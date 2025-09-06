@@ -1,9 +1,9 @@
 {
   "createdAt": "2025-09-06T09:59:25.294Z",
-  "updatedAt": "2025-09-06T10:02:23.361Z",
+  "updatedAt": "2025-09-06T10:03:12.667Z",
   "id": "d2d5jaGLMQIjoGab",
   "name": "github backup",
-  "active": false,
+  "active": true,
   "isArchived": false,
   "nodes": [
     {
@@ -59,7 +59,7 @@
         "rule": {
           "interval": [
             {
-              "field": "hours"
+              "triggerAtHour": 12
             }
           ]
         }
@@ -1111,12 +1111,16 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "staticData": null,
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
   "meta": {
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "1034a705-29f0-437d-bd81-1d96637e0742",
-  "triggerCount": 0,
+  "versionId": "e6fe9907-404a-4d08-bb99-e8afe267e302",
+  "triggerCount": 1,
   "tags": []
 }
