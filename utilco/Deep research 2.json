@@ -1,0 +1,290 @@
+{
+  "createdAt": "2025-07-15T09:06:26.548Z",
+  "updatedAt": "2025-07-15T09:30:24.000Z",
+  "id": "PRWBlrffwl6OSBQQ",
+  "name": "Deep research 2",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "courses",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{ $json.course_id }}"
+            }
+          ]
+        }
+      },
+      "id": "88399790-0258-43f2-a1b7-4ecee038510b",
+      "name": "Fetch Course Data",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -368,
+        -352
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "bvMVIJLed9p3sKxS",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Hent kursusdata\nconst courseData = $input.item.json;\n\n// Opret research prompt\nconst researchPrompt = `\nGenerer en dybdegående research-rapport til følgende kursus:\n\nKURSUSINFORMATION:\n- Titel: ${courseData.draft_title}\n- Niveau: ${courseData.course_level}\n- Varighed: ${courseData.estimated_hours} timer\n- Sprog: ${courseData.course_language}\n- Målgruppe: ${courseData.target_audience}\n- Sektor: ${courseData.sector}\n- Kursusspecifikation: ${courseData.course_spec}\n\nRAPPORTKRAV:\nUdarbejd en omfattende baggrundsresearch-rapport der skal indeholde:\n\n1. Sektoranalyse og kontekst\n   - Aktuelle trends og udfordringer i sektoren\n   - Reguleringsmæssige krav og standarder\n   - Teknologiske udviklinger og innovationer\n   - Markedsdynamikker og konkurrenceforhold\n\n2. Målgruppeanalyse\n   - Detaljeret profil af målgruppen\n   - Typiske job-roller og ansvarsområder\n   - Kompetencebehov og -gap\n   - Læringsmotivation og præferencer\n\n3. Faglig dybde og teori\n   - Kernebegreber og teoretisk fundament\n   - Best practices og metodologier\n   - Relevante frameworks og modeller\n   - Videnskabelig baggrund og research\n\n4. Praktisk anvendelse\n   - Real-world implementering\n   - Case studies og eksempler fra branchen\n   - Typiske udfordringer og løsninger\n   - ROI og værdi-realisering\n\n5. Kompetenceudvikling\n   - Progression fra begynder til ekspert\n   - Nødvendige forudsætninger\n   - Certificeringer og akkrediteringer\n   - Karriereveje og udviklingsmuligheder\n\n6. Kilder og referencer\n   - Primære kilder og autoritative referencer\n   - Brancheorganisationer og ekspertnetværk\n   - Relevante standarder og guidelines\n   - Yderligere læsning og ressourcer\n\nFORMATERING:\n- Strukturér rapporten med tydelige overskrifter og underafsnit\n- Brug markdown-formatering\n- Inkluder relevante data, statistikker og citater\n- Skriv på ${courseData.course_language === 'Dansk' ? 'dansk' : 'engelsk'}\n- Målret indholdet til ${courseData.sector}-sektoren\n- Tilpas dybden til ${courseData.course_level}-niveau\n\nOMFANG:\nRapporten skal være omfattende og detaljeret (minimum 3000 ord) og give en solid faglig baggrund for kurset.\n`;\n\n// Return data for next node\nreturn {\n  prompt: researchPrompt,\n  course_id: courseData.id,\n  course_title: courseData.draft_title,\n  model: \"o1-mini\" // Skift til \"o1\" i produktion\n};"
+      },
+      "id": "d7fd8063-b1ea-46c9-84fb-70e688d2bfd2",
+      "name": "Prepare Research Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -160,
+        -352
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Forbered API request body\nconst requestBody = {\n  model: $input.item.json.model,\n  messages: [\n    {\n      role: \"user\",\n      content: $input.item.json.prompt\n    }\n  ]\n};\n\n// Return både request body og course info\nreturn {\n  requestBody: requestBody,\n  requestBodyString: JSON.stringify(requestBody),\n  course_id: $input.item.json.course_id,\n  course_title: $input.item.json.course_title\n};"
+      },
+      "id": "f4395300-19ea-48a9-ad31-12d11a02c968",
+      "name": "Prepare API Body",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        48,
+        -352
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "headerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.requestBodyString }}",
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "id": "f3b6f8a1-7bb9-41ec-83ac-f89c644da089",
+      "name": "Call Deep Research API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        -352
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Udtræk research content fra API response\nconst apiResponse = $input.item.json;\n\n// Check om response er valid\nif (!apiResponse.choices || !apiResponse.choices[0] || !apiResponse.choices[0].message) {\n  throw new Error('Invalid response from OpenAI API');\n}\n\n// Udtræk content\nconst researchContent = apiResponse.choices[0].message.content;\n\n// Hent course info fra tidligere node\nconst courseId = $('Prepare API Body').item.json.course_id;\nconst courseTitle = $('Prepare API Body').item.json.course_title;\n\nreturn {\n  research_content: researchContent,\n  course_id: courseId,\n  course_title: courseTitle,\n  updated_at: new Date().toISOString()\n};"
+      },
+      "id": "90b56293-ce19-417c-ad93-ab4fca9a9465",
+      "name": "Extract Research Content",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        -352
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "courses",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "equals"
+            }
+          ]
+        }
+      },
+      "id": "7cff4d71-4248-4f11-af9d-2f927f50dff3",
+      "name": "Update Course Research",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        640,
+        -352
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "bvMVIJLed9p3sKxS",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Forbered response\nconst researchLength = $('Extract Research Content').item.json.research_content.length;\nconst courseId = $('Extract Research Content').item.json.course_id;\nconst courseTitle = $('Extract Research Content').item.json.course_title;\n\nreturn {\n  success: true,\n  message: \"Deep research rapport genereret og gemt\",\n  course_id: courseId,\n  course_title: courseTitle,\n  research_length: researchLength,\n  timestamp: new Date().toISOString(),\n  model_used: \"o1-mini\"\n};"
+      },
+      "id": "9e0b33ff-b9b9-4f6c-a14e-a4dfdbf6bd54",
+      "name": "Prepare Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        848,
+        -352
+      ]
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f883b2b0-aaf5-4200-a681-7a2860514971",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8f2234b1-afbe-4e3f-94ef-2e99a438208c",
+              "name": "course_id",
+              "value": "725b2224-eef1-48c9-9792-d758ebc07c52",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "f6c5cf91-e0c3-47b7-9c9f-a1d2db3b5bbd",
+      "name": "course_id"
+    }
+  ],
+  "connections": {
+    "Fetch Course Data": {
+      "main": [
+        [
+          {
+            "node": "Prepare Research Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Research Prompt": {
+      "main": [
+        [
+          {
+            "node": "Prepare API Body",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare API Body": {
+      "main": [
+        [
+          {
+            "node": "Call Deep Research API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Deep Research API": {
+      "main": [
+        [
+          {
+            "node": "Extract Research Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Research Content": {
+      "main": [
+        [
+          {
+            "node": "Update Course Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Course Research": {
+      "main": [
+        [
+          {
+            "node": "Prepare Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "course_id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "course_id": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "382ee9ad-7391-4803-9511-39f3c147fb0d",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-07-15T09:06:26.551Z",
+      "updatedAt": "2025-07-15T09:06:26.551Z",
+      "role": "workflow:owner",
+      "workflowId": "PRWBlrffwl6OSBQQ",
+      "projectId": "SFLNAzqJIfhKMhJx"
+    }
+  ],
+  "tags": []
+}
