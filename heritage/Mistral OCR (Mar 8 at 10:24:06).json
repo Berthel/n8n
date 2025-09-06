@@ -1,0 +1,590 @@
+{
+  "createdAt": "2025-03-08T11:01:30.732Z",
+  "updatedAt": "2025-03-08T11:01:30.732Z",
+  "id": "3jeLvEfUeyikZzlR",
+  "name": "Mistral OCR (Mar 8 at 10:24:06)",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -340,
+        -160
+      ],
+      "id": "68450790-764d-4e39-9af5-595283dfa723",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "id": "5b763c1a-6a73-40dc-9e33-b91c9ddb767b",
+      "name": "Download File",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        540,
+        -160
+      ],
+      "executeOnce": false,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "PJ6id5UZ4SjuKSnf",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        300,
+        -160
+      ],
+      "id": "101e9a30-2cf8-4d41-87d6-8b63619edc11",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.mistral.ai/v1/ocr",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"mistral-ocr-latest\",\n  \"document\": {\n    \"type\": \"document_url\",\n    \"document_url\": \"{{ $json['pdf-url'] }}\",\n    \"document_name\": \"side4.pdf\"\n  },\n  \"include_image_base64\": false\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1260,
+        -160
+      ],
+      "id": "3e25fa0b-4314-4f7a-9c7e-148c5624e166",
+      "name": "Upload to Mistral",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "mxx9XUbmVC2Mm1QE",
+          "name": "Mistral"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "pages",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1460,
+        -160
+      ],
+      "id": "1a53c5f8-6be7-4c0a-97f8-05403d218dcf",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "markdown"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1680,
+        -160
+      ],
+      "id": "050b612b-6839-485e-a7ef-0ad39cc5c0f2",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "queryString": "=",
+        "returnAll": true,
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "value": "1BJ34mVw0uGLgP-mPng7mGpy06x8j9BO8",
+            "mode": "list",
+            "cachedResultName": "OCR Inbox",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1BJ34mVw0uGLgP-mPng7mGpy06x8j9BO8"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        80,
+        -160
+      ],
+      "id": "90c5fc56-dd07-4a95-8a68-b1674ad32a4b",
+      "name": "OCR Inbox",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "PJ6id5UZ4SjuKSnf",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "dffd0be7-94ff-485f-9466-8702d9e0dd4d",
+              "name": "Supabaseaccount",
+              "value": "rrkivosxnrfvdawawexd",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -120,
+        -160
+      ],
+      "id": "03914dd3-11f9-4ba0-8ab7-ce4a908babb7",
+      "name": "Set variables"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "377d926a-1aa0-4754-afb8-eacb1220e8ad",
+              "name": "pdf-url",
+              "value": "=https://{{ $('Set variables').first().json.Supabaseaccount }}.supabase.co/storage/v1/object/tmp/{{ $('Loop Over Items').item.json.name }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1020,
+        -160
+      ],
+      "id": "79b3852a-e8d2-4358-a94d-920472858cdd",
+      "name": "Get pdf url"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://{{ $('Set variables').first().json.Supabaseaccount }}.supabase.co/storage/v1/object/tmp/{{ $json.name }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/pdf"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "=data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        780,
+        -160
+      ],
+      "id": "258c72a3-5bf1-4894-88e5-4a5ba637dada",
+      "name": "Upload pdf",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "znNIyfNCzQN57VEr",
+          "name": "supabase service role api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "toText",
+        "sourceProperty": "cleanedMarkdown",
+        "options": {
+          "addBOM": false,
+          "encoding": "utf8",
+          "fileName": "={{ $('OCR Inbox').item.json.name.replace(/\\.pdf$/, \".txt\") }}"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        2360,
+        -160
+      ],
+      "id": "8efa2457-e110-43a5-a7b2-89d392fed8d8",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "12U_typ9QZfgkVw8PKsOAFj19OB0Z40IO",
+          "mode": "list",
+          "cachedResultName": "RAG Inbox",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/12U_typ9QZfgkVw8PKsOAFj19OB0Z40IO"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2580,
+        -160
+      ],
+      "id": "27650c28-b294-4a71-93ae-57716bf7e589",
+      "name": "Upload til RAG Inbox",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "PJ6id5UZ4SjuKSnf",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Loop Over Items').item.json.id }}",
+          "mode": "id"
+        },
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1tlHZfVFc79969NEgLzsPgtEStg4zY_IO",
+          "mode": "list",
+          "cachedResultName": "OCR Processed",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1tlHZfVFc79969NEgLzsPgtEStg4zY_IO"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2800,
+        -160
+      ],
+      "id": "6037c7ae-9a57-4458-b9f6-4e672781069b",
+      "name": "Move til OCR Processed",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "PJ6id5UZ4SjuKSnf",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "={{ $('Get pdf url').item.json['pdf-url'] }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/pdf"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3060,
+        -160
+      ],
+      "id": "0525a9f5-b43e-4146-956f-cf71829f8447",
+      "name": "Delete pdf i supabase storage",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "znNIyfNCzQN57VEr",
+          "name": "supabase service role api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "markdown"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1900,
+        -160
+      ],
+      "id": "d2af9d32-f3f7-4ced-b8c8-4c2926f8702c",
+      "name": "Aggregate1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1) Hent markdown fra forrige node\nlet markdownData = $input.first().json.markdown || '';\n\n// 2) Hvis det er et array, saml det til én streng\nif (Array.isArray(markdownData)) {\n  markdownData = markdownData.join('\\n');\n}\n\n// 3) Konverter bogstavelige \\n til rigtige linjeskift og rens teksten\nlet cleanedText = markdownData\n  // Håndter Windows-linjeskift\n  .replace(/\\r\\n/g, '\\n')\n  // Erstat bogstavelige \\n med rigtige linjeskift\n  // (hvis du stadig ser \\n, prøv .replace(/\\\\\\\\n/g, '\\n'))\n  .replace(/\\\\n/g, '\\n')\n  // Fjern billedreferencer, hvis de ikke skal bruges\n  .replace(/!\\[.*?\\]\\(.*?\\)/g, '')\n  // Fjern de specifikke LaTeX-lignende stykker\n  .replace(/\\$[^$]{1,50}\\$/g, '')\n  // Normaliser whitespace\n  .replace(/[ \\t]+$/gm, '')         // Fjern trailing whitespace på hver linje\n  .replace(/^[ \\t]+$/gm, '')         // Fjern linjer med kun whitespace\n  .replace(/\\n{3,}/g, '\\n\\n')        // Reducér mange linjeskift til max 2\n  // Rens kanter\n  .replace(/^[^a-zA-Z0-9#]+/, '')    // Fjern \"junk\" i starten (f.eks. specialtegn)\n  .replace(/[^a-zA-Z0-9.]+$/g, '')   // Fjern \"junk\" i slutningen\n  .trim();                         // Fjern whitespace i kanterne\n\n// 4) Returner det rensede resultat\nreturn [\n  {\n    json: {\n      cleanedMarkdown: cleanedText,\n      mimeType: 'text/plain'\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2120,
+        -160
+      ],
+      "id": "e3d471dd-d380-41dc-bf12-b55f8acce201",
+      "name": "Code"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Set variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Download File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download File": {
+      "main": [
+        [
+          {
+            "node": "Upload pdf",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload to Mistral": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OCR Inbox": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set variables": {
+      "main": [
+        [
+          {
+            "node": "OCR Inbox",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get pdf url": {
+      "main": [
+        [
+          {
+            "node": "Upload to Mistral",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload pdf": {
+      "main": [
+        [
+          {
+            "node": "Get pdf url",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Aggregate1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Upload til RAG Inbox",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload til RAG Inbox": {
+      "main": [
+        [
+          {
+            "node": "Move til OCR Processed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move til OCR Processed": {
+      "main": [
+        [
+          {
+            "node": "Delete pdf i supabase storage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete pdf i supabase storage": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate1": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": null,
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": "590c0b89-96fa-41e8-9b95-3b198e051d70",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-03-08T11:01:30.736Z",
+      "updatedAt": "2025-03-08T11:01:30.736Z",
+      "role": "workflow:owner",
+      "workflowId": "3jeLvEfUeyikZzlR",
+      "projectId": "GfhaYhFYRk0TRXAf"
+    }
+  ],
+  "tags": []
+}
