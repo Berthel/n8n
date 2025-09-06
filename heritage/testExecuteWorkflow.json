@@ -1,0 +1,103 @@
+{
+  "createdAt": "2025-01-26T06:00:15.849Z",
+  "updatedAt": "2025-01-26T14:25:04.000Z",
+  "id": "zCvk5VJf6tSqvWPw",
+  "name": "testExecuteWorkflow",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        -120
+      ],
+      "id": "1f4f3194-04ee-4f83-af00-b45aabeb339c",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "scD5ffOudFVzNGFA",
+          "mode": "list",
+          "cachedResultName": "My project — subGetPlaceDetails"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "GoogleMapsQuery": "Castelo de Tavira"
+          },
+          "matchingColumns": [
+            "GoogleMapsQuery"
+          ],
+          "schema": [
+            {
+              "id": "GoogleMapsQuery",
+              "displayName": "GoogleMapsQuery",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -100,
+        -120
+      ],
+      "id": "b7e022b9-d445-4565-96b4-09b28e832aaa",
+      "name": "Execute Workflow"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Execute Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "0a3ef281-3eaf-45e1-9af3-6ded805ff65e",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-01-26T06:00:15.852Z",
+      "updatedAt": "2025-01-26T06:00:15.852Z",
+      "role": "workflow:owner",
+      "workflowId": "zCvk5VJf6tSqvWPw",
+      "projectId": "rkqKISKa14HwF9Xd"
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-01-26T14:24:07.274Z",
+      "updatedAt": "2025-01-26T14:24:07.274Z",
+      "id": "qneX5ZMmFiQm5Mhs",
+      "name": "research"
+    }
+  ]
+}
