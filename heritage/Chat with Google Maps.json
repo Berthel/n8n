@@ -1,0 +1,618 @@
+{
+  "createdAt": "2025-01-26T06:23:48.729Z",
+  "updatedAt": "2025-01-29T09:22:44.000Z",
+  "id": "ypxImtRKEFDJxGuv",
+  "name": "Chat with Google Maps",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Hi there! 👋\nWhich historical site in Tavira do you want me to tell you about?",
+        "options": {
+          "inputPlaceholder": "Type your question..",
+          "title": "Hi there! 👋"
+        }
+      },
+      "id": "a2b5db83-482a-43f1-9a36-e517c0aff1ee",
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -60,
+        -140
+      ],
+      "webhookId": "e985d15f-b2f6-456d-be15-97e0b1544a40"
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 20
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        240,
+        60
+      ],
+      "id": "dc588187-e478-4b3f-9f44-4d2d1f780033",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "EzZYFEVPXxVDpNLe",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "=anthropic/claude-3.5-sonnet:beta",
+        "options": {}
+      },
+      "id": "b7a96fea-fa76-484d-849a-8389d1a554bc",
+      "name": "Openrouter Claude",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        80
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "7oESUrXOypaiYfq2",
+          "name": "openrouter"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "21241565-472a-4bda-8b15-13498fa29451",
+      "name": "OpenAI Chat Model3",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        420
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "ZjiR1Y4tdzymEK1L",
+          "name": "OpenAi account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        160,
+        -140
+      ],
+      "id": "4ad4e48e-9e11-45ae-b25e-601e54d653f7",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Fint nearby restaurants using latitude, longitude, number of places and distance in meter",
+        "method": "POST",
+        "url": "https://places.googleapis.com/v1/places:searchNearby",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "parametersHeaders": {
+          "values": [
+            {
+              "name": "Content-Type",
+              "valueProvider": "fieldValue",
+              "value": "application/json"
+            },
+            {
+              "name": "X-Goog-FieldMask",
+              "valueProvider": "fieldValue",
+              "value": "places.displayName,places.types,places.formattedAddress,places.location,places.editorialSummary,places.rating,places.websiteUri,places.priceLevel,places.primaryType,places.plusCode,places.googleMapsLinks,places.business_status"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"includedTypes\": {includedTypes},\n  \"locationRestriction\": {\n    \"circle\": {\n      \"center\": {\n        \"latitude\": {latitude},\n        \"longitude\": {longitude}\n      },\n      \"radius\": {radius}\n    }\n  },\n  \"maxResultCount\": 20\n}\n",
+        "placeholderDefinitions": {
+          "values": [
+            {
+              "name": "latitude",
+              "description": "The latitude of the starting place from where we search for nearby places",
+              "type": "number"
+            },
+            {
+              "name": "longitude",
+              "description": "The longitude of the starting place from where we search for nearby places",
+              "type": "number"
+            },
+            {
+              "name": "radius",
+              "description": "The radius in meters to search for nearby places",
+              "type": "number"
+            },
+            {
+              "name": "includedTypes",
+              "description": "An array of types in this format: [\"restaurant\", \"cafe\"]\nChose among these types: historical_place, cultural_landmark, monument, museum, historical_landmark, cultural_center, art_gallery, performing_arts_theater, visitor_center, church, mosque, hindu_temple, synagogue, plaza, tourist_attraction, tourist_information_center, garden, park, botanical_garden, restaurant, cafe, cafeteria, coffee_shop, bar, pub, wine_bar, public_bathroom, public_bath\n",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        620,
+        80
+      ],
+      "id": "0f7c36c1-dd56-45c0-98bd-f1080c63fc3e",
+      "name": "nearby_places_tool",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "RBY53ewF7tAnXKlY",
+          "name": "Google API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "fb06f350-745e-45fb-9b7b-07932ed023fb",
+      "name": "OpenAI Chat Model1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        540,
+        660
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "ZjiR1Y4tdzymEK1L",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "user_documents",
+        "description": "Contains all the user's documents that you can check for context to answer user questions. Before beginning, scan and identify all relevant occurrences of the topic or subject matter to ensure a comprehensive overview of the best descriptions. Use this overview to prioritize and refine responses effectively.",
+        "topK": 20
+      },
+      "id": "85ea8a93-4095-4847-9406-84a4e62e79a4",
+      "name": "Retrieve Documents",
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1,
+      "position": [
+        320,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-small",
+        "options": {}
+      },
+      "id": "c0d071e3-ff56-4842-b5df-9ea0d833cc61",
+      "name": "Embeddings OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1,
+      "position": [
+        500,
+        920
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "ZjiR1Y4tdzymEK1L",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {
+          "queryName": "match_documents"
+        }
+      },
+      "id": "9088ed01-aa56-4cf4-8380-2a67f773c354",
+      "name": "Supabase Vector Store",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1,
+      "position": [
+        200,
+        640
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "google_maps_tool",
+        "description": "Call this tool by using the name of the place.\nOnly the name of the place and nothing else.\nThen I will return all information about the place to you.\n",
+        "workflowId": {
+          "__rl": true,
+          "value": "scD5ffOudFVzNGFA",
+          "mode": "list",
+          "cachedResultName": "My project — subGetPlaceDetails"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [
+            "GoogleMapsQuery"
+          ],
+          "schema": [
+            {
+              "id": "query",
+              "displayName": "query",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        420,
+        100
+      ],
+      "id": "8d42b51d-1756-4120-9c0f-3c1ad3215e2d",
+      "name": "google_maps_tool"
+    },
+    {
+      "parameters": {
+        "name": "insert_site_to_supabase",
+        "description": "Call this tool to insert site info from google_maps_tool into supabase",
+        "workflowId": {
+          "__rl": true,
+          "value": "WdNyDCo81L6luW0s",
+          "mode": "list",
+          "cachedResultName": "My project — Insert Site in supabase"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "global_code": "={{ $fromAI('global_code') }}",
+            "latitude": "={{ $fromAI('latitude') }}",
+            "longitude": "={{ $fromAI('longitude') }}",
+            "address": "={{ $fromAI('address') }}",
+            "website_url": "={{ $fromAI('website_url') }}",
+            "CID": "={{ $fromAI('CID') }}",
+            "place_id": "={{ $fromAI('place_id') }}",
+            "site_name": "={{ $fromAI('site_name_in_local_language') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "global_code",
+              "displayName": "global_code",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "latitude",
+              "displayName": "latitude",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "longitude",
+              "displayName": "longitude",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "address",
+              "displayName": "address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "website_url",
+              "displayName": "website_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "CID",
+              "displayName": "CID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "place_id",
+              "displayName": "place_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "site_name",
+              "displayName": "site_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        820,
+        80
+      ],
+      "id": "c4796d69-36f2-4a64-ab02-33bd4bcf9d72",
+      "name": "insert_site_to_supabase"
+    },
+    {
+      "parameters": {
+        "name": "find_fotos_from_geolocation",
+        "description": "Call this tool to get the photo from a geolocation.\nUse it to present photos from a site. ",
+        "workflowId": {
+          "__rl": true,
+          "value": "ayEPA5vEl8XzXAwm",
+          "mode": "list",
+          "cachedResultName": "My project — Find Wikimedia Photo by Geolocation"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "radius": "={{ $fromAI(\"radius\", \"The radius so search photos for in meters.\") }}",
+            "latitude": "={{$fromAI(\"latitude\")}}",
+            "longitude": "={{$fromAI(\"longitude\")}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "radius",
+              "displayName": "radius",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "latitude",
+              "displayName": "latitude",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "longitude",
+              "displayName": "longitude",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        980,
+        80
+      ],
+      "id": "1f49fb6d-aef5-48fb-b041-1146e6d01c91",
+      "name": "find_fotos_from_geolocation"
+    }
+  ],
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Openrouter Claude": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model3": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "nearby_places_tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Retrieve Documents",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Retrieve Documents",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retrieve Documents": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "google_maps_tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "insert_site_to_supabase": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "find_fotos_from_geolocation": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "428f5ce2-d0ad-45ee-8fc5-927c3c18da22",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-01-26T06:23:48.733Z",
+      "updatedAt": "2025-01-26T06:23:48.733Z",
+      "role": "workflow:owner",
+      "workflowId": "ypxImtRKEFDJxGuv",
+      "projectId": "rkqKISKa14HwF9Xd"
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-01-27T04:16:13.710Z",
+      "updatedAt": "2025-01-27T04:16:13.710Z",
+      "id": "UKDDqdJlo9qVGTuK",
+      "name": "navigator"
+    }
+  ]
+}
