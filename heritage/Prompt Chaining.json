@@ -1,0 +1,280 @@
+{
+  "createdAt": "2025-02-11T04:24:58.702Z",
+  "updatedAt": "2025-02-11T04:25:04.000Z",
+  "id": "BKcxuLKNLMJCqSGk",
+  "name": "Prompt Chaining",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        540,
+        640
+      ],
+      "id": "9f0e16b0-0af9-42c8-9c43-a80a87a81ab5",
+      "name": "4o mini"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Here is the topic to write a blog about: {{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "# Overview\nYou are an expert outline writer. Your job is to generate a structured outline for a blog post with section titles and key points."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        220,
+        380
+      ],
+      "id": "be4b973f-5064-4c53-b61c-f2a55a997569",
+      "name": "Outline Writer"
+    },
+    {
+      "parameters": {
+        "content": "# Prompt Chaining\n ✅ Improved Accuracy and Quality – Each step focuses on a specific task, reducing errors and hallucinations.\n\n ✅ Greater Control Over Each Step – You can refine or tweak individual steps without affecting the entire process.\n\n ✅ Specialization Leads to More Effective AI Agents – Each AI agent becomes a specialist rather than a generalist, improving reliability.\n\n ✅ Easier Debugging and Optimization – If an output isn’t ideal, you only need to fix the weak link rather than redoing everything.\n\n ✅ More Scalable and Reusable Workflows – A structured, step-by-step workflow can be repurposed for different use cases.\n",
+        "height": 260,
+        "width": 940,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "293836f6-2df6-4ab5-9c20-765bfdc5d387",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Here is the outline: \n\n{{ $json.output }}",
+        "options": {
+          "systemMessage": "=# Overview\nYou are an expert blog evaluator. Revise this outline and ensure it covers the following key criteria: \n(1) Engaging Introduction \n(2) Clear Section Breakdown\n(3) Logical Flow\n(4) Conclusion with Key Takeaways\n\n## Output\nOnly output the revised outline."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        540,
+        380
+      ],
+      "id": "82f1aad0-5605-4957-998f-6adaf62c741b",
+      "name": "Outline Evaluation"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Here if the revised outline: {{ $json.output }}",
+        "options": {
+          "systemMessage": "=# Overview\nYou are an expert blog writer. Generate a detailed blog post using the outline with well-structured paragraphs and engaging content."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        880,
+        380
+      ],
+      "id": "d6b6432b-9a1c-44fd-bfb1-e74789f88108",
+      "name": "Blog Writer"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "simple": false,
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "={{ $json.output }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1220,
+        380
+      ],
+      "id": "bb1d8a59-8b4b-4720-9e1d-82cf938bb2af",
+      "name": "Post to Docs"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        1060,
+        640
+      ],
+      "id": "2a6d90a7-771a-435f-ac57-b078b4167a6e",
+      "name": "DeepSeek R1",
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        20,
+        380
+      ],
+      "id": "1d8def38-0158-4a1a-8f72-e9be688890f3",
+      "name": "When chat message received",
+      "webhookId": "8b5d17e6-9356-437e-a97a-4f4027e6451d"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        220,
+        640
+      ],
+      "id": "dbbd218e-b69f-4bee-a052-c7bce4723df9",
+      "name": "2.0 Flash"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.2,
+      "position": [
+        920,
+        640
+      ],
+      "id": "bdda49ec-d9a7-4188-840d-7e9ee0bcb42d",
+      "name": "Claude 3.5"
+    }
+  ],
+  "connections": {
+    "4o mini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Outline Evaluation",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Outline Writer": {
+      "main": [
+        [
+          {
+            "node": "Outline Evaluation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Outline Evaluation": {
+      "main": [
+        [
+          {
+            "node": "Blog Writer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Blog Writer": {
+      "main": [
+        [
+          {
+            "node": "Post to Docs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Outline Writer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2.0 Flash": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Outline Writer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude 3.5": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Blog Writer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "e9e9122d-3d6f-4bbc-a8d3-0ff52cefed59",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-02-11T04:24:58.705Z",
+      "updatedAt": "2025-02-11T04:24:58.705Z",
+      "role": "workflow:owner",
+      "workflowId": "BKcxuLKNLMJCqSGk",
+      "projectId": "PH5AAePaZfow61Bz"
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-02-11T04:13:44.194Z",
+      "updatedAt": "2025-02-11T04:13:44.194Z",
+      "id": "EtWh3oSAkx4xw5uF",
+      "name": "nate"
+    },
+    {
+      "createdAt": "2025-02-11T04:21:49.564Z",
+      "updatedAt": "2025-02-11T04:22:36.344Z",
+      "id": "q5mFv9M5YWiJHj0q",
+      "name": "agentic_framework"
+    }
+  ]
+}
