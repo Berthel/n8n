@@ -1,0 +1,107 @@
+{
+  "createdAt": "2025-08-25T08:15:28.654Z",
+  "updatedAt": "2025-08-25T08:15:28.654Z",
+  "id": "TNdFO3Ik5keaMB3j",
+  "name": "Translate course dynamic - FIXED",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "translate-course-fixed",
+        "options": {}
+      },
+      "id": "webhook-node",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -352,
+        416
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT\n  m.id AS module_id,\n  mt_source.content AS module_content_source,\n  COALESCE(json_agg(\n    json_build_object(\n      'lesson_id', l.id,\n      'lesson_content_source', lt_source.content,\n      'position', l.position\n    )\n    ORDER BY l.position NULLS LAST, l.id\n  ) FILTER (WHERE lt_source.content IS NOT NULL), '[]'::json) AS lessons\nFROM modules m\nJOIN courses c ON c.id = m.course_id\nJOIN module_translations mt_source\n  ON mt_source.module_id = m.id AND mt_source.language_code = '{{ $json.body.source_language }}'\nJOIN lessons l\n  ON l.module_id = m.id\nJOIN lesson_translations lt_source\n  ON lt_source.lesson_id = l.id AND lt_source.language_code = '{{ $json.body.source_language }}'\nLEFT JOIN lesson_translations lt_target\n  ON lt_target.lesson_id = l.id AND lt_target.language_code = '{{ $json.body.target_language }}'\nWHERE c.id = '{{ $json.body.course_id }}'\n  AND lt_target.lesson_id IS NULL\nGROUP BY m.id, mt_source.content;",
+        "options": {}
+      },
+      "id": "fetch-lessons",
+      "name": "Fetch Modules+Lessons",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -128,
+        540
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "Vw56OL1mZd8nlif7",
+          "name": "Postgres staging account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT\n  mt_source.module_id,\n  mt_source.content AS module_content_source\nFROM module_translations mt_source\nJOIN modules m ON m.id = mt_source.module_id\nJOIN courses c ON c.id = m.course_id\nLEFT JOIN module_translations mt_target\n  ON mt_target.module_id = mt_source.module_id AND mt_target.language_code = '{{ $json.body.target_language }}'\nWHERE mt_source.language_code = '{{ $json.body.source_language }}'\n  AND c.id = '{{ $json.body.course_id }}'\n  AND mt_target.module_id IS NULL;",
+        "options": {}
+      },
+      "id": "fetch-modules",
+      "name": "Fetch Modules Missing",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        320,
+        168
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "Vw56OL1mZd8nlif7",
+          "name": "Postgres staging account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Fetch Modules Missing",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fetch Modules+Lessons",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveManualExecutions": true,
+    "saveExecutionProgress": true
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": "a2a4d963-678b-4772-8b78-fcd001835f6c",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-08-25T08:15:28.656Z",
+      "updatedAt": "2025-08-25T08:15:28.656Z",
+      "role": "workflow:owner",
+      "workflowId": "TNdFO3Ik5keaMB3j",
+      "projectId": "amlePLldrdBTzDyr"
+    }
+  ],
+  "tags": []
+}
