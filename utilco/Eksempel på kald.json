@@ -1,0 +1,157 @@
+{
+  "createdAt": "2025-05-01T12:42:36.564Z",
+  "updatedAt": "2025-05-01T12:48:10.000Z",
+  "id": "NxjXWgxxEBMxGERy",
+  "name": "Eksempel på kald",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "13c4120e-1496-404e-9adf-02fdac6d6384",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d92788c6-74be-4d33-971c-c537ab4606ea",
+              "name": "image_name",
+              "value": "go_daw_do",
+              "type": "string"
+            },
+            {
+              "id": "839114d5-ae50-43c7-8d76-e9ee4562eca7",
+              "name": "Billedtekst",
+              "value": "Som vandselskab står du over for en række unikke risikokategorier. Lad os se på de vigtigste:  For det første har vi miljømæssige risici, som omfatter forurening og klimaforandringer. Tænk på hvordan ekstreme vejrhændelser påvirker jeres anlæg og infrastruktur.  Så er der infrastrukturelle risici – herunder ældning af udstyr og brud på ledningsnet. Vi ved at mange danske vandselskaber har rør, der er over 50 år gamle, hvilket øger risikoen for brud og lækager.  Regulatoriske risici omfatter ændringer i lovgivning og krav til benchmarking. Reguleringen bliver stadig mere omfattende, og I skal kunne tilpasse jer nye krav løbende.  Endelig er der sundhedsrelaterede risici, som handler om vandkvalitet og risiko for kontaminering. Forbrugernes sundhed er jeres ultimative ansvar.  En effektiv risikostyring kræver, at I balancerer disse forskellige risikotyper med jeres øvrige ledelsesmæssige prioriteter.",
+              "type": "string"
+            },
+            {
+              "id": "22d2c972-67cf-4066-8c93-2908b53d2905",
+              "name": "ref_image",
+              "value": "https://iynjlzzmszozpxpgldaa.supabase.co/storage/v1/object/public/images/test/20250430043509.png",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "id": "6f941e45-2ea4-4cd1-8ef3-19613ffe2e72",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "hs2iwVsjN8phf01l",
+          "mode": "list",
+          "cachedResultName": "My project — Tool Kursus Image generator"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "eksempel_url": "={{ $json.ref_image }}",
+            "Billedtekst": "={{ $json.Billedtekst }}",
+            "image_name": "={{ $json.image_name }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "eksempel_url",
+              "displayName": "eksempel_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "Billedtekst",
+              "displayName": "Billedtekst",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "image_name",
+              "displayName": "image_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        440,
+        0
+      ],
+      "id": "04d86ffb-6b8a-4227-b88a-ca83c8bfc350",
+      "name": "Execute Workflow"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Execute Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "cbff2331-a444-412c-9cc3-659a83880e0a",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-05-01T12:42:36.567Z",
+      "updatedAt": "2025-05-01T12:42:36.567Z",
+      "role": "workflow:owner",
+      "workflowId": "NxjXWgxxEBMxGERy",
+      "projectId": "SFLNAzqJIfhKMhJx"
+    }
+  ],
+  "tags": []
+}
