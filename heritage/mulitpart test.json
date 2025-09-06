@@ -1,0 +1,170 @@
+{
+  "createdAt": "2025-03-09T06:56:01.542Z",
+  "updatedAt": "2025-03-09T08:50:04.000Z",
+  "id": "JqLFaM6RuRfotqpr",
+  "name": "mulitpart test",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "5ef6b4ba-0be1-4fb9-b737-52e0eb936d43",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "queryString": "=",
+        "returnAll": true,
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "value": "1BJ34mVw0uGLgP-mPng7mGpy06x8j9BO8",
+            "mode": "list",
+            "cachedResultName": "OCR Inbox",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1BJ34mVw0uGLgP-mPng7mGpy06x8j9BO8"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        260,
+        -180
+      ],
+      "id": "98bc41a6-d35a-4eec-9810-6ea9513575aa",
+      "name": "OCR Inbox",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "PJ6id5UZ4SjuKSnf",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://www.googleapis.com/drive/v3/files/{{ $json.id }}?uploadType=multipart",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDriveOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        480,
+        -180
+      ],
+      "id": "a41f7b7f-5841-4495-9095-427e797b06b6",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "RBY53ewF7tAnXKlY",
+          "name": "Google API"
+        },
+        "googleDriveOAuth2Api": {
+          "id": "PJ6id5UZ4SjuKSnf",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDriveOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "multipart/related; boundary=foo_bar_baz"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        280,
+        140
+      ],
+      "id": "4fdeb81c-3be1-4dee-a122-12d479c75652",
+      "name": "Upload mulitpart",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "RBY53ewF7tAnXKlY",
+          "name": "Google API"
+        },
+        "googleDriveOAuth2Api": {
+          "id": "PJ6id5UZ4SjuKSnf",
+          "name": "Google Drive account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "OCR Inbox": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Upload mulitpart",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "6966df5e-9eb2-47d0-b8c3-5a3bcfc08edd",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-03-09T06:56:01.546Z",
+      "updatedAt": "2025-03-09T06:56:01.546Z",
+      "role": "workflow:owner",
+      "workflowId": "JqLFaM6RuRfotqpr",
+      "projectId": "rkqKISKa14HwF9Xd"
+    }
+  ],
+  "tags": []
+}
