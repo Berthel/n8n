@@ -1,0 +1,1906 @@
+{
+  "createdAt": "2025-05-09T12:23:00.692Z",
+  "updatedAt": "2025-05-09T12:23:29.000Z",
+  "id": "OW71rqY0tY9nEc1F",
+  "name": "Kursus creator copy",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        340,
+        1080
+      ],
+      "id": "37df59d6-3b97-47a1-807d-382456059ffc",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        780,
+        1300
+      ],
+      "id": "fd0f5078-cc6e-409b-994d-321e6a2c4b8e",
+      "name": "OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "Gvr9qL4I7djxEhHC",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "User_documents",
+        "toolDescription": "Brug denne baggrundsviden til udarbejdelse af kurser",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "topK": 20,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1,
+      "position": [
+        900,
+        1302.5
+      ],
+      "id": "84cee9d0-020b-4d9d-93d6-ba1782b1e86e",
+      "name": "User documents",
+      "credentials": {
+        "supabaseApi": {
+          "id": "bvMVIJLed9p3sKxS",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        988,
+        1500
+      ],
+      "id": "1b3a0310-4bc4-4de8-8e9d-080209e3a175",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "Gvr9qL4I7djxEhHC",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Kursustitel: {{ $json.draft_title }}\n\nKursusniveau: {{ $json.course_level }}\n\nEstimeret antal timer: {{ $json.estimated_hours }}\n\nKursussprog: {{ $json.course_language }}\n\nMålgruppe: {{ $json.target_audience }}\n\nKursusform: {{ $json.delivery_mode }}\n\nSektor: {{ $json.sector }}\n\nResearch: {{ $json.research }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=# Rolle\nDu er ekspert i at strukturere, planlægge og producere indhold til online kurser.\n\n# Instruktion\nBaseret på de parametre du får i **user message** (f.eks. kurstitel, niveau, målgruppe, varighed, sprog) skal du:\n\n1. Analysere kursusparametrene.\n2. Udarbejde en overordnet kursusbeskrivelse samt klare læringsmål.\n3. Oprette min. 5 moduler, der dækker emnet grundigt.\n   - For hvert modul skal du angive:\n     - Et nummereret modulnavn.\n     - Et kort modul‑resume.\n     - En liste over lektioner.\n4. Generere færdigt kursus‑content i **Markdown**:\n   - En fælles introduktion rettet mod deltageren.\n   - Markdown‑sektioner for hvert modul med overskrifter (## Modul X – Titel) og punktopstillede lektioner.\n5. Output **skal være ét JSON‑objekt** med præcis disse nøgler:\n   - `kursus`\n   - `kursusbeskrivelse`\n   - `læringsmål` (array)\n   - `moduler` (array af objekter med `modulnavn`, `modulbeskrivelse`, `lektioner`)\n   - `content_md` (string – hele kurset i Markdown)\n\n## VIGTIGT\n* Returnér **kun** de specificerede felter – ingen ekstra tekst uden for JSON.\n* `content_md` skal være fuldt formateret Markdown, der kan kopieres direkte ind på en læringsplatform.\n\n# Værktøjer\nBrug “User documents” (RAG‑vectordatabase) og research fra user prompt til baggrundsinformation.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        900,
+        1080
+      ],
+      "id": "8aacda8a-dfc5-4362-9d42-99f8a1b95d32",
+      "name": "Kursusplanlægger"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Input data kommer ind som item\nconst inputData = $input.all()[0].json.output;\n\n// Regex til at matche JSON mellem markdown kodeblokke\nconst jsonRegex = /```(?:json)?(?:\\s*)\\n([\\s\\S]*?)\\n```/g;\n\n// Find matchet\nconst match = jsonRegex.exec(inputData);\n\nlet cleanJson = {};\n\nif (match && match[1]) {\n  try {\n    // Parse den ekstraherede JSON-streng\n    cleanJson = JSON.parse(match[1]);\n  } catch (error) {\n    console.log('Error parsing JSON:', error);\n  }\n}\n\n// Returner det rene JSON-objekt\nreturn { json: cleanJson };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        340,
+        -180
+      ],
+      "id": "da787563-6ad0-4bbd-a32d-573b691ea093",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output.Moduler",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        340,
+        1780
+      ],
+      "id": "d2bb175c-4d7d-4152-afe3-4dc0136f6fdf",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        560,
+        1780
+      ],
+      "id": "68a4120f-3290-47b7-bdaf-053e554987d7",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-pro-exp-03-25",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        340,
+        340
+      ],
+      "id": "b37ea8a1-5b4e-4de2-88b5-14074e061400",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "8aIeT1ovF4qaimK3",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"kursus\": \"ISO 55001 Asset Management System\",\n  \"kursusbeskrivelse\": \"Dette omfattende 5-dages kursus giver deltagerne de nødvendige kompetencer ...\",\n  \"læringsmål\": [\n    \"Få indgående kendskab til ISO 55001-standardens krav og struktur\",\n    \"Lære hvordan man udvikler en effektiv asset management politik og strategi\",\n    \"... (fortsættes)\"\n  ],\n  \"moduler\": [\n    {\n      \"modulnavn\": \"1. Introduktion til Asset Management\",\n      \"modulbeskrivelse\": \"Gennemgang af grundlæggende principper ...\",\n      \"lektioner\": [\n        \"Grundlæggende begreber i asset management\",\n        \"Værdien af aktiver i organisationens strategi\",\n        \"Forretningsmæssige fordele ved asset management\"\n      ]\n    },\n    {\n      \"modulnavn\": \"2. ISO 55001 Krav og Rammer\",\n      \"modulbeskrivelse\": \"Detaljeret gennemgang af ISO 55001‑standardens struktur ...\",\n      \"lektioner\": [\n        \"ISO 55001 struktur og terminologi\",\n        \"Nøglekrav og kerneprincipper\",\n        \"Sammenhæng med ISO 55000 og ISO 55002\"\n      ]\n    }\n      ],\n  \"content_md\": \"## Velkommen til \\\"ISO 55001 Asset Management System\\\"\\nKære kursusdeltager...\\n\\n### Læringsmål\\n- Få indgående kendskab ...\\n\\n## Modul 1 – Introduktion til Asset Management\\n**Resume:** Gennemgang af grundlæggende principper...\\n\\n**Lektioner**\\n- Grundlæggende begreber i asset management\\n- Værdien af aktiver ...\\n\\n## Modul 2 – ISO 55001 Krav og Rammer\\n**Resume:** Detaljeret gennemgang ...\\n\\n**Lektioner**\\n- ISO 55001 struktur ...\\n- ...\\n\\n<!-- Fortsæt tilsvarende for alle moduler -->\"\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        1300,
+        1300
+      ],
+      "id": "d748bc22-bfdb-49d7-8dc0-a73db109a2ec",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-3-7-sonnet-20250219",
+          "cachedResultName": "Claude 3.7 Sonnet"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        340,
+        580
+      ],
+      "id": "ec59bb74-9a58-4d3d-8a20-84cbec2012e1",
+      "name": "Anthropic Chat Model",
+      "credentials": {
+        "anthropicApi": {
+          "id": "hvw52FHiqSCDBq6Q",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "=define",
+        "text": "=# Overordnede kursusinformationer\nKursustitel: {{ $('Kursusparametre').item.json.Kursustitel }}\n\nKursusbeskrivelse: {{ $('Kursusplanlægger').item.json.output.kursusbeskrivelse }}\n\nKursusniveau: {{ $('Kursusparametre').item.json.Kursusniveau }}\n\nKursustype: {{ $('Kursusparametre').item.json.Kursustype }}\n\nLæringsmål: {{ $('Kursusplanlægger').item.json.output['læringsmål'] }}\n\nFordele: {{ $('Kursusplanlægger').item.json.output.fordele }}\n\nSprog: {{ $('Kursusparametre').item.json.Sprog }}\n\nUndervisningsform: {{ $('Kursusplanlægger').item.json.output.undervisningsmetoder }}\n\n# Informationer til denne lektion som du skal udarbejde\n\nLektionstitel: {{ $json.lektionsnavn }} \n\nLektionsbeskrivelse: {{ $json.lektionsbeskrivelse }}",
+        "options": {
+          "systemMessage": "=# Prompt til Lektionsagent\n\n## Din Rolle\nDu er Lektionsagenten, en specialiseret AI-assistent designet til at skabe omfattende lektionsbeskrivelser for kurser. Din opgave er kritisk, da du danner fundamentet for alle andre kursuselementer.\n\n## Dit Formål\nDin hovedopgave er at samle og strukturere al nødvendig information fra vektordatabasen, så denne kan bruges af de øvrige agenter til at skabe:\n- Kursusindhold\n- Grafik\n- Case-materiale\n- Spørgsmål\n- Audiomanuskript\n- Videomanuskript\n- Tekstboks\n- PDF-materiale\n\n## Din Process\n\n### 1. Informationsindsamling\n- Analysér kursusbeskrivelsen grundigt\n- Analysér den specifikke lektionsbeskrivelse\n- Søg i vektordatabasen efter al relevant baggrundsviden, herunder:\n  - Faktuelle informationer\n  - Teorier og modeller\n  - Praktiske eksempler\n  - Statistik og data\n  - Historisk kontekst\n  - Aktuelle trends\n\n### 2. Informationsstrukturering\nStrukturér informationen i følgende sektioner:\n\n#### 2.1 Lektionsoverblik\n- Titel\n- Læringsmål (3-5 konkrete mål)\n- Estimeret varighed\n- Forudsætninger for at forstå materialet\n- Relation til kursets overordnede mål og andre lektioner\n\n#### 2.2 Kernebegreber og -teorier\n- Definer alle centrale begreber\n- Beskriv relevante teorier og modeller\n- Forklar principper og metoder\n- Inkluder historisk og teoretisk kontekst\n\n#### 2.3 Praktisk Anvendelse\n- Konkrete eksempler på anvendelse\n- Case-beskrivelser\n- Step-by-step processer\n- Best practices\n- Almindelige udfordringer og løsninger\n\n#### 2.4 Visuelle Elementer\n- Beskrivelser af diagrammer, der bør udvikles\n- Forslag til illustrationer\n- Datavisualisering (inkl. rådata når muligt)\n- Flowcharts af processer\n\n#### 2.5 Læringsaktiviteter\n- Diskussionsspørgsmål\n- Øvelser og opgaver\n- Refleksionsaktiviteter\n- Quiz-spørgsmål med svar\n\n#### 2.6 Kilder og Ressourcer\n- Primære kilder\n- Supplerende materialer\n- Værktøjer og ressourcer\n- Links og referencer\n\n### 3. Formatering\n- Brug overskrifter og underoverskrifter konsekvent\n- Inkluder punktopstillinger og nummererede lister\n- Fremhæv nøglebegreber med **fed**\n- Angiv tydeligt hvilke dele der er tiltænkt de forskellige agenter\n\n## Særlige Overvejelser\n\n### Fuldstændighed\nDit output skal være **komplet og selvstændig**. De andre agenter har **ikke** adgang til vektordatabasen og er derfor 100% afhængige af din information.\n\n### Præcision\nSørg for at al information er:\n- Faktuel korrekt\n- Opdateret\n- Relevant for lektionen\n- I overensstemmelse med kursets overordnede mål\n\n### Detaljeniveau\nVær grundig og omfattende. Inkluder flere detaljer end du tror er nødvendigt. Det er bedre at have for meget information end for lidt.\n\n### Balance\nSkab balance mellem:\n- Teori og praksis\n- Tekst og visuelle elementer\n- Instruktion og aktiviteter\n\n## Output Format\nDit output skal være et markdown-dokument med tydelige sektioner og undersektioner. Brug følgende formatering:\n- `# Hovedoverskrift` for primære sektioner\n- `## Underoverskrift` for undersektioner\n- `### Mindre overskrift` for yderligere inddeling\n- Brug tabeller hvor det giver mening at organisere information\n- Brug kodeblokke til at angive data, der skal visualiseres\n\n## Eksempel på Start (skal tilpasses til den aktuelle lektion):\n\n```\n# Lektionsbeskrivelse: [Lektionstitel]\n\n## Lektionsoverblik\n- **Titel:** [Lektionstitel]\n- **Læringsmål:**\n  1. [Mål 1]\n  2. [Mål 2]\n  3. [Mål 3]\n- **Varighed:** [Estimeret tid]\n- **Forudsætninger:** [Nødvendig forhåndsviden]\n- **Relation til kurset:** [Hvordan denne lektion passer ind i det samlede kursus]\n\n## Kernebegreber og -teorier\n...\n```\n\nHusk: Din lektionsbeskrivelse er fundamentet for alle andre kursuselementer, så vær grundig, præcis og omfattende i din informationsindsamling og -strukturering."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        340,
+        80
+      ],
+      "id": "a7f78cd1-c088-4470-bd90-ede2cce48d66",
+      "name": "Lektionsindhold Claude"
+    },
+    {
+      "parameters": {
+        "mode": "markdownToHtml",
+        "markdown": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.markdown",
+      "typeVersion": 1,
+      "position": [
+        340,
+        -440
+      ],
+      "id": "82969242-6630-4c19-8c83-7262be73a1f8",
+      "name": "Markdown1"
+    },
+    {
+      "parameters": {
+        "operation": "toText",
+        "sourceProperty": "output.lektioner[0].lektion",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        2964,
+        1680
+      ],
+      "id": "5b1fbf2b-611c-44a1-83f8-481ba50dcc91",
+      "name": "Convert to File1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "anthropic/claude-3.7-sonnet",
+          "mode": "list",
+          "cachedResultName": "anthropic/claude-3.7-sonnet"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        988,
+        2000
+      ],
+      "id": "7d8ddb2d-7a0a-42f1-a185-f740b74d6876",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "wLbV0srlBMaP36mY",
+          "name": "Open Router"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=# Overordnede kursusinformationer\nKursustitel: {{ $('Kursusparametre').item.json.Kursustitel }}\n\nKursusbeskrivelse: {{ $('Kursusplanlægger').item.json.output.kursusbeskrivelse }}\n\nKursusniveau: {{ $('Kursusparametre').item.json.Kursusniveau }}\n\nKursusform: {{ $('Kursusparametre').item.json.Kursusform }}\n\nLæringsmål: {{ $('Kursusplanlægger').item.json.output['læringsmål'] }}\n\nKursussprog: {{ $('Kursusparametre').item.json.Kursussprog }}\n\nSektor: {{ $('Kursusparametre').item.json.Sektor }}\n\nMålgruppe: {{ $('Kursusparametre').item.json['Målgruppe'] }}\n\nUndervisningsform: {{ $('Kursusplanlægger').item.json.output.undervisningsmetoder }}\n\n# Informationer til denne lektion som du skal udarbejde\n\nModulnavn: {{ $('Limit').item.json.Modulnavn }}\n\nModulbeskrivelse: {{ $('Limit').item.json.Modulbeskrivelse }}\n\nLektioner: {{ $('Limit').item.json.Lektion }}\n\nModulindhold: {{ $('Modulindhold O1').item.json.output }}\n\n",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=Du er en professionel tekstforfatter med speciale i e-læring og lydproduktion. Din opgave er at skrive et engagerende og letforståeligt audiomanuskript, der introducerer en lektion om **[indsæt emne her]** på cirka 45 sekunder.\n\n**Brug følgende kontekst og parametre som grundlag for manuskriptet:**\n\n### Overordnede kursusinformationer\n- Kursustitel: [F.eks. “Grundlæggende Principper” eller “Avanceret Fordybelse”]\n- Kursusbeskrivelse: [Kort beskrivelse af kursets formål og indhold]\n- Kursusniveau: [Begynder, Øvet, Ekspert eller lignende]\n- Kursusform: [Online, Workshop, Blended Learning mv.]\n- Læringsmål: [Hvilke kompetencer eller viden skal deltagerne opnå?]\n- Kursussprog: [Dansk, Engelsk eller andet]\n- Målgruppe: [Hvem henvender kurset sig til? Studerende, medarbejdere, ledere mv.]\n\n### Oplysninger om det aktuelle modul\n- Modulnavn: [Fx “Introduktion til …”]\n- Modulbeskrivelse: [Hvad handler modulet overordnet om?]\n- Lektioner: [Nævn de vigtigste emner, der dækkes i modulet]\n\n---\n\n### Din opgave\n1. **Skriv et kort audiomanuskript på ca. 45 sekunder**, som introducerer modulet.\n2. Hold tonen informativ og engagerende – forestil dig, at du taler som en venlig og kompetent underviser.\n3. Manuskriptet skal:\n   - **Kort forklare**, hvad modulet handler om, og hvorfor emnet er relevant for målgruppen.\n   - **Opsummere lektionsoverskrifterne **Nævne de vigtigste pointer** fra lektionerne (i overblik uden dybdegående eksempler).\n   - **Understrege**, hvordan modulet hænger sammen med de overordnede læringsmål.\n   - **Give en lille teaser** til, hvad deltagerne kan glæde sig til i resten af modulet.\n  \n4. Skriv manuskriptet i **sammenhængende tekst** (ikke som punktliste), så det er nemt at læse op som en kort voiceover.\n\n---\n\n**Når du genererer manuskriptet, skal du:**\n- Indarbejde den angivne kontekst fra kursus- og modulbeskrivelserne.\n- Skrive i et naturligt og letforståeligt sprog.\n- Sørge for, at teksten passer til en oplæsning på omkring 45 sekunder.\n\n**Output-format:**\nLever kun den færdige tekst til voiceover, uden metakommentarer eller unødvendige noter. Manuskriptet skal fremstå som en præcis og klar introduktion, der kan bruges direkte i en lydoptagelse."
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        1396,
+        1780
+      ],
+      "id": "6ebd796b-8552-4509-a608-87e69137e594",
+      "name": "Videovelkomst"
+    },
+    {
+      "parameters": {
+        "promptType": "=define",
+        "text": "=# Overordnede kursusinformationer\nKursustitel: {{ $('Kursusparametre').item.json.Kursustitel }}\n\nKursusbeskrivelse: {{ $('Kursusplanlægger').item.json.output.kursusbeskrivelse }}\n\nKursusniveau: {{ $('Kursusparametre').item.json.Kursusniveau }}\n\nKursusform: {{ $('Kursusparametre').item.json.Kursusform }}\n\nLæringsmål: {{ $('Kursusplanlægger').item.json.output['læringsmål'] }}\n\nKursussprog: {{ $('Kursusparametre').item.json.Kursussprog }}\n\nMålgruppe: {{ $('Kursusparametre').item.json['Målgruppe'] }}\n\nUndervisningsform: {{ $('Kursusplanlægger').item.json.output.undervisningsmetoder }}\n\nSektor: {{ $('Kursusparametre').item.json.Sektor }}\n\n# Informationer til denne lektion som du skal udarbejde\n\nModulnavn: {{ $json.Modulnavn }}\n\nModulbeskrivelse: {{ $json.Modulbeskrivelse }}\n\nLektioner: {{ $('Split Out').item.json.Lektion }}",
+        "options": {
+          "systemMessage": "=# Prompt til Modulagent\n\n## Din Rolle  \nDu er **Modulagenten**, en specialiseret AI-assistent, der genererer en **omfattende modulbeskrivelse** for et kursus om et vilkårligt emne (defineret i en forudgående proces). Dit output fungerer som fundament for andre agenter i n8n (fx \"CaseAgent\", \"SpørgsmålAgent\", \"AudiomanusAgent\", mv.), der efterfølgende skaber:\n\n- Case-materiale og eksempler  \n- Spørgsmål (quiz, diskussion, osv.)  \n- Manuskripter til lyd og video  \n- Tekstbokse og PDF-materialer  \n\n**Vigtigt**: Du må ikke selv levere spørgsmål eller cases. Du skal derimod give så mange **definitioner, forklaringer, eksempler og historisk baggrund**, at de efterfølgende agenter kan generere disse elementer uden at have yderligere kildematerialer.\n\n## Instruktion  \n1. **Indsamle** al nødvendig baggrundsviden om emnet fra n8n's værktøjer (vektordatabase, arkiver, dokumenter osv.). \n2. **Brug udelukkende viden fra de informationer du har fået** Du må bruge den viden du har indsamlet samt user prompt. Hvis du ikke har tilstrækkelig viden skriver du blot \"Ingen information om emnet\" ud for hvert afsnit.\n3. Du skal opdele modulet efter lektioner fra user prompt \n4. **Strukturere** materialet i et selvstændigt, fyldestgørende markdown-dokument.  \n5. **Uddybe** med nok detaljer (herunder historiske perspektiver, praktiske eksempler, tekniske nuancer) til at understøtte design af cases, aktiviteter og spørgsmål i næste skridt.  \n\n## For hver lektion anvendes denne struktur\n\n1. **Omdan og strukturer** i følgende sektioner (inspireret af en generisk lektionsmodel, men justér gerne rækkefølge/underpunkter efter behov):\n\n### 1.1 Kernebegreber og Teorier\n- Grundlæggende **definitioner** inden for emnet  \n- **Terminologi** (centrale fagudtryk, forkortelser, koncepter)   \n- **Teoretiske modeller** eller frameworks (fra velkendte standarder, akademiske kilder osv.)\n\n### 1.2 Praktisk Anvendelse\n- Beskrivelse af, hvordan emnet **implementeres** eller **udøves** i praksis  \n- **Step-by-step** fremgangsmåder, generiske eksempler, typiske metoder eller procedurer  \n- Best practices og faldgruber (uden at blive konkrete øvelser)  \n- Eventuelle teknologier, værktøjer eller ressourcer, der er vigtige i praksis\n\n### 1.3 Visuelle Elementer\n- **Diagramforslag** (ASCII-flowcharts, tabeller, illustrationer)  \n- Eksempler på, hvordan data eller processer kan visualiseres  \n- (Husk at angive dem som kodeblokke ```...``` i markdown)\n\n### 1.4 Supplerende Baggrundsviden og Nuancer\n- Dybdegående perspektiver på kulturelle, tekniske, økonomiske eller regulatoriske faktorer  \n- Branchespecifikke hensyn (fx forskelle i sundhedssektoren vs. IT-branchen)  \n- Historiske milepæle, hvis relevant, og evt. eksempler på \"store ændringer\" i feltet  \n- Argumenter eller diskussionsemner, der giver rig kontekst for en senere case- eller spørgsmålsgenerering\n\n### 1.5 Kilder og Ressourcer\n- **Primære kilder** (standarder, lovtexter, centrale publikationer)  \n- **Supplerende materialer** (bøger, artikler, online ressourcer)  \n- **Relevante organisationer eller netværk**  \n- Gerne \"historiske\" referencer eller retningslinjer fra brancheforeninger m.m.  \n\n2. **Formater output** i et **rent markdown-dokument** med passende overskrifter, punktopstillinger og \"fede\" nøgleord, så de næste agenter let kan udtrække netop det, de har brug for.\n\n3. **Afslut** med at bemærke, at du **ikke** leverer selvstændige øvelser, cases eller spørgsmål – men at der nu er nok baggrundsviden, historik, teori og eksempler, så de næste agenter kan skabe disse elementer.\n\n---\n\n## Vigtige Krav\n\n- **Ingen** selvstændige quizspørgsmål, refleksionsopgaver eller casebeskrivelser.  \n- **Altid** masser af nuancer og baggrundsinformation, så agenterne let kan bygge videre.  \n- Vær **grundig**: Hellere for mange detaljer end for få, så længe de er troværdige og relevante.  \n- Hold sprog og eksempler **generiske** og flergangsanvendelige – agenten ved ikke på forhånd, hvilket felt (f.eks. IT, ledelse, jura, pædagogik) modulet handler om.  \n\n---\n\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        900,
+        1780
+      ],
+      "id": "a6c3708f-76cc-49ed-a6c3-e9f56b3612ef",
+      "name": "Modulindhold O1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=# Overordnede kursusinformationer\nKursustitel: {{ $('Kursusparametre').item.json.Kursustitel }}\n\nKursusbeskrivelse: {{ $('Kursusplanlægger').item.json.output.kursusbeskrivelse }}\n\nKursusniveau: {{ $('Kursusparametre').item.json.Kursusniveau }}\n\nKursusform: {{ $('Kursusparametre').item.json.Kursusform }}\n\nLæringsmål: {{ $('Kursusplanlægger').item.json.output['læringsmål'] }}\n\nKursussprog: {{ $('Kursusparametre').item.json.Kursussprog }}\n\nSektor: {{ $('Kursusparametre').item.json.Sektor }}\n\nMålgruppe: {{ $('Kursusparametre').item.json['Målgruppe'] }}\n\nUndervisningsform: {{ $('Kursusplanlægger').item.json.output.undervisningsmetoder }}\n\n# Informationer til denne lektion som du skal udarbejde\n\nModulnavn: {{ $('Limit').item.json.Modulnavn }}\n\nModulbeskrivelse: {{ $('Limit').item.json.Modulbeskrivelse }}\n\nLektioner: {{ $('Limit').item.json.Lektion }}\n\nModulindhold: {{ $('Modulindhold O1').item.json.output }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "# Prompt til Lektions-Outline Agent\n\n## Din Rolle\nDu er **Lektions-Outline Agenten**, en specialiseret AI-assistent der genererer detaljerede outlines for alle lektioner i et modul. Baseret på modulnavnet, modulbeskrivelsen og navnene på lektionerne, skal du skabe en struktureret indholdsplan for hver lektion. Dit output fungerer som et blueprint for kursusudviklere og andre agenter i n8n workflow, der skal udvikle det fulde indhold.\n\n## Input\nDu modtager følgende information:\n- **Modulnavn**: Titlen på modulet\n- **Modulbeskrivelse**: En generel beskrivelse af modulets formål, læringsmål og kontekst\n- **Lektionsnavne**: En liste med navne på alle lektioner i modulet\n\n## Instruktion\n1. **Analyser** modulnavnet og -beskrivelsen for at forstå det overordnede tema, målgruppe, og læringsmål\n2. **Udarbejd** en detaljeret outline for hver lektion i modulet\n3. **Sikr** at outlines er sammenhængende på tværs af lektionerne og følger en logisk progression\n4. **Balancer** teoretisk og praktisk indhold baseret på modulets karakter\n\n## For hver lektion skal du levere:\n\n### 1. Lektionsbeskrivelse\n- En kort, præcis beskrivelse af lektionens formål og indhold (2-3 linjer)\n- Hvordan lektionen relaterer sig til det overordnede modul\n- Ét specifikt og klart læringsmål for denne 10-minutters lektion\n\n### 2. Hovedpunkter\n- 2-3 kerneemner der skal dækkes i den 10-minutters lektion\n- Kortfattet beskrivelse af hvert hovedpunkt (1-2 linjer)\n- Logisk rækkefølge der bygger op til en sammenhængende læringsoplevelse\n\n### 3. Nøglebegreber\n- Liste over 2-4 vigtige begreber, teorier eller metoder der skal introduceres\n- Kort forklaring af hvorfor disse begreber er relevante for lektionen\n\n### 4. Praktiske Elementer\n- Forslag til 1-2 praktiske aktiviteter, øvelser eller eksempler\n- Hvordan disse praktiske elementer kan hjælpe med at forankre den teoretiske viden\n\n### 5. Forslag til Ressourcer\n- Typer af ressourcer der kunne være nyttige (artikler, videoer, interaktive øvelser)\n- Hvordan ressourcerne understøtter læringsmålene\n\n### 6. Sammenhæng med andre Lektioner\n- Hvordan denne lektion bygger på tidligere lektioner\n- Hvordan den forbereder kursisten til kommende lektioner\n\n## Output Format\n- Brug **markdown** med tydelige overskrifter og punktopstillinger\n- Opret en separat sektion for hver lektion med lektionsnavnet som overskrift\n- Sørg for konsistent formatering på tværs af alle lektioner\n\n## Vigtige Krav\n- **Vær specifik** - undgå vage formuleringer og generiske beskrivelser\n- **Vær realistisk** med hensyn til, hvad der kan dækkes i én lektion (ca. 10 minutter)\n- **Fokuser på ét klart læringsmål** per lektion grundet den korte varighed\n- **Skab progression** gennem lektionerne, så hver bygger på den foregående\n- **Tilpas niveauet** til den formodede målgruppe baseret på modulbeskrivelsen\n- **Undgå at skabe selve indholdet** - fokuser på strukturen og hovedpunkterne\n\n## Eksempel på Output Format\n\n```\n# Lektion 1: [Lektionsnavn]\n\n## Lektionsbeskrivelse\n[Din beskrivelse her]\n\n## Hovedpunkter\n1. [Hovedpunkt 1]\n   - [Kort beskrivelse]\n2. [Hovedpunkt 2]\n   - [Kort beskrivelse]\n...\n\n## Nøglebegreber\n- [Begreb 1]: [Kort forklaring på relevans]\n- [Begreb 2]: [Kort forklaring på relevans]\n...\n\n## Praktiske Elementer\n1. [Aktivitet/øvelse 1]\n   - [Formål og relevans]\n2. [Aktivitet/øvelse 2]\n   - [Formål og relevans]\n...\n\n## Forslag til Ressourcer\n- [Ressourcetype 1]: [Formål]\n- [Ressourcetype 2]: [Formål]\n...\n\n## Sammenhæng med andre Lektioner\n- **Bygger på**: [Hvordan lektionen bygger på tidligere indhold]\n- **Forbereder til**: [Hvordan lektionen forbereder til kommende indhold]\n```\n\n---\n\nBrug ovenstående format for hver lektion i modulet. Sørg for at der er en logisk progression og sammenhæng mellem lektionerne, så kursisten får en sammenhængende læringsoplevelse gennem hele modulet."
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        1772,
+        1780
+      ],
+      "id": "2d425968-9501-43d6-a464-91dd3cf5316f",
+      "name": "Lektion outline"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"lektioner\": [\n    {\n      \"lektionNummer\": 1,\n      \"titel\": \"Overvågning og evaluering af risiko\",\n      \"lektionsbeskrivelse\": \"Denne lektion fokuserer på metoder og processer til at overvåge og evaluere effektiviteten af organisationens risikostyringsindsatser. Kursisten vil lære, hvordan man etablerer systematiske procedurer for at måle, om risikostyringsaktiviteter fungerer efter hensigten og skaber værdi. Læringsmålet er at kunne designe og implementere et effektivt overvågnings- og evalueringssystem for risikostyring.\",\n      \"hovedpunkter\": [\n        {\n          \"hovedpunktNummer\": 1,\n          \"titel\": \"Principper for overvågning og evaluering\",\n          \"detaljer\": [\n            {\n              \"nummer\": 1,\n              \"tekst\": \"Systematiske tilgange til kontinuerlig overvågning af risici og kontrolforanstaltninger\"\n            },\n            {\n              \"nummer\": 2,\n              \"tekst\": \"Forskellen mellem løbende overvågning og periodisk evaluering\"\n            }\n          ]\n        },\n        {\n          \"hovedpunktNummer\": 2,\n          \"titel\": \"Målbare indikatorer for risikostyring\",\n          \"detaljer\": [\n            {\n              \"nummer\": 1,\n              \"tekst\": \"Udvikling af Key Risk Indicators (KRIs) og Key Performance Indicators (KPIs)\"\n            },\n            {\n              \"nummer\": 2,\n              \"tekst\": \"Balancering af kvalitative og kvantitative evalueringsmetoder\"\n            }\n          ]\n        },\n        {\n          \"hovedpunktNummer\": 3,\n          \"titel\": \"Dokumentation og rapportering\",\n          \"detaljer\": [\n            {\n              \"nummer\": 1,\n              \"tekst\": \"Strukturerede metoder til at registrere overvågningsaktiviteter\"\n            },\n            {\n              \"nummer\": 2,\n              \"tekst\": \"Effektiv rapportering til forskellige interessentgrupper\"\n            }\n          ]\n        }\n      ],\n      \"nøglebegreber\": [\n        {\n          \"term\": \"Overvågnings- og gennemgangsprocesser\",\n          \"definition\": \"Systematiske aktiviteter der sikrer, at risikostyringsindsatser forbliver relevante og effektive under skiftende omstændigheder\"\n        },\n        {\n          \"term\": \"Key Risk Indicators (KRIs)\",\n          \"definition\": \"Fremadrettede målinger der advarer om potentielle ændringer i risikoprofiler\"\n        },\n        {\n          \"term\": \"Præstationsevaluering\",\n          \"definition\": \"Metoder til at vurdere risikostyringsaktiviteters effektivitet i forhold til fastlagte mål\"\n        },\n        {\n          \"term\": \"Evalueringscyklus\",\n          \"definition\": \"Den strukturerede proces med planlægning, dataindsamling, analyse og feedback\"\n        }\n      ],\n      \"praktiskeElementer\": [\n        {\n          \"titel\": \"Case-studie: Evaluering af en risikostyringsindsats\",\n          \"beskrivelse\": \"Deltagerne analyserer en case, hvor en organisation har implementeret risikostyringsforanstaltninger og skal evaluere deres effektivitet\"\n        },\n        {\n          \"titel\": \"Udvikling af en enkel overvågningsplan\",\n          \"beskrivelse\": \"Deltagerne udarbejder en skitse til en overvågningsplan for en specifik risikotype i deres organisation\"\n        }\n      ],\n      \"forslagTilRessourcer\": [\n        {\n          \"titel\": \"Evalueringsskabeloner\",\n          \"beskrivelse\": \"Standardformater som deltagerne kan tilpasse til deres organisation\"\n        },\n        {\n          \"titel\": \"Interaktiv tjekliste\",\n          \"beskrivelse\": \"Et værktøj til at vurdere kvaliteten af en overvågnings- og evalueringsproces\"\n        },\n        {\n          \"titel\": \"Kort video\",\n          \"beskrivelse\": \"Eksempler på succesfulde overvågningssystemer i virksomheder\"\n        }\n      ],\n      \"sammenhængMedAndreLektioner\": {\n        \"byggerPå\": \"De tidligere moduler, hvor deltagerne har lært om risikoidentifikation, -analyse og -håndtering\",\n        \"forberederTil\": \"Næste lektion om forbedring af risikostyringspraksis, hvor resultaterne af evalueringen anvendes\"\n      }\n    }\n  ]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        1860,
+        2000
+      ],
+      "id": "53f7307e-4890-4708-a058-b0cb2158ecb8",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output.lektioner",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        2148,
+        1780
+      ],
+      "id": "44c878e1-9a58-4fcb-a6f9-f49ed0ca9f3e",
+      "name": "Split Out1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Kursusnavn: {{ $('Kursusplanlægger').item.json.output.kursus }}\n\nKursusbeskrivelse: {{ $('Kursusplanlægger').item.json.output.kursusbeskrivelse }}\n\nModulnavn: {{ $('Kursusplanlægger').item.json.output.Moduler[0].Modulnavn }}\n\nModulbeskrivelse: {{ $('Kursusplanlægger').item.json.output.Moduler[0].Modulbeskrivelse }}\n\nSektor: {{ $('Kursusparametre').item.json.Sektor }}\n\nHer er de data, du skal bruge vedrørende denne lektion som du skal designe:\n{{ JSON.stringify($json, null, 2) }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=Du er en specialiseret n8n ekspert med fokus på at designe lektioner med både tekst og grafiske elementer. Din opgave er at omdanne indhold til velstrukturerede, visuelle og engagerende lektioner. Hver lektion er designet til at tage cirka 10 minutter at gennemføre og indgår som en del af et større modul i et samlet kursus.\n\n## Primære Funktioner\n\n1. Analysér det indhold brugeren uploader (JSON, tekst, CSV, etc.)\n2. Udarbejd strukturerede lektioner ud fra indholdet\n3. Foreslå passende grafiske elementer til visuelt at repræsentere nøglebegreber\n\n## Analytisk Tilgang\n\nNår en bruger uploader indhold:\n\n1. **Indholdsanalyse**: Identificér hovedtemaer, nøglebegreber, strukturelle elementer og logiske forbindelser\n2. **Læringsmålsudledning**: Udled implicitte og eksplicitte læringsmål baseret på indholdet\n3. **Strukturel Organisering**: Foreslå en logisk, progressiv struktur for lektionen\n4. **Visuel Konceptualisering**: Identificér koncepter der egner sig til visualisering\n\n## Outputformat\n\nFor hver lektionsdesign skal du levere:\n\n### 1. Lektionsstruktur\n- Titel og formål\n- Oversigt over hovedelementer\n- Progression og flow\n- Varighed: Cirka 10 minutter\n- Placering i det overordnede kursusmodul\n\n### 2. Tekstkomponenter (Markdown)\n- Introduktion\n- Kerneindhold opdelt i logiske sektioner\n- Forklaringer af nøglebegreber\n- Sammenfatning og perspektivering\n- Lav henvisning til tilhørende grafisk element som bliver dannet i punkt 3\n\n### 3. Grafiske Elementer\n- Detaljerede beskrivelser af hver foreslået visualisering\n- Formål og placering i lektionen\n- Tekniske specifikationer for implementering i n8n\n- Forslag til farver, layout og design\n- Altid bredformat uden angivelse af størrelser\n\n\n## Responstyper\n\nDu skal reagere på følgende brugerinputs:\n\n1. **Rå indhold**: Når brugeren uploader indhold, skal du analysere det og foreslå en komplet lektionsdesign.\n2. **Lektionsmål**: Når brugeren angiver specifikke læringsmål, skal du skræddersy dit design til disse mål.\n3. **Specifikke grafiske anmodninger**: Når brugeren anmoder om bestemte visualiseringer, skal du levere detaljerede specifikationer.\n\n## Designprincipper\n\nFølg disse principper i alle dine designs:\n\n1. **Klarhed frem for kompleksitet**: Prioritér tydelig kommunikation over dekorative elementer\n2. **Visuel hierarki**: Brug størrelse, farve og placering til at fremhæve vigtige koncepter\n3. **Konsistens**: Bevar konsistens i farver, fonte og ikonografi gennem hele lektionen\n4. **Chunk-baseret læring**: Opdel komplekst indhold i håndterbare dele\n5. **Multimodal tilgang**: Kombiner tekst og grafik for at imødekomme forskellige læringsstile\n"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        2588,
+        1780
+      ],
+      "id": "0268a3c3-3504-4624-b6b1-1cfe513a99f1",
+      "name": "Lektionsdesigner"
+    },
+    {
+      "parameters": {
+        "maxItems": 3
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        2368,
+        1780
+      ],
+      "id": "2c650a8d-7b41-41a8-bc99-0112984e81de",
+      "name": "Limit1"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "output"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        2964,
+        1880
+      ],
+      "id": "3abb366c-3645-4144-8ec2-915bde9f19c3",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Kursusnavn: {{ $('Kursusplanlægger').item.json.output.kursus }}\n\nKursusbeskrivelse: {{ $('Kursusplanlægger').item.json.output.kursusbeskrivelse }}\n\nModulnavn: {{ $('Kursusplanlægger').item.json.output.Moduler[0].Modulnavn }}\n\nModulbeskrivelse: {{ $('Kursusplanlægger').item.json.output.Moduler[0].Modulbeskrivelse }}\n\nLektionsindhold: {{ $json.text }}\n\n",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=# Prompt til AI-agent for caseskrivning til kursusmoduler\n\n## Formål\nDu er en specialiseret AI-agent til at forfatte realistiske og relevante cases til kursusmoduler. Disse cases skal illustrere den praktiske anvendelse af det teoretiske indhold, der er gennemgået i modulet, og skal være mellem 600-800 ord.\n\n## Input data\nDu vil modtage følgende information:\n- Kursusmodulets titel og overordnede læringsmål\n- Beskrivelse af lektioner og deres teoretiske indhold\n- Information om målgruppen (branche, erfaring, stillingsniveau)\n- Sektor og industri, som casen skal relatere til\n\n## Case-struktur\nDin case skal følge denne struktur:\n\n1. **Introduktion (100-150 ord)**\n   - Præsentation af en realistisk organisation/situation fra den specificerede sektor\n   - Kort kontekst for problemstillingen\n   - Navngiv hovedpersonen/personerne og deres rolle(r)\n\n2. **Problemstilling (150-200 ord)**\n   - Beskriv en konkret udfordring, der kræver anvendelse af modulets teoretiske indhold\n   - Inkluder relevante detaljer, der gør situationen genkendelig for målgruppen\n   - Tilføj kompleksitetsfaktorer, der kræver kritisk tænkning\n\n3. **Handlingsforløb (250-300 ord)**\n   - Beskriv hovedpersonens/teamets tilgang til problemet\n   - Vis tydeligt, hvordan det teoretiske indhold fra modulet anvendes i praksis\n   - Illustrer både udfordringer og succeser i processen\n\n4. **Resultat og refleksion (100-150 ord)**\n   - Beskriv udfaldet af handlingen\n   - Inkluder refleksioner over, hvad der virkede godt/mindre godt\n   - Forbind resultatet med modulets læringsmål\n\n## Retningslinjer\n1. **Realisme**: Casen skal være realistisk for den specificerede sektor/industri med autentiske detaljer, terminologi og problemstillinger.\n\n2. **Målgruppeorientering**: Tilpas kompleksitetsniveauet til målgruppens erfaring og stilling.\n\n3. **Teoretisk forankring**: Inkluder direkte eksempler på anvendelse af modulets teoretiske begreber, metoder eller modeller.\n\n4. **Engagement**: Skriv historien med en engagerende narrativ stil, der gør teorien konkret og relevant.\n\n5. **Omfang**: Casen skal være 600-800 ord i alt (følg fordelingen angivet i strukturen).\n\n6. **Format**: Anvend et professionelt sprog og stil, der passer til målgruppen.\n\n7. **Undgå**: Generiske situationer, overdreven teknisk jargon, eller urealistiske \"perfekte\" løsninger.\n\n\n## Output\nEn sammenhængende case på 600-800 ord, der illustrerer, hvordan en mellemleder i fintech-sektoren anvender projektledelsesværktøjer til at håndtere et realistisk projekt med udfordringer relateret til scope, interessenter og risici."
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        3184,
+        1880
+      ],
+      "id": "fff74ce9-7ab8-4d42-93da-3c1c8a0dd003",
+      "name": "Case forfatter"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Kursusnavn: {{ $('Kursusplanlægger').item.json.output.kursus }}\n\nKursusbeskrivelse: {{ $('Kursusplanlægger').item.json.output.kursusbeskrivelse }}\n\nModulnavn: {{ $('Kursusplanlægger').item.json.output.Moduler[0].Modulnavn }}\n\nModulbeskrivelse: {{ $('Kursusplanlægger').item.json.output.Moduler[0].Modulbeskrivelse }}\n\nLektionsindhold: {{ $json.text }}\n",
+        "options": {
+          "systemMessage": "=# Prompt til AI-agent for caseskrivning til kursusmoduler\n\n## Formål\nDu er en specialiseret AI-agent til at forfatte realistiske og relevante cases til kursusmoduler. Disse cases skal illustrere den praktiske anvendelse af det teoretiske indhold, der er gennemgået i modulet, og skal være mellem 600-800 ord.\n\n## Input data\nDu vil modtage følgende information:\n- Kursusmodulets titel og overordnede læringsmål\n- Beskrivelse af lektioner og deres teoretiske indhold\n- Information om målgruppen (branche, erfaring, stillingsniveau)\n- Sektor og industri, som casen skal relatere til\n\n## Case-struktur\nDin case skal følge denne struktur:\n\n1. **Introduktion (100-150 ord)**\n   - Præsentation af en realistisk organisation/situation fra den specificerede sektor\n   - Kort kontekst for problemstillingen\n   - Navngiv hovedpersonen/personerne og deres rolle(r)\n\n2. **Problemstilling (150-200 ord)**\n   - Beskriv en konkret udfordring, der kræver anvendelse af modulets teoretiske indhold\n   - Inkluder relevante detaljer, der gør situationen genkendelig for målgruppen\n   - Tilføj kompleksitetsfaktorer, der kræver kritisk tænkning\n\n3. **Handlingsforløb (250-300 ord)**\n   - Beskriv hovedpersonens/teamets tilgang til problemet\n   - Vis tydeligt, hvordan det teoretiske indhold fra modulet anvendes i praksis\n   - Illustrer både udfordringer og succeser i processen\n\n4. **Resultat og refleksion (100-150 ord)**\n   - Beskriv udfaldet af handlingen\n   - Inkluder refleksioner over, hvad der virkede godt/mindre godt\n   - Forbind resultatet med modulets læringsmål\n\n## Retningslinjer\n1. **Realisme**: Casen skal være realistisk for den specificerede sektor/industri med autentiske detaljer, terminologi og problemstillinger.\n\n2. **Målgruppeorientering**: Tilpas kompleksitetsniveauet til målgruppens erfaring og stilling.\n\n3. **Teoretisk forankring**: Inkluder direkte eksempler på anvendelse af modulets teoretiske begreber, metoder eller modeller.\n\n4. **Engagement**: Skriv historien med en engagerende narrativ stil, der gør teorien konkret og relevant.\n\n5. **Omfang**: Casen skal være 600-800 ord i alt (følg fordelingen angivet i strukturen).\n\n6. **Format**: Anvend et professionelt sprog og stil, der passer til målgruppen.\n\n7. **Undgå**: Generiske situationer, overdreven teknisk jargon, eller urealistiske \"perfekte\" løsninger.\n\n\n## Output\nEn sammenhængende case på 600-800 ord, der illustrerer, hvordan en mellemleder i fintech-sektoren anvender projektledelsesværktøjer til at håndtere et realistisk projekt med udfordringer relateret til scope, interessenter og risici."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        340,
+        -700
+      ],
+      "id": "846c9f96-745e-4016-b8ed-09498dc6e201",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Kursusnavn: {{ $('Kursusplanlægger').item.json.output.kursus }}\n\nKursusbeskrivelse: {{ $('Kursusplanlægger').item.json.output.kursusbeskrivelse }}\n\nModulnavn: {{ $('Kursusplanlægger').item.json.output.Moduler[0].Modulnavn }}\n\nModulbeskrivelse: {{ $('Kursusplanlægger').item.json.output.Moduler[0].Modulbeskrivelse }}\n\nLektionsindhold: {{ $('Aggregate').item.json.text }}\n\n",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "# Prompt til AI-agent for spørgsmålsgenerering til kursusmoduler\n\n## Formål\nDu er en specialiseret AI-agent til at udvikle detaljerede og relevante spørgsmål til kursusmoduler. Disse spørgsmål skal teste forståelsen af det teoretiske indhold, der er gennemgået i modulet, og fremme kritisk tænkning hos deltagerne. Spørgsmålene skal variere i kompleksitet og format. Hvert spørgsmål skal have tilknyttet det korrekte svar og begrundelse for det korrekte svar.\n\n## Input data\nDu vil modtage følgende information:\n- Kursusmodulets titel og overordnede læringsmål\n- Beskrivelse af lektioner og deres teoretiske indhold\n- Information om målgruppen (branche, erfaring, stillingsniveau)\n- Sektor og industri, som spørgsmålene skal relatere til\n\n## Spørgsmålsstruktur\nDine spørgsmål skal følge disse formater:\n\n1. **Vidensprøvende spørgsmål (25-30% af totalen)**\n   - Multiple choice spørgsmål, der tester genkaldelse af nøglebegreber\n   - Sandt/falsk spørgsmål om grundlæggende principper\n   - Udfyld-tomrummet spørgsmål for terminologi\n   - **Inkluder korrekt svar og evt. begrundelse**\n\n2. **Anvendelsesspørgsmål (30-35% af totalen)**\n   - Korte scenarier, der kræver anvendelse af modulets teorier\n   - Spørgsmål om, hvordan man implementerer specifikke teknikker\n   - Problemløsningsspørgsmål relateret til branchekonteksten\n   - **Inkluder modelløsning og hvorfor den er korrekt**\n\n3. **Analysespørgsmål (25-30% af totalen)**\n   - Casebaserede spørgsmål, der kræver evaluering af tilgange\n   - Sammenlign/kontrast spørgsmål for forskellige metodologier\n   - Spørgsmål om at identificere best practices i specifikke situationer\n   - **Inkluder detaljeret svarforklaring med teoretisk begrundelse**\n\n4. **Refleksionsspørgsmål (10-15% af totalen)**\n   - Åbne spørgsmål, der forbinder teori til personlig erfaring\n   - Spørgsmål, der fremkalder kritisk tænkning om teoriers begrænsninger\n   - Spørgsmål om potentielle tilpasninger af koncepter til unikke situationer\n   - **Inkluder vejledende svar med eksempler på gode refleksioner**\n\n## Retningslinjer\n1. **Relevans**: Spørgsmålene skal direkte relatere til modulets teoretiske indhold og læringsmål.\n\n2. **Branchekontekst**: Inkorporer realistisk branchespecifik terminologi og scenarier.\n\n3. **Varieret sværhedsgrad**: Inkluder en blanding af grundlæggende, mellemliggende og avancerede spørgsmål.\n\n4. **Klarhed**: Formuler spørgsmål tydeligt og utvetydigt.\n\n5. **Engagement**: Skab spørgsmål, der stimulerer kritisk tænkning og praktisk anvendelse.\n\n6. **Formatvariation**: Inkluder multiple choice, korte svar, caseanalyse og diskussionsspørgsmål.\n\n7. **Undgå**: Oversimplificerede spørgsmål, spørgsmål med indlysende svar eller spørgsmål, der kræver viden ud over modulets indhold.\n\n8. **Svarnøjagtighed**: Sørg for at alle svar er korrekte og velbegrundede med reference til modulets materiale.\n\n## Output\nEt omfattende sæt af 15-20 spørgsmål på tværs af de forskellige spørgsmålstyper, der effektivt tester forståelsen af modulets indhold. Hvert spørgsmål skal have det korrekte svar tilknyttet samt en relevant forklaring, hvor det er nødvendigt. "
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        3560,
+        1880
+      ],
+      "id": "267eb6d3-2b5e-4b05-8d14-739ea98ff124",
+      "name": "Sprøgsmåls creator"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Kursusnavn: {{ $('Kursusplanlægger').item.json.output.kursus }}\n\nKursusbeskrivelse: {{ $('Kursusplanlægger').item.json.output.kursusbeskrivelse }}\n\nModulnavn: {{ $('Kursusplanlægger').item.json.output.Moduler[0].Modulnavn }}\n\nModulbeskrivelse: {{ $('Kursusplanlægger').item.json.output.Moduler[0].Modulbeskrivelse }}\n\nLektionsindhold: {{ $('Aggregate').item.json.text }}\n\nKursusniveau: {{ $('Kursusparametre').item.json.Kursusniveau }}\n\nMålgruppe: {{ $('Kursusparametre').item.json['Målgruppe'] }}\n\nSektor: {{ $('Kursusparametre').item.json.Sektor }}\n\n\n\n",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=# Prompt til AI-agent for udvikling af hjemmeopgaver til kursusmoduler\n\n## Formål\nDu er en specialiseret AI-agent til at udvikle praktiske og relevante hjemmeopgaver til kursusmoduler. Disse hjemmeopgaver skal give kursisterne mulighed for at anvende det teoretiske indhold fra modulet i en kontekst, der er direkte relevant for deres egen virksomhed. Hjemmeopgaven skal understøtte læring gennem praktisk anvendelse i kursistens egen arbejdskontekst.\n\n## Input data\nDu vil modtage følgende information:\n- Kursusmodulets titel og overordnede læringsmål\n- Beskrivelse af lektioner og deres teoretiske indhold\n- Information om målgruppen (branche, erfaring, stillingsniveau)\n- Sektor og industri, som hjemmeopgaven skal relatere til\n- Specifik information om kursistens virksomhed (størrelse, type, udfordringer)\n\n## Hjemmeopgavens struktur\nDin hjemmeopgave skal følge denne struktur:\n\n1. **Formål og læringsmål (75-100 ord)**\n   - Tydelig beskrivelse af hjemmeopgavens formål\n   - Konkrete læringsmål der kobler til modulets teoretiske indhold\n   - Forventet udbytte for kursisten og dennes virksomhed\n\n2. **Baggrund og kontekst (100-125 ord)**\n   - Kort opsamling af relevante teorier og metoder fra modulet\n   - Forklaring af hjemmeopgavens relevans for kursistens virksomhed\n   - Kobling mellem teori og praksis i kursistens arbejdskontekst\n\n3. **Opgavebeskrivelse (200-250 ord)**\n   - Detaljeret beskrivelse af hjemmeopgaven\n   - Specificering af, hvilke teoretiske begreber og metoder der skal anvendes\n   - Klare instruktioner om forventede leverancer og afleveringsformat\n\n4. **Praktisk vejledning (150-175 ord)**\n   - Trin-for-trin guide til gennemførelse af hjemmeopgaven\n   - Forslag til dataindsamling eller analyser i kursistens egen virksomhed\n   - Estimeret tidsforbrug og forslag til arbejdsplanlægning\n\n5. **Refleksionspunkter (100-125 ord)**\n   - 3-5 refleksionsspørgsmål, der skal besvares som del af opgaven\n   - Spørgsmål der kobler teori med kursistens egne erfaringer\n   - Fokus på praktisk anvendelighed og implementering i virksomheden\n\n6. **Afleveringskrav og evaluering (75-100 ord)**\n   - Format for aflevering (rapport, præsentation, video, etc.)\n   - Omfang og deadline\n   - Kriterier for evaluering og feedback\n\n## Retningslinjer\n1. **Virksomhedsrelevans**: Hjemmeopgaven skal direkte relatere til kursistens virksomhed og dens specifikke kontekst, udfordringer og muligheder.\n\n2. **Selvstændigt arbejde**: Design opgaven så den kan løses selvstændigt uden assistance fra underviser.\n\n3. **Realistisk omfang**: Tilpas hjemmeopgavens kompleksitet og omfang til kursistens stillingsniveau og den tid, der er til rådighed mellem modulerne.\n\n4. **Ressourcetilgængelighed**: Sørg for at opgaven kan løses med de ressourcer og data, kursisten realistisk har adgang til i virksomheden.\n\n5. **Anvendelsesorientering**: Fokuser på, hvordan teoretiske koncepter konkret kan implementeres og skabe værdi i kursistens organisation.\n\n6. **Progression**: Design hjemmeopgaven, så den bygger på modulets indhold, men også forbereder kursisten på kommende moduler.\n\n7. **Undgå**: Generiske opgaver uden kobling til virksomhedens specifikke situation eller opgaver, der kræver omfattende indsigt i virksomhedsinformation, som kursisten måske ikke har adgang til.\n\n## Output\nEn sammenhængende hjemmeopgavebeskrivelse på 700-850 ord, der giver kursisten mulighed for at anvende modulets teoretiske indhold i sin egen virksomhedskontekst. Hjemmeopgaven skal være skræddersyet til målgruppen i den specificerede sektor og skal tage udgangspunkt i realistiske udfordringer og muligheder i kursistens virksomhed, med tydelige instruktioner for selvstændigt arbejde og aflevering."
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        3936,
+        1880
+      ],
+      "id": "fc26499b-edc4-4adb-beef-e09caa46c851",
+      "name": "Opgave creator"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"lektioner\": [\n    {\n      \"lektion\": \"# Lektionsdesign: Betydningen af risikostyring i ledelse\\n\\nBaseret på det uploadede indhold om risikostyring i vandselskaber, har jeg designet følgende lektionsstruktur:\\n\\n## Lektionsstruktur\\n- **Titel:** Betydningen af risikostyring i ledelse\\n- **Formål:** At give deltagerne forståelse for, hvordan risikostyring integreres i ledelsesarbejdet i vandselskaber, med fokus på ledelsesansvar, beslutningsprocesser og organisationskultur.\\n- **Hovedelementer:** \\n  - Risikostyring som et ledelsesansvar\\n  - Integration af risikostyring i beslutningsprocesser\\n  - Kultur og kommunikation omkring risikostyring\\n- **Varighed:** 10 minutter\\n- **Placering:** Lektion 1 i Modul 1: Introduktion til Risikostyring\\n\\n## Tekstkomponenter\\n\\n### Introduktion\\nEn kortfattet velkomst der introducerer lektionen og dens relevans for ledere i vandselskaber, med særligt fokus på, hvorfor risikostyring er en kerneopgave for ledelsen.\\n\\n### Sektion 1: Risikostyring som et ledelsesansvar\\n- Topledelsens rolle og ansvar i at etablere en strategisk tilgang til risikostyring\\n- Fordeling af risikoejerskab gennem organisationens hierarki\\n- Fokus på risikostyring som en integreret del af ledelsesopgaven\\n#### Grafik: 1. Pyramidemodel: Risikostyringsansvar\\n\\n### Sektion 2: Integration i beslutningsprocesser\\n- Hvordan risikostyring implementeres i kerneforretningen\\n- Strukturerede metoder til at inkludere risikoovervejelser i beslutninger\\n- Systematisk anvendelse af risikoinformation i ledelsens arbejde\\n#### Grafik: 2. Procesdiagram: Risikointegreret beslutningsproces\\n\\n### Sektion 3: Kultur og kommunikation\\n- Ledelsens rolle i at skabe en risikobevidst kultur\\n- Principper for effektiv risikokommunikation\\n- Balance mellem formelle systemer og fleksibel kultur\\n#### Grafik: 3. Konceptvisualisering: Risikokultur vs. Formelle Systemer\\n\\n### Sammenfatning\\nEn kort konklusion der opsummerer hovedpointerne og forbinder dem til næste lektion om konkrete integrationsmetoder.\\n#### Grafik: 4. Infografik: Nøglebegreber i risikointegreret ledelse\",\n      \"grafiskeElementer\": [\n        {\n          \"titel\": \"1. Pyramidemodel: Risikostyringsansvar\",\n          \"beskrivelse\": \"En visualisering af risikostyring gennem en organisationspyramide, der viser forskellige ledelsesniveauer i et vandselskab og deres respektive roller i risikostyring.\",\n          \"formaal\": \"At visualisere hvordan risikoejerskab fordeles på forskellige ledelseslag, fra bestyrelse og direktør til afdelingsledere og teamledere.\",\n          \"tekniskImplementation\": \"Pyramide med 3-4 lag repræsenterende ledelsesniveauer. Hvert niveau har et tilknyttet tekstfelt med ansvarsområder. Farvegraduering fra mørkeblå (top) til lysere blå (bund). Ved mouse-over fremhæves det pågældende niveau og viser detaljeret beskrivelse af ansvarsområder.\"\n        },\n        {\n          \"titel\": \"2. Procesdiagram: Risikointegreret beslutningsproces\",\n          \"beskrivelse\": \"Et cirkulært flowdiagram der illustrerer, hvordan risikostyring integreres i beslutningsprocesser i et vandselskab.\",\n          \"formaal\": \"At vise den cykliske natur af risikointegrerede beslutninger og hvordan risikoinformation indgår på forskellige stadier.\",\n          \"tekniskImplementation\": \"Cirkulært design med 5 faser: Planlægning → Risikovurdering → Beslutning → Implementering → Opfølgning → (tilbage til Planlægning). Hver fase har et ikon og kort beskrivelse. Centrale ikoner relaterer til vandselskabets aktiviteter. Farveskema i blå og grønne nuancer. Simple animerede pile der indikerer flowets retning.\"\n        },\n        {\n          \"titel\": \"3. Konceptvisualisering: Risikokultur vs. Formelle Systemer\",\n          \"beskrivelse\": \"En 2×2 matrix der viser balancen mellem formaliserede systemer og fleksibel risikokultur, samt mellem intern og ekstern risikokommunikation.\",\n          \"formaal\": \"At illustrere de forskellige dimensioner af risikokommunikation og -kultur, og hvordan ledere skal balancere disse aspekter.\",\n          \"tekniskImplementation\": \"X-akse: Formaliseret ↔ Fleksibel. Y-akse: Intern ↔ Ekstern. Hvert kvadrant indeholder eksempler på kommunikations- og kulturaktiviteter. Farvegraduering fra rød (høj formalitet/ekstern) til grøn (høj fleksibilitet/intern). Simple ikoner i hvert kvadrant repræsenterer eksemplerne.\"\n        },\n        {\n          \"titel\": \"4. Infografik: Nøglebegreber i risikointegreret ledelse\",\n          \"beskrivelse\": \"Et interaktivt koncept-kort der viser de fire nøglebegreber og deres indbyrdes relationer.\",\n          \"formaal\": \"At hjælpe deltagerne med at forstå sammenhængen mellem nøglebegreberne og hvordan de sammen danner grundlag for risikointegreret ledelse.\",\n          \"tekniskImplementation\": \"Fire hovedbobler med nøglebegreberne: 'Risikointegreret ledelse', 'Risikoejerskab', 'Beslutningsrammer' og 'Risikokommunikation'. Forbindelseslinjer mellem boblerne viser deres indbyrdes relationer. Ved klik på en boble fremhæves definitionen af begrebet. Ved mouse-over på forbindelseslinjerne vises korte tekster om relationerne.\"\n        }\n      ],\n      \"lektionsafslutning\": \"En kort opsummering af hovedpunkterne fra lektionen, med særligt fokus på, hvordan deltagerne kan begynde at implementere risikointegreret ledelse i deres egen organisation. Afsluttes med en henvisning til næste lektion om konkrete metoder til integration af risikostyring.\"\n    }\n  ]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        2676,
+        2000
+      ],
+      "id": "f09d8ce2-a5db-491c-b9fa-9b8f66df50d6",
+      "name": "Structured Output Parser2"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.download_url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1000,
+        820
+      ],
+      "id": "09ff2b1d-4cb1-4975-9906-2d62547b9566",
+      "name": "Download PDF"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://rest-us.apitemplate.io/v2/create-pdf-from-html",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "apiTemplateIoApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "filename",
+              "value": "=Test4.pdf"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"body\": \"{{ $json.Foto }}\",\n  \"css\": \"<style>.bg{background: red};</style>\",\n  \"data\": {\n    \"name\": \"This is a title\"\n  },\n  \"settings\": {\n    \"paper_size\": \"A4\",\n    \"orientation\": \"1\",\n    \"header_font_size\": \"9px\",\n    \"margin_top\": \"40\",\n    \"margin_right\": \"10\",\n    \"margin_bottom\": \"40\",\n    \"margin_left\": \"10\",\n    \"print_background\": \"1\",\n    \"displayHeaderFooter\": true,\n    \"custom_header\": \"<style>#header, #footer { padding: 0 !important; }</style>\\n<table style=\\\"width: 100%; padding: 0px 5px;margin: 0px!important;font-size: 8px\\\">\\n  <tr>\\n    <td style=\\\"text-align:left; width:30%!important;\\\"><span class=\\\"date\\\"></span></td>\\n    <td style=\\\"text-align:center; width:30%!important;\\\"><span class=\\\"pageNumber\\\"></span></td>\\n    <td style=\\\"text-align:right; width:30%!important;\\\"><span class=\\\"totalPages\\\"></span></td>\\n  </tr>\\n</table>\",\n    \"custom_footer\": \"<style>#header, #footer { padding: 0 !important; }</style>\\n<table style=\\\"width: 100%; padding: 0px 5px;margin: 0px!important;font-size: 8px\\\">\\n  <tr>\\n    <td style=\\\"text-align:left; width:30%!important;\\\"><span class=\\\"date\\\"></span></td>\\n    <td style=\\\"text-align:center; width:30%!important;\\\"><span class=\\\"pageNumber\\\"></span></td>\\n    <td style=\\\"text-align:right; width:30%!important;\\\"><span class=\\\"totalPages\\\"></span></td>\\n  </tr>\\n</table>\"\n  }\n}\n\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        780,
+        820
+      ],
+      "id": "275dfd15-5399-4dd7-8533-7960e99c4149",
+      "name": "Generate PDF",
+      "credentials": {
+        "apiTemplateIoApi": {
+          "id": "Ma4TLszBz6pQ7jKa",
+          "name": "APITemplate.io account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "root",
+          "cachedResultName": "/ (Root folder)"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1220,
+        820
+      ],
+      "id": "0c2b6440-2f39-459d-a1d2-9918a81dd68c",
+      "name": "Google Drive",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "iqKibuWvWktI99Br",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "markdownToHtml",
+        "markdown": "={{ $json.text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.markdown",
+      "typeVersion": 1,
+      "position": [
+        340,
+        820
+      ],
+      "id": "ab585d2e-4991-47b7-a5cb-5ad8c27454df",
+      "name": "Markdown"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "eafb02ff-dbd2-413b-a2be-5126bfb2ebd7",
+              "name": "Foto",
+              "value": "<img src=\\\"https://utilco.dk/____impro/1/onewebmedia/brandmark-design.png\\\" alt=\\\"Brandmark design\\\">",
+              "type": "string"
+            },
+            {
+              "id": "7ba733dd-c239-4d12-9035-0e5877a0ae90",
+              "name": "JSON",
+              "value": "{   \"body\": \"<h1 id=\\\"hjemmeopgaveintegrationafrisikostyringiditvandselskab\\\">Hjemmeopgave: Integration af Risikostyring i Dit Vandselskab</h1>\\n<h2 id=\\\"formloglringsml\\\">Formål og læringsmål</h2>\\n<p>Formålet med denne hjemmeopgave er at give dig mulighed for at anvende teorier og metoder fra Modul 1: Introduktion til Risikostyring direkte i dit eget vandselskab. Ved at gennemføre opgaven vil du kunne omsætte teoretisk viden til praktiske forbedringer i jeres risikostyringsarbejde. Efter opgaven vil du kunne:</p>\\n<ul>\\n<li>Analysere status for risikostyring i din egen organisation</li>\\n<li>Designe praktiske metoder til at integrere risikostyring i beslutningsprocesser</li>\\n<li>Udvikle en konkret handlingsplan for forbedret risikostyring i dit vandselskab</li>\\n</ul>\\n<h2 id=\\\"baggrundogkontekst\\\">Baggrund og kontekst</h2>\\n<p>Risikostyring er en central ledelsesdisciplin i moderne vandselskaber, hvor forsyningssikkerhed, miljøhensyn og økonomisk bæredygtighed skal balanceres. Som vi har lært i modulet, er det afgørende at risikostyring ikke blot eksisterer som et separat system, men integreres i organisationens beslutningsprocesser på alle niveauer.</p>\\n<p>I denne opgave skal du arbejde med at analysere, hvor godt risikostyrin",
+              "type": "string"
+            },
+            {
+              "id": "a8da2a7b-86c7-49c2-948c-2754f077ca7e",
+              "name": "HTML",
+              "value": " <h1 id=\"hjemmeopgaveintegrationafrisikostyringiditvandselskab\">Hjemmeopgave: Integration af Risikostyring i Dit Vandselskab</h1>\\n<h2 id=\"formloglringsml\">Formål og læringsmål</h2>\\n<p>Formålet med denne hjemmeopgave er at give dig mulighed for at anvende teorier og metoder fra Modul 1: Introduktion til Risikostyring direkte i dit eget vandselskab. Ved at gennemføre opgaven vil du kunne omsætte teoretisk viden til praktiske forbedringer i jeres risikostyringsarbejde. Efter opgaven vil du kunne:</p>\\n<ul>\\n<li>Analysere status for risikostyring i din egen organisation</li>\\n<li>Designe praktiske metoder til at integrere risikostyring i beslutningsprocesser</li>\\n<li>Udvikle en konkret handlingsplan for forbedret risikostyring i dit vandselskab</li>\\n</ul>\\n<a href=\"https://utilco.dk/____impro/1/onewebmedia/brandmark-design.png?etag=W%2F%229986-634bde18%22&sourceContentType=image%2Fpng&ignoreAspectRatio&resize=441%2B120\">Foto</a><h2 id=\"baggrundogkontekst\">Baggrund og kontekst</h2>\\n<p>Risikostyring er en central ledelsesdisciplin i moderne vandselskaber, hvor forsyningssikkerhed, miljøhensyn og økonomisk bæredygtighed skal balanceres. Som vi har lært i modulet, er det afgørende at risikostyring ikke blot eksisterer som et separat system, men integreres i organisationens beslutningsprocesser på alle niveauer. </p>\\n<p>I denne opgave skal du arbejde med at analysere, hvor godt risikostyring er integreret i dit vandselskab i dag, og udvikle konkrete forslag til forbedringer. Opgaven bygger på både den strategiske forståelse fra lektion 1, integrationsmetoderne fra lektion 2, og evalueringstilgangene fra lektion 3, med fokus på praktisk implementering i jeres specifikke kontekst.</p>\\n<h2 id=\"opgavebeskrivelse\">Opgavebeskrivelse</h2>\\n<p>Din opgave består af tre dele, der skal gennemføres i dit eget vandselskab:</p>\\n<h3 id=\"del1statusanalyseafrisikostyringmodenhedsvurdering\">Del 1: Statusanalyse af risikostyring (modenhedsvurdering)</h3>\\n<p>Gennemfør en modenhedsvurdering af risikostyringen i dit vandselskab ved at:</p>\\n<ol>\\n<li>Anvende den 5-trins modenhedsmodel fra lektion 3 til at vurdere jeres nuværende niveau</li>\\n<li>Undersøge hvordan risikostyring aktuelt er integreret i minimum tre vigtige beslutningsprocesser i dit selskab (f.eks. investeringsbeslutninger, driftsplanlægning, beredskab)</li>\\n<li>Identificere 2-3 konkrete styrker og 2-3 konkrete svagheder ved jeres nuværende praksis</li>\\n</ol>\\n<p>Dokumenter dine fund med konkrete eksempler fra organisationen og korte begrundelser for din vurdering.</p>\\n<h3 id=\"del2designafintegrationsmetode\">Del 2: Design af integrationsmetode</h3>\\n<p>Baseret på din analyse i del 1, skal du:</p>\\n<ol>\\n<li>Udvælge én central beslutningsproces i dit vandselskab, hvor risikostyring enten mangler eller kan forbedres væsentligt</li>\\n<li>Redesigne denne proces med integration af risikostyring ved at:</li>\\n</ol>\\n<ul>\\n<li>Udarbejde en skitse til et konkret beslutningsdokument eller -skabelon, der integrerer risikohensyn</li>\\n<li>Beskrive hvilke roller og ansvarsområder der skal indgå i den forbedrede proces</li>\\n<li>Definere hvordan risici skal identificeres, vurderes og håndteres i processen</li>\\n</ul>\\n<p>Dit design skal være realistisk og tilpasset dit vandselskabs størrelse, ressourcer og kultur.</p>\\n<h3 id=\"del3implementeringsogevalueringsplan\">Del 3: Implementerings- og evalueringsplan</h3>\\n<p>Udarbejd en handlingsplan for implementering af din redesignede beslutningsproces med følgende elementer:</p>\\n<ol>\\n<li>Konkrete implementeringsskridt med tidshorisont (kortsigtet, mellemsigtet, langsigtet)</li>\\n<li>Plan for kompetenceopbygning hos de involverede medarbejdere</li>\\n<li>Metoder til at overvinde potentiel modstand mod forandringen</li>\\n<li>En specifik evalueringsplan der beskriver, hvordan I vil måle succesen af implementeringen</li>\\n</ol>\\n<h2 id=\"praktiskvejledning\">Praktisk vejledning</h2>\\n<p>For at gennemføre opgaven effektivt, anbefales følgende fremgangsmåde:</p>\\n<p><strong>Indsamling af data</strong>:</p>\\n<ul>\\n<li>Gennemgå eksisterende dokumentation om risikostyring i dit selskab (politikker, procedurer, etc.)</li>\\n<li>Arranger korte interviews (15-20 min) med 2-3 kolleger, der er involveret i de udvalgte beslutningsprocesser</li>\\n<li>Indhent eksempler på tidligere risikovurderinger eller beslutningsdokumenter</li>\\n</ul>\\n<p><strong>Analyse</strong>:</p>\\n<ul>\\n<li>Brug PDCA-modellen fra lektion 3 som analyseredskab for jeres nuværende praksis</li>\\n<li>Sammenlign jeres praksis med de integrationsmetoder, der blev præsenteret i lektion 2</li>\\n<li>Identificer \"quick wins\" og mere omfattende forbedringsmuligheder</li>\\n</ul>\\n<p><strong>Udarbejdelse af plan</strong>:</p>\\n<ul>\\n<li>Start med at skitsere din løsning på papir før du udarbejder den endelige version</li>\\n<li>Fokuser på, hvad der realistisk kan implementeres inden for en 3-6 måneders tidshorisont</li>\\n<li>Sørg for at dit design er skalerbart, så det senere kan udbredes til andre beslutningsprocesser</li>\\n</ul>\\n<p>Beregn at bruge 3-4 timer på opgaven fordelt over 1-2 uger.</p>\\n<h2 id=\"refleksionspunkter\">Refleksionspunkter</h2>\\n<p>Inkluder dine refleksioner over følgende spørgsmål i din aflevering:</p>\\n<ol>\\n<li><p>Hvilke organisatoriske eller kulturelle faktorer i dit vandselskab kan henholdsvis fremme og hæmme en mere integreret tilgang til risikostyring?</p></li>\\n<li><p>Hvordan balancerer du behovet for systematisk risikostyring med hensynet til at undgå unødig bureaukratisering af beslutningsprocesserne?</p></li>\\n<li><p>Hvilken rolle kan du som leder spille i at fremme en mere risikobevidst kultur i organisationen, og hvilke konkrete handlinger vil du tage?</p></li>\\n<li><p>Hvordan kan forbedret risikostyring specifikt skabe værdi i relation til de strategiske udfordringer, dit vandselskab står overfor i de kommende år?</p></li>\\n<li><p>Hvilke kompetencer mangler potentielt i organisationen for at kunne implementere en mere moden risikostyringstilgang?</p></li>\\n</ol>\\n<h2 id=\"afleveringskravogevaluering\">Afleveringskrav og evaluering</h2>\\n<p>Din aflevering skal have et omfang på 5-7 sider (ekskl. eventuelle bilag) og indeholde:</p>\\n<ul>\\n<li>Statusanalyse med modenhedsvurdering og analyse af nuværende praksis</li>\\n<li>Design af integrationsmetode inkl. visualisering af den redesignede proces</li>\\n<li>Implementerings- og evalueringsplan</li>\\n<li>Refleksioner over de angivne refleksionspunkter</li>\\n</ul>\\n<p>Afleveringen bedømmes efter, hvorvidt du:</p>\\n<ul>\\n<li>Demonstrerer forståelse for de teoretiske begreber fra modulet</li>\\n<li>Anvender begreberne korrekt og relevant i din egen organisationskontekst</li>\\n<li>Udviser kreativitet og realisme i dit løsningsforslag</li>\\n<li>Reflekterer nuanceret over implementeringsudfordringer og muligheder</li>\\n</ul>\\n<p>Afleveringsfristen er to uger efter afslutning af Modul 1. Feedback gives skriftligt inden for to uger efter afleveringen, med fokus på anvendelige indsigter til dit videre arbejde med risikostyring.</p>",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        560,
+        820
+      ],
+      "id": "802ffe82-b06a-451e-96cf-46473c191701",
+      "name": "Billede (temp)"
+    },
+    {
+      "parameters": {
+        "content": "Næste gang: Lav Modul outliner. Den skal planlægge filer og filnavne og hvad der skal ligge i hver fil",
+        "height": 80,
+        "width": 300
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1600,
+        -140
+      ],
+      "id": "10237676-72ad-4968-808e-939e0de79a97",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "eeea6151-0f3f-4aef-a0fb-1e3743b0559c",
+              "name": "output",
+              "value": "={{ $('Aggregate').item.json.output[0].lektioner[0].lektion }}\n\n{{ $('Case forfatter').item.json.text }}\n\n{{ $('Sprøgsmåls creator').item.json.text }}\n\n{{ $json.text }}\n",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4312,
+        1880
+      ],
+      "id": "45a2aeb8-efd2-4ea1-8a1c-aaafca2ddef4",
+      "name": "Samler elementer"
+    },
+    {
+      "parameters": {
+        "operation": "toText",
+        "sourceProperty": "output",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        4532,
+        1880
+      ],
+      "id": "f66619de-2fb1-472a-b209-dc8a605d775c",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "hs2iwVsjN8phf01l",
+          "mode": "list",
+          "cachedResultName": "My project — Tool Kursus Image generator"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Billedtekst": "=Beskrivelse: \n{{ $('Insert courses_translation').first().json.description }}\n\nIndhold:\n{{ $('Insert courses_translation').first().json.content }}",
+            "image_name": "Kursusbeskrivelse",
+            "Billedetype": "Generelt",
+            "eksempel_url": "https://iynjlzzmszozpxpgldaa.supabase.co/storage/v1/object/public/images/test/20250501161911_0.png"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "eksempel_url",
+              "displayName": "eksempel_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "Billedtekst",
+              "displayName": "Billedtekst",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "image_name",
+              "displayName": "image_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "Billedetype",
+              "displayName": "Billedetype",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        2020,
+        1080
+      ],
+      "id": "3045042b-8426-42b7-8f42-4304374d447f",
+      "name": "Genererer kursusbillede"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1,
+      "position": [
+        1180,
+        1400
+      ],
+      "id": "0d9e7141-3686-48a4-a000-abd04c302019",
+      "name": "Think"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        2240,
+        1080
+      ],
+      "id": "fd9af8c8-37ce-4c54-a060-3aade7ef8a8a",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-3-7-sonnet-20250219",
+          "cachedResultName": "Claude 3.7 Sonnet"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        1520,
+        1300
+      ],
+      "id": "628c8a43-9c0c-4118-8c22-67489bb6cbc4",
+      "name": "Anthropic Chat Model1",
+      "credentials": {
+        "anthropicApi": {
+          "id": "hvw52FHiqSCDBq6Q",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "course_translations",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "title",
+              "fieldValue": "={{ $json.output.kursus }}"
+            },
+            {
+              "fieldId": "description",
+              "fieldValue": "={{ $json.output.kursusbeskrivelse }}"
+            },
+            {
+              "fieldId": "learning_objectives",
+              "fieldValue": "={{ $json.output['læringsmål'] }}"
+            },
+            {
+              "fieldId": "course_id",
+              "fieldValue": "={{ $('Get course_id').first().json.id }}"
+            },
+            {
+              "fieldId": "language_code",
+              "fieldValue": "da"
+            },
+            {
+              "fieldId": "content",
+              "fieldValue": "={{ $json.output.content_md }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1260,
+        1080
+      ],
+      "id": "27ea92b6-d52c-4de1-92aa-745d8907b2cf",
+      "name": "Insert courses_translation",
+      "credentials": {
+        "supabaseApi": {
+          "id": "bvMVIJLed9p3sKxS",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "course_translations",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $('Insert courses_translation').item.json.id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "videoscript",
+              "fieldValue": "={{ $json.text }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1780,
+        1080
+      ],
+      "id": "5623dcdf-f311-459b-97c6-90d254376968",
+      "name": "Update video script",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "bvMVIJLed9p3sKxS",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Description:\n{{ $json.description }}\n\nContent:\n{{ $json.content }}\n\n\nLearning objectives:\n{{ $json.learning_objectives }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "Du er en professionel dansk speak-forfatter.\n\n**Input**  \n- content: (Markdown-tekst med kursus­beskrivelse, moduler og lektioner)  \n- learning_objectives: (JSON-array med læringsmål)\n\n**Opgave**  \nSkriv en velkomst-videospeak opdelt i cirka **5 scener**.  \nFor hver scene skal du levere:\n\n1. **Scene-titel**  \n2. **Speak-tekst** (2-4 korte, mundrette sætninger i et indbydende, motiverende tonefald)  \n3. **Understøttende nøglepunkter** – 2-4 bullets med korte tekster eller stikord, som kan vises på skærmen.\n\n**Indhold der SKAL dækkes**  \n- Kort velkomst + hvorfor kurset er relevant.  \n- Speaker præsenterer sig selv som underviser og med navn (hedder Alex) \n- Oversigt over **kursusopbygning**  \n  - Moduler → lektioner → tilhørende spørgsmål & cases.  \n- **Modul­oversigt**: modulnavn + meget kort intro til hvert modul (max én sætning).  \n- De vigtigste **læringsmål** (sammenfat og fremhæv dem).  \n- En motiverende afslutning, der giver kursisterne lyst til at komme i gang.\n\n**Sprogkrav – skriv enkelt og konkret**\n- Brug almindeligt, mundret dansk. Ingen buzzwords eller floskler.\n- Undgå overpustede vendinger som: “rejse”, “stakeholders”, “maksimere potentiale”, “fremme synergier”, “game-changer”, “transformativ”, “next level” osv.\n- Vælg konkrete ord frem for abstrakte: \n  - brug “forløb” i stedet for “rejse”\n  - brug “værdifuldt” i stedet for “value-add”\n  - brug “plan” i stedet for “strategi” (medmindre det virkelig ER en strategi)\n- Sætningslængde: maks. 20 ord. Aktivt udsagnsord først.\n- Ingen engelske termer hvis et godt dansk ord findes.\n- Tonen skal være venlig, direkte og professionel – ikke hype.\n\n**Format**  \nSvar kun med Markdown som nedenfor:\n\n```\n\n### Scene 1 – <titel>\n\n**Speak** <tekst>\n\n**Vis på skærmen**\n\n* punkt 1\n* punkt 2\n  \\[...]\n\n### Scene 2 – …\n\n...\n\n```\n\nBrug naturligt sprog. Tal til kursisten i “du”.  \nIngen ekstra forklaringer – returnér kun speak-scenerne.\n```\n\n---\n\n## 🔹 Eksempel på output fra skabelonen\n\n*(baseret på dit “Introduktion til asset management”-kursus)*\n\n### Scene 1 – Velkommen ombord!\n\n**Speak**\nHej – og velkommen til “Introduktion til Asset Management”.\nUanset om du er ny i faget eller vil finpudse dine kompetencer, er dette kursus skræddersyet til dig, der arbejder i forsyningssektoren.\nSammen dykker vi ned i metoderne, der får dine aktiver til at levere maksimal værdi gennem hele deres livscyklus.\n\n**Vis på skærmen**\n\n* Online, selvpaced kursus\n* Fokus: værdi & risikostyring af aktiver\n* Relevans: bedre beslutninger, lavere omkostninger\n\n---\n\n### Scene 2 – Sådan er kurset bygget op\n\n**Speak**\nKurset er opdelt i fem moduler, hver bestående af korte lektioner.\nEfter hvert modul møder du spørgsmål og cases, så du kan teste og omsætte din nye viden med det samme.\n\n**Vis på skærmen**\n\n* 5 moduler → flere lektioner\n* Interaktive spørgsmål\n* Virkelige branche-cases\n\n---\n\n### Scene 3 – Moduloversigt\n\n**Speak**\nLad os kigge på modulerne:\nFørst får du fundamentet for asset management.\nDerefter lærer du at styre hele livscyklussen for dine aktiver.\nTredje modul handler om strategier og prioritering.\nI modul fire udforsker vi værktøjer og software.\nOg vi runder af med aktuelle udfordringer og fremtidige tendenser.\n\n**Vis på skærmen**\n\n* **Modul 1:** Introduktion til Asset Management\n* **Modul 2:** Livscyklusforvaltning af Aktiver\n* **Modul 3:** Strategier for Effektiv Asset Management\n* **Modul 4:** Værktøjer til Asset Management\n* **Modul 5:** Udfordringer & Fremtidige Tendenser\n\n---\n\n### Scene 4 – Dine læringsmål\n\n**Speak**\nNår du har gennemført kurset, kan du forklare de grundlæggende principper, anvende livscyklus-værktøjer og optimere performance og risiko.\nDu vil også kunne spotte fremtidige muligheder i en sektor i forandring.\n\n**Vis på skærmen**\n\n* Mestre principper & teori\n* Vælge og bruge de rette strategier\n* Analysere performance & risiko\n* Se mulighederne i nye teknologier\n\n---\n\n### Scene 5 – Klar til start!\n\n**Speak**\nNu er det tid til at gå i gang. Klik videre til Modul 1, og tag det første skridt mod bedre asset management.\nVi glæder os til at følge din rejse – rigtig god fornøjelse!\n\n\n"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.6,
+      "position": [
+        1420,
+        1080
+      ],
+      "id": "d04f9fad-3094-49d3-9167-35db72e5c84e",
+      "name": "Video script creator"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "courses",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "status",
+              "keyValue": "next"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        580,
+        1080
+      ],
+      "id": "1d378c10-7734-42b5-a322-6921c50f703d",
+      "name": "Get course_id",
+      "credentials": {
+        "supabaseApi": {
+          "id": "bvMVIJLed9p3sKxS",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "images",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $json.id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "ref_table_name",
+              "fieldValue": "courses"
+            },
+            {
+              "fieldId": "ref_table_id",
+              "fieldValue": "={{ $('Get course_id').first().json.id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2440,
+        1160
+      ],
+      "id": "27c8dbae-0a7a-4451-9ef5-87cd08c5898a",
+      "name": "Update images",
+      "credentials": {
+        "supabaseApi": {
+          "id": "bvMVIJLed9p3sKxS",
+          "name": "Supabase account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get course_id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Kursusplanlægger",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "User documents": {
+      "ai_tool": [
+        [
+          {
+            "node": "Kursusplanlægger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "User documents",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Kursusplanlægger": {
+      "main": [
+        [
+          {
+            "node": "Insert courses_translation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        []
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Modulindhold O1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Kursusplanlægger",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "Lektionsindhold Claude": {
+      "main": [
+        []
+      ]
+    },
+    "Markdown1": {
+      "main": [
+        []
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Modulindhold O1",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Videovelkomst",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Lektion outline",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Lektionsdesigner",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Case forfatter",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Sprøgsmåls creator",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Opgave creator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Videovelkomst": {
+      "main": [
+        [
+          {
+            "node": "Lektion outline",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Modulindhold O1": {
+      "main": [
+        [
+          {
+            "node": "Videovelkomst",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lektion outline": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Lektion outline",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "Limit1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit1": {
+      "main": [
+        [
+          {
+            "node": "Lektionsdesigner",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lektionsdesigner": {
+      "main": [
+        [
+          {
+            "node": "Convert to File1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Case forfatter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Case forfatter": {
+      "main": [
+        [
+          {
+            "node": "Sprøgsmåls creator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sprøgsmåls creator": {
+      "main": [
+        [
+          {
+            "node": "Opgave creator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Opgave creator": {
+      "main": [
+        [
+          {
+            "node": "Samler elementer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser2": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Lektionsdesigner",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download PDF": {
+      "main": [
+        [
+          {
+            "node": "Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate PDF": {
+      "main": [
+        [
+          {
+            "node": "Download PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Markdown": {
+      "main": [
+        [
+          {
+            "node": "Billede (temp)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Billede (temp)": {
+      "main": [
+        [
+          {
+            "node": "Generate PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Samler elementer": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Genererer kursusbillede": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Think": {
+      "ai_tool": [
+        [
+          {
+            "node": "Kursusplanlægger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Update images",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Video script creator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert courses_translation": {
+      "main": [
+        [
+          {
+            "node": "Video script creator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update video script": {
+      "main": [
+        [
+          {
+            "node": "Genererer kursusbillede",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Video script creator": {
+      "main": [
+        [
+          {
+            "node": "Update video script",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get course_id": {
+      "main": [
+        [
+          {
+            "node": "Kursusplanlægger",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update images": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Lektionsindhold Claude": [
+      {
+        "json": {
+          "output": "# Lektionsbeskrivelse: 1. Introduktion til risikostyring\n\n## Lektionsoverblik\n- **Titel:** Introduktion til risikostyring\n- **Læringsmål:**\n  1. Forstå definitionen af risiko og de centrale begreber i risikostyring\n  2. Kende principperne for effektiv risikostyring og deres formål\n  3. Kunne beskrive hovedkomponenterne i risikostyringsprocessen\n  4. Forstå hvorfor risikostyring er vigtig for organisationer\n  5. Identificere sammenhængen mellem risikostyring og beslutningsprocesser\n- **Varighed:** 45-60 minutter\n- **Forudsætninger:** Ingen specifik forhåndsviden kræves\n- **Relation til kurset:** Dette er den første lektion i kurset og danner grundlaget for al efterfølgende læring om risikostyring\n\n## Kernebegreber og -teorier\n\n### Definition af risiko\n- **Risiko:** Effekt af usikkerhed på mål\n  - En effekt er en afvigelse fra det forventede, som kan være positiv, negativ eller begge dele\n  - Kan omhandle, skabe eller resultere i muligheder (positive udfald) og trusler (negative udfald)\n  - Risiko udtrykkes normalt i form af risikokilder, potentielle hændelser, deres konsekvenser og sandsynlighed\n  - Mål kan have forskellige aspekter og kategorier og kan anvendes på forskellige niveauer i organisationen\n\n### Centrale begreber i risikostyring\n- **Risikoledelse (risikostyring):** Koordinerede aktiviteter til at lede og styre en organisation med hensyn til risiko\n- **Interessent:** Person eller organisation, som kan påvirke, påvirkes af eller opfatte sig selv som påvirket af en beslutning eller aktivitet\n- **Risikokilde:** Element, der alene eller i kombination med andre, har potentiale til at fremkalde risiko\n- **Hændelse:** Forekomst eller ændring af en bestemt række af omstændigheder\n  - Kan være noget forventet, som ikke sker, eller noget uventet, som sker\n  - Kan være en risikokilde i sig selv\n- **Konsekvens:** Resultat af en hændelse, der påvirker mål\n  - Kan være sikker eller usikker\n  - Kan have positiv eller negativ direkte eller indirekte effekt på mål\n  - Kan udtrykkes kvalitativt eller kvantitativt\n- **Sandsynlighed:** Mulighed for, at noget sker\n  - Kan defineres, måles eller fastlægges objektivt eller subjektivt\n  - Kan beskrives kvalitativt eller kvantitativt\n- **Kontrolforanstaltning:** Foranstaltning, der opretholder og/eller ændrer risikoen\n  - Kan omfatte processer, politikker, udstyr, praksis eller andre forhold\n\n### Principper for risikostyring\nFormålet med risikostyring er at skabe og beskytte værdi. Effektiv risikostyring bygger på følgende principper:\n\n1. **Integreret:** Risikostyring er en integreret del af alle organisationens aktiviteter\n2. **Struktureret og omfattende:** Bidrager til forenelige og sammenlignelige resultater\n3. **Tilpasset (skræddersyet):** Rammen og processen er tilpasset organisationens eksterne og interne rammer og vilkår\n4. **Inkluderende:** Passende og rettidig inddragelse af interessenter\n5. **Dynamisk:** Risici kan opstå, ændre sig eller forsvinde i takt med organisationens ændrede vilkår\n6. **Bedste tilgængelige information:** Baseret på historisk og aktuel information samt på forventninger til fremtiden\n7. **Menneskelige og kulturelle faktorer:** Anerkender at menneskelig adfærd og kultur har væsentlig indflydelse\n8. **Løbende forbedring:** Risikostyring forbedres løbende gennem læring og erfaring\n\n### Historisk kontekst for risikostyring\n- Risikostyring har udviklet sig fra en primært finansiel/forsikringsmæssig disciplin til en integreret del af moderne organisationsledelse\n- Internationale standarder som ISO 31000 har skabt en fælles ramme og metodik\n- Større regulatoriske krav efter finanskrisen og andre store virksomhedsskandaler har øget fokus på risikostyring\n- Udvikling fra et snævert fokus på at undgå tab til et bredere perspektiv, hvor risikostyring også handler om at identificere og udnytte muligheder\n\n## Praktisk Anvendelse\n\n### Formål med risikostyring\n- Skabe og beskytte værdi i organisationen\n- Forbedre præstation og fremme innovation\n- Understøtte opnåelse af organisationens mål\n- Hjælpe organisationer med at fastlægge strategier, nå mål og træffe kvalificerede beslutninger\n- Integrere risikohåndtering i beslutningsprocesser på alle niveauer\n\n### Rammen for risikostyring\nRammen for risikostyring hjælper organisationen med at integrere risikostyring i væsentlige aktiviteter og funktioner gennem:\n\n1. **Lederskab og forpligtelse** fra topledelsen\n2. **Integration** i organisationsstrukturen\n3. **Udvikling af rammen** gennem:\n   - Forståelse af organisationens interne og eksterne vilkår\n   - Formulering af forpligtelse til risikostyring\n   - Tildeling af roller, beføjelser og ansvar\n   - Tildeling af ressourcer (personer, kompetencer, metoder, værktøjer)\n   - Etablering af kommunikation og konsultation\n4. **Implementering** af rammen\n5. **Evaluering** af effektiviteten\n6. **Forbedring** gennem tilpasning og løbende forbedring\n\n### Risikostyringsprocessen\nRisikostyringsprocessen omfatter følgende trin:\n\n1. **Kommunikation og konsultation** (løbende gennem hele processen)\n   - Inddrage interessenter\n   - Udveksle information\n   - Skabe ejerskab\n\n2. **Fastlægge anvendelsesområde, rammer og kriterier**\n   - Afgrænse anvendelsesområdet\n   - Forstå externe og interne rammer og vilkår\n   - Definere risikokriterier (acceptniveauer)\n\n3. **Risikovurdering:**\n   - **Risikoidentifikation:** Finde, anerkende og beskrive risici\n   - **Risikoanalyse:** Forstå risikoens art og karakteristika\n   - **Risikoevaluering:** Sammenligne resultater fra risikoanalyse med fastlagte risikokriterier\n\n4. **Risikohåndtering:**\n   - Vælge risikohåndteringsmuligheder\n   - Udarbejde og implementere handlingsplaner\n\n5. **Overvågning og gennemgang** (kontinuerlig aktivitet)\n   - Sikre effektiviteten af processer og kontrolforanstaltninger\n   - Identificere ændringer i risikobilledet\n\n6. **Registrering og rapportering** (kontinuerlig aktivitet)\n   - Dokumentere processen og resultater\n   - Rapportere til relevante interessenter\n\n### Risikohåndteringsmuligheder\nDer findes forskellige strategier til at håndtere risici:\n\n1. **Undgå risikoen:** Beslutte ikke at starte eller fortsætte med aktiviteten, som forårsager risikoen\n2. **Tage eller øge risikoen:** Med henblik på at forfølge en mulighed\n3. **Fjerne risikokilden**\n4. **Ændre sandsynligheden** for at risikoen indtræffer\n5. **Ændre konsekvenserne** hvis risikoen indtræffer\n6. **Dele risikoen:** F.eks. gennem kontrakter eller køb af forsikring\n7. **Bevare risikoen:** Træffe en bevidst beslutning om at acceptere risikoen på et oplyst grundlag\n\n## Visuelle Elementer\n\n### Diagram 1: Principper, ramme og proces for risikostyring\n```\nForslag til diagram: Et samlet visuelt overblik over risikostyringens tre hovedkomponenter: \n1) Principper (de 8 principper i en cirkel)\n2) Ramme (lederskab, integration, udvikling, implementering, evaluering, forbedring)\n3) Proces (de 6 trin i risikostyringsprocessen)\n\nDette kunne vises som tre forbundne elementer der tilsammen udgør en effektiv risikostyringstilgang.\n```\n\n### Diagram 2: Risikostyringsprocessen\n```\nForslag til flowdiagram som viser risikostyringsprocessens hovedelementer:\n- Kommunikation & konsultation (vises som kontinuerlig proces langs venstre side)\n- Anvendelsesområde, rammer og kriterier (øverst)\n- Risikovurdering (midten):\n  - Risikoidentifikation\n  - Risikoanalyse\n  - Risikoevaluering\n- Risikohåndtering (bunden)\n- Overvågning & gennemgang (vises som kontinuerlig proces langs højre side)\n- Registrering & rapportering (vises som kontinuerlig proces langs bunden)\n```\n\n### Diagram 3: Risikotypologi\n```\nForslag til visual der viser forskellige typer af risici i en organisation:\n- Strategiske risici\n- Operationelle risici\n- Finansielle risici\n- Compliance-risici\n- IT/cyber-risici\n- Omdømmerisici\n- Miljømæssige risici\n\nKan vises som en gruppering med undergrupperinger eller i et hierarki.\n```\n\n### Diagram 4: Fra usikkerhed til risiko til muligheder/trusler\n```\nForslag til visual der viser hvordan usikkerhed manifesterer sig som risiko, \nder derefter kan resultere i enten muligheder (positive udfald) eller \ntrusler (negative udfald), afhængigt af hvordan de håndteres.\n```\n\n## Læringsaktiviteter\n\n### Diskussionsspørgsmål\n1. Hvordan definerer du risiko i din egen hverdag? Er denne definition forskellig fra den faglige definition?\n2. Hvilke fordele kan en organisation opnå ved at implementere risikostyring?\n3. Hvorfor er det vigtigt at risikostyring er integreret i organisationens aktiviteter?\n4. Giv eksempler på hvordan risici kan indeholde både muligheder og trusler.\n5. Hvordan kan kulturelle faktorer påvirke en organisations tilgang til risikostyring?\n\n### Øvelser\n**Øvelse 1: Identificer risici i hverdagen**\n- Bed deltagerne om at identificere 3-5 risici, de har mødt i deres private eller professionelle liv inden for den seneste uge\n- Kategoriser disse risici efter type (finansiel, operationel, strategisk, etc.)\n- Reflekter over hvordan disse risici blev håndteret (bevidst eller ubevidst)\n\n**Øvelse 2: Principper for risikostyring**\n- Inddel deltagerne i små grupper\n- Tildel hver gruppe et eller to af de otte principper for effektiv risikostyring\n- Bed grupperne om at diskutere, hvorfor deres tildelte principper er vigtige, og hvordan de kunne implementeres i praksis\n- Lad hver gruppe præsentere deres tanker for de øvrige deltagere\n\n**Øvelse 3: Risikoscenarieanalyse**\n- Præsenter et simpelt forretningsscenarie (f.eks. lancering af et nyt produkt)\n- Bed deltagerne om at identificere potentielle risici ved scenariet\n- Diskuter hvordan disse risici kunne analyseres og håndteres\n\n### Refleksionsaktiviteter\n- **Personlig risikoprofil:** Bed deltagerne om at reflektere over deres egen tilgang til risiko. Er de generelt risikovillige eller risikoaverse? Hvordan påvirker dette deres beslutningsprocesser?\n- **Organisatorisk modenhed:** Bed deltagerne om at vurdere deres organisations modenhed vedrørende risikostyring. Hvor integreret er risikostyring i organisationens processer og kultur?\n- **Fra reaktiv til proaktiv:** Bed deltagerne reflektere over, hvordan deres organisation kan bevæge sig fra en reaktiv tilgang til risici (håndtere når de opstår) til en mere proaktiv tilgang (identificere og håndtere risici på forhånd).\n\n### Quiz-spørgsmål\n1. **Hvad er den korrekte definition af risiko ifølge ISO 31000?**\n   - A: Sandsynligheden for at noget går galt\n   - B: Et potentielt tab for organisationen\n   - C: Effekt af usikkerhed på mål\n   - D: En negativ hændelse der skal undgås\n   - Korrekt svar: C\n\n2. **Hvilket af følgende er IKKE et princip for effektiv risikostyring?**\n   - A: Integreret\n   - B: Dynamisk\n   - C: Centraliseret\n   - D: Struktureret og omfattende\n   - Korrekt svar: C\n\n3. **Hvilken af følgende er en valid risikohåndteringsstrategi?**\n   - A: Ignorere risikoen\n   - B: Dele risikoen\n   - C: Overdrive risikoen\n   - D: Skjule risikoen\n   - Korrekt svar: B\n\n4. **Hvad er formålet med kommunikation og konsultation i risikostyringsprocessen?**\n   - A: At dokumentere alle risici\n   - B: At uddelegere ansvar for risikohåndtering\n   - C: At hjælpe interessenter med at forstå risiko og grundlaget for beslutninger\n   - D: At sikre overholdelse af lovgivningsmæssige krav\n   - Korrekt svar: C\n\n5. **Hvad er det primære formål med risikostyring?**\n   - A: At eliminere alle risici i organisationen\n   - B: At skabe og beskytte værdi\n   - C: At identificere syndebukke når noget går galt\n   - D: At dokumentere alle potentielle problemer\n   - Korrekt svar: B\n\n## Kilder og Ressourcer\n\n### Primære kilder\n- ISO 31000:2018 - Risikoledelse - Vejledning\n- IEC 31010 - Risikovurderingsteknikker\n\n### Supplerende materialer\n- Artikler om risikostyring i praksis\n- Case-studier fra forskellige brancher\n- Vejledninger og værktøjer til risikostyring i organisationer\n\n### Værktøjer og ressourcer\n- Risikomatrixer og -registre\n- Tjeklister til risikoidentifikation\n- Eksempler på risikostyringspolitikker og -procedurer\n\n### Links og referencer\n- ISO's officielle hjemmeside: www.iso.org\n- Dansk Standard: www.ds.dk\n- IRM (Institute of Risk Management): www.theirm.org\n\n## Case-eksempel: Implementering af risikostyring i en mellemstor virksomhed\n\n### Baggrund\nXYZ A/S er en mellemstor fremstillingsvirksomhed med 150 ansatte. Virksomheden har oplevet hurtig vækst over de seneste tre år, men har samtidig også oplevet flere udfordringer:\n- Forsinkelser i leverancer til kunder\n- Kvalitetsproblemer med nogle produkter\n- Stigende råvareomkostninger\n- Udfordringer med at rekruttere kvalificeret arbejdskraft\n\nLedelsen beslutter at implementere en systematisk tilgang til risikostyring for at adressere disse udfordringer og sikre virksomhedens fortsatte vækst og succes.\n\n### Implementeringsproces\n1. **Ledelsesforankring**\n   - Administrerende direktør og ledergruppe gennemgår principperne for risikostyring\n   - Der etableres en risikostyringskomité med repræsentanter fra forskellige afdelinger\n   - En overordnet risikostyringspolitik formuleres og godkendes\n\n2. **Risikovurdering**\n   - Workshopper afholdes i alle afdelinger for at identificere risici\n   - Risici vurderes efter sandsynlighed og konsekvens\n   - En samlet risikovurdering udarbejdes og præsenteres for ledelsen\n\n3. **Risikohåndtering**\n   - Handlingsplaner udvikles for de højest prioriterede risici\n   - Risikobegrænsende foranstaltninger implementeres\n   - Risikoejere udpeges for hver identificeret risiko\n\n4. **Overvågning og rapportering**\n   - Kvartalsvis rapportering om status på centrale risici\n   - Årlig gennemgang af det samlede risikobillede\n   - Integration af risikostyring i eksisterende ledelsesprocesser\n\n### Resultater\nEfter et år med systematisk risikostyring opnåede virksomheden følgende resultater:\n- 40% reduktion i forsinkede leverancer\n- 25% reduktion i kvalitetsproblemer\n- Bedre kontrol over råvareomkostninger gennem nye indkøbsstrategier\n- Forbedret evne til at identificere og håndtere nye risici før de påvirkede forretningen\n- Øget medarbejdertilfredshed gennem mere struktureret arbejdsgang\n\n### Læringspunkter fra casen\n- Risikostyring er ikke en enkeltstående aktivitet, men en kontinuerlig proces\n- Ledelsens engagement er afgørende for succesfuld implementering\n- Involvering af medarbejdere på alle niveauer sikrer bedre risikoidentifikation\n- Risikostyring kan skabe målbare forretningsmæssige fordele\n- Risikostyring handler ikke kun om at undgå negative hændelser, men også om at gribe muligheder\n\nDette case-eksempel demonstrerer, hvordan systematisk risikostyring kan implementeres i en organisation, og hvilke fordele det kan medføre."
+        }
+      }
+    ],
+    "Generate PDF": [
+      {
+        "json": {
+          "download_url": "https://s3.us-east-1.amazonaws.com/pub-cdn-us.apitemplate.io/2025/04/c393c43b-1995-466e-a9ab-ae764ab1f753/Test4.pdf",
+          "transaction_ref": "c393c43b-1995-466e-a9ab-ae764ab1f753",
+          "total_pages": 1,
+          "status": "success"
+        }
+      }
+    ],
+    "Billede (temp)": [
+      {
+        "json": {
+          "Foto": "<img src=\\\"https://utilco.dk/____impro/1/onewebmedia/brandmark-design.png\\\" alt=\\\"Brandmark design\\\">",
+          "JSON": "{   \"body\": \"<h1 id=\\\"hjemmeopgaveintegrationafrisikostyringiditvandselskab\\\">Hjemmeopgave: Integration af Risikostyring i Dit Vandselskab</h1>\\n<h2 id=\\\"formloglringsml\\\">Formål og læringsmål</h2>\\n<p>Formålet med denne hjemmeopgave er at give dig mulighed for at anvende teorier og metoder fra Modul 1: Introduktion til Risikostyring direkte i dit eget vandselskab. Ved at gennemføre opgaven vil du kunne omsætte teoretisk viden til praktiske forbedringer i jeres risikostyringsarbejde. Efter opgaven vil du kunne:</p>\\n<ul>\\n<li>Analysere status for risikostyring i din egen organisation</li>\\n<li>Designe praktiske metoder til at integrere risikostyring i beslutningsprocesser</li>\\n<li>Udvikle en konkret handlingsplan for forbedret risikostyring i dit vandselskab</li>\\n</ul>\\n<h2 id=\\\"baggrundogkontekst\\\">Baggrund og kontekst</h2>\\n<p>Risikostyring er en central ledelsesdisciplin i moderne vandselskaber, hvor forsyningssikkerhed, miljøhensyn og økonomisk bæredygtighed skal balanceres. Som vi har lært i modulet, er det afgørende at risikostyring ikke blot eksisterer som et separat system, men integreres i organisationens beslutningsprocesser på alle niveauer.</p>\\n<p>I denne opgave skal du arbejde med at analysere, hvor godt risikostyrin",
+          "HTML": " <h1 id=\"hjemmeopgaveintegrationafrisikostyringiditvandselskab\">Hjemmeopgave: Integration af Risikostyring i Dit Vandselskab</h1>\\n<h2 id=\"formloglringsml\">Formål og læringsmål</h2>\\n<p>Formålet med denne hjemmeopgave er at give dig mulighed for at anvende teorier og metoder fra Modul 1: Introduktion til Risikostyring direkte i dit eget vandselskab. Ved at gennemføre opgaven vil du kunne omsætte teoretisk viden til praktiske forbedringer i jeres risikostyringsarbejde. Efter opgaven vil du kunne:</p>\\n<ul>\\n<li>Analysere status for risikostyring i din egen organisation</li>\\n<li>Designe praktiske metoder til at integrere risikostyring i beslutningsprocesser</li>\\n<li>Udvikle en konkret handlingsplan for forbedret risikostyring i dit vandselskab</li>\\n</ul>\\n<a href=\"https://utilco.dk/____impro/1/onewebmedia/brandmark-design.png?etag=W%2F%229986-634bde18%22&sourceContentType=image%2Fpng&ignoreAspectRatio&resize=441%2B120\">Foto</a><h2 id=\"baggrundogkontekst\">Baggrund og kontekst</h2>\\n<p>Risikostyring er en central ledelsesdisciplin i moderne vandselskaber, hvor forsyningssikkerhed, miljøhensyn og økonomisk bæredygtighed skal balanceres. Som vi har lært i modulet, er det afgørende at risikostyring ikke blot eksisterer som et separat system, men integreres i organisationens beslutningsprocesser på alle niveauer. </p>\\n<p>I denne opgave skal du arbejde med at analysere, hvor godt risikostyring er integreret i dit vandselskab i dag, og udvikle konkrete forslag til forbedringer. Opgaven bygger på både den strategiske forståelse fra lektion 1, integrationsmetoderne fra lektion 2, og evalueringstilgangene fra lektion 3, med fokus på praktisk implementering i jeres specifikke kontekst.</p>\\n<h2 id=\"opgavebeskrivelse\">Opgavebeskrivelse</h2>\\n<p>Din opgave består af tre dele, der skal gennemføres i dit eget vandselskab:</p>\\n<h3 id=\"del1statusanalyseafrisikostyringmodenhedsvurdering\">Del 1: Statusanalyse af risikostyring (modenhedsvurdering)</h3>\\n<p>Gennemfør en modenhedsvurdering af risikostyringen i dit vandselskab ved at:</p>\\n<ol>\\n<li>Anvende den 5-trins modenhedsmodel fra lektion 3 til at vurdere jeres nuværende niveau</li>\\n<li>Undersøge hvordan risikostyring aktuelt er integreret i minimum tre vigtige beslutningsprocesser i dit selskab (f.eks. investeringsbeslutninger, driftsplanlægning, beredskab)</li>\\n<li>Identificere 2-3 konkrete styrker og 2-3 konkrete svagheder ved jeres nuværende praksis</li>\\n</ol>\\n<p>Dokumenter dine fund med konkrete eksempler fra organisationen og korte begrundelser for din vurdering.</p>\\n<h3 id=\"del2designafintegrationsmetode\">Del 2: Design af integrationsmetode</h3>\\n<p>Baseret på din analyse i del 1, skal du:</p>\\n<ol>\\n<li>Udvælge én central beslutningsproces i dit vandselskab, hvor risikostyring enten mangler eller kan forbedres væsentligt</li>\\n<li>Redesigne denne proces med integration af risikostyring ved at:</li>\\n</ol>\\n<ul>\\n<li>Udarbejde en skitse til et konkret beslutningsdokument eller -skabelon, der integrerer risikohensyn</li>\\n<li>Beskrive hvilke roller og ansvarsområder der skal indgå i den forbedrede proces</li>\\n<li>Definere hvordan risici skal identificeres, vurderes og håndteres i processen</li>\\n</ul>\\n<p>Dit design skal være realistisk og tilpasset dit vandselskabs størrelse, ressourcer og kultur.</p>\\n<h3 id=\"del3implementeringsogevalueringsplan\">Del 3: Implementerings- og evalueringsplan</h3>\\n<p>Udarbejd en handlingsplan for implementering af din redesignede beslutningsproces med følgende elementer:</p>\\n<ol>\\n<li>Konkrete implementeringsskridt med tidshorisont (kortsigtet, mellemsigtet, langsigtet)</li>\\n<li>Plan for kompetenceopbygning hos de involverede medarbejdere</li>\\n<li>Metoder til at overvinde potentiel modstand mod forandringen</li>\\n<li>En specifik evalueringsplan der beskriver, hvordan I vil måle succesen af implementeringen</li>\\n</ol>\\n<h2 id=\"praktiskvejledning\">Praktisk vejledning</h2>\\n<p>For at gennemføre opgaven effektivt, anbefales følgende fremgangsmåde:</p>\\n<p><strong>Indsamling af data</strong>:</p>\\n<ul>\\n<li>Gennemgå eksisterende dokumentation om risikostyring i dit selskab (politikker, procedurer, etc.)</li>\\n<li>Arranger korte interviews (15-20 min) med 2-3 kolleger, der er involveret i de udvalgte beslutningsprocesser</li>\\n<li>Indhent eksempler på tidligere risikovurderinger eller beslutningsdokumenter</li>\\n</ul>\\n<p><strong>Analyse</strong>:</p>\\n<ul>\\n<li>Brug PDCA-modellen fra lektion 3 som analyseredskab for jeres nuværende praksis</li>\\n<li>Sammenlign jeres praksis med de integrationsmetoder, der blev præsenteret i lektion 2</li>\\n<li>Identificer \"quick wins\" og mere omfattende forbedringsmuligheder</li>\\n</ul>\\n<p><strong>Udarbejdelse af plan</strong>:</p>\\n<ul>\\n<li>Start med at skitsere din løsning på papir før du udarbejder den endelige version</li>\\n<li>Fokuser på, hvad der realistisk kan implementeres inden for en 3-6 måneders tidshorisont</li>\\n<li>Sørg for at dit design er skalerbart, så det senere kan udbredes til andre beslutningsprocesser</li>\\n</ul>\\n<p>Beregn at bruge 3-4 timer på opgaven fordelt over 1-2 uger.</p>\\n<h2 id=\"refleksionspunkter\">Refleksionspunkter</h2>\\n<p>Inkluder dine refleksioner over følgende spørgsmål i din aflevering:</p>\\n<ol>\\n<li><p>Hvilke organisatoriske eller kulturelle faktorer i dit vandselskab kan henholdsvis fremme og hæmme en mere integreret tilgang til risikostyring?</p></li>\\n<li><p>Hvordan balancerer du behovet for systematisk risikostyring med hensynet til at undgå unødig bureaukratisering af beslutningsprocesserne?</p></li>\\n<li><p>Hvilken rolle kan du som leder spille i at fremme en mere risikobevidst kultur i organisationen, og hvilke konkrete handlinger vil du tage?</p></li>\\n<li><p>Hvordan kan forbedret risikostyring specifikt skabe værdi i relation til de strategiske udfordringer, dit vandselskab står overfor i de kommende år?</p></li>\\n<li><p>Hvilke kompetencer mangler potentielt i organisationen for at kunne implementere en mere moden risikostyringstilgang?</p></li>\\n</ol>\\n<h2 id=\"afleveringskravogevaluering\">Afleveringskrav og evaluering</h2>\\n<p>Din aflevering skal have et omfang på 5-7 sider (ekskl. eventuelle bilag) og indeholde:</p>\\n<ul>\\n<li>Statusanalyse med modenhedsvurdering og analyse af nuværende praksis</li>\\n<li>Design af integrationsmetode inkl. visualisering af den redesignede proces</li>\\n<li>Implementerings- og evalueringsplan</li>\\n<li>Refleksioner over de angivne refleksionspunkter</li>\\n</ul>\\n<p>Afleveringen bedømmes efter, hvorvidt du:</p>\\n<ul>\\n<li>Demonstrerer forståelse for de teoretiske begreber fra modulet</li>\\n<li>Anvender begreberne korrekt og relevant i din egen organisationskontekst</li>\\n<li>Udviser kreativitet og realisme i dit løsningsforslag</li>\\n<li>Reflekterer nuanceret over implementeringsudfordringer og muligheder</li>\\n</ul>\\n<p>Afleveringsfristen er to uger efter afslutning af Modul 1. Feedback gives skriftligt inden for to uger efter afleveringen, med fokus på anvendelige indsigter til dit videre arbejde med risikostyring.</p>"
+        }
+      }
+    ],
+    "Case forfatter": [
+      {
+        "json": {
+          "text": "# Case: Bæredygtig risikostyring ved udvidelse af Vestdalens Vandforsyning\n\n## Introduktion\nVestdalens Vandforsyning er et mellemstort vandselskab, der betjener omkring 80.000 borgere i en kommune med både bymæssig bebyggelse og landområder. Selskabet står overfor en betydelig udvidelse, da kommunen har planlagt et nyt boligområde med 2.500 husstande. Maria Jensen er netop blevet forfremmet til driftschef med ansvar for planlægning og implementering af infrastrukturudvidelsen. Med 8 års erfaring i selskabet, men uden tidligere erfaring med projekter af denne størrelse, indser Maria behovet for en struktureret tilgang til at identificere og håndtere de potentielle risici, der kan påvirke projektets succes.\n\n## Problemstilling\nUdvidelsesprojektet er estimeret til at koste 45 millioner kroner og skal gennemføres over de næste 18 måneder. Kommunalbestyrelsen har understreget vigtigheden af at overholde både budget og tidsplan, da de første beboere forventes at flytte ind om 14 måneder. Maria står overfor flere komplekse udfordringer: Det nye område ligger i nærheden af et beskyttet naturområde, hvilket stiller særlige krav til miljøpåvirkning. Derudover skal arbejdet koordineres med andre forsyningsselskaber (el og fjernvarme), og lokale borgergrupper har udtrykt bekymring over potentielle trafikgener under anlægsarbejdet.\n\nEfter et indledende planlægningsmøde med sit team bliver det klart for Maria, at der mangler en systematisk tilgang til at identificere, vurdere og håndtere de mange risici, der kan påvirke projektet. Hun indser, at uden struktureret risikostyring kan projektet støde på uforudsete problemer, der kan medføre forsinkelser, budgetoverskridelser og omdømmeskade for vandselskabet.\n\n## Handlingsforløb\nMaria besluttede sig for at etablere en formaliseret risikostyringsproces for projektet. Hun startede med at arrangere en workshop med repræsentanter fra forskellige afdelinger: tekniske eksperter, økonomi, kommunikation og miljø. Som forberedelse gjorde hun det klart for deltagerne, at risiko ikke kun handlede om negative begivenheder, men også om usikkerhed, der kunne påvirke projektmålene både positivt og negativt.\n\nUnder workshoppen anvendte Maria brainstorming-teknikker og en risiko-identifikationsmatrix for systematisk at kortlægge potentielle risici inden for kategorier som miljø, tekniske forhold, lovgivning, økonomi, interessenter og tidsplan. I alt identificerede gruppen 32 specifikke risici, herunder potentielle grundvandsudfordringer, leverandørsvigt, lovgivningsmæssige ændringer og modstand fra lokalmiljøet.\n\nEfterfølgende gennemførte Maria en kvalitativ risikovurdering, hvor hver risiko blev evalueret ud fra sandsynlighed og konsekvens på en skala fra 1-5. Dette resulterede i et risikomatrix, hvor åtte risici blev kategoriseret som \"høje\" og krævede øjeblikkelig opmærksomhed. Blandt disse var risikoen for at støde på forurenet jord i et specifikt område, hvor der tidligere havde ligget en mindre industrivirksomhed.\n\nMaria udviklede sammen med teamet risikohåndteringsstrategier for hver identificeret risiko – nogle skulle undgås (omlægning af rørføring væk fra beskyttede områder), andre overføres (forsikringer mod specifikke hændelser), nogle skulle reduceres (ændrede anlægsteknikker nær naturområdet for at minimere miljøpåvirkning), mens mindre risici blot skulle accepteres og overvåges.\n\n## Resultat og refleksion\nImplementeringen af den systematiske risikostyringsproces viste sig hurtigt værdifuld. Da man under de indledende gravearbejder faktisk stødte på lettere forurenet jord, havde teamet allerede en beredskabsplan klar med alternative leverandører og budgetreserver afsat til håndtering af situationen. Dette forhindrede en potentiel forsinkelse på op til fire uger.\n\nEfter seks måneders arbejde reflekterede Maria over processen. Hun indså, at den systematiske tilgang til risikostyring ikke kun havde hjulpet med at identificere konkrete risici, men også havde forbedret kommunikationen mellem afdelingerne og med eksterne interessenter. Særligt værdifuldt var det månedlige risiko-review, hvor nye risici blev identificeret og eksisterende blev genvurderet. Maria bemærkede dog også, at teamet indledningsvis havde været tilbøjelige til at fokusere på tekniske risici og overse de \"bløde\" risici relateret til kommunikation og interessenthåndtering.\n\nErfaringerne fra projektet førte til, at Vestdalens Vandforsyning besluttede at implementere formaliseret risikostyring i alle større projekter, samt integrere risikostyringsprincipper i selskabets overordnede strategiske planlægning."
+        }
+      }
+    ],
+    "Sprøgsmåls creator": [
+      {
+        "json": {
+          "text": "# Spørgsmål til Modul 1: Introduktion til Risikostyring\n\n## Vidensprøvende spørgsmål\n\n### 1. Multiple choice: Hvad er den mest præcise definition af risiko i en vandforsyningskontekst?\na) Sandsynligheden for at noget går galt\nb) Kombinationen af sandsynlighed og konsekvens af en uønsket hændelse\nc) Enhver form for usikkerhed i driften\nd) Økonomiske tab som følge af driftsforstyrrelser\n\n**Korrekt svar: b) Kombinationen af sandsynlighed og konsekvens af en uønsket hændelse**\n\n**Begrundelse:** Risiko defineres fagligt som kombinationen af sandsynligheden for at en hændelse indtræffer og konsekvensen, hvis den gør. Dette er den internationale standard for risikoforståelse og anvendes i professionel risikostyring.\n\n### 2. Sandt/falsk: Risikostyring handler primært om at eliminere alle risici i organisationen.\na) Sandt\nb) Falsk\n\n**Korrekt svar: b) Falsk**\n\n**Begrundelse:** Risikostyring handler ikke om at eliminere alle risici, men om at identificere, vurdere og håndtere risici på en måde, der balancerer omkostninger ved risikoreduktion med potentielle konsekvenser. Det er ofte hverken muligt eller økonomisk forsvarligt at eliminere alle risici.\n\n### 3. Udfyld det tomme felt: __________ er processen, hvor man identificerer, analyserer og prioriterer risici og derefter implementerer strategier for at reducere eller håndtere dem.\n\n**Korrekt svar: Risikostyring**\n\n**Begrundelse:** Risikostyring er den systematiske proces, hvor organisationer identificerer potentielle trusler, vurderer deres sandsynlighed og konsekvens, og udvikler strategier til at håndtere dem effektivt.\n\n### 4. Multiple choice: Hvilken af følgende er IKKE et af hovedformålene med risikostyring i et vandselskab?\na) At sikre forsyningssikkerhed\nb) At opnå økonomisk optimering\nc) At overholde lovgivningsmæssige krav\nd) At eliminere behovet for beredskabsplaner\n\n**Korrekt svar: d) At eliminere behovet for beredskabsplaner**\n\n**Begrundelse:** Risikostyring og beredskabsplanlægning komplementerer hinanden. Risikostyring reducerer sandsynligheden for hændelser, mens beredskabsplaner forbereder organisationen på at håndtere de hændelser, der alligevel måtte opstå.\n\n### 5. Multiple choice: Hvilken fase kommer typisk først i en risikostyringsproces?\na) Risikovurdering\nb) Risikoidentifikation\nc) Risikohåndtering\nd) Risikokommunikation\n\n**Korrekt svar: b) Risikoidentifikation**\n\n**Begrundelse:** Risikoidentifikation er det første skridt i risikostyringsprocessen, da organisationen først må identificere potentielle risici, før disse kan vurderes og håndteres.\n\n## Anvendelsesspørgsmål\n\n### 6. I et vandselskab opdages en potentiel risiko for forurening af grundvandet fra en nærliggende industrivirksomhed. Hvilken tilgang til risikohåndtering ville være mest passende i denne situation?\na) Risikoundgåelse ved at lukke vandboringer i området\nb) Risikoreduktion gennem øget overvågning og etablering af præventive barrierer\nc) Risikooverførsel ved at forsikre sig mod forureningsskader\nd) Risikoacceptance, da sandsynligheden er lav\n\n**Korrekt svar: b) Risikoreduktion gennem øget overvågning og etablering af præventive barrierer**\n\n**Modelløsning:** I dette tilfælde er grundvandsforurening en alvorlig risiko for et vandselskab, men undgåelse (lukning af boringer) ville være en ekstrem reaktion med store konsekvenser for forsyningssikkerheden. Risikooverførsel via forsikring kompenserer kun for økonomiske tab, men løser ikke problemet med drikkevandssikkerheden. Risikoacceptance ville være uansvarligt ved potentiel forurening. Derfor er risikoreduktion gennem præventive foranstaltninger og overvågning den mest afbalancerede tilgang, der både beskytter vandressourcen og opretholder forsyningen.\n\n### 7. Et vandselskab oplever gentagne brud på ældre støbejernsrør i et bestemt område. Hvordan kan risikostyringsprincipper anvendes til at håndtere denne situation?\n\n**Modelløsning:** Risikostyringsprincipper kan anvendes gennem følgende trin:\n1. Identifikation: Kortlægge alle ældre støbejernsrør og deres tilstand\n2. Analyse: Vurdere sandsynligheden for brud baseret på alder, tryk, jordforhold og tidligere hændelser\n3. Evaluering: Beregne konsekvenser ved brud (forsyningssikkerhed, økonomiske tab, omdømme)\n4. Prioritering: Rangere rørsektioner efter risikoscore (sandsynlighed × konsekvens)\n5. Håndtering: Implementere en kombination af:\n   - Forebyggende vedligeholdelse på højrisikostrækninger\n   - Udarbejdelse af udskiftningsplan for de mest kritiske rør\n   - Installation af sensorer til lækagedetektering på mellemrisiko-strækninger\n   - Øget beredskab for hurtig respons ved brud\n6. Monitorering: Overvåge effekten af tiltag og justere planen løbende\n\nDenne tilgang sikrer en systematisk og omkostningseffektiv håndtering af problemet, hvor ressourcer prioriteres til de områder med højest risiko.\n\n### 8. Et vandselskab skal vurdere risikoen ved langvarig tørke. Beskriv hvordan de kan anvende en simpel risikomatrix til dette formål.\n\n**Modelløsning:** Et vandselskab kan anvende en risikomatrix til tørkevurdering ved at følge disse trin:\n\n1. Opstille en 5×5 risikomatrix med sandsynlighed på den ene akse og konsekvens på den anden\n2. Definere sandsynlighedsniveauer:\n   - 1: Meget sjælden (én gang pr. 50+ år)\n   - 2: Sjælden (én gang pr. 20-50 år)\n   - 3: Moderat (én gang pr. 10-20 år)\n   - 4: Sandsynlig (én gang pr. 5-10 år)\n   - 5: Meget sandsynlig (oftere end hvert 5. år)\n3. Definere konsekvensniveauer:\n   - 1: Ubetydelig (minimalt fald i grundvandsstand, ingen driftspåvirkning)\n   - 2: Mindre (begyndende kapacitetsbegrænsninger, vandingsforbud)\n   - 3: Moderat (betydelige kapacitetsbegrænsninger, forsyningsudfordringer)\n   - 4: Alvorlig (kritisk lav vandstand, omfattende forsyningsproblemer)\n   - 5: Katastrofal (ikke i stand til at opretholde forsyningen til kritiske funktioner)\n4. Placere risikoen i matricen baseret på historiske data, klimamodeller og ekspertvurderinger\n5. Definere risikoniveauer med farvekoder:\n   - Grøn (1-4): Lav risiko - acceptabel\n   - Gul (5-9): Moderat risiko - overvågning nødvendig\n   - Orange (10-16): Høj risiko - handlingsplan påkrævet\n   - Rød (17-25): Ekstrem risiko - omgående handling nødvendig\n6. Udvikle specifikke håndteringsstrategier for hvert risikoniveau\n\nDenne metode giver et visuelt og systematisk grundlag for beslutningstagning omkring tørkerisici.\n\n### 9. Anvendelse af risikoregister: Et vandselskab ønsker at oprette et risikoregister for deres forsyningsområde. Hvilke grundlæggende informationer bør dette register som minimum indeholde for hver identificeret risiko?\n\n**Modelløsning:** Et grundlæggende risikoregister for et vandselskab bør som minimum indeholde følgende informationer for hver identificeret risiko:\n\n1. Unik identifikationskode for risikoen\n2. Beskrivelse af risikoen (hvad kan gå galt)\n3. Risikokilder/årsager (hvorfor kan det gå galt)\n4. Potentielle konsekvenser (hvad sker der hvis det går galt)\n5. Risikokategori (fx teknisk, miljømæssig, økonomisk, regulatorisk)\n6. Sandsynlighedsvurdering (fx på en skala fra 1-5)\n7. Konsekvensvurdering (fx på en skala fra 1-5)\n8. Samlet risikoscore (sandsynlighed × konsekvens)\n9. Nuværende kontrolforanstaltninger\n10. Ansvarlig person/afdeling\n11. Handlingsplan for yderligere risikoreduktion (hvis nødvendigt)\n12. Deadline for implementering af handlingsplan\n13. Status på handlingsplan\n14. Dato for seneste revurdering\n15. Dato for næste planlagte revurdering\n\nDette format sikrer, at alle væsentlige aspekter af hver risiko dokumenteres systematisk, og at der er klarhed omkring ansvar og opfølgning.\n\n## Analysespørgsmål\n\n### 10. Case: På baggrund af klimaændringer oplever et vandselskab både hyppigere skybrud og længerevarende tørkeperioder. Analyser hvordan en risikobaseret tilgang kan hjælpe selskabet med at prioritere investeringer for at imødegå begge udfordringer med et begrænset budget.\n\n**Svarforklaring:** En risikobaseret tilgang til klimatilpasning kan hjælpe vandselskabet med at optimere investeringer gennem følgende analyseproces:\n\n1. **Omfattende risikoidentifikation:**\n   - For skybrud: Oversvømmelse af tekniske anlæg, overløb fra kloaksystemer, forurening af vandressourcer\n   - For tørke: Vandmangel, kvalitetsproblemer i vandet, saltvandsindtrængning i kystnære boringer\n\n2. **Detaljeret risikoanalyse:**\n   - Kvantificere sandsynligheder baseret på klimamodeller og lokale forhold\n   - Beregne konsekvenser i økonomiske termer, forsyningssikkerhed og miljøpåvirkning\n   - Udarbejde risikoanalyse for forskellige scenarier og tidshorisonter (fx 10, 25, 50 år)\n\n3. **Cost-benefit analyse af mulige tiltag:**\n   - Beregne omkostnings-effektiviteten for forskellige investeringer\n   - Identificere \"no-regret\" løsninger, der gavner i begge scenarier\n   - Prioritere investeringer med højest risikoreduktion pr. investeret krone\n\n4. **Portfolio-tilgang til investeringer:**\n   - Udvikle en balanceret investeringsportefølje med:\n     - Kortsigtede, lavomkostningstiltag for umiddelbar risikoredaktion\n     - Langsigtet strategisk planlægning for infrastruktur\n     - Kombination af \"hårde\" (tekniske) og \"bløde\" (organisatoriske) tiltag\n   - Integrere fleksibilitet i løsninger, så de kan tilpasses ændrede forhold\n\n5. **Implementering af adaptiv planlægning:**\n   - Fastlægge \"trigger points\" for hvornår yderligere investeringer iværksættes\n   - Udvikle monitoreringsplan for løbende evaluering af risikobilledet\n   - Inkorporere læring og feedback i investeringsstrategien\n\nDenne tilgang sikrer, at selskabet får mest mulig risikoreduktion for pengene ved at prioritere de tiltag, der adresserer de mest kritiske risici først, samtidig med at der skabes synergier mellem forskellige investeringer.\n\n### 11. Sammenlign og kontraster følgende to risikohåndteringsstrategier for et vandselskab, der skal håndtere risikoen for cybersikkerhedsbrud: 1) Præventiv teknisk beskyttelse gennem firewalls og adgangskontrol, og 2) Reaktiv beredskabsplan med fokus på hurtig genopretning efter et angreb. Hvilke styrker og svagheder har hver tilgang, og hvordan kan de komplimentere hinanden?\n\n**Svarforklaring:** \n\n**Præventiv teknisk beskyttelse:**\n\n*Styrker:*\n- Forhindrer potentielt angreb i at lykkes og dermed undgås konsekvenserne helt\n- Beskytter kontinuerligt og automatisk uden behov for menneskelig intervention\n- Reducerer risikoen for datatab, driftsforstyrrelser og omdømmeskade\n- Er omkostningseffektiv på lang sigt ved at forebygge dyre nedbrud\n- Opfylder lovgivningsmæssige krav til databehandling og beskyttelse af kritisk infrastruktur\n\n*Svagheder:*\n- Giver falsk tryghed, hvis man tror teknologien alene kan stoppe alle angreb\n- Kræver konstant opdatering for at imødegå nye trusler\n- Kan være ressourcekrævende at implementere og vedligeholde\n- Risikerer at fokusere for meget på kendte trusler og overse nye angrebsvektorer\n- Kan hæmme arbejdsprocesser gennem restriktive sikkerhedspolitikker\n\n**Reaktiv beredskabsplan:**\n\n*Styrker:*\n- Anerkender at nogle angreb vil lykkes trods forebyggelse\n- Minimerer nedetid og konsekvenser gennem hurtig respons\n- Giver klar ansvarsfordeling og handlingsplan i krisesituationer\n- Er fleksibel og kan tilpasses forskellige typer af cyberhændelser\n- Opbygger organisatorisk modstandsdygtighed og læring\n\n*Svagheder:*\n- Accepterer implicit at skaden vil ske (data kan være kompromitteret)\n- Kan undervurdere genopretningens kompleksitet og omkostninger\n- Risikerer at fokusere for meget på teknisk genopretning og overse andre konsekvenser\n- Kræver regelmæssige øvelser for at være effektiv\n- Kan give falsk tryghed, hvis planen ikke testes under realistiske forhold\n\n**Komplementær integration:**\nDen optimale tilgang er en balanceret kombination af begge strategier i et lagdelt forsvar:\n1. Implementer robuste præventive foranstaltninger som første forsvarslinje\n2. Anerkend at ingen forebyggelse er 100% sikker og forbered reaktive planer\n3. Integrer strategierne gennem:\n   - Sikkerhedsovervågning der forbinder forebyggelse med reaktion\n   - Regelmæssige sårbarheds- og penetrationstests for at forbedre begge aspekter\n   - Uddannelse af personale i både forebyggende praksis og reaktionsprocedurer\n   - Etablering af et cybersikkerhedsprogram der dækker hele sikkerhedslivscyklussen\n\nDette skaber en resiliensbaseret tilgang, hvor vandselskabet både arbejder på at forhindre angreb og samtidig er forberedt på effektivt at håndtere de angreb, der alligevel lykkes.\n\n### 12. Identificer og analyser tre centrale udfordringer ved implementering af risikostyring i et mindre vandselskab, og foreslå praktiske løsninger til at overkomme disse.\n\n**Svarforklaring:**\n\n**Udfordring 1: Begrænsede ressourcer (økonomi, personale, tid)**\n\n*Analyse:* Mindre vandselskaber har typisk en stram økonomi og få medarbejdere, der allerede varetager mange forskellige opgaver. Implementering af risikostyring kræver både tidsinvestering og potentielt nye kompetencer, hvilket kan være udfordrende at prioritere i den daglige drift.\n\n*Løsningsforslag:*\n- Start med en simpel risikostyringmodel, der kan skaleres over tid\n- Integrer risikostyring i eksisterende processer frem for at skabe parallelle systemer\n- Udvikl en faseopdelt implementeringsplan med klare, opnåelige milepæle\n- Udnyt standardiserede værktøjer og skabeloner fra brancheorganisationer\n- Etabler samarbejde med andre vandselskaber om deling af ressourcer og viden\n- Overvej ekstern bistand til den indledende implementering, med fokus på videnoverførsel\n\n**Udfordring 2: Manglende ekspertise inden for systematisk risikostyring**\n\n*Analyse:* I mindre vandselskaber er medarbejderne ofte generalister med teknisk baggrund inden for vandforsyning, men uden specifik uddannelse i risikostyring. Dette kan føre til usikkerhed om metoderne, inkonsistent implementering og vanskeligheder ved at prioritere risici objektivt.\n\n*Løsningsforslag:*\n- Identificer nøglemedarbejdere og investér i målrettet uddannelse for disse\n- Etabler mentorordning med større vandselskaber eller konsulenter\n- Tilpas værktøjer og processer til eksisterende kompetenceniveau\n- Understøt risikostyring med simple, intuitive værktøjer og klare vejledninger\n- Skab et internt \"risikostyringssprog\" med klare definitioner og eksempler\n- Udvikl en vidensbase med relevante cases og best practices fra sektoren\n- Gør brug af branchespecifikke netværk og erfa-grupper\n\n**Udfordring 3: Manglende data og dokumentation for risikostyring**\n\n*Analyse:* Effektiv risikostyring kræver et solidt datagrundlag. Mange mindre vandselskaber har utilstrækkelig dokumentation af hændelser, nær-hændelser og tilstand af anlæg. Dette gør det vanskeligt at estimere sandsynligheder og konsekvenser præcist, hvilket kan underminere troværdigheden af risikoanalyserne.\n\n*Løsningsforslag:*\n- Implementer simple hændelsesrapporteringssystemer (kan være papirbaserede til at starte med)\n- Fokuser på at skabe en kultur, hvor rapportering af nær-hændelser værdsættes\n- Etabler baseline gennem workshops med ekspertskøn, hvor data mangler\n- Start med kvalitative vurderinger, og bevæg jer gradvist mod mere kvantitative tilgange\n- Udvikl en systematisk plan for dataindsamling over tid, integreret med daglig drift\n- Udnyt digitale værktøjer til at automatisere dataopsamling hvor muligt\n- Prioriter dokumentation af kritiske processer og systemer først\n\nGennem disse praktiske løsninger kan mindre vandselskaber gradvist udvikle en risikostyringskultur og -praksis, der er tilpasset deres størrelse og ressourcer, men stadig leverer værdi i form af øget sikkerhed, bedre beslutningsgrundlag og mere robust drift.\n\n## Refleksionsspørgsmål\n\n### 13. Reflekter over hvordan din personlige risikovillighed som leder kan påvirke beslutningsprocesser i risikostyring, og hvordan du kan sikre en afbalanceret tilgang, der hverken er for risikoavers eller for risikovillig i forhold til vandselskabets overordnede mål.\n\n**Vejledende svar:** En god refleksion ville anerkende, at personlig risikovillighed er en subjektiv faktor, der ubevidst kan påvirke risikobeslutninger. Refleksionen kunne indeholde:\n\n- Erkendelse af egen risikovillighed (risikoavers, risikoneutral eller risikosøgende) og hvordan dette kan farve beslutninger\n- Overvejelser om, hvordan personlige bias kan føre til enten overestimering eller underestimering af risici, baseret på tidligere erfaringer\n- Strategier for at adskille personlige præferencer fra organisationens behov, fx:\n  - Brug af strukturerede processer og værktøjer til risikovurdering\n  - Inddragelse af forskellige perspektiver og faglige vurderinger i beslutningsprocesser\n  - Anvendelse af scenariebaseret analyse for at skelne mellem personlig intuition og faktabaserede vurderinger\n- Eksempler på hvordan vandselskabets kontekst (fx samfundskritisk infrastruktur) kræver en særlig balance i risikovillighed\n- Refleksion over hvordan forskellige interessenter (kunder, myndigheder, ejere) har forskellige forventninger til risikostyring\n- Overvejelser om, hvordan transparente beslutningsprocesser kan bidrage til mere objektive risikovurderinger\n- Hvordan man kan skabe en organisationskultur, hvor det er legitimt at udfordre risikoantagelser uanset position\n\nEn moden refleksion ville erkende, at målet ikke er at eliminere personlig dømmekraft, men at gøre sig bevidst om egne tendenser og supplere med objektive metoder og diverse perspektiver.\n\n### 14. Tænk på en risiko i dit vandselskab, som du mener er undervurderet eller overset. Hvilke faktorer kan have bidraget til denne situation, og hvordan ville du gå frem for at få risikoen adresseret på en konstruktiv måde i organisationen?\n\n**Vejledende svar:** En gennemtænkt refleksion kunne omfatte:\n\nIdentifikation af en specifik, omend hypotetisk, risiko - fx:\n- Cyberangreb på SCADA-systemer\n- Mikro-forureninger i vandressourcer (PFAS, lægemiddelrester)\n- Sårbarhed ved strømafbrydelse i kritiske pumpestationer\n- Tab af nøgleviden ved pensionering af erfarne medarbejdere\n- Manglende koordinering med andre infrastrukturejere ved gravearbejder\n\nAnalyse af årsager til, at risikoen er overset:\n- Manglende bevidsthed eller viden om problemet\n- \"Det sker ikke hos os\"-mentalitet\n- Risikoen opfattes som for usandsynlig eller abstrakt\n- Kortsigtede driftsprioriteter overskygger langsigtede risici\n- Organisatoriske siloer, hvor ansvaret falder mellem stole\n- Risikoen er svær at kvantificere eller dokumentere\n\nKonstruktiv strategi for adressering:\n- Start med at indsamle data og konkrete eksempler, gerne fra lignende organisationer\n- Identificer og engager nøgleinteressenter tidligt i processen\n- Frame risikoen i relation til organisationens strategiske mål og værdier\n- Forbered både business case og worst-case scenarier\n- Anvend pilotprojekter eller trinvis implementering for at demonstrere værdi\n- Skab ejerskab på tværs af organisationen\n- Etabler klare succeskriterier og opfølgningsmekanismer\n\nRefleksionen kunne også indeholde overvejelser om timing, kommunikation, potentielle modargumenter, og hvordan man balancerer denne risiko mod andre prioriteter.\n\n### 15. Hvordan kunne principper fra risikostyring anvendes til at forbedre din personlige beslutningstagning i arbejdslivet? Giv konkrete eksempler på, hvordan systematisk risikovurdering kunne have ændret udfaldet af en tidligere beslutning i din karriere.\n\n**Vejledende svar:** En dybdegående refleksion kunne indeholde:\n\nPrincipper fra risikostyring der kan overføres til personlig beslutningstagning:\n- Systematisk identifikation af usikkerheder før beslutninger\n- Explicit vurdering af både sandsynligheder og konsekvenser\n- Adskillelse af fakta fra antagelser\n- Bevidsthed om bias i egen vurdering af risici\n- Værdien af at overveje både best-case, expected-case og worst-case scenarier\n- Regelmæssig opfølgning og justering baseret på ny information\n\nEksempel på arbejdsrelateret beslutning, hvor risikostyring kunne have forbedret udfaldet:\n- Et projekt der overskred deadline eller budget\n- En teknisk løsning der ikke leverede forventede resultater\n- En personalekonflikt der eskalerede unødvendigt\n- En forandring der mødte uventet modstand\n- En investering der ikke gav forventet afkast\n\nAnalyse af hvordan risikostyring kunne have ændret forløbet:\n- Identifikation af vigtige afhængigheder og usikkerheder tidligt\n- Bredere inddragelse af forskellige perspektiver i beslutningsprocessen\n- Udvikling af beredskabsplaner for kritiske risikofaktorer\n- Etablering af tidlige advarselsindikatorer\n- Mere systematisk stakeholder-analyse\n- Løbende revurdering af antagelser undervejs i processen\n\nEn god refleksion ville være konkret omkring både situationen og de specifikke risikostyringsværktøjer, der kunne have været anvendt, samt være ærlig omkring egen rolle i beslutningsprocessen."
+        }
+      }
+    ],
+    "Opgave creator": [
+      {
+        "json": {
+          "text": "# Hjemmeopgave: Kortlægning af risikoprofil i dit vandselskab\n\n## Formål og læringsmål\nFormålet med denne hjemmeopgave er at give dig mulighed for at anvende de grundlæggende begreber og principper fra modulet om risikostyring direkte i dit eget vandselskab. Gennem opgaven vil du opnå praktiske færdigheder i at identificere og kategorisere relevante risici i din organisation. Ved opgavens afslutning vil du have udviklet en første version af en risikoprofil for dit vandselskab, som kan danne grundlag for videre arbejde med systematisk risikostyring.\n\n## Baggrund og kontekst\nI modulet har du fået introduceret grundlæggende begreber inden for risikostyring, herunder hvordan risici kan defineres, kategoriseres og vurderes. Vandsektoren står over for en række specifikke udfordringer - fra klimaforandringer og forsyningssikkerhed til compliance med regulatoriske krav og teknologiske forandringer. Disse udfordringer skaber et komplekst risikobillede, som kræver systematisk håndtering. Ved at anvende principperne fra modulet i din egen organisation, kan du begynde at opbygge en struktureret tilgang til risikostyring, der passer specifikt til dit vandselskabs størrelse, geografiske placering, infrastruktur og organisatoriske setup.\n\n## Opgavebeskrivelse\nDin opgave består i at udarbejde en indledende kortlægning af de væsentligste risici, som dit vandselskab står overfor. Du skal:\n\n1. Identificere mindst 8-10 betydende risici for dit vandselskab inden for minimum tre forskellige kategorier (f.eks. driftsmæssige, finansielle, miljømæssige, regulatoriske, sikkerhedsmæssige, eller omdømmemæssige risici).\n\n2. Beskrive hver risiko kort, herunder potentielle årsager og konsekvenser, hvis risikoen materialiserer sig.\n\n3. Vurdere hver risiko kvalitativt ud fra to parametre:\n   - Sandsynlighed (lav, mellem, høj)\n   - Konsekvens/impact (lav, mellem, høj)\n\n4. Placere de identificerede risici i en simpel risikomatrix (3x3), som visualiserer deres relative placering baseret på sandsynlighed og konsekvens.\n\n5. Udvælge de 3 risici, du vurderer som mest kritiske for dit vandselskab, og beskrive kort, hvordan I pt. arbejder med (eller ikke arbejder med) at håndtere disse risici.\n\n## Praktisk vejledning\nFølg disse trin for at gennemføre opgaven:\n\n1. **Dataindsamling** (1-2 timer): Gennemgå tilgængelige dokumenter i dit vandselskab (strategiplaner, årsrapporter, tidligere hændelsesrapporter, osv.) for at identificere tidligere erkendte risici. Overvej også at konsultere kollegaer fra forskellige afdelinger for at få et bredere perspektiv.\n\n2. **Risikoidentifikation** (1-2 timer): Brug teknikker fra modulet (f.eks. brainstorming eller checklister) til at identificere relevante risici. Tænk både på interne og eksterne faktorer, og overvej både kortsigtede og langsigtede risici.\n\n3. **Risikovurdering** (1-2 timer): Vurder hver risiko efter sandsynlighed og konsekvens. Brug din erfaring og tilgængelig information, men vær opmærksom på potentielle bias i din vurdering.\n\n4. **Dokumentation** (2-3 timer): Sammenfat dine resultater i et dokument, der indeholder beskrivelser af de identificerede risici, din vurdering, risikomatrixen og dine observationer om de tre mest kritiske risici.\n\nForventet samlet tidsforbrug: 5-9 timer, afhængigt af dit kendskab til organisationen og tilgængeligheden af information.\n\n## Refleksionspunkter\nSom del af din aflevering skal du besvare følgende refleksionsspørgsmål:\n\n1. Hvilke udfordringer mødte du i processen med at identificere og vurdere risici i dit vandselskab?\n\n2. Var der særlige typer af risici, der var lettere eller sværere at identificere, og hvad fortæller det om organisationens fokus?\n\n3. Hvordan kunne en mere systematisk tilgang til risikostyring potentielt forbedre beslutningsprocesserne i dit vandselskab?\n\n4. Hvilke ressourcer (kompetencer, data, værktøjer) mangler I eventuelt for at kunne arbejde mere effektivt med risikostyring?\n\n5. Hvordan kunne du forestille dig at involvere forskellige interessenter (bestyrelse, medarbejdere, kunder, myndigheder) i risikostyringsprocessen?\n\n## Afleveringskrav og evaluering\nDin aflevering skal bestå af et dokument (Word eller PDF) på 3-5 sider inkl. risikomatrix. Dokumentet skal indeholde:\n- Kort introduktion til dit vandselskab (størrelse, geografisk område, primære funktioner)\n- Liste over identificerede risici med kortfattede beskrivelser\n- Udfyldt risikomatrix\n- Uddybende beskrivelse af de tre mest kritiske risici\n- Besvarelse af refleksionsspørgsmålene\n\nAfleveringsfrist: Senest 2 uger efter modulets gennemførelse.\n\nDin aflevering vil blive evalueret på baggrund af din evne til at anvende modulets begreber i praksis, din analytiske tilgang til risikoidentifikation, samt dybden og relevansen af dine refleksioner over processen."
+        }
+      }
+    ],
+    "Videovelkomst": [
+      {
+        "json": {
+          "text": "Velkommen til Modul 1 i vores kursus om risikostyring for ledere i vandselskaberne. I dette modul skal vi udforske grundlæggende begreber og principper, der udgør fundamentet for effektiv risikostyring. Vi starter med at definere, hvad risikostyring egentlig er, og hvorfor det er særligt vigtigt i vandsektoren. Derefter dykker vi ned i nøglebegreber og terminologi, så vi taler samme sprog, når vi arbejder med risici. Til sidst gennemgår vi risikostyringsprocessens faser - fra identifikation til håndtering. Disse grundsten vil hjælpe jer med at opbygge en struktureret tilgang til at identificere, analysere og håndtere de risici, jeres vandselskab står over for. Gennem kurset vil I få konkrete værktøjer til at integrere risikostyring i jeres daglige beslutningsprocesser og dermed skabe mere robuste organisationer."
+        }
+      }
+    ],
+    "Modulindhold O1": [
+      {
+        "json": {
+          "output": "# Modul 1: Introduktion til Risikostyring\n\n## Lektion 1: Hvad er risikostyring?\n\n### 1.1 Kernebegreber og Teorier\n\n#### Grundlæggende definitioner\n- **Risiko**: Effekt af usikkerhed på mål. En risiko kan være positiv, negativ eller begge dele og kan skabe både muligheder og trusler. Risiko udtrykkes normalt i form af risikokilder, potentielle hændelser, deres konsekvenser og deres sandsynlighed.\n- **Risikostyring** (også kaldet risikoledelse): Koordinerede aktiviteter til at lede og styre en organisation med hensyn til risiko. Formålet er at skabe og beskytte værdi.\n- **Risikoledelsesproces**: En systematisk anvendelse af politikker, procedurer og praksis i relation til aktiviteter som kommunikation, etablering af rammer og vilkår, vurdering, behandling, overvågning, gennemgang, registrering og rapportering af risici.\n\n#### Teoretisk ramme for risikostyring\n- **Værdibaseret tilgang**: Risikostyring har til formål at skabe og beskytte værdi. Det forbedrer præstation, fremmer innovation og understøtter opnåelse af mål.\n- **Helhedsorienteret process**: Risikostyring er ikke en isoleret funktion, men en integreret del af den overordnede organisationsledelse og lederskab.\n- **ISO 31000**: International standard for risikostyring, som fastlægger en fælles metode til styring af enhver form for risiko og ikke er industri- eller branchespecifik.\n\n### 1.2 Praktisk Anvendelse\n\n#### Implementering af risikostyring\n- **Integrering i organisationen**: Risikostyring bør være en integreret del af alle organisationens aktiviteter, herunder beslutningstagning på alle niveauer.\n- **Risikostyringsramme**: Strukturer og processer, der sikrer at risikostyring bliver systematisk implementeret i hele organisationen.\n- **Fastlæggelse af ansvarsområder**: Topledelsen er ansvarlig for at styre risici, mens styregrupper for risikostyring typisk er ansvarlige for at overvåge risikostyringen.\n\n#### Risikostyringsprocessen i praksis\n1. **Kommunikation og konsultation** med interessenter\n2. **Etablering af rammer og vilkår** for risikostyring\n3. **Risikovurdering** (identifikation, analyse og evaluering)\n4. **Risikohåndtering** (valg og implementering af muligheder)\n5. **Overvågning og gennemgang**\n6. **Dokumentation og rapportering**\n\n#### Anvendelse i vandselskaber\nVandselskaber har forskellige størrelser og kompleksiteter - fra små selskaber i bjergområder med få brugere til store selskaber i byområder med egen vandforsyning og komplekse distributionssystemer. Risikostyring må tilpasses den specifikke kontekst, men visse principper gælder på tværs af organisatorisk størrelse.\n\n### 1.3 Visuelle Elementer\n\n#### Risikostyringsproces diagram\n```\n+------------------------------------------+\n|                                          |\n|       KOMMUNIKATION & KONSULTATION       | <---------|\n|                                          |           |\n+-----------------+------------------------+           |\n                  |                                    |\n                  v                                    |\n+------------------------------------------+           |\n|                                          |           |\n|   ANVENDELSESOMRÅDE, RAMMER OG VILKÅR    |           |\n|                                          |           |\n+-----------------+------------------------+           |\n                  |                                    |\n                  v                                    |\n+------------------------------------------+           |\n|          RISIKOVURDERING                 |           |\n|  +---------------+                       |           |\n|  | Identifikation|                       |           |\n|  +---------------+                       |     OVERVÅGNING\n|  | Analyse       |                       |           &\n|  +---------------+                       |      GENNEMGANG\n|  | Evaluering    |                       |           |\n|  +---------------+                       |           |\n+-----------------+------------------------+           |\n                  |                                    |\n                  v                                    |\n+------------------------------------------+           |\n|                                          |           |\n|           RISIKOHÅNDTERING               | <---------|\n|                                          |           |\n+-----------------+------------------------+           |\n                  |                                    |\n                  v                                    |\n+------------------------------------------+           |\n|                                          |           |\n|       REGISTRERING & RAPPORTERING        | <---------|\n|                                          |\n+------------------------------------------+\n```\n\n#### Risikohåndteringsmuligheder\n```\n+----------------------------------------+\n|    MULIGHEDER FOR RISIKOHÅNDTERING     |\n+----------------------------------------+\n| - Undgå risikoen                       |\n| - Tage eller øge risikoen (mulighed)   |\n| - Fjerne risikokilden                  |\n| - Ændre sandsynligheden                |\n| - Ændre konsekvenserne                 |\n| - Dele risikoen (kontrakt, forsikring) |\n| - Beholde risikoen på oplyst grundlag  |\n+----------------------------------------+\n```\n\n### 1.4 Supplerende Baggrundsviden og Nuancer\n\n#### Principper for effektiv risikostyring\n- **Integreret**: Risikostyring bør være en integreret del af alle organisationsaktiviteter.\n- **Struktureret og omfattende**: En struktureret tilgang bidrager til konsistente resultater.\n- **Tilpasset**: Rammerne skal tilpasses organisationens kontekst og mål.\n- **Inkluderende**: Involvering af interessenter sikrer bedre bevidsthed og risikoledelse.\n- **Dynamisk**: Risici ændrer sig over tid; risikoledelse skal reagere på disse ændringer.\n- **Informationsbaseret**: Risikoledelse baseres på den bedste tilgængelige information.\n- **Kulturelt forankret**: Menneskelig adfærd og kultur påvirker alle aspekter af risikostyring.\n- **Kontinuerlig forbedring**: Risikostyring forbedres gennem læring og erfaring.\n\n#### Risikostyring i forskellige sektorer\nVandselskaber har særlige risici i forhold til andre sektorer:\n- **Miljømæssige risici**: Forurening, klimaforandringer, tørke\n- **Infrastrukturrisici**: Ældre rørledninger, vedligehold af anlæg\n- **Regulatoriske risici**: Ændringer i lovgivning og krav\n- **Sundhedsrisici**: Vandkvalitet og forureningskilder\n\n#### Kritiske overvejelser ved risikostyring\n- Risikostyring er ikke kun fokuseret på at undgå negative konsekvenser, men også på at identificere muligheder.\n- Balancering af ressourcer mellem risikohåndtering og kerneaktiviteter.\n- Subjektivitet og gruppeprocesser kan påvirke risikovurderinger.\n\n### 1.5 Kilder og Ressourcer\n\n#### Primære kilder\n- **ISO 31000**: International standard for risikostyring, der fastlægger principper, ramme og processer.\n- **DS/ISO 55002:2018**: Omhandler asset management-systemer, med afsnit om risikostyring i aktivforvaltning.\n\n#### Supplerende materialer\n- Vejledninger fra DANVA (Dansk Vand- og Spildevandsforening)\n- Miljøstyrelsens retningslinjer om vandforsyning\n- Forsyningssekretariatets reguleringspraksis\n\n#### Relevante organisationer\n- Miljøstyrelsen\n- DANVA\n- Forsyningssekretariatet\n- Kommunernes Landsforening (KL)\n\n## Lektion 2: Nøglebegreber og terminologi\n\n### 2.1 Kernebegreber og Teorier\n\n#### Centrale begreber inden for risikostyring\n- **Risikokilde**: Element, der alene eller i kombination med andre, har potentiale til at fremkalde risiko.\n- **Hændelse**: Forekomst eller ændring af en bestemt række af omstændigheder.\n- **Konsekvens**: Resultat af en hændelse, der påvirker mål. Kan være sikker eller usikker og have positiv eller negativ effekt.\n- **Sandsynlighed**: Mulighed for, at noget sker, defineret objektivt eller subjektivt, kvalitativt eller kvantitativt.\n- **Kontrolforanstaltning**: Foranstaltning, der opretholder og/eller ændrer risikoen.\n\n#### Risikostyringsramme\n- **Organisationens rammer og vilkår**: Den kontekst hvori organisationen definerer og opnår sine mål.\n- **Interessent**: Person eller organisation, som kan påvirke, påvirkes af eller opfatte sig selv som påvirket af en beslutning eller aktivitet.\n- **Risikokriterier**: Mængden og typen af risici, organisationen kan eller ikke kan acceptere.\n\n### 2.2 Praktisk Anvendelse\n\n#### Risikovurdering i praksis\n- **Risikoidentifikation**: Proces til at finde, anerkende og beskrive risici, som kan hjælpe eller forhindre en organisation i at nå sine mål.\n- **Risikoanalyse**: Proces der søger at forstå risikoens art og karakteristika, herunder risikoniveauet.\n- **Risikoevaluering**: Sammenligning af risikoanalyseresultater med fastlagte risikokriterier for at bestemme, hvor der er behov for handling.\n\n#### Analysemetoder\n- **Kvalitativ analyse**: Beskrivende vurdering af risiko baseret på kategorier (lav/mellem/høj).\n- **Kvantitativ analyse**: Numerisk vurdering, fx gennem modellering, statistik eller sandsynlighedsberegning.\n- **Semi-kvantitativ analyse**: Kombination af kvalitative og kvantitative metoder.\n\n#### Risikomatricer og vurderingsskalaer\n- **Konsekvens-skala**: Vurdering af hvor alvorlige følger en hændelse kan have (fra ubetydelige til katastrofale).\n- **Sandsynligheds-skala**: Vurdering af hvor sandsynlig en hændelse er (fra sjældent til næsten sikkert).\n- **Risikomatrix**: Et værktøj der kombinerer konsekvens og sandsynlighed for at prioritere risici.\n\n### 2.3 Visuelle Elementer\n\n#### Risikomatrice\n```\n         KONSEKVENS\n         +-------------------+\n         | Lav  | Medium | Høj |\n+--------+------+--------+-----+\n|Høj     | Medium| Høj   | Høj  |\n+--------+------+--------+-----+\n|Medium  | Lav   | Medium| Høj  |\n+--------+------+--------+-----+\n|Lav     | Lav   | Lav   |Medium|\n+--------+------+--------+-----+\nSANDSYNLIGHED\n```\n\n#### Risikohåndteringsproces\n```\n+--------------------------------------------------+\n|              RISIKOHÅNDTERINGSPROCES             |\n+--------------------------------------------------+\n| 1. FORMULERING OG VALG AF HÅNDTERINGSMULIGHEDER  |\n|                      ↓                           |\n| 2. PLANLÆGNING OG IMPLEMENTERING                 |\n|                      ↓                           |\n| 3. VURDERING AF EFFEKTIVITET                     |\n|                      ↓                           |\n| 4. BESLUTNING OM ACCEPTABEL RISIKO               |\n|                      ↓                           |\n| 5. YDERLIGERE HÅNDTERING (HVIS NØDVENDIGT)       |\n+--------------------------------------------------+\n```\n\n### 2.4 Supplerende Baggrundsviden og Nuancer\n\n#### Usikkerhed i risikovurdering\n- Enhver risikovurdering er forbundet med usikkerhed, da den er baseret på antagelser om fremtiden.\n- Vurderinger kan være påvirket af subjektivitet, forudindtagede holdninger og begrænset information.\n- Ved meget alvorlige konsekvenser med lav sandsynlighed (fx katastrofale hændelser) kan det være vanskeligt at kvantificere risikoen præcist.\n\n#### Udviklingen i risikotænkning\n- Fra reaktiv tilgang (reagere når noget sker) til proaktiv tilgang (forebyggelse og beredskab).\n- Fra fokus på sikkerhed og compliance til et bredere risikostyringsperspektiv, der inkluderer både trusler og muligheder.\n- Øget anerkendelse af sammenhængen mellem risikostyring og organisationers overordnede mål.\n\n#### Kulturelle aspekter af risikohåndtering\n- Organisationskultur påvirker væsentligt, hvordan risici opfattes og håndteres.\n- Åbenhed om risici og fejl er afgørende for effektiv risikostyring.\n- Ledelsens engagement og rollemodel-adfærd er central for at skabe en sund risikokultur.\n\n### 2.5 Kilder og Ressourcer\n\n#### Tekniske standarder\n- ISO 31000:2018: Risikoledelse - Vejledning\n- ISO 31010: Risikovurderingsteknikker\n- ISO 55002:2018: Asset management-systemer\n\n#### Fagspecifikke ressourcer\n- Vejledninger fra DANVA om risikostyring i vandsektoren\n- Miljøstyrelsens publikationer om risici i vandforsyning\n- DTU og Teknologisk Instituts undersøgelser vedrørende vandsikkerhed\n\n## Lektion 3: Risikostyringsprocessens faser\n\n### 3.1 Kernebegreber og Teorier\n\n#### Processens hovedfaser\n- **Kommunikation og konsultation**: Løbende udveksling af information med interessenter gennem hele processen.\n- **Anvendelsesområde, rammer, vilkår og kriterier**: Definition af risikostyringsprocessens omfang og kontekst.\n- **Risikovurdering**: Samlede proces bestående af identifikation, analyse og evaluering af risici.\n- **Risikohåndtering**: Udvælgelse og implementering af muligheder for at håndtere risici.\n- **Overvågning og gennemgang**: Sikring af processens kvalitet og effektivitet.\n- **Registrering og rapportering**: Dokumentation og formidling af risikoaktiviteter og resultater.\n\n#### Teoretisk forankring\n- Risikostyringsprocessen bygger på en gennemprøvet og internationalt anerkendt systemtilgang.\n- Processen er iterativ og dynamisk, ikke lineær, hvilket tillader løbende forbedringer og tilpasninger.\n\n### 3.2 Praktisk Anvendelse\n\n#### Fase 1: Kommunikation og konsultation\n- **Formål**: At hjælpe relevante interessenter med at forstå begrebet risiko og fremme bevidsthed.\n- **Aktiviteter**: Identificere interessenter, etablere kommunikationskanaler, indhente tilbagemeldinger.\n- **Resultat**: En kommunikationsplan og konsultationsprocesser, der sikrer relevant inddragelse.\n\n#### Fase 2: Anvendelsesområde, rammer, vilkår og kriterier\n- **Formål**: At tilpasse risikostyringsprocessen, så der kan foretages effektiv risikovurdering.\n- **Aktiviteter**: Afgrænsning af omfang, forståelse af kontekst, fastlæggelse af risikokriterier.\n- **Resultat**: Tydelig ramme for processen og kriterier for risikoaccept.\n\n#### Fase 3: Risikovurdering\n- **Risikoidentifikation**:\n  - Find og beskriv potentielle risici der kan påvirke mål\n  - Brug teknikker som brainstorming, tjeklister, historiske data\n- **Risikoanalyse**:\n  - Forstå risici og deres karakteristika (årsager, konsekvenser, sandsynlighed)\n  - Analyser med kvalitative eller kvantitative metoder\n- **Risikoevaluering**:\n  - Sammenlign resultater med risikokriterier\n  - Prioriter risici for håndtering\n\n#### Fase 4: Risikohåndtering\n- **Formål**: At vælge og implementere muligheder for at håndtere risici.\n- **Aktiviteter**: Vurdere håndteringsmuligheder, udarbejde og implementere handlingsplaner.\n- **Handlingsmuligheder**: \n  - Undgå risikoen\n  - Tage risikoen for at forfølge en mulighed\n  - Fjerne risikokilden\n  - Ændre sandsynlighed eller konsekvens\n  - Dele risikoen (fx gennem forsikring)\n  - Acceptere risikoen på et oplyst grundlag\n\n#### Fase 5: Overvågning og gennemgang\n- **Formål**: At sikre og forbedre kvaliteten og effektiviteten af risikostyringsprocessen.\n- **Aktiviteter**: Løbende overvågning, periodisk evaluering, tilpasning af metoder.\n- **Resultat**: Forbedrede risikoprocesser og opdateret risikoinformation.\n\n#### Fase 6: Registrering og rapportering\n- **Formål**: At dokumentere og formidle risikoaktiviteter og resultater.\n- **Aktiviteter**: Dokumentation af proces og resultater, rapportering til relevante interessenter.\n- **Resultat**: Dokumentation der understøtter beslutningstagning og læring.\n\n### 3.3 Visuelle Elementer\n\n#### Sammenhæng mellem risikoprocessens faser\n```\n+-----------------------------------------------------------------------+\n|                          RISIKOSTYRINGSPROCES                          |\n+-----------------------------------------------------------------------+\n|                                                                       |\n|  +---------------------+      +-------------------------+             |\n|  | Kommunikation       |      | Overvågning             |             |\n|  | og konsultation     |<---->| og gennemgang           |             |\n|  +---------------------+      +-------------------------+             |\n|            ^                             ^                            |\n|            |                             |                            |\n|            v                             v                            |\n|  +---------------------+      +-------------------------+             |\n|  | Anvendelsesområde,  |      | Registrering            |             |\n|  | rammer og vilkår    |----->| og rapportering         |             |\n|  +---------------------+      +-------------------------+             |\n|            |                             ^                            |\n|            v                             |                            |\n|  +---------------------+                 |                            |\n|  | Risikovurdering     |                 |                            |\n|  |                     |                 |                            |\n|  | • Identifikation    |                 |                            |\n|  | • Analyse           |---------------->|                            |\n|  | • Evaluering        |                 |                            |\n|  +---------------------+                 |                            |\n|            |                             |                            |\n|            v                             |                            |\n|  +---------------------+                 |                            |\n|  | Risikohåndtering    |---------------->|                            |\n|  +---------------------+                                              |\n|                                                                       |\n+-----------------------------------------------------------------------+\n```\n\n#### Risikohåndteringsplan struktur\n```\n+----------------------------------------------+\n|           RISIKOHÅNDTERINGSPLAN              |\n+----------------------------------------------+\n| • Valgte risikohåndteringsstrategier         |\n| • Ansvarlige personer/roller                 |\n| • Specifikke handlinger                      |\n| • Ressourcekrav                              |\n| • Præstationsmål og indikatorer              |\n| • Tidsfrister for implementering             |\n| • Rapporteringskrav                          |\n| • Overvågnings- og kontrolmekanismer         |\n+----------------------------------------------+\n```\n\n### 3.4 Supplerende Baggrundsviden og Nuancer\n\n#### Udfordringer i risikostyringsprocessen\n- **Integration**: Risikostyring opfattes ofte som en \"compliance-øvelse\" adskilt fra daglig drift, i stedet for en integreret del af beslutningsprocesserne.\n- **Ressourceprioritering**: Balancering af ressourcer mellem risikostyring og andre forretningsaktiviteter.\n- **Manglende data**: I nogle situationer er historiske data begrænsede eller ikke tilgængelige, hvilket vanskeliggør sandsynlighedsvurderinger.\n- **Dynamiske risici**: I takt med at det eksterne miljø ændrer sig (fx klimaændringer, regulatoriske ændringer), opstår nye eller ændrede risici.\n\n#### Branchespecifikke hensyn for vandselskaber\n- **Kritisk infrastruktur**: Vandforsyning er en kritisk samfundsfunktion, som kræver særlig opmærksomhed på beredskab og kontinuitet.\n- **Langsigtet planlægning**: Infrastrukturinvesteringer har typisk lang levetid (30-100 år), hvilket stiller særlige krav til risikovurdering af fremtidige scenarier.\n- **Offentligt ejerskab**: Mange vandselskaber er offentligt ejede, hvilket kan påvirke risikostyringens fokus og prioriteter.\n- **Regulatorisk miljø**: Prisloft og krav om effektivisering kan påvirke risikobilledet og beslutninger om risikohåndtering.\n\n#### Koblingen til asset management\n- Risikostyring i vandselskaber er tæt forbundet med asset management (aktivforvaltning), da en stor del af selskabernes værdi og risici er knyttet til fysiske aktiver.\n- ISO 55002:2018 indeholder specifik vejledning om risikostyring i relation til aktivforvaltning, herunder:\n  - Risici med kritiske aktiver\n  - Serviceleveranceniveau i forhold til omkostninger\n  - Sundheds-, sikkerheds- og miljøpåvirkninger\n\n### 3.5 Kilder og Ressourcer\n\n#### Standarder og vejledninger\n- ISO 31000:2018 - Risikoledelse - Vejledning\n- ISO 31010 - Risikovurderingsteknikker\n- ISO 55002:2018 - Asset management-systemer (specifikt afsnit E om risikoledelse)\n\n#### Sektorspecifikke ressourcer\n- DANVA's publikationer om risikostyring i vandsektoren\n- Vandrelaterede beredskabsplaner og -vejledninger\n- Forsyningssekretariatets vejledninger om totaløkonomi i vandsektoren\n\n#### Internationale ressourcer\n- International Water Association (IWA) publikationer om risikostyring\n- European Water Association retningslinjer\n- American Water Works Association risikostyringsmodeller\n\n---\n\nDenne modulbeskrivelse giver et omfattende grundlag for risikostyringskoncepter, som de næste agenter kan bruge til at udvikle spørgsmål, cases og aktiviteter. Materialet er struktureret efter de angivne lektioner med tilstrækkelig dybde og bredde til at støtte udviklingen af kursets interaktive elementer."
+        }
+      }
+    ],
+    "Lektion outline": [
+      {
+        "json": {
+          "output": {
+            "lektioner": [
+              {
+                "lektionNummer": 1,
+                "titel": "Hvad er risikostyring?",
+                "lektionsbeskrivelse": "Denne lektion introducerer grundlæggende begreber og principper inden for risikostyring med fokus på, hvordan det kan anvendes i vandselskaber. Du vil opnå en klar forståelse af, hvad risikostyring er, og hvordan det skaber værdi for din organisation.",
+                "hovedpunkter": [
+                  {
+                    "hovedpunktNummer": 1,
+                    "titel": "Definition og grundlæggende koncept",
+                    "detaljer": [
+                      {
+                        "nummer": 1,
+                        "tekst": "Definition af risiko som effekten af usikkerhed på mål, og risikostyring som koordinerede aktiviteter til at lede og styre en organisation med hensyn til risiko"
+                      },
+                      {
+                        "nummer": 2,
+                        "tekst": "Risikostyringens formål: at skabe og beskytte værdi, ikke kun at undgå negative konsekvenser"
+                      }
+                    ]
+                  },
+                  {
+                    "hovedpunktNummer": 2,
+                    "titel": "Risikostyringsprocessen i overblik",
+                    "detaljer": [
+                      {
+                        "nummer": 1,
+                        "tekst": "De seks hovedfaser i risikostyringsprocessen: kommunikation, rammesætning, vurdering, håndtering, overvågning og rapportering"
+                      },
+                      {
+                        "nummer": 2,
+                        "tekst": "Hvordan risikostyringsprocessen fungerer som en integreret del af organisationsledelse"
+                      }
+                    ]
+                  },
+                  {
+                    "hovedpunktNummer": 3,
+                    "titel": "Særlige hensyn for vandselskaber",
+                    "detaljer": [
+                      {
+                        "nummer": 1,
+                        "tekst": "Typiske risikokategorier for vandselskaber: miljømæssige, infrastrukturelle, regulatoriske og sundhedsrelaterede risici"
+                      },
+                      {
+                        "nummer": 2,
+                        "tekst": "Balancering af risikostyring med andre ledelsesmæssige prioriteter i forsyningsvirksomheder"
+                      }
+                    ]
+                  }
+                ],
+                "nøglebegreber": [
+                  {
+                    "term": "Risiko",
+                    "definition": "Effekt af usikkerhed på mål. En risiko kan være positiv, negativ eller begge dele og kan skabe både muligheder og trusler."
+                  },
+                  {
+                    "term": "Risikostyring",
+                    "definition": "Koordinerede aktiviteter til at lede og styre en organisation med hensyn til risiko. Formålet er at skabe og beskytte værdi."
+                  },
+                  {
+                    "term": "Helhedsorienteret proces",
+                    "definition": "En kerneidé i risikostyring, hvor processen ikke er en isoleret funktion, men en integreret del af organisationens aktiviteter og beslutningstagning."
+                  },
+                  {
+                    "term": "ISO 31000",
+                    "definition": "International standard for risikostyring, som fastlægger en fælles metode til styring af enhver form for risiko og ikke er industri- eller branchespecifik."
+                  }
+                ],
+                "praktiskeElementer": [
+                  {
+                    "titel": "Selvvurdering: Din forståelse af risiko",
+                    "beskrivelse": "En kort refleksionsøvelse, hvor deltagerne identificerer 2-3 væsentlige risici i deres eget vandselskab og overvejer, hvordan disse påvirker organisationsmålene."
+                  },
+                  {
+                    "titel": "Mini-case: Risikostyring i et vandselskab",
+                    "beskrivelse": "Et konkret eksempel på, hvordan et mellemstort dansk vandselskab har implementeret risikostyring og de resultater, det har opnået. Deltagerne reflekterer over, hvilke elementer der kan være relevante for deres egen organisation."
+                  }
+                ],
+                "forslagTilRessourcer": [
+                  {
+                    "titel": "Kompakt guide til ISO 31000",
+                    "beskrivelse": "En letforståelig oversigt over nøglekoncepter fra den internationale standard for risikostyring."
+                  },
+                  {
+                    "titel": "DANVA's vejledninger om risikostyring",
+                    "beskrivelse": "Branchespecifikke ressourcer der relaterer risikostyringsprincipper direkte til vandselskabernes kontekst."
+                  }
+                ],
+                "sammenhængMedAndreLektioner": {
+                  "byggerPå": "Denne lektion er den første i modulet og danner grundlaget for de efterfølgende lektioner.",
+                  "forberederTil": "Næste lektion om nøglebegreber og terminologi vil bygge videre på de grundlæggende koncepter introduceret her."
+                }
+              },
+              {
+                "lektionNummer": 2,
+                "titel": "Nøglebegreber og terminologi",
+                "lektionsbeskrivelse": "Denne lektion giver dig et solidt fundament i den centrale terminologi inden for risikostyring. Du vil lære at anvende fagbegreber præcist, hvilket er afgørende for effektiv kommunikation og gennemførelse af risikostyringsprocessen i dit vandselskab.",
+                "hovedpunkter": [
+                  {
+                    "hovedpunktNummer": 1,
+                    "titel": "Centrale begreber og deres anvendelse",
+                    "detaljer": [
+                      {
+                        "nummer": 1,
+                        "tekst": "Gennemgang af kernebegreber: risikokilde, hændelse, konsekvens, sandsynlighed, kontrolforanstaltning"
+                      },
+                      {
+                        "nummer": 2,
+                        "tekst": "Hvordan begreberne hænger sammen og anvendes i praksis i risikostyringsprocessen"
+                      }
+                    ]
+                  },
+                  {
+                    "hovedpunktNummer": 2,
+                    "titel": "Risikovurdering og risikoanalyse",
+                    "detaljer": [
+                      {
+                        "nummer": 1,
+                        "tekst": "Forskellen mellem kvalitativ, kvantitativ og semi-kvantitativ analyse af risici"
+                      },
+                      {
+                        "nummer": 2,
+                        "tekst": "Anvendelse af risikomatricer til at prioritere risici baseret på konsekvens og sandsynlighed"
+                      }
+                    ]
+                  },
+                  {
+                    "hovedpunktNummer": 3,
+                    "titel": "Risikohåndtering og kontrolforanstaltninger",
+                    "detaljer": [
+                      {
+                        "nummer": 1,
+                        "tekst": "Gennemgang af de forskellige strategier for risikohåndtering: undgå, tage, fjerne, ændre, dele eller acceptere risici"
+                      },
+                      {
+                        "nummer": 2,
+                        "tekst": "Vurdering af kontrolforanstaltningers effektivitet og implementering i organisationen"
+                      }
+                    ]
+                  }
+                ],
+                "nøglebegreber": [
+                  {
+                    "term": "Risikokilde",
+                    "definition": "Element, der alene eller i kombination med andre, har potentiale til at fremkalde risiko."
+                  },
+                  {
+                    "term": "Hændelse",
+                    "definition": "Forekomst eller ændring af en bestemt række af omstændigheder, der kan have konsekvenser for organisationens mål."
+                  },
+                  {
+                    "term": "Konsekvens",
+                    "definition": "Resultat af en hændelse, der påvirker mål. Kan være sikker eller usikker og have positiv eller negativ effekt."
+                  },
+                  {
+                    "term": "Sandsynlighed",
+                    "definition": "Mulighed for, at noget sker, defineret objektivt eller subjektivt, kvalitativt eller kvantitativt."
+                  },
+                  {
+                    "term": "Risikomatrice",
+                    "definition": "Et værktøj der kombinerer konsekvens og sandsynlighed for at prioritere risici og bestemme risikoniveauet."
+                  }
+                ],
+                "praktiskeElementer": [
+                  {
+                    "titel": "Øvelse i risikoanalyse",
+                    "beskrivelse": "Deltagerne arbejder med et scenarie fra et vandselskab, hvor de skal identificere risici og vurdere dem ved hjælp af en risikomatrice. Dette giver praktisk erfaring med at anvende terminologien."
+                  },
+                  {
+                    "titel": "Begrebsfortolkning",
+                    "beskrivelse": "En interaktiv øvelse, hvor deltagerne skal omsætte generelle risikobegreber til specifikke eksempler fra deres daglige arbejde i vandselskabet."
+                  }
+                ],
+                "forslagTilRessourcer": [
+                  {
+                    "titel": "Risikostyringsordliste",
+                    "beskrivelse": "En digital opslagsbog med definitioner af centrale termer inden for risikostyring, tilpasset vandselskabskonteksten."
+                  },
+                  {
+                    "titel": "Illustreret guide til risikovurdering",
+                    "beskrivelse": "Visuelt materiale der viser sammenhængen mellem de forskellige begreber og deres anvendelse i risikostyringsprocessen."
+                  }
+                ],
+                "sammenhængMedAndreLektioner": {
+                  "byggerPå": "Denne lektion bygger på den grundlæggende introduktion til risikostyring fra lektion 1.",
+                  "forberederTil": "Den forbereder deltagerne til lektion 3 om risikostyringsprocessens faser ved at sikre, at de behersker den nødvendige terminologi."
+                }
+              },
+              {
+                "lektionNummer": 3,
+                "titel": "Risikostyringsprocessens faser",
+                "lektionsbeskrivelse": "Denne lektion giver dig detaljeret indsigt i de seks hovedfaser i risikostyringsprocessen. Du vil lære, hvordan du systematisk kan gennemføre hver fase, og hvordan de forskellige faser hænger sammen i en iterativ proces, der er relevant for dit vandselskab.",
+                "hovedpunkter": [
+                  {
+                    "hovedpunktNummer": 1,
+                    "titel": "Overblik over processens hovedfaser",
+                    "detaljer": [
+                      {
+                        "nummer": 1,
+                        "tekst": "Introduktion til de seks faser: kommunikation, rammesætning, vurdering, håndtering, overvågning og rapportering"
+                      },
+                      {
+                        "nummer": 2,
+                        "tekst": "Hvordan faserne hænger sammen i en iterativ og dynamisk proces, ikke en lineær række aktiviteter"
+                      }
+                    ]
+                  },
+                  {
+                    "hovedpunktNummer": 2,
+                    "titel": "Dybdegående gennemgang af faserne",
+                    "detaljer": [
+                      {
+                        "nummer": 1,
+                        "tekst": "De tre trin i risikovurderingen: identifikation, analyse og evaluering af risici"
+                      },
+                      {
+                        "nummer": 2,
+                        "tekst": "Risikohåndteringsprocessen: formulering, evaluering og valg af håndteringsmuligheder"
+                      },
+                      {
+                        "nummer": 3,
+                        "tekst": "Betydningen af kontinuerlig overvågning, gennemgang og kommunikation gennem hele processen"
+                      }
+                    ]
+                  },
+                  {
+                    "hovedpunktNummer": 3,
+                    "titel": "Implementering i vandselskaber",
+                    "detaljer": [
+                      {
+                        "nummer": 1,
+                        "tekst": "Særlige hensyn ved implementering af risikostyringsprocessen i vandselskaber, herunder koblingen til asset management"
+                      },
+                      {
+                        "nummer": 2,
+                        "tekst": "Praktiske udfordringer og løsninger, fx ressourceprioritering og integration med eksisterende processer"
+                      }
+                    ]
+                  }
+                ],
+                "nøglebegreber": [
+                  {
+                    "term": "Risikoidentifikation",
+                    "definition": "Proces til at finde, anerkende og beskrive risici, som kan hjælpe eller forhindre en organisation i at nå sine mål."
+                  },
+                  {
+                    "term": "Risikoanalyse",
+                    "definition": "Proces der søger at forstå risikoens art og karakteristika, herunder risikoniveauet ved at vurdere sandsynlighed og konsekvens."
+                  },
+                  {
+                    "term": "Risikoevaluering",
+                    "definition": "Sammenligning af risikoanalyseresultater med fastlagte risikokriterier for at bestemme, hvor der er behov for handling."
+                  },
+                  {
+                    "term": "Risikohåndtering",
+                    "definition": "Proces til at udvælge og implementere muligheder for at ændre risikoniveauet, herunder at undgå, acceptere, reducere eller dele risici."
+                  }
+                ],
+                "praktiskeElementer": [
+                  {
+                    "titel": "Procesoverblik-øvelse",
+                    "beskrivelse": "Deltagerne skal placere konkrete aktiviteter fra risikostyring i den korrekte fase af processen, hvilket giver forståelse for fasernes sammenhæng og indhold."
+                  },
+                  {
+                    "titel": "Casebaseret procesgennemgang",
+                    "beskrivelse": "Deltagerne følger et konkret eksempel fra et vandselskab gennem alle faser i risikostyringsprocessen for at se, hvordan teorien omsættes til praksis."
+                  }
+                ],
+                "forslagTilRessourcer": [
+                  {
+                    "titel": "Procesdiagrammer og tjeklister",
+                    "beskrivelse": "Praktiske værktøjer der kan hjælpe med at implementere hver fase af risikostyringsprocessen i vandselskabet."
+                  },
+                  {
+                    "titel": "Eksempler på risikohåndteringsplaner",
+                    "beskrivelse": "Skabeloner og konkrete eksempler, der viser, hvordan risikohåndteringsplaner kan opbygges og dokumenteres."
+                  }
+                ],
+                "sammenhængMedAndreLektioner": {
+                  "byggerPå": "Denne lektion bygger på forståelsen af risikostyring fra lektion 1 og terminologien fra lektion 2.",
+                  "forberederTil": "Lektionen afslutter modulet og forbereder deltagerne til praktisk anvendelse af risikostyring i deres eget vandselskab."
+                }
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "Kursusplanlægger": [
+      {
+        "json": {
+          "output": {
+            "kursus": "Introduktion til risikostyring",
+            "kursusbeskrivelse": "Dette kursus giver en grundlæggende forståelse for risikostyring i forsyningssektoren med fokus på klassiske rammeværk som ISO 31000 og ISO 55000, samt relevante regulatoriske forhold. Deltagerne vil lære at identificere og håndtere risici relateret til deres aktiver gennem forskellige værktøjer og teknikker, herunder risikoanalyser og lovgivningsmæssige krav.",
+            "læringsmål": [
+              "Forstå de centrale rammeværk for risikostyring (ISO 31000, COSO, ISO 55000)",
+              "Kende til det regulatoriske landskab relevant for forsyningsektoren",
+              "Identificere og analysere typiske risici for asset managere",
+              "Anvende metoder til risikovurdering og behandling",
+              "Udarbejde risk registers og rapporter til interessenter"
+            ],
+            "moduler": [
+              {
+                "modulnavn": "1. Introduktion til ERM & ISO 31000",
+                "modulbeskrivelse": "Dette modul introducerer deltagerne til konceptet Enterprise Risk Management (ERM) og ISO 31000, som er en central standard for risikostyring.",
+                "lektioner": [
+                  "Hvad er risikostyring?",
+                  "Indførelsen af ISO 31000",
+                  "Principperne bag ERM",
+                  "Risikostyringens proces",
+                  "Quiz: Grundlæggende begreber"
+                ]
+              },
+              {
+                "modulnavn": "2. Sektorregulering & compliance",
+                "modulbeskrivelse": "I dette modul fokuseres der på de relevante love og reguleringer, der påvirker forsyningssektoren og risikostyringspraksis.",
+                "lektioner": [
+                  "Oversigt over regulatoriske krav",
+                  "Risikobaseret tilsyn",
+                  "Beredskab og forsyningssikkerhed",
+                  "EU-taxonomi og CSR",
+                  "Interaktiv tidslinje med vigtige frister"
+                ]
+              },
+              {
+                "modulnavn": "3. Risikoidentifikation i praksis",
+                "modulbeskrivelse": "Deltagerne lærer metoder til identifikation af risici ved hjælp af praktiske værktøjer som PESTLE og HAZOP.",
+                "lektioner": [
+                  "Introduktion til risikoidentifikation",
+                  "Brug af PESTLE-analyse",
+                  "HAZOP-metodologi",
+                  "Case øvelse: Identifikation af risici",
+                  "Udfyldning af risikoregister"
+                ]
+              },
+              {
+                "modulnavn": "4. Analyse & evaluering",
+                "modulbeskrivelse": "Dette modul dækker analyseteknikker og hvordan risici kan evalueres og prioriteres.",
+                "lektioner": [
+                  "Risikoområder og prioritering",
+                  "Brug af risiko-matrix",
+                  "ALARP-princippet",
+                  "Cost-Benefit analyse",
+                  "Workshop: Prioritering af risici via heatmap"
+                ]
+              },
+              {
+                "modulnavn": "5. Kommunikation og rapportering af risici",
+                "modulbeskrivelse": "I dette modul lærer deltagere hvordan man dokumenterer og rapporterer risici effektivt til interessenter.",
+                "lektioner": [
+                  "Betydningen af kommunikation i risikostyring",
+                  "Udarbejdelse af risikoregistre",
+                  "Eksempler på executive summaries",
+                  "Skabeloner til risikorapportering",
+                  "Refleksionsopgave: Hvordan rapporterer du risiko i dit arbejde?"
+                ]
+              },
+              {
+                "modulnavn": "6. Eksamen / mini-projekt",
+                "modulbeskrivelse": "Deltagerne afslutter kurset med en eksamen eller et case-baseret mini-projekt, der viser deres forståelse af emnet.",
+                "lektioner": [
+                  "Gennemgang af kursusmateriale",
+                  "Multiple choice eksamen",
+                  "Case pitch: Præsentation af risikostyring",
+                  "Feedback session"
+                ]
+              }
+            ],
+            "content_md": "# Introduktion til risikostyring\n\nDette kursus giver en grundlæggende forståelse for risikostyring i forsyningssektoren med fokus på klassiske rammeværk som ISO 31000 og ISO 55000, samt relevante regulatoriske forhold. Deltagerne vil lære at identificere og håndtere risici relateret til deres aktiver gennem forskellige værktøjer og teknikker, herunder risikoanalyser og lovgivningsmæssige krav.\n\n## Modul 1 – Introduktion til ERM & ISO 31000\n\n- Hvad er risikostyring?\n- Indførelsen af ISO 31000\n- Principperne bag ERM\n- Risikostyringens proces\n- Quiz: Grundlæggende begreber\n\n## Modul 2 – Sektorregulering & compliance\n\n- Oversigt over regulatoriske krav\n- Risikobaseret tilsyn\n- Beredskab og forsyningssikkerhed\n- EU-taxonomi og CSR\n- Interaktiv tidslinje med vigtige frister\n\n## Modul 3 – Risikoidentifikation i praksis\n\n- Introduktion til risikoidentifikation\n- Brug af PESTLE-analyse\n- HAZOP-metodologi\n- Case øvelse: Identifikation af risici\n- Udfyldning af risikoregister\n\n## Modul 4 – Analyse & evaluering\n\n- Risikoområder og prioritering\n- Brug af risiko-matrix\n- ALARP-princippet\n- Cost-Benefit analyse\n- Workshop: Prioritering af risici via heatmap\n\n## Modul 5 – Kommunikation og rapportering af risici\n\n- Betydningen af kommunikation i risikostyring\n- Udarbejdelse af risikoregistre\n- Eksempler på executive summaries\n- Skabeloner til risikorapportering\n- Refleksionsopgave: Hvordan rapporterer du risiko i dit arbejde?\n\n## Modul 6 – Eksamen / mini-projekt\n\n- Gennemgang af kursusmateriale\n- Multiple choice eksamen\n- Case pitch: Præsentation af risikostyring\n- Feedback session"
+          }
+        }
+      }
+    ]
+  },
+  "versionId": "e629b719-ffa2-42a2-ac56-d137422a08b3",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-05-09T12:23:00.700Z",
+      "updatedAt": "2025-05-09T12:23:00.700Z",
+      "role": "workflow:owner",
+      "workflowId": "OW71rqY0tY9nEc1F",
+      "projectId": "SFLNAzqJIfhKMhJx"
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-03-18T13:45:14.553Z",
+      "updatedAt": "2025-03-18T13:45:14.553Z",
+      "id": "6pOUCPP24FxgjbZJ",
+      "name": "Kursus"
+    }
+  ]
+}
