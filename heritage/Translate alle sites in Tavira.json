@@ -1,0 +1,145 @@
+{
+  "createdAt": "2025-02-27T16:44:21.388Z",
+  "updatedAt": "2025-05-18T20:14:01.000Z",
+  "id": "eSSnoVFSnG6tdwDu",
+  "name": "Translate alle sites in Tavira",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        -100
+      ],
+      "id": "26c920e9-9338-4284-b24b-2ef276200145",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "\n/* Engelske originalrækker i den ønskede by                       */\nWITH en AS (\n    SELECT site_id,\n           city_id,\n           updated_at AS en_updated_at\n    FROM   site_translations\n    WHERE  language_code = 'en'\n      AND  city_id       = 'rome'       -- samme by-filter som før\n)\n\n/* Slå alle andre sprog op og check om de mangler/er forældede    */\nSELECT DISTINCT\n       en.site_id,\n       en.city_id\nFROM        en\nLEFT  JOIN  site_translations tr\n       ON   tr.site_id       = en.site_id\n       AND  tr.city_id       = en.city_id\n       AND  tr.language_code <> 'en'      -- alle andre sprog\nWHERE  tr.updated_at IS NULL              -- mangler helt\n    OR tr.updated_at <  en.en_updated_at  -- eller er ældre end engelsk\n\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -100,
+        -100
+      ],
+      "id": "467d417c-21b5-40eb-be17-800dc8d3f039",
+      "name": "Postgres",
+      "credentials": {
+        "postgres": {
+          "id": "EzZYFEVPXxVDpNLe",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "XUkV5TNfmvJDn6dc",
+          "mode": "list",
+          "cachedResultName": "Heritage Navigator — Translate Agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "site_id": "={{ $json.site_id }}",
+            "city_id": "={{ $('Postgres').item.json.city_id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "site_id",
+              "displayName": "site_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "city_id",
+              "displayName": "city_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "mode": "each",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        340,
+        -100
+      ],
+      "id": "984a4418-72f5-4a76-8176-c11f72851210",
+      "name": "Translate site"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Postgres",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres": {
+      "main": [
+        [
+          {
+            "node": "Translate site",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "3751466f-d324-474b-a5f5-c3be5b1900ca",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-02-27T16:44:21.392Z",
+      "updatedAt": "2025-02-27T16:44:21.392Z",
+      "role": "workflow:owner",
+      "workflowId": "eSSnoVFSnG6tdwDu",
+      "projectId": "rkqKISKa14HwF9Xd"
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-01-28T15:25:26.214Z",
+      "updatedAt": "2025-01-28T15:25:26.214Z",
+      "id": "BngebX50Ev8rBclu",
+      "name": "HN Content manager"
+    }
+  ]
+}
