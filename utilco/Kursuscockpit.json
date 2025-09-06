@@ -1,0 +1,621 @@
+{
+  "createdAt": "2025-05-26T09:15:58.847Z",
+  "updatedAt": "2025-08-01T07:10:32.000Z",
+  "id": "cIyAT2GKM5Ng1Wwa",
+  "name": "Kursuscockpit",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "ZOTTc7BFoxlnLyvP",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "course_id": "={{ $('Course id').first().json.course_id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "course_id",
+              "displayName": "course_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        896,
+        256
+      ],
+      "id": "681d0b70-4333-4da9-9e39-60dead0056cd",
+      "name": "Course creation"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "qWxRPLsazbaV2TpV",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "courses_id": "={{ $('Course id').first().json.course_id }}"
+          },
+          "matchingColumns": [
+            "courses_id"
+          ],
+          "schema": [
+            {
+              "id": "courses_id",
+              "displayName": "courses_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1120,
+        256
+      ],
+      "id": "63806f42-4a1d-4203-9a5b-c89fa82777b0",
+      "name": "Module creator"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        256
+      ],
+      "id": "770fc477-fc62-4370-a608-e3d7873736f4",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5c5109d4-dc99-4cde-a5c6-9b4a58a41175",
+              "name": "course_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        448,
+        256
+      ],
+      "id": "2569b1a8-6d50-43e3-aa54-b473d3b4d981",
+      "name": "Course id"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "JFxTvX4GDNqmUX0R",
+          "mode": "list",
+          "cachedResultName": "My project — Lessons creator"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "module_id": "={{ $('Module creator').item.json.module_id }}"
+          },
+          "matchingColumns": [
+            "module_id"
+          ],
+          "schema": [
+            {
+              "id": "module_id",
+              "displayName": "module_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1344,
+        256
+      ],
+      "id": "b02579fc-e2d0-4625-ba29-2c075ce2b173",
+      "name": "Lesson creator"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        1568,
+        256
+      ],
+      "id": "02937a44-6c78-4234-97df-46125ad9b514",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "cgya94OU6IhFm58p",
+          "mode": "list",
+          "cachedResultName": "My project — Module questions creator"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "module_id": "={{ $json.id }}"
+          },
+          "matchingColumns": [
+            "module_id"
+          ],
+          "schema": [
+            {
+              "id": "module_id",
+              "displayName": "module_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        2672,
+        256
+      ],
+      "id": "a6c60a3f-0338-402f-9614-87b3bb4e0646",
+      "name": "Module question creator"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select id from modules where course_id = '{{ $('Course id').first().json.course_id }}'",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2224,
+        256
+      ],
+      "id": "ea7a87af-e4dd-4306-857e-ffea631753df",
+      "name": "Get module id",
+      "credentials": {
+        "postgres": {
+          "id": "RUVxlMmZvsZC2IGe",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "id",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -160
+      ],
+      "id": "a214051f-c394-4901-b0b4-dade44b87306",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "TM4BtRHM82JhtiIH",
+          "mode": "list",
+          "cachedResultName": "My project — Case creator"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "courses_id": "={{ $('Course id').first().json.course_id }}"
+          },
+          "matchingColumns": [
+            "courses_id"
+          ],
+          "schema": [
+            {
+              "id": "courses_id",
+              "displayName": "courses_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1792,
+        256
+      ],
+      "id": "2498f7a5-a77c-490a-86e4-8d7927022b91",
+      "name": "Case creator"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select id from courses where status = 'next'\nlimit 1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        224,
+        256
+      ],
+      "id": "b0136059-5041-40df-84da-7c5aae7fe683",
+      "name": "Get course_id",
+      "credentials": {
+        "postgres": {
+          "id": "RUVxlMmZvsZC2IGe",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "update courses set status = 'draft' where id = '{{ $('Course id').first().json.course_id }}'",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2672,
+        64
+      ],
+      "id": "5a166a53-ebbe-444f-822f-2b9d9686703f",
+      "name": "Updata course status = draft",
+      "credentials": {
+        "postgres": {
+          "id": "RUVxlMmZvsZC2IGe",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "Fv40Y9vCdSfzaWAU",
+          "mode": "list",
+          "cachedResultName": "My project — Deep research"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "course_id": "={{ $json.course_id }}"
+          },
+          "matchingColumns": [
+            "course_id"
+          ],
+          "schema": [
+            {
+              "id": "course_id",
+              "displayName": "course_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        672,
+        256
+      ],
+      "id": "d5476ce4-c43f-4561-87b7-57f58e768d09",
+      "name": "Deep Research",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        2448,
+        256
+      ],
+      "id": "d12c1866-ae53-4e96-b015-118fd7179531",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        2896,
+        336
+      ],
+      "id": "2596facc-a6e0-4853-8db2-f34d63cce721",
+      "name": "Limit1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        2000,
+        256
+      ],
+      "id": "adba7b7e-3c57-4003-8d3d-8dfe0d875816",
+      "name": "Limit2"
+    }
+  ],
+  "connections": {
+    "Course creation": {
+      "main": [
+        [
+          {
+            "node": "Module creator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Module creator": {
+      "main": [
+        [
+          {
+            "node": "Lesson creator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get course_id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Course id": {
+      "main": [
+        [
+          {
+            "node": "Deep Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lesson creator": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Case creator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Module question creator": {
+      "main": [
+        [
+          {
+            "node": "Limit1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get module id": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        []
+      ]
+    },
+    "Case creator": {
+      "main": [
+        [
+          {
+            "node": "Limit2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get course_id": {
+      "main": [
+        [
+          {
+            "node": "Course id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deep Research": {
+      "main": [
+        [
+          {
+            "node": "Course creation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Updata course status = draft",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Module question creator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit2": {
+      "main": [
+        [
+          {
+            "node": "Get module id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "67750ea7-df9e-4977-98ee-af8bc96517d7",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "createdAt": "2025-05-26T09:15:58.853Z",
+      "updatedAt": "2025-05-26T09:15:58.853Z",
+      "role": "workflow:owner",
+      "workflowId": "cIyAT2GKM5Ng1Wwa",
+      "projectId": "SFLNAzqJIfhKMhJx"
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-03-18T13:45:14.553Z",
+      "updatedAt": "2025-03-18T13:45:14.553Z",
+      "id": "6pOUCPP24FxgjbZJ",
+      "name": "Kursus"
+    }
+  ]
+}
