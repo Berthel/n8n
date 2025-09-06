@@ -1,0 +1,920 @@
+{
+  "createdAt": "2025-01-29T10:52:09.114Z",
+  "updatedAt": "2025-05-22T11:32:56.000Z",
+  "id": "IpVMGwXt5TmcAzUd",
+  "name": "Insert Description Agent",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "jsonExample",
+        "jsonExample": "{\n  \"global_code\": \"8C9J49CH+HC\",\n  \"site_id\": \"cacela-velha\",\n    \"city_id\": \"tavira\",\n  \"shortDescription\": \"Short description\",\n  \"overview\": \"Overview\",\n  \"mainStory\": \"Main story\",\n  \"academicBackground\": \"Background\"\n}\n"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1800,
+        -845
+      ],
+      "id": "c8f47590-6e4f-452c-8bda-0369b637e543",
+      "name": "Workflow Input Trigger"
+    },
+    {
+      "parameters": {
+        "tableId": "detail_sections",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "id",
+              "fieldValue": "={{ $('Workflow Input Trigger').item.json.site_id }}-main"
+            },
+            {
+              "fieldId": "site_id",
+              "fieldValue": "={{ $('Workflow Input Trigger').item.json.site_id }}"
+            },
+            {
+              "fieldId": "type",
+              "fieldValue": "text"
+            },
+            {
+              "fieldId": "order_number",
+              "fieldValue": "2"
+            },
+            {
+              "fieldId": "city_id",
+              "fieldValue": "={{ $('Workflow Input Trigger').item.json.city_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        180,
+        -770
+      ],
+      "id": "9f8c9a87-71be-4697-8def-66627f1ff4f0",
+      "name": "detail_sections-main",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "detail_sections",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "id",
+              "fieldValue": "={{ $('Workflow Input Trigger').item.json.site_id }}-overview"
+            },
+            {
+              "fieldId": "site_id",
+              "fieldValue": "={{ $('Workflow Input Trigger').item.json.site_id }}"
+            },
+            {
+              "fieldId": "type",
+              "fieldValue": "text"
+            },
+            {
+              "fieldId": "order_number",
+              "fieldValue": "1"
+            },
+            {
+              "fieldId": "city_id",
+              "fieldValue": "={{ $('Workflow Input Trigger').item.json.city_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        400,
+        -770
+      ],
+      "id": "8137acc5-fb95-4a4b-b971-869b6eebc2fb",
+      "name": "detail_sections-overview",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "detail_section_translations",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "detail_section_id",
+              "fieldValue": "={{ $('Workflow Input Trigger').item.json.site_id }}-main"
+            },
+            {
+              "fieldId": "language_code",
+              "fieldValue": "en"
+            },
+            {
+              "fieldId": "content",
+              "fieldValue": "={{ $('Workflow Input Trigger').item.json.mainStory }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        840,
+        -845
+      ],
+      "id": "3d9f96b5-c8d5-43da-a2d6-e2ea2bf76856",
+      "name": "mainStory",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "detail_section_translations",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "detail_section_id",
+              "fieldValue": "={{ $('Workflow Input Trigger').item.json.site_id }}-background"
+            },
+            {
+              "fieldId": "language_code",
+              "fieldValue": "en"
+            },
+            {
+              "fieldId": "content",
+              "fieldValue": "={{ $('Workflow Input Trigger').item.json.academicBackground }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1060,
+        -845
+      ],
+      "id": "e4fbb142-7e47-45a4-acd5-e278507fe008",
+      "name": "academicBackground",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "detail_section_translations",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "detail_section_id",
+              "fieldValue": "={{ $('Workflow Input Trigger').item.json.site_id }}-overview"
+            },
+            {
+              "fieldId": "language_code",
+              "fieldValue": "en"
+            },
+            {
+              "fieldId": "content",
+              "fieldValue": "={{ $('Workflow Input Trigger').item.json.overview }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        620,
+        -845
+      ],
+      "id": "d1eda1dc-a543-4c4d-ac67-a2a1715fd6af",
+      "name": "overview",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "site_translations",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "site_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Workflow Input Trigger').item.json.site_id }}"
+            },
+            {
+              "keyName": "city_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Workflow Input Trigger').item.json.city_id }}"
+            },
+            {
+              "keyName": "language_code",
+              "condition": "eq",
+              "keyValue": "en"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "description",
+              "fieldValue": "={{ $('Workflow Input Trigger').item.json.shortDescription }}"
+            },
+            {
+              "fieldId": "updated_at",
+              "fieldValue": "={{ $now }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1280,
+        -845
+      ],
+      "id": "11a4dfbd-8d35-4d9a-a76c-c980c86dc2ab",
+      "name": "shortDescription",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "RFBP4vgrDB7zY6cz",
+          "mode": "list",
+          "cachedResultName": "My project — Create Tags Agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "globalCode": "={{ $('Workflow Input Trigger').item.json.site_id }}"
+          },
+          "matchingColumns": [
+            "globalCode"
+          ],
+          "schema": [
+            {
+              "id": "globalCode",
+              "displayName": "globalCode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1500,
+        -845
+      ],
+      "id": "233e60f1-bfc2-40c8-be17-5ea9a8a40395",
+      "name": "Execute Create tags workflow"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "tableId": "detail_section_translations",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "detail_section_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Workflow Input Trigger').item.json.site_id }}-overview"
+            },
+            {
+              "keyName": "language_code",
+              "condition": "eq",
+              "keyValue": "=en"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -1140,
+        -920
+      ],
+      "id": "789233a1-d8e6-4bf9-b78f-b99fad67aebb",
+      "name": "Delete overview",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "tableId": "detail_section_translations",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "detail_section_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Workflow Input Trigger').item.json.site_id }}-background"
+            },
+            {
+              "keyName": "language_code",
+              "condition": "eq",
+              "keyValue": "=en"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -920,
+        -920
+      ],
+      "id": "9b5a4182-b3d8-4d70-b47a-96b999749941",
+      "name": "Delete background",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "tableId": "detail_section_translations",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "detail_section_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Workflow Input Trigger').item.json.site_id }}-main"
+            },
+            {
+              "keyName": "language_code",
+              "condition": "eq",
+              "keyValue": "=en"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -700,
+        -920
+      ],
+      "id": "568736ac-febd-461b-a903-02d04ecb6402",
+      "name": "Delete main",
+      "alwaysOutputData": true,
+      "executeOnce": false,
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "0a6fda25-4ec6-42eb-808c-83dbbe75a696",
+              "leftValue": "={{ $json.detail_section_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1360,
+        -845
+      ],
+      "id": "53ea3cbd-708e-44a9-836b-47233a4f75d2",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "tableId": "detail_sections",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $('Workflow Input Trigger').first().json.global_code }}-overview"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -1800,
+        -1180
+      ],
+      "id": "86c475d1-c1ea-4020-9bbf-49ef411d06c7",
+      "name": "Delete overview1",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "tableId": "detail_sections",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $('Workflow Input Trigger').item.json.global_code }}-background"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -1580,
+        -1180
+      ],
+      "id": "25cb261b-3ce8-487a-b235-a763ef78a867",
+      "name": "Delete background1",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "tableId": "detail_sections",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $('Workflow Input Trigger').item.json.global_code }}-main"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -1360,
+        -1180
+      ],
+      "id": "3d34a6bb-f82a-46ba-9ece-1a11ef5e6b83",
+      "name": "Delete main1",
+      "alwaysOutputData": true,
+      "executeOnce": false,
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "detail_section_translations",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "detail_section_id",
+              "keyValue": "={{ $json.site_id }}-overview"
+            },
+            {
+              "keyName": "language_code",
+              "keyValue": "=en"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -1580,
+        -845
+      ],
+      "id": "89e4836d-55f4-4cdf-ab2a-bdb0198dfeb0",
+      "name": "Translations Exists?",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "detail_sections",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{ $('Workflow Input Trigger').first().json.site_id }}-overview"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        -845
+      ],
+      "id": "c75a722e-daf1-437e-86ae-358db94aa590",
+      "name": "Detail section Exists?",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "0a6fda25-4ec6-42eb-808c-83dbbe75a696",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -260,
+        -845
+      ],
+      "id": "b7e74b4f-45a7-4da5-b665-0bb9a2dccdc4",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "tableId": "detail_sections",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "id",
+              "fieldValue": "={{ $('Workflow Input Trigger').first().json.site_id }}-background"
+            },
+            {
+              "fieldId": "site_id",
+              "fieldValue": "={{ $('Workflow Input Trigger').item.json.site_id }}"
+            },
+            {
+              "fieldId": "type",
+              "fieldValue": "text"
+            },
+            {
+              "fieldId": "order_number",
+              "fieldValue": "3"
+            },
+            {
+              "fieldId": "city_id",
+              "fieldValue": "={{ $('Workflow Input Trigger').item.json.city_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        -770
+      ],
+      "id": "5992a02c-9634-4a2e-9fc2-bc7b92eef7de",
+      "name": "detail_sections-background",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Workflow Input Trigger": {
+      "main": [
+        [
+          {
+            "node": "Translations Exists?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "detail_sections-main": {
+      "main": [
+        [
+          {
+            "node": "detail_sections-overview",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "detail_sections-overview": {
+      "main": [
+        [
+          {
+            "node": "overview",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "mainStory": {
+      "main": [
+        [
+          {
+            "node": "academicBackground",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "overview": {
+      "main": [
+        [
+          {
+            "node": "mainStory",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "academicBackground": {
+      "main": [
+        [
+          {
+            "node": "shortDescription",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "shortDescription": {
+      "main": [
+        [
+          {
+            "node": "Execute Create tags workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete overview": {
+      "main": [
+        [
+          {
+            "node": "Delete background",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete background": {
+      "main": [
+        [
+          {
+            "node": "Delete main",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Delete overview",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Detail section Exists?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete main": {
+      "main": [
+        [
+          {
+            "node": "Detail section Exists?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete overview1": {
+      "main": [
+        [
+          {
+            "node": "Delete background1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete background1": {
+      "main": [
+        [
+          {
+            "node": "Delete main1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Translations Exists?": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Detail section Exists?": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "overview",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "detail_sections-background",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete main1": {
+      "main": [
+        []
+      ]
+    },
+    "detail_sections-background": {
+      "main": [
+        [
+          {
+            "node": "detail_sections-main",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "db7f7df2-aa5f-4c80-a552-079cbb3c9efc",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-01-29T10:52:09.119Z",
+      "updatedAt": "2025-01-29T10:52:09.119Z",
+      "role": "workflow:owner",
+      "workflowId": "IpVMGwXt5TmcAzUd",
+      "projectId": "rkqKISKa14HwF9Xd"
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-01-28T15:25:26.214Z",
+      "updatedAt": "2025-01-28T15:25:26.214Z",
+      "id": "BngebX50Ev8rBclu",
+      "name": "HN Content manager"
+    }
+  ]
+}
