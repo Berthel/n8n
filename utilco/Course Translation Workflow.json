@@ -1,0 +1,530 @@
+{
+  "createdAt": "2025-08-22T09:23:41.121Z",
+  "updatedAt": "2025-08-22T09:58:06.000Z",
+  "id": "CpVRQxIfWQFBkV4R",
+  "name": "Course Translation Workflow",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "translate-course",
+        "responseMode": "lastNode",
+        "responseData": "allEntries",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Course Translation Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        112,
+        332
+      ],
+      "webhookId": "634dea51-5219-4a32-85d7-37f202972086"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Validate required webhook parameters\nconst input = $input.first();\nconst { course_id, source_language, target_language } = input.json.body;\n\nif (!course_id || !source_language || !target_language) {\n  throw new Error('Missing required parameters: course_id, source_language, target_language');\n}\n\n// Validate language codes (basic check)\nconst validLanguages = ['da', 'en', 'de', 'fr', 'es', 'sv', 'no'];\nif (!validLanguages.includes(source_language) || !validLanguages.includes(target_language)) {\n  throw new Error('Invalid language code. Supported: da, en, de, fr, es, sv, no');\n}\n\nreturn [{\n  json: {\n    course_id,\n    source_language,\n    target_language,\n    status: 'validated',\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "validate-input",
+      "name": "Validate Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        336,
+        332
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT title, description FROM course_translations WHERE course_id = '{{ $json.course_id }}' AND language_code = '{{ $json.source_language }}' LIMIT 1",
+        "options": {}
+      },
+      "id": "fetch-course-context",
+      "name": "Fetch Course Context",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [
+        560,
+        332
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "RUVxlMmZvsZC2IGe",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Define translation tables to process\nconst tables = [\n  {\n    table_name: 'course_translations',\n    query: 'SELECT * FROM course_translations WHERE course_id = $1 AND language_code = $2',\n    group_field: null\n  },\n  {\n    table_name: 'module_translations', \n    query: 'SELECT mt.*, m.course_id FROM module_translations mt JOIN modules m ON mt.module_id = m.id WHERE m.course_id = $1 AND mt.language_code = $2',\n    group_field: null\n  },\n  {\n    table_name: 'lesson_translations',\n    query: 'SELECT lt.*, l.module_id, m.course_id FROM lesson_translations lt JOIN lessons l ON lt.lesson_id = l.id JOIN modules m ON l.module_id = m.id WHERE m.course_id = $1 AND lt.language_code = $2',\n    group_field: null\n  },\n  {\n    table_name: 'module_question_translations',\n    query: 'SELECT mqt.*, mq.module_id, m.course_id FROM module_question_translations mqt JOIN module_questions mq ON mqt.module_question_id = mq.id JOIN modules m ON mq.module_id = m.id WHERE m.course_id = $1 AND mqt.language_code = $2',\n    group_field: 'module_question_id'\n  },\n  {\n    table_name: 'module_question_option_translations',\n    query: 'SELECT mqot.*, mq.module_id, m.course_id FROM module_question_option_translations mqot JOIN module_question_options mqo ON mqot.module_question_option_id = mqo.id JOIN module_questions mq ON mqo.module_question_id = mq.id JOIN modules m ON mq.module_id = m.id WHERE m.course_id = $1 AND mqot.language_code = $2',\n    group_field: 'module_question_id'\n  }\n];\n\nconst input = $input.first().json;\nconst courseContext = $input.last().json;\n\nreturn tables.map((table, index) => ({\n  json: {\n    ...input,\n    course_context: courseContext,\n    table_config: table,\n    table_index: index\n  }\n}));"
+      },
+      "id": "prepare-tables-batch",
+      "name": "Prepare Tables for Processing",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        784,
+        332
+      ]
+    },
+    {
+      "parameters": {
+        "options": {
+          "reset": false
+        }
+      },
+      "id": "split-tables",
+      "name": "Process Tables in Batches",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1008,
+        332
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "={{ $json.table_config.query }}",
+        "options": {}
+      },
+      "id": "fetch-table-data",
+      "name": "Fetch Table Data",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [
+        1232,
+        208
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "RUVxlMmZvsZC2IGe",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Group data if needed (for questions/options)\nconst input = $input.first().json;\nconst tableData = $input.all().slice(1); // Skip first input which is config\n\nif (tableData.length === 0) {\n  return [{\n    json: {\n      ...input,\n      translation_batches: [],\n      rows_to_process: 0\n    }\n  }];\n}\n\nlet translationBatches = [];\n\nif (input.table_config.group_field) {\n  // Group by field (for questions with options)\n  const grouped = {};\n  tableData.forEach(item => {\n    const groupKey = item.json[input.table_config.group_field];\n    if (!grouped[groupKey]) {\n      grouped[groupKey] = [];\n    }\n    grouped[groupKey].push(item.json);\n  });\n  \n  translationBatches = Object.values(grouped);\n} else {\n  // Individual items\n  translationBatches = tableData.map(item => [item.json]);\n}\n\nreturn [{\n  json: {\n    ...input,\n    translation_batches: translationBatches,\n    rows_to_process: tableData.length\n  }\n}];"
+      },
+      "id": "prepare-translation-batch",
+      "name": "Prepare Translation Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1456,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "options": {
+          "reset": false
+        }
+      },
+      "id": "split-translation-batches",
+      "name": "Process Translation Batches",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1680,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\nconst batch = input.translation_batches[input.batchIndex];\n\nif (!batch || batch.length === 0) {\n  return [{\n    json: {\n      ...input,\n      translation_needed: false,\n      current_batch: []\n    }\n  }];\n}\n\n// Create context from course description\nconst courseContext = input.course_context;\nconst contextText = courseContext ? `Course: \"${courseContext.title}\" - ${courseContext.description}` : 'Course context not available';\n\n// Prepare content for translation\nconst contentToTranslate = batch.map(item => {\n  const fields = ['title', 'description', 'content', 'question', 'option_text', 'feedback'];\n  const texts = {};\n  \n  fields.forEach(field => {\n    if (item[field] && item[field].trim()) {\n      texts[field] = item[field];\n    }\n  });\n  \n  return {\n    id: item.id || `${item.course_id}_${item.module_id || ''}_${item.lesson_id || ''}_${item.module_question_id || ''}_${item.module_question_option_id || ''}`,\n    texts: texts\n  };\n}).filter(item => Object.keys(item.texts).length > 0);\n\nif (contentToTranslate.length === 0) {\n  return [{\n    json: {\n      ...input,\n      translation_needed: false,\n      current_batch: batch\n    }\n  }];\n}\n\n// Create translation prompt\nconst prompt = `You are a professional translator. Translate the following content from ${input.source_language} to ${input.target_language}.\n\nContext: ${contextText}\n\nMaintain the original meaning, tone, and formatting. Return ONLY a JSON object with the same structure but translated text.\n\nContent to translate:\n${JSON.stringify(contentToTranslate, null, 2)}`;\n\nreturn [{\n  json: {\n    ...input,\n    translation_needed: true,\n    current_batch: batch,\n    content_to_translate: contentToTranslate,\n    chatInput: prompt\n  }\n}];"
+      },
+      "id": "prepare-llm-prompt",
+      "name": "Prepare LLM Translation Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1904,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "model": "google/gemini-2.5-flash",
+        "options": {
+          "maxTokens": 4000,
+          "temperature": 0.1
+        }
+      },
+      "id": "openai-chat-model",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        1888,
+        624
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "wLbV0srlBMaP36mY",
+          "name": "Open Router"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\n\nif (!input.translation_needed) {\n  return [{\n    json: {\n      ...input,\n      processed_translations: [],\n      translation_errors: []\n    }\n  }];\n}\n\ntry {\n  const translationResult = $input.last().json.output;\n  \n  // Parse LLM response\n  let translatedContent;\n  try {\n    translatedContent = JSON.parse(translationResult);\n  } catch (parseError) {\n    // Try to extract JSON from response if wrapped in text\n    const jsonMatch = translationResult.match(/\\[.*\\]/s) || translationResult.match(/\\{.*\\}/s);\n    if (jsonMatch) {\n      translatedContent = JSON.parse(jsonMatch[0]);\n    } else {\n      throw new Error('Could not parse LLM response as JSON');\n    }\n  }\n  \n  const processedTranslations = [];\n  const originalBatch = input.current_batch;\n  \n  // Map translations back to original records\n  translatedContent.forEach((translatedItem, index) => {\n    const originalItem = originalBatch.find(item => \n      item.id === translatedItem.id || \n      index < originalBatch.length\n    ) || originalBatch[index];\n    \n    if (originalItem) {\n      processedTranslations.push({\n        original: originalItem,\n        translated: translatedItem.texts || translatedItem,\n        table_name: input.table_config.table_name\n      });\n    }\n  });\n  \n  return [{\n    json: {\n      ...input,\n      processed_translations: processedTranslations,\n      translation_errors: []\n    }\n  }];\n  \n} catch (error) {\n  return [{\n    json: {\n      ...input,\n      processed_translations: [],\n      translation_errors: [{\n        table_name: input.table_config.table_name,\n        batch_index: input.batchIndex,\n        error_type: 'translation_processing',\n        message: error.message\n      }]\n    }\n  }];\n}"
+      },
+      "id": "process-translation-result",
+      "name": "Process Translation Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2688,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\n\nif (input.processed_translations.length === 0) {\n  return [{\n    json: {\n      ...input,\n      upsert_results: [],\n      upsert_errors: input.translation_errors || []\n    }\n  }];\n}\n\nconst upsertResults = [];\nconst upsertErrors = [...(input.translation_errors || [])];\n\n// Prepare upsert queries for each translation\ninput.processed_translations.forEach(translation => {\n  const { original, translated, table_name } = translation;\n  \n  try {\n    // Build upsert query based on table type\n    let query = '';\n    let params = [];\n    \n    switch (table_name) {\n      case 'course_translations':\n        query = `INSERT INTO course_translations (course_id, language_code, title, description) \n                 VALUES ($1, $2, $3, $4) \n                 ON CONFLICT (course_id, language_code) \n                 DO UPDATE SET title = $3, description = $4, updated_at = NOW()`;\n        params = [original.course_id, input.target_language, \n                 translated.title || original.title, \n                 translated.description || original.description];\n        break;\n        \n      case 'module_translations':\n        query = `INSERT INTO module_translations (module_id, language_code, title, description) \n                 VALUES ($1, $2, $3, $4) \n                 ON CONFLICT (module_id, language_code) \n                 DO UPDATE SET title = $3, description = $4, updated_at = NOW()`;\n        params = [original.module_id, input.target_language,\n                 translated.title || original.title,\n                 translated.description || original.description];\n        break;\n        \n      case 'lesson_translations':\n        query = `INSERT INTO lesson_translations (lesson_id, language_code, title, content) \n                 VALUES ($1, $2, $3, $4) \n                 ON CONFLICT (lesson_id, language_code) \n                 DO UPDATE SET title = $3, content = $4, updated_at = NOW()`;\n        params = [original.lesson_id, input.target_language,\n                 translated.title || original.title,\n                 translated.content || original.content];\n        break;\n        \n      case 'module_question_translations':\n        query = `INSERT INTO module_question_translations (module_question_id, language_code, question, feedback) \n                 VALUES ($1, $2, $3, $4) \n                 ON CONFLICT (module_question_id, language_code) \n                 DO UPDATE SET question = $3, feedback = $4, updated_at = NOW()`;\n        params = [original.module_question_id, input.target_language,\n                 translated.question || original.question,\n                 translated.feedback || original.feedback];\n        break;\n        \n      case 'module_question_option_translations':\n        query = `INSERT INTO module_question_option_translations (module_question_option_id, language_code, option_text) \n                 VALUES ($1, $2, $3) \n                 ON CONFLICT (module_question_option_id, language_code) \n                 DO UPDATE SET option_text = $3, updated_at = NOW()`;\n        params = [original.module_question_option_id, input.target_language,\n                 translated.option_text || original.option_text];\n        break;\n        \n      default:\n        throw new Error(`Unsupported table: ${table_name}`);\n    }\n    \n    upsertResults.push({\n      table_name,\n      query,\n      params,\n      record_id: original.id\n    });\n    \n  } catch (error) {\n    upsertErrors.push({\n      table_name,\n      record_id: original.id,\n      error_type: 'upsert_preparation',\n      message: error.message\n    });\n  }\n});\n\nreturn [{\n  json: {\n    ...input,\n    upsert_results: upsertResults,\n    upsert_errors: upsertErrors\n  }\n}];"
+      },
+      "id": "upsert-translations",
+      "name": "Upsert Translations",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2912,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "batchSize": 5,
+        "options": {
+          "reset": false
+        }
+      },
+      "id": "execute-upserts",
+      "name": "Execute Database Upserts",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        3136,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "={{ $json.upsert_results[$json.batchIndex].query }}",
+        "options": {}
+      },
+      "id": "run-upsert-query",
+      "name": "Run Upsert Query",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [
+        3360,
+        208
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "RUVxlMmZvsZC2IGe",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Collect all results from batch processing\nconst allInputs = $input.all();\nconst baseData = allInputs[0].json;\n\nlet totalProcessed = 0;\nlet totalErrors = [...(baseData.upsert_errors || [])];\nlet processedTables = {};\n\nallInputs.forEach(input => {\n  if (input.json.upsert_results) {\n    input.json.upsert_results.forEach(result => {\n      if (!processedTables[result.table_name]) {\n        processedTables[result.table_name] = 0;\n      }\n      processedTables[result.table_name]++;\n      totalProcessed++;\n    });\n  }\n});\n\nreturn [{\n  json: {\n    ...baseData,\n    table_processing_complete: true,\n    processed_count: totalProcessed,\n    table_results: processedTables,\n    all_errors: totalErrors\n  }\n}];"
+      },
+      "id": "collect-batch-results",
+      "name": "Collect Batch Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3584,
+        332
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Aggregate results from all table processing\nconst allInputs = $input.all();\nlet processedTables = {};\nlet allErrors = [];\nlet totalProcessed = 0;\n\nallInputs.forEach(input => {\n  const data = input.json;\n  \n  if (data.table_results) {\n    Object.keys(data.table_results).forEach(tableName => {\n      if (!processedTables[tableName]) {\n        processedTables[tableName] = 0;\n      }\n      processedTables[tableName] += data.table_results[tableName];\n      totalProcessed += data.table_results[tableName];\n    });\n  }\n  \n  if (data.all_errors) {\n    allErrors.push(...data.all_errors);\n  }\n});\n\n// Prepare final response\nconst baseInput = allInputs[0].json;\nconst status = allErrors.length === 0 ? 'success' : \n               totalProcessed > 0 ? 'partial' : 'error';\n\nconst finalResponse = {\n  status: status,\n  course_id: baseInput.course_id,\n  source_language: baseInput.source_language,\n  target_language: baseInput.target_language,\n  processed_tables: Object.keys(processedTables).map(tableName => ({\n    table_name: tableName,\n    rows_processed: processedTables[tableName]\n  })),\n  errors: allErrors,\n  log: `Translation completed. Status: ${status}. Tables processed: ${Object.keys(processedTables).length}. Total rows: ${totalProcessed}. Errors: ${allErrors.length}`,\n  timestamp: new Date().toISOString()\n};\n\nreturn [{\n  json: finalResponse\n}];"
+      },
+      "id": "aggregate-final-results",
+      "name": "Aggregate Final Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3808,
+        332
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.input }}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        2240,
+        192
+      ],
+      "id": "869431b9-5eb7-4df6-9682-76aca908f12e",
+      "name": "Basic LLM Chain"
+    }
+  ],
+  "connections": {
+    "Course Translation Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validate Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Input": {
+      "main": [
+        [
+          {
+            "node": "Fetch Course Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Course Context": {
+      "main": [
+        [
+          {
+            "node": "Prepare Tables for Processing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Tables for Processing": {
+      "main": [
+        [
+          {
+            "node": "Process Tables in Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Tables in Batches": {
+      "main": [
+        [
+          {
+            "node": "Fetch Table Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Table Data": {
+      "main": [
+        [
+          {
+            "node": "Prepare Translation Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Translation Data": {
+      "main": [
+        [
+          {
+            "node": "Process Translation Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Translation Batches": {
+      "main": [
+        [
+          {
+            "node": "Prepare LLM Translation Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare LLM Translation Prompt": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "main": [
+        []
+      ],
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Translation Result": {
+      "main": [
+        [
+          {
+            "node": "Upsert Translations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert Translations": {
+      "main": [
+        [
+          {
+            "node": "Execute Database Upserts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Database Upserts": {
+      "main": [
+        [
+          {
+            "node": "Run Upsert Query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Upsert Query": {
+      "main": [
+        [
+          {
+            "node": "Collect Batch Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Collect Batch Results": {
+      "main": [
+        [
+          {
+            "node": "Process Tables in Batches",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Aggregate Final Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate Final Results": {
+      "main": []
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Process Translation Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveManualExecutions": true,
+    "saveExecutionProgress": true
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Course Translation Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "utilco.app.n8n.cloud",
+            "user-agent": "axios/1.11.0",
+            "content-length": "98",
+            "accept": "application/json, text/plain, */*",
+            "accept-encoding": "gzip, br",
+            "cdn-loop": "cloudflare; loops=1; subreqs=1",
+            "cf-connecting-ip": "2001:8a0:58dc:d500:f587:f88d:f860:df24",
+            "cf-ew-via": "15",
+            "cf-ipcountry": "PT",
+            "cf-ray": "97316f8280974610-LIS",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "cf-worker": "n8n.cloud",
+            "content-type": "application/json",
+            "x-forwarded-for": "2001:8a0:58dc:d500:f587:f88d:f860:df24, 172.68.102.65",
+            "x-forwarded-host": "utilco.app.n8n.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "traefik-prod-users-gwc-10-6888ffdd77-9vgr4",
+            "x-is-trusted": "yes",
+            "x-real-ip": "2001:8a0:58dc:d500:f587:f88d:f860:df24"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "course_id": "fe7e5cbf-1c42-4054-a871-e203ac5377db",
+            "source_language": "da",
+            "target_language": "en"
+          },
+          "webhookUrl": "https://utilco.app.n8n.cloud/webhook/translate-course",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "versionId": "ba118d10-ab2d-4664-aa44-0393d80f5072",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "createdAt": "2025-08-22T09:29:24.694Z",
+      "updatedAt": "2025-08-22T09:29:24.694Z",
+      "role": "workflow:owner",
+      "workflowId": "CpVRQxIfWQFBkV4R",
+      "projectId": "SFLNAzqJIfhKMhJx"
+    }
+  ],
+  "tags": []
+}
