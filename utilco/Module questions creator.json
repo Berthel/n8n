@@ -1,0 +1,724 @@
+{
+  "createdAt": "2025-05-25T12:07:51.575Z",
+  "updatedAt": "2025-08-01T07:26:21.000Z",
+  "id": "cgya94OU6IhFm58p",
+  "name": "Module questions creator",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "jsonExample",
+        "jsonExample": "{\n  \"module_id\": \"a string\"\n}"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        192,
+        432
+      ],
+      "id": "a65c220a-fbba-485b-8467-69068861b360",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "courses",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{ $json.course_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        672,
+        432
+      ],
+      "id": "d77053c2-f747-4e91-840d-969e94fcf2fe",
+      "name": "Get course",
+      "credentials": {
+        "supabaseApi": {
+          "id": "bvMVIJLed9p3sKxS",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "course_translations",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "course_id",
+              "keyValue": "={{ $json.id }}"
+            },
+            {
+              "keyName": "language_code",
+              "keyValue": "={{ $json.language_code }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        880,
+        432
+      ],
+      "id": "0ef04d70-2f59-42e5-b38f-9b26cb055f33",
+      "name": "Get course content",
+      "credentials": {
+        "supabaseApi": {
+          "id": "bvMVIJLed9p3sKxS",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "modules",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{ $('When Executed by Another Workflow').first().json.module_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        448,
+        432
+      ],
+      "id": "ce886a83-4320-4eb0-a96d-ac5a9d06f5d5",
+      "name": "Get module",
+      "credentials": {
+        "supabaseApi": {
+          "id": "bvMVIJLed9p3sKxS",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "module_translations",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "module_id",
+              "keyValue": "={{ $('When Executed by Another Workflow').first().json.module_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1104,
+        432
+      ],
+      "id": "7cd82601-8f65-44ca-b8ee-deab8b6647db",
+      "name": "Get module content",
+      "credentials": {
+        "supabaseApi": {
+          "id": "bvMVIJLed9p3sKxS",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select\n  (select count(*)\n     from modules\n     where course_id = '{{ $(\"Get course\").item.json.id }}')  as no_of_modules,\n  (select count(*)\n     from lessons\n     where module_id = '{{ $json.module_id }}')              as no_of_lessons;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1328,
+        432
+      ],
+      "id": "c64b7256-c84b-47e4-b4aa-a1be44f2604b",
+      "name": "Get no of modules and lessons",
+      "credentials": {
+        "postgres": {
+          "id": "RUVxlMmZvsZC2IGe",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "adaf2be2-5fe2-4eae-9b55-4889b231cc45",
+              "name": "lesson_id",
+              "value": "={{ $json.lesson_id }}",
+              "type": "string"
+            },
+            {
+              "id": "3b905965-50d7-4bed-9e58-131e4049618e",
+              "name": "position",
+              "value": "={{ $json.position }}",
+              "type": "number"
+            },
+            {
+              "id": "aa2cc915-77d4-4392-853a-6770d4cb3498",
+              "name": "title",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "5378e9ab-7ad9-4fd3-ae66-94bcad3b2134",
+              "name": "content",
+              "value": "={{ $json.content }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1760,
+        432
+      ],
+      "id": "3f52d877-0deb-4076-8559-f9a8b2bb7af9",
+      "name": "Lesson content"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=#Input\n\n##Kursusinformation\n\nKursustitel: {{ $('Get course content').first().json.title }}\n\nKursusniveau: {{ $('Get course').first().json.course_level }}\n\nMålgruppe: {{ $('Get course').first().json.target_audience }}\n\nSprog: {{ $('Get course').first().json.course_language }}\n\nSektor: {{ $('Get course').first().json.sector }}\n\nKursusbeskrivelse: {{ $('Get course content').first().json.description }}\n\nKursusindhold: {{ $('Get course content').first().json.content }}\n\n\n##Modulinformation\n\nModulnavn: {{ $('Get module content').first().json.title }}\n\nModulbeskrivelse: {{ $('Get module content').first().json.description }}\n\nModulcontent: {{ $('Get module content').first().json.content }}\n\nAntal moduler i kurset: {{ $('Get no of modules and lessons').first().json.no_of_modules }}\n\n##Lektioner\nLektionsdata: {{ JSON.stringify($json.data, null, 2) }}\n\nAntal lektioner i modulet: {{ $('Get no of modules and lessons').first().json.no_of_lessons }}\n\nAntal spørgsmål: {{ $('Get course').item.json.no_of_quiz_questions }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "# Rolle\n\nDu er ekspert i at udvikle pædagogiske multiple choice spørgsmål, der tester forståelse og anvendelse af kursusmateriale på en meningsfuld måde.\n\n# Instruktion\n\nBaseret på modulinformationen du modtager (modulbeskrivelse, lektioner, læringsmål, niveau, målgruppe, antal spørgsmål og sprog), skal du:\n\n1. Analysere modulets indhold og læringsmål og antal spørgsmål\n2. Udarbejde det ønskede antal relevante multiple choice spørgsmål, der:\n   - Dækker modulets centrale emner bredt\n   - Tester forskellige niveauer af forståelse (viden, anvendelse, analyse)\n   - Er formuleret klart og entydigt\n   - Har 4 svarmuligheder per spørgsmål\n   - Har præcis 1 korrekt svar per spørgsmål\n   - Indeholder troværdige distraktorer (forkerte svar)\n\n3. Sikre at spørgsmålene:\n   - Er progressive i sværhedsgrad\n   - Relaterer direkte til modulets læringsmål\n   - Undgår negative formuleringer (ikke, aldrig, etc.)\n   - Er kontekstuelle og praktisk orienterede hvor muligt\n\n# Output\n\nReturnér spørgsmål og svarmuligheder struktureret efter det givne databaseskema, med:\n- Spørgsmålstekst på det angivne sprog\n- 4 svarmuligheder per spørgsmål (svarmulighederne skal være cirka lige lange)\n- Markering af hvilket svar der er korrekt\n- Position/rækkefølge for både spørgsmål og svarmuligheder"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.6,
+      "position": [
+        2208,
+        432
+      ],
+      "id": "cc5067a4-c98b-4fce-80d7-d1226f7e4d68",
+      "name": "Module question creator"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"questions\": [\n    {\n      \"position\": 1,\n      \"question_text\": \"Hvilket af følgende er det primære formål med ISO 55001?\",\n      \"options\": [\n        {\n          \"position\": 1,\n          \"is_correct\": false,\n          \"option_text\": \"At reducere medarbejderantallet i organisationen\"\n        },\n        {\n          \"position\": 2,\n          \"is_correct\": true,\n          \"option_text\": \"At etablere et systematisk asset management system\"\n        },\n        {\n          \"position\": 3,\n          \"is_correct\": false,\n          \"option_text\": \"At øge salget af virksomhedens produkter\"\n        },\n        {\n          \"position\": 4,\n          \"is_correct\": false,\n          \"option_text\": \"At minimere alle former for vedligeholdelse\"\n        }\n      ]\n    },\n    {\n      \"position\": 2,\n      \"question_text\": \"Hvad betyder 'asset' i konteksten af asset management?\",\n      \"options\": [\n        {\n          \"position\": 1,\n          \"is_correct\": false,\n          \"option_text\": \"Kun finansielle investeringer\"\n        },\n        {\n          \"position\": 2,\n          \"is_correct\": false,\n          \"option_text\": \"Udelukkende fysiske maskiner og udstyr\"\n        },\n        {\n          \"position\": 3,\n          \"is_correct\": true,\n          \"option_text\": \"Alt der har værdi for organisationen og dens interessenter\"\n        },\n        {\n          \"position\": 4,\n          \"is_correct\": false,\n          \"option_text\": \"Kun immaterielle rettigheder og patenter\"\n        }\n      ]\n    }\n  ]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        2400,
+        624
+      ],
+      "id": "5c3d07cb-4130-4032-939e-2992c9cbaef7",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "openai/gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "openai/gpt-4.1"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2240,
+        640
+      ],
+      "id": "23bf502c-99cf-4899-b137-1bf1bc5b9c4f",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "wLbV0srlBMaP36mY",
+          "name": "Open Router"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "module_questions",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "module_id",
+              "fieldValue": "={{ $('When Executed by Another Workflow').first().json.module_id }}"
+            },
+            {
+              "fieldId": "position",
+              "fieldValue": "={{ $json.position }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2800,
+        432
+      ],
+      "id": "cb3f91f1-f50e-4d0c-a446-07b0b3b3a825",
+      "name": "Module questions",
+      "credentials": {
+        "supabaseApi": {
+          "id": "bvMVIJLed9p3sKxS",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "module_question_translations",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "module_question_id",
+              "fieldValue": "={{ $json.id }}"
+            },
+            {
+              "fieldId": "language_code",
+              "fieldValue": "={{ $('Get course').first().json.language_code }}"
+            },
+            {
+              "fieldId": "question_text",
+              "fieldValue": "={{ $('Split Out').item.json.question_text }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        3024,
+        432
+      ],
+      "id": "0728ac29-2d91-4b93-a1ce-9cf2b283e381",
+      "name": "Module question translation",
+      "credentials": {
+        "supabaseApi": {
+          "id": "bvMVIJLed9p3sKxS",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6873bfe8-eee1-4f7f-a5fa-41c6f9190258",
+              "name": "options",
+              "value": "={{ $('Split Out').item.json.options }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3248,
+        432
+      ],
+      "id": "f2018e68-b02e-4eaf-af83-b5481b2a6025",
+      "name": "Options"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "options",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        3456,
+        432
+      ],
+      "id": "2714459a-add1-44c4-b0af-610a471831a3",
+      "name": "Split options"
+    },
+    {
+      "parameters": {
+        "tableId": "module_question_options",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "module_question_id",
+              "fieldValue": "={{ $('Module questions').item.json.id }}"
+            },
+            {
+              "fieldId": "position",
+              "fieldValue": "={{ $json.position }}"
+            },
+            {
+              "fieldId": "is_correct",
+              "fieldValue": "={{ $json.is_correct }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        3680,
+        432
+      ],
+      "id": "26329cc1-f011-498e-9d8a-116abcd56fc8",
+      "name": "Module question options",
+      "credentials": {
+        "supabaseApi": {
+          "id": "bvMVIJLed9p3sKxS",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "module_question_option_translations",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "module_question_option_id",
+              "fieldValue": "={{ $json.id }}"
+            },
+            {
+              "fieldId": "language_code",
+              "fieldValue": "={{ $('Get course').first().json.language_code }}"
+            },
+            {
+              "fieldId": "option_text",
+              "fieldValue": "={{ $('Split options').item.json.option_text }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        3904,
+        432
+      ],
+      "id": "c0f98849-5fc2-4bfd-a0ad-588e17abb383",
+      "name": "Module question option translation",
+      "credentials": {
+        "supabaseApi": {
+          "id": "bvMVIJLed9p3sKxS",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1984,
+        432
+      ],
+      "id": "b7722920-9d5f-4dbf-82aa-9ad4a296e539",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output.questions",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        2576,
+        432
+      ],
+      "id": "b5556459-7af2-41d6-a48f-150e13ac6f8e",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select l.id as lesson_id, l.position, t.title, t.CONTENT\nfrom lessons l join lesson_translations t on\nl.id = t.lesson_id\nwhere l.module_id = '{{ $('When Executed by Another Workflow').first().json.module_id }}'\nand language_code='da'\norder by position ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1552,
+        432
+      ],
+      "id": "b97bcb18-02e6-468c-acfe-cc82dea43954",
+      "name": "Get lesson content",
+      "credentials": {
+        "postgres": {
+          "id": "RUVxlMmZvsZC2IGe",
+          "name": "Postgres account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Get module",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get course": {
+      "main": [
+        [
+          {
+            "node": "Get course content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get course content": {
+      "main": [
+        [
+          {
+            "node": "Get module content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get module": {
+      "main": [
+        [
+          {
+            "node": "Get course",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get module content": {
+      "main": [
+        [
+          {
+            "node": "Get no of modules and lessons",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get no of modules and lessons": {
+      "main": [
+        [
+          {
+            "node": "Get lesson content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lesson content": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Module question creator": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Module question creator",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Module question creator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Module questions": {
+      "main": [
+        [
+          {
+            "node": "Module question translation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Module question translation": {
+      "main": [
+        [
+          {
+            "node": "Options",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Options": {
+      "main": [
+        [
+          {
+            "node": "Split options",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split options": {
+      "main": [
+        [
+          {
+            "node": "Module question options",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Module question options": {
+      "main": [
+        [
+          {
+            "node": "Module question option translation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Module question option translation": {
+      "main": [
+        []
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Module question creator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Module questions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get lesson content": {
+      "main": [
+        [
+          {
+            "node": "Lesson content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "module_id": "32ef9168-6186-438e-9781-402a88f118b9"
+        }
+      }
+    ]
+  },
+  "versionId": "da64efa4-6a76-4434-bdeb-34e408595767",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-05-25T12:07:51.580Z",
+      "updatedAt": "2025-05-25T12:07:51.580Z",
+      "role": "workflow:owner",
+      "workflowId": "cgya94OU6IhFm58p",
+      "projectId": "SFLNAzqJIfhKMhJx"
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-03-18T13:45:14.553Z",
+      "updatedAt": "2025-03-18T13:45:14.553Z",
+      "id": "6pOUCPP24FxgjbZJ",
+      "name": "Kursus"
+    }
+  ]
+}
