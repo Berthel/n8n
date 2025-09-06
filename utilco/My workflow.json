@@ -1,0 +1,122 @@
+{
+  "createdAt": "2025-06-30T15:52:08.105Z",
+  "updatedAt": "2025-06-30T19:11:34.000Z",
+  "id": "WL76aszkKxRdfsn0",
+  "name": "My workflow",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -500,
+        -20
+      ],
+      "id": "a509f5e9-3c33-45b6-9675-47bfd9f52d75",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select id, name\nfrom namefinder.namefinder_suggestions",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -280,
+        -20
+      ],
+      "id": "c69b87e5-6577-4f14-b7c9-4fd4862c32a3",
+      "name": "Get ID og name",
+      "credentials": {
+        "postgres": {
+          "id": "RUVxlMmZvsZC2IGe",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        -60,
+        -20
+      ],
+      "id": "d315a8cb-b44d-41d4-824f-fd3c47f7ac63",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "url": "=https://whois-api.dk-hostmaster.dk/domain/{{ $json.name.toLowerCase() }}.dk",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        160,
+        -20
+      ],
+      "id": "83b89ba4-165c-4c40-ab93-62b3d7285f54",
+      "name": "HTTP Request"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get ID og name",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get ID og name": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "4955b680-8569-4def-a575-1f009f8f53de",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-06-30T15:52:08.107Z",
+      "updatedAt": "2025-06-30T15:52:08.107Z",
+      "role": "workflow:owner",
+      "workflowId": "WL76aszkKxRdfsn0",
+      "projectId": "SFLNAzqJIfhKMhJx"
+    }
+  ],
+  "tags": []
+}
