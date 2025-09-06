@@ -1,0 +1,28 @@
+{
+  "createdAt": "2025-06-30T15:45:27.352Z",
+  "updatedAt": "2025-06-30T15:48:14.000Z",
+  "id": "3WXCgZyatixOl9Uv",
+  "name": "domainecheck",
+  "active": false,
+  "isArchived": true,
+  "nodes": [],
+  "connections": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "dbf7c32c-b743-4265-a58f-b3bce5eeb2ba",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-06-30T15:45:27.357Z",
+      "updatedAt": "2025-06-30T15:45:27.357Z",
+      "role": "workflow:owner",
+      "workflowId": "3WXCgZyatixOl9Uv",
+      "projectId": "amlePLldrdBTzDyr"
+    }
+  ],
+  "tags": []
+}
