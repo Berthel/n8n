@@ -1,0 +1,104 @@
+{
+  "createdAt": "2025-03-15T14:37:37.532Z",
+  "updatedAt": "2025-03-15T14:42:25.000Z",
+  "id": "mPLSjKU5yt4KTbxd",
+  "name": "Gemini Deep Research test",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f604cf74-4af1-4592-9124-b17c30bc7c48",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [{\n    \"parts\":[\n      {\"text\": \"Hvad er de seneste politiske nyheder i Portugal?\"}\n    ]\n  }]\n}\n",
+        "options": {}
+      },
+      "id": "9ca572e0-ac90-479e-8f2d-c45d3c097d10",
+      "name": "Call Gemini API1",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        260,
+        -220
+      ],
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "5qlgt2xyQqxMW8o9",
+          "name": "Query Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [{\n    \"parts\":[\n      {\"text\": \"Whats on this image?\"},\n      {\n        \"inline_data\": {\n          \"mime_type\": \"image/jpeg\",\n          \"data\": \"{{ $json.data }}\"\n        }\n      }\n    ]\n  }]\n}\n",
+        "options": {}
+      },
+      "id": "c1c2fcc9-85e3-4fe6-ab06-6a5365123696",
+      "name": "Call Gemini API",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -420,
+        60
+      ],
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "5qlgt2xyQqxMW8o9",
+          "name": "Query Auth account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Call Gemini API1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "bd351a79-a244-434d-b774-8fb8aa9229a0",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-03-15T14:37:37.535Z",
+      "updatedAt": "2025-03-15T14:37:37.535Z",
+      "role": "workflow:owner",
+      "workflowId": "mPLSjKU5yt4KTbxd",
+      "projectId": "rkqKISKa14HwF9Xd"
+    }
+  ],
+  "tags": []
+}
