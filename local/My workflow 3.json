@@ -1,0 +1,354 @@
+{
+  "createdAt": "2025-08-14T13:20:52.824Z",
+  "updatedAt": "2025-08-14T16:17:17.811Z",
+  "id": "zbxlWky2Xpves6An",
+  "name": "My workflow 3",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {
+        "fileSelector": "/data/shared/*.pdf",
+        "options": {
+          "dataPropertyName": "pdf"
+        }
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        -224,
+        288
+      ],
+      "id": "44a4993c-2593-40cc-91ee-45845a894b9c",
+      "name": "Read/Write Files from Disk"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        288
+      ],
+      "id": "56336311-bd86-4519-b777-9d4b9cce80f1",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://docling:5001/v1/convert/file",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "files",
+              "inputDataFieldName": "pdf"
+            },
+            {
+              "name": "image_export_mode",
+              "value": "placeholder"
+            },
+            {
+              "name": "table_mode",
+              "value": "accurate"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        0,
+        384
+      ],
+      "id": "61a063c2-070f-484a-b17c-a656a5d62147",
+      "name": "Docling Convert"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c80bfdb7-f1ef-4275-bfe8-c44627b3bf82",
+              "name": "data",
+              "value": "={{ $json.document.md_content }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -448,
+        0
+      ],
+      "id": "57606d89-3627-4a7f-af29-d8e0dd115437",
+      "name": "Extract from File",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "76b72965-8eba-4f8f-81c4-2b4f52e6e632",
+              "name": "text",
+              "value": "=={{ ($json.data || $json.text).replace(/^!\\[background image\\]\\([^\\)]+\\)\\s*/i, '') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "86600feb-4987-41e5-8ca6-a2c44464fdbb",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "c462deb9-9285-4646-9d0d-a6aa46d9758e",
+              "leftValue": "={{ $json.data.length }}",
+              "rightValue": 200,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -224,
+        0
+      ],
+      "id": "928bcbe6-2608-48c8-8e68-a411546f5ec5",
+      "name": "Har vi tekst?"
+    },
+    {
+      "parameters": {
+        "mode": "chooseBranch",
+        "output": "input2"
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2,
+      "position": [
+        0,
+        192
+      ],
+      "id": "402fd294-0b36-4007-aa96-54fb9fcf821b",
+      "name": "Gate til OCR (Merge)"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "89a912e7-6cff-4e94-b9f7-0afd70db7e1e",
+              "name": "text",
+              "value": "={{ $json.document.md_content }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -224,
+        480
+      ],
+      "id": "a8451c18-66c5-4c3b-8b39-d88b1ca405d3",
+      "name": "Extract from File (OCR)"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://docling:5001/v1/convert/file",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "files",
+              "inputDataFieldName": "pdf"
+            },
+            {
+              "name": "image_export_mode",
+              "value": "placeholder"
+            },
+            {
+              "name": "table_mode",
+              "value": "accurate"
+            },
+            {
+              "name": "ocr_engine",
+              "value": "tesseract"
+            },
+            {
+              "name": "ocr_lang",
+              "value": "eng"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -448,
+        704
+      ],
+      "id": "b5a0d29d-ab80-44a7-8aa2-6398233a4f7e",
+      "name": "Docling OCR"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f486fa5c-2db5-4055-bbf2-0c0fd50c198e",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        0
+      ],
+      "id": "8d30d353-9a6e-45ab-9393-afef7c1acef2",
+      "name": "Edit Fields1"
+    }
+  ],
+  "connections": {
+    "Read/Write Files from Disk": {
+      "main": [
+        [
+          {
+            "node": "Docling Convert",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Gate til OCR (Merge)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Har vi tekst?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Har vi tekst?": {
+      "main": [
+        [
+          {
+            "node": "Gate til OCR (Merge)",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File (OCR)": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "f7b907fb-8a6b-4a9a-96f1-c1b9c96ce8e6",
+  "triggerCount": 0,
+  "tags": []
+}
