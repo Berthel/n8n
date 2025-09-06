@@ -1,0 +1,1333 @@
+{
+  "createdAt": "2025-02-18T06:22:53.570Z",
+  "updatedAt": "2025-04-10T05:15:04.000Z",
+  "id": "uXiuWL9QKXGtJAV6",
+  "name": "Create Content Agent 3",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "sendTo": "flemming.berthelsen@gmail.com",
+        "subject": "Content approval required",
+        "message": "=shortDescription:\n{{ $json.output.shortDescription }}\n\n\nintroduction:\n{{ $json.output.introduction }}\n\n\nmainStory:\n{{ $json.output.mainStory }}\n\n\nacademicBackground:\n{{ $json.output.academicBackground }}",
+        "responseType": "customForm",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Action",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Publish"
+                  },
+                  {
+                    "option": "Reject"
+                  },
+                  {
+                    "option": "Change"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Message",
+              "fieldType": "textarea"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1060,
+        680
+      ],
+      "id": "c9a0a678-b50b-4032-be3e-e321630a00b2",
+      "name": "Gmail",
+      "webhookId": "22da2ee1-6b10-4422-af5c-714e5157edee",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "XI6wZVsQczyW63ra",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1240,
+        900
+      ],
+      "id": "4ac99af5-eb51-4804-89b0-d9fb894e8c3d",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "7oESUrXOypaiYfq2",
+          "name": "openrouter"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "eb91541b-0154-471c-aff3-87d1959e7a36",
+              "name": "output.shortDescription",
+              "value": "={{ $json.output.shortDescription }}",
+              "type": "string"
+            },
+            {
+              "id": "e324dd71-776f-452c-b0a8-cb9231ae1799",
+              "name": "output.introduction",
+              "value": "={{ $json.output.introduction }}",
+              "type": "string"
+            },
+            {
+              "id": "87845a90-24e8-41c4-a9e7-39817d749d19",
+              "name": "output.mainStory",
+              "value": "={{ $json.output.mainStory }}",
+              "type": "string"
+            },
+            {
+              "id": "e1d52e83-645a-4fc5-ae8f-f375bc2382bd",
+              "name": "output.academicBackground",
+              "value": "={{ $json.output.academicBackground }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        820,
+        680
+      ],
+      "id": "b26af1e0-7b5b-4917-8603-77df75452fea",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "inputText": "=Classify this response: {{ $json.data.Action }}",
+        "categories": {
+          "categories": [
+            {
+              "category": "Publish",
+              "description": "If human response is Publish"
+            },
+            {
+              "category": "Reject",
+              "description": "If human response is Reject"
+            },
+            {
+              "category": "Change",
+              "description": "If human response is Change"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "typeVersion": 1,
+      "position": [
+        1260,
+        680
+      ],
+      "id": "2ac357d3-c960-497b-8889-2fd26d298608",
+      "name": "Check Feedback"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=shortDescription:  {{ $('Edit Fields1').item.json.output.shortDescription }}\n\nintroduction: {{ $('Edit Fields1').item.json.output.introduction }}\n\nmainStory: {{ $('Edit Fields1').item.json.output.mainStory }}\n\nacademicBackground: {{ $('Edit Fields1').item.json.output.academicBackground }}\n\nhumanFeedback: {{ $json.data.Message }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=# Role\nYou are a Content Revision Specialist. Your objective is to refine AI-generated historical content based on human feedback while strictly adhering to the original creation guidelines and preserving the intended style, structure, and factual integrity.\n\n# Instructions\n1. Retain the core meaning and factual accuracy of the original content.\n2. Ensure the language and style remain accessible and appealing to cultural travelers aged 45-70.\n3. Incorporate user feedback only where it does not conflict with the original guidelines.\n\n# Critical Rules\n- Maintain all original place names (e.g., \"København\", \"São Jorge\").\n- Keep the exact JSON structure and preserve all HTML tags.\n- Retain the original section word counts (±10% margin).\n- Do not introduce any new or speculative information. If user feedback cannot be verified with provided data, use \"[REDACTED]\" instead.\n- Continue to uphold the previously defined ratio of verified facts to cultural narratives and readability levels.\n- Follow SEO keyword usage only if included in the original text; do not add new keywords.\n\n# Workflow\nYou will receive these elements:\n  \"shortDescription\": [Content Creator’s output],\n  \"introduction\": [Content Creator’s output],\n  \"mainStory\": [Content Creator’s output],\n  \"academicBackground\": [Content Creator’s output],\n  \"humanFeedback\": [User’s revision requests]\n\n\nYour tasks:\n1. Compare user feedback with the original text.\n2. Apply changes that comply with the original content guidelines.\n3. Preserve all HTML formatting (e.g., <h2>, <h3>, <ul>, <li>, <b>) and ensure the timeline structure remains intact.\n4. Avoid adding or removing major content sections beyond minor adjustments (within ±10% word count).\n\n# Required Output\nReturn your revised content in the EXACT same JSON format:\n{\n  \"shortDescription\": \"\",\n  \"introduction\": \"\",\n  \"mainStory\": \"\",\n  \"academicBackground\": \"\"\n}\n\nOutput ONLY the JSON object with the revised text. No explanations or additional commentary beyond the JSON object.\n"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        1660,
+        920
+      ],
+      "id": "53d031e3-8618-4c95-a905-da7fc227947b",
+      "name": "Content Revision"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "IpVMGwXt5TmcAzUd",
+          "mode": "list",
+          "cachedResultName": "My project — Insert Description Agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "global_code": "={{ $('Collect input').first().json.global_code }}",
+            "shortDescription": "={{ $('Edit Fields1').first().json.output.shortDescription }}",
+            "overview": "={{ $('Edit Fields1').first().json.output.introduction }}",
+            "mainStory": "={{ $('Edit Fields1').first().json.output.mainStory }}",
+            "academicBackground": "={{ $('Edit Fields1').first().json.output.academicBackground }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "global_code",
+              "displayName": "global_code",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "shortDescription",
+              "displayName": "shortDescription",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "overview",
+              "displayName": "overview",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "mainStory",
+              "displayName": "mainStory",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "academicBackground",
+              "displayName": "academicBackground",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1820,
+        440
+      ],
+      "id": "b814bb86-8e00-4600-9a22-2d497205e0f8",
+      "name": "Publish"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1720,
+        700
+      ],
+      "id": "0f6586e8-64ae-43f4-98a7-53a51b7d3218",
+      "name": "Rejected"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "2732d484-9275-4342-b4b1-2ce58b979aa8",
+        "authentication": "basicAuth",
+        "options": {
+          "rawBody": true
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -920,
+        -720
+      ],
+      "id": "53d3f3b0-6834-4ff5-b8c4-e42cffefc183",
+      "name": "Webhook",
+      "webhookId": "2732d484-9275-4342-b4b1-2ce58b979aa8",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "quvO0KQt5vjETJuR",
+          "name": "Content Creator auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8296aff9-e3f6-47ff-8497-f73d346c6214",
+              "name": "query",
+              "value": "={{\n    $node[\"On form submission\"].json.query \n    || $node[\"Webhook\"].json.query\n    || $json.query \n}}",
+              "type": "string"
+            },
+            {
+              "id": "80127f8e-c16e-453f-b924-7d32f7d94123",
+              "name": "global_code",
+              "value": "={{\n  $node[\"On form submission\"].json.global_code\n    || $node[\"Webhook\"].json.global_code\n    || $json.global_code\n    || ''\n}}",
+              "type": "string"
+            },
+            {
+              "id": "1f70c1ae-5359-40d0-88ea-6fa6c58f12e7",
+              "name": "additional_research",
+              "value": "={{\n    $node[\"On form submission\"].json.additional_research \n    || $node[\"Webhook\"].json.additional_research\n    || $json.additional_research \n}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -460,
+        -740
+      ],
+      "id": "d6919ea3-a65e-4674-8dcc-dbe653ac5e0d",
+      "name": "Collect input"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e0c5477f-b331-4fd1-8671-0e27832a8345",
+              "name": "query",
+              "value": "={{ $json.body.query }}",
+              "type": "string"
+            },
+            {
+              "id": "00caee80-e7bd-440c-8f23-5a4bc5773788",
+              "name": "global_code",
+              "value": "={{ $json.body.global_code }}",
+              "type": "string"
+            },
+            {
+              "id": "a5ffd520-07a0-4fdd-ba69-d87892a440a7",
+              "name": "additional_research",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -700,
+        -720
+      ],
+      "id": "2a86d9e2-5f2d-433d-b398-af558c8bd893",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.2,
+      "position": [
+        2540,
+        220
+      ],
+      "id": "f1f5bd4e-3a7a-4030-b57b-be7287a19c12",
+      "name": "Anthropic Chat Model",
+      "credentials": {
+        "anthropicApi": {
+          "id": "ADl7Wvu9YXxKvVtY",
+          "name": "Anthropic account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-small",
+        "options": {}
+      },
+      "id": "cac36950-2856-4c5d-865c-08be35924481",
+      "name": "Embeddings OpenAI1",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        200
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "ZjiR1Y4tdzymEK1L",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {
+          "queryName": "match_documents"
+        }
+      },
+      "id": "454fe622-a80b-44b9-ac68-edfd8a48ab97",
+      "name": "Supabase Vector Store1",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1,
+      "position": [
+        1820,
+        20
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolWikipedia",
+      "typeVersion": 1,
+      "position": [
+        1300,
+        140
+      ],
+      "id": "3148b964-bfac-465a-9cac-7b6ef54d19a9",
+      "name": "Wikipedia1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2220,
+        20
+      ],
+      "id": "b2a5bb02-01f0-4c92-b33b-456eebed8995",
+      "name": "OpenAI Chat Model2",
+      "credentials": {
+        "openAiApi": {
+          "id": "ZjiR1Y4tdzymEK1L",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "monumentos_portugal",
+        "description": "Query this tool with the name of the historical site and the city name to get response from http://www.monumentos.gov.pt/",
+        "workflowId": {
+          "__rl": true,
+          "value": "y3SEoNbyzFsiZXtw",
+          "mode": "list",
+          "cachedResultName": "My project — Content Monumentos Portugal"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        1540,
+        240
+      ],
+      "id": "1dc55e1e-79d1-4866-820c-5252c267ce4d",
+      "name": "Monumentos Portugal1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Collect input').item.json.query }} in {{ $json.city_id.toTitleCase() }}",
+        "options": {
+          "systemMessage": "=**Objective**  \nAs a historian specializing in chronological analysis, produce a concise timeline overview for the location: \"{{ $('Collect input').item.json.query }}\" in the city {{ $json.city_id.toTitleCase() }}. If there is insufficient reliable information, respond with:  \n> *No verified historical data available for this location.*  \n\n**Input Requirements**  \n1. Location name: \"{{ $('Collect input').item.json.query }}\"  \n2. All available historical records about the site  \n\n**Tools**\n1. user_documents\nAlways check this tool first\n2. Wikipedia\n3. monumentos_portugal\nQuery this tool with the name of the historical site and the city name to get response from http://www.monumentos.gov.pt/ - the official Portuguese source for information about monuments\n\n"
+        }
+      },
+      "id": "a98178ab-62d7-447b-9a0f-c50bf584ec75",
+      "name": "Timeline",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        120,
+        -820
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Collect input').first().json.query }} in {{ $('Get city').first().json.city_id.toTitleCase() }}",
+        "options": {
+          "systemMessage": "=**Objective**  \nAs an architectural expert on Heritage Navigator's platform, create a technical yet accessible analysis for key structures at \"{{ $('Collect input').first().json.query }}\" in the city {{ $('Get city').first().json.city_id.toTitleCase() }}. If no valid data can be confirmed, respond with:  \n> *No verified architectural data available for this location.*\n\n**Input Requirements**  \n1. Location name: \"{{ $('Collect input').first().json.query }}\"  \n2. All available architectural records  \n\n**Tools**\n1. user_documents\nAlways check this tool first\n2. Wikipedia\n3. monumentos_portugal\nQuery this tool with the name of the historical site and the city name to get response from http://www.monumentos.gov.pt/ - the official Portuguese source for information about monuments\n"
+        }
+      },
+      "id": "6c1f423c-5463-49c2-9f4e-b3b700db380d",
+      "name": "Architecture",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        580,
+        -820
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Collect input').first().json.query }} in {{ $('Get city').first().json.city_id.toTitleCase() }}",
+        "options": {
+          "systemMessage": "=**Objective**  \nAs a cultural historian on Heritage Navigator, provide a concise overview of religious and artistic movements at \"{{ $('Collect input').first().json.query }}\". If no verifiable records exist, respond with:  \n> *No verified cultural data available for this location.*\n\n**Input Requirements**  \n1. Location name: \"{{ $('Collect input').first().json.query }}\"  \n2. All cultural/historical documentation   \n\n**Tools**\n1. user_documents\nAlways check this tool first\n2. Wikipedia\n3. monumentos_portugal\nQuery this tool with the name of the historical site and the city name to get response from http://www.monumentos.gov.pt/ - the official Portuguese source for information about monuments\n"
+        }
+      },
+      "id": "e150b51d-3af2-4221-9823-3cad2a20c360",
+      "name": "Culture",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        980,
+        -820
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Collect input').first().json.query }} in {{ $('Get city').first().json.city_id.toTitleCase() }}",
+        "options": {
+          "systemMessage": "=**Objective**  \nAs a folk history specialist on Heritage Navigator magazine, present succinct micro-narratives for \"{{ $('Collect input').first().json.query }}\". If no credible data is available, respond with:  \n> *No verified anecdotal data available for this location.*\n\n**Input Requirements**  \n1. Location name: \"{{ $('Collect input').first().json.query }}\"  \n2. All oral histories or archival records   \n\n**Tools**\n1. user_documents\nAlways check this tool first\n2. Wikipedia\n3. monumentos_portugal\nQuery this tool with the name of the historical site and the city name to get response from http://www.monumentos.gov.pt/ - the official Portuguese source for information about monuments\n"
+        }
+      },
+      "id": "6f986737-7fc7-4205-abe0-27b1639f4013",
+      "name": "Anecdote",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        1400,
+        -820
+      ]
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"shortDescription\": {\n      \"type\": \"string\",\n      \"description\": \"A concise summary of the historical site (max 60 characters).\"\n    },\n    \"introduction\": {\n      \"type\": \"string\",\n      \"description\": \"An introduction section that begins with <h2>Introduction</h2> and contains 60-80 words in English, formatted in HTML with <p> tags.\"\n    },\n    \"mainStory\": {\n      \"type\": \"string\",\n      \"description\": \"The main story section that starts with <h2>Historic Highlights</h2> and includes 400-800 words of detailed historical and cultural content in English. The content should be formatted in HTML using paragraphs (<p>), bold (<b>), italic (<i>), and additional subsections for readability.\"\n    },\n    \"academicBackground\": {\n      \"type\": \"string\",\n      \"description\": \"An academic background section that begins with <h2>Timeline & Context</h2> followed by <h4>Historical Timeline</h4>. It must include a <ul> list of key historical dates and events formatted as list items (<li>) with bolded periods, and contain 400-600 words in English, using HTML formatting.\"\n    }\n  },\n  \"required\": [\n    \"shortDescription\",\n    \"introduction\",\n    \"mainStory\",\n    \"academicBackground\"\n  ]\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        2840,
+        220
+      ],
+      "id": "3e410646-86b4-4764-8168-275a226e3bdd",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -260,
+        -80
+      ],
+      "id": "6d6a9f1d-c415-403d-92b5-3a60aa0e2de3",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "lw4yNIR7bkr06aVc",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Collect input').first().json.query }} in {{ $('Get city').first().json.city_id.toTitleCase() }}\n\nTimeline agent's input: {{ $('Timeline').first().json.output }}\n\nArchitecture agent's input: {{ $('Architecture').first().json.output }}\n\nCulture agent's input: {{ $('Culture').first().json.output }}\n\nAnecdote agent's input: {{ $('Anecdote').first().json.output }}\n\nDaily Life agent's input: {{ $('Daily Life').first().json.output }}\n\nSocial & Political agent's input: {{ $('Social & Political').item.json.output }}\n\nVerified Additional important human research:  {{ $('Collect input').item.json.additional_research }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=**Narrative Compilation Protocol for \"{{ $('Collect input').first().json.query }}\"**  \n\n**Objective**  \nAs chief editor integrated with Heritage Navigator, synthesize multi-agent inputs into a unified narrative that balances academic depth with public accessibility, optimized for our target demographics (cultural tourists 45-70, educators, and local history enthusiasts).\nYou need to prioritize which topics from the sub-agents you want to emphasize in order to create a story that is as engaging as possible for the target audience.\n\n**Friendly and Engaging**\nUse a warm, welcoming style that treats the reader like a valued guest.\nKeep sentences shorter and use inclusive language such as “we” and “us” to build rapport.\nEncourage curiosity about historical or cultural details without overwhelming the reader with jargon.\nUse direct calls to action when relevant, like “Discover,” “Explore,” or “Immerse yourself.”\nEngage emotions by highlighting the human stories behind the facts.\n\n**Input Requirements**  \n1. Structured data from all specialized agents  \n\n**Output Specifications**  \n_A multi-format narrative containing:_  \n\n1. **Engagement Hook**  \n   - 1-sentence thematic premise (\"A fortress where Gothic austerity meets Baroque whimsy\")  \n   - 3 key narrative threads (Power, Faith, Innovation)  \n\n2. **Modular Content Sections**   \n   ## The Living Legacy of [{{ $('Collect input').first().json.query }}]  \n   [Context-rich opening paragraph linking chronology and culture]  \n\n   ### Stone & Story: Architecture Through Ages  \n   [Fusion of technical specs and human history]  \n\n   **Did You Know?**  \n   [Anecdote carousel integration point]  \n   ```\n\n3. **Audience-Specific Adaptations**  \n   | Demographic | Content Emphasis | Length |  \n   |---|---|---|  \n   | Casual Tourists | Anecdotes + Visual highlights | 400-800 words |  \n   | Academic Users | Source analysis + Controversies | 400-800 words |  \n\n**Quality Requirements**  \n✓ Maintain 65:35 ratio of verified facts to cultural narratives  \n✓ Apply Flesch-Kincaid Grade Level 8-10 readability     \n✓ Validate against mobile UI text rendering tests  \n\n**Formatting Rules in mainStory**  \n▲ Use **bold** section headers with emoji prefixes (🏰 🎨 ⛪ 🎭 ⚔️ 🌟) \n▲ Apply responsive content chunks (max 150 words each)\n▲ Include 2-4 pull quotes from notable sources  \n\n**Example Output Structure in mainStory**   \n## Echoes in Stone: 800 Years of [{{ $('Collect input').first().json.query }}]  \nBeneath its Gothic spires lies a palimpsest of Crusader ambitions and Renaissance artistry...  \n\n🏰 **Architectural Crossroads**  \nThe 14th-century keep demonstrates rare *opus mixtum* construction (alternating brick/stone)...  \n\nA fortress built with both prayer books and battlements\" - Dr. Elena Marquez, 2022  \n\n🎭 **Cultural Contradictions**  \n1521 Reformation clashes left...  \n\n**Visitor Tip**  \nThe south tower's \"Laughing Gargoyle\" inspired local festival traditions...  \n\n... [additional sections]  \n```\n\nYou must create the content in these 4 main sections:\n\n### shortDescription (max 60 characters)\n  - Brief description for the overview of historical sites in the city\n### introduction (60-80 words)\n  - This section is an introduction and an appetizer.\n  - Begin with the header: `<h2>Introduction</h2>`\n  - HTML formatted. Don't use \\n\\n\n### mainStory (400-800 words)\n  - This section is narrative and engaging\n  - Begin with the header: `<h2>Historic Highlights</h2>`\n  - Use the formatting rules for mainStory in this section \n  - Include at least one memorable anecdote pe   -r 200 words if you got any from the research material\n  - HTML formatted. Don't use \\n\\n\n### academicBackground (400-600 words)\n  - This section is more fact-based and shorter and more precisely formulated than the mainStory section, and contains academic background knowledge\n  - Don't repeat things from mainStory, but make background information for people who are interested in a deeper knowledge\n  - HTML formatted. Don't use \\n\\n\n  - Begin with the header: `<h2>Timeline & Context</h2>` followed by `<h3>Historical Timeline</h3>`\n  - Include a `<ul>` list with key historical dates and events formatted as `<li><b>period</b> period-short-description</li>` (see example below).\n\nExample for Historical Timeline:\n```\n<ul>\n    <li><b>8th-11th centuries</b> Initial Islamic settlement and fortification of the site</li>\n    <li><b>12th century</b> Construction of the main castle structure during the Almohad period</li>\n    <li><b>1242</b> Christian reconquest of Tavira and the castle by D. Paio Peres Correia</li>\n    <li><b>14th-15th centuries</b> Major renovations and strengthening of the fortifications</li>\n    <li><b>16th-17th centuries</b> Gradual transition from military to symbolic importance</li>\n    <li><b>20th century</b> Addition of current battlements and preservation work</li>\n</ul>\n```\n\n# Output Format\nYour final output must be a valid JSON object exactly following this structure:\n```\n{\n  \"shortDescription\": \"\",\n  \"introduction\": \"\",\n  \"mainStory\": \"\",\n  \"academicBackground\": \"\"\n}\n```\nDo not include any additional text or explanations. Only output the JSON object."
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        2560,
+        -820
+      ],
+      "id": "050db104-f354-479c-8b6e-bcb0cd4498f3",
+      "name": "Editor"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Collect input').first().json.query }} in {{ $('Get city').first().json.city_id.toTitleCase() }}",
+        "options": {
+          "systemMessage": "=**Objective**  \nAs a historian specializing in everyday culture, produce a concise yet vivid account of how ordinary people lived through various periods in “{{ $('Collect input').first().json.query }}.” If no verifiable data exists, respond with:  \n> *No verified information on daily life and culture is available for this location.*  \n\n**Input Requirements**  \n1. Location name: “{{ $('Collect input').first().json.query }}”  \n2. Relevant historical/cultural references  \n\n**Tools**\n1. user_documents\nAlways check this tool first\n2. Wikipedia\n3. monumentos_portugal\nQuery this tool with the name of the historical site and the city name to get response from http://www.monumentos.gov.pt/ - the official Portuguese source for information about monuments\n"
+        }
+      },
+      "id": "c455e81f-9895-4260-ae05-51dbb678ef77",
+      "name": "Daily Life",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        1760,
+        -820
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Collect input').first().json.query }} in {{ $('Get city').first().json.city_id.toTitleCase() }}",
+        "options": {
+          "systemMessage": "=**Objective**  \nAs a historical sociopolitical researcher, provide an overview of how governance, power struggles, and societal changes shaped the buildings and urban layout at “{{ $('Collect input').first().json.query }}.” If no credible information is available, respond with:  \n> *No verified sociopolitical data available for this location.*\n\n**Input Requirements**  \n1. Location name: “{{ $('Collect input').first().json.query }}”  \n2. Relevant historical records (political, military, ecclesiastical)  \n\n**Tools**\n1. user_documents\nAlways check this tool first\n2. Wikipedia\n3. monumentos_portugal\nQuery this tool with the name of the historical site and the city name to get response from http://www.monumentos.gov.pt/ - the official Portuguese source for information about monuments\n"
+        }
+      },
+      "id": "784b87ac-64e1-4332-a406-f3197c422cc9",
+      "name": "Social & Political",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        2160,
+        -820
+      ]
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -700,
+        -180
+      ],
+      "id": "6911102a-deff-472b-bb05-f3a16c0a277d",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "formTitle": "Create Content",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "query",
+              "placeholder": "Stedets navn"
+            },
+            {
+              "fieldLabel": "global_code"
+            },
+            {
+              "fieldLabel": "additional_research",
+              "fieldType": "textarea",
+              "placeholder": "F.eks. fra NotebookLM"
+            },
+            {
+              "fieldLabel": "city",
+              "placeholder": "tavira"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -820,
+        -460
+      ],
+      "id": "8c0aa13b-46bc-4397-8379-49ebbfae6a1b",
+      "name": "On form submission",
+      "webhookId": "29901691-cb4a-4fd6-9b87-7d2efb3368cd"
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-3.7-sonnet",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        2740,
+        560
+      ],
+      "id": "663c3b47-8934-41a8-9e41-4ade5bd9212b",
+      "name": "Anthropic 3.7",
+      "credentials": {
+        "openRouterApi": {
+          "id": "p82huCAcsjyIZh7S",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "sites",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{ $json.global_code }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -180,
+        -840
+      ],
+      "id": "e46a4872-02d3-4cfe-9488-9af9fbc23218",
+      "name": "Get city",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        120,
+        -60
+      ],
+      "id": "358ce954-d274-48ac-b9e6-79b3dc1e75d6",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "ZjiR1Y4tdzymEK1L",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "user_documents",
+        "description": "Historical documents",
+        "topK": 5
+      },
+      "id": "dd7ad831-26b6-4f16-9260-fa54d367d8d3",
+      "name": "user_documents",
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1,
+      "position": [
+        1980,
+        -140
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=# Rolle\nDu er en hjælpsom assistent der kommunikerer med brugeren på dansk.\nDu kan afdække hvad vi har i værktøjet user_documents som er et vector store der indeholder pdf dokumenter om lokalhistorie\nFormålet er at give brugeren viden om indholdet af user_documents\n\n# Regler\nDu skal kun bruge de oplysninger der står i user_documents når du bliver spurgt om et emne. Du må ikke videregive din egen viden.\n"
+        }
+      },
+      "id": "dd9b164c-08a1-43c0-9673-89a072fe28a0",
+      "name": "RAG AI Agent1",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        -200,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "public": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -500,
+        160
+      ],
+      "id": "5d414e5a-20c2-45f9-91fd-d7076ebc7a30",
+      "name": "When chat message received",
+      "webhookId": "b183bf9a-35ef-4ce3-aecd-34fbd3c9067c",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -640,
+        940
+      ],
+      "id": "ea88386e-e036-401f-aba5-8ab90399589b",
+      "name": "OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "ZjiR1Y4tdzymEK1L",
+          "name": "OpenAi account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Gmail": {
+      "main": [
+        [
+          {
+            "node": "Check Feedback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Check Feedback",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Feedback": {
+      "main": [
+        [
+          {
+            "node": "Publish",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Rejected",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Content Revision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Content Revision": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Collect input": {
+      "main": [
+        [
+          {
+            "node": "Get city",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Collect input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Editor",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Content Revision",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store1": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "user_documents",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wikipedia1": {
+      "ai_tool": [
+        [
+          {
+            "node": "Architecture",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "Culture",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "Anecdote",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "Daily Life",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "Social & Political",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "Timeline",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "user_documents",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Monumentos Portugal1": {
+      "ai_tool": [
+        [
+          {
+            "node": "Architecture",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "Culture",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "Anecdote",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "Daily Life",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "Social & Political",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "Timeline",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Timeline": {
+      "main": [
+        [
+          {
+            "node": "Architecture",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Architecture": {
+      "main": [
+        [
+          {
+            "node": "Culture",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Culture": {
+      "main": [
+        [
+          {
+            "node": "Anecdote",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anecdote": {
+      "main": [
+        [
+          {
+            "node": "Daily Life",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Content Revision",
+            "type": "ai_outputParser",
+            "index": 0
+          },
+          {
+            "node": "Editor",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Architecture",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Culture",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Anecdote",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Daily Life",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Social & Political",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Timeline",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Editor": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Daily Life": {
+      "main": [
+        [
+          {
+            "node": "Social & Political",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Social & Political": {
+      "main": [
+        [
+          {
+            "node": "Editor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Collect input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Collect input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic 3.7": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "RAG AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "user_documents": {
+      "ai_tool": [
+        [
+          {
+            "node": "Timeline",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "Architecture",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "Culture",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "Anecdote",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "Daily Life",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "Social & Political",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "RAG AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "RAG AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI1": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "Get city": {
+      "main": [
+        [
+          {
+            "node": "Timeline",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "ed1b6e56-c539-4f8f-861f-0d614e1be3ca",
+  "triggerCount": 3,
+  "shared": [
+    {
+      "createdAt": "2025-02-18T06:22:53.573Z",
+      "updatedAt": "2025-02-18T06:22:53.573Z",
+      "role": "workflow:owner",
+      "workflowId": "uXiuWL9QKXGtJAV6",
+      "projectId": "rkqKISKa14HwF9Xd"
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-01-28T15:25:26.214Z",
+      "updatedAt": "2025-01-28T15:25:26.214Z",
+      "id": "BngebX50Ev8rBclu",
+      "name": "HN Content manager"
+    }
+  ]
+}
