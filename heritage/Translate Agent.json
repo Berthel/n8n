@@ -1,0 +1,1013 @@
+{
+  "createdAt": "2025-02-02T04:14:00.552Z",
+  "updatedAt": "2025-05-18T18:41:21.000Z",
+  "id": "XUkV5TNfmvJDn6dc",
+  "name": "Translate Agent",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "site_id"
+            },
+            {
+              "name": "city_id"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -900,
+        85
+      ],
+      "id": "296d7192-40fb-4223-b634-e18ec5de4ee1",
+      "name": "Workflow Input Trigger"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b0a144e5-0bc7-4fba-a65d-3912655613fe",
+              "name": "query",
+              "value": "=rpc/get_missing_translation_languages",
+              "type": "string"
+            },
+            {
+              "id": "12897d42-9636-4575-a16b-c2f95809da7d",
+              "name": "body",
+              "value": "={   \"site_id_arg\": \"{{ $json.site_id }}\", \"city_arg\": \"{{ $json.city_id }}\" }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -460,
+        85
+      ],
+      "id": "5e0a5a28-6fbd-4817-9eca-773b224ca843",
+      "name": "Q: get missing translation language"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b0a144e5-0bc7-4fba-a65d-3912655613fe",
+              "name": "query",
+              "value": "=rpc/get_site_detail_section_translation",
+              "type": "string"
+            },
+            {
+              "id": "12897d42-9636-4575-a16b-c2f95809da7d",
+              "name": "body",
+              "value": "={ \"site_id_arg\": \"{{ $('Get city').first().json.id }}\",  \"detail_section_arg\": \"%main\" }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -900,
+        -700
+      ],
+      "id": "a00ac6d8-88f8-4d3c-aef7-2cb908d85245",
+      "name": "Q: get main content"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://rrkivosxnrfvdawawexd.supabase.co/rest/v1/{{ $json.query }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.body }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -680,
+        -700
+      ],
+      "id": "2f5442ca-29b1-49f1-83ea-63ffc930b0b8",
+      "name": "Call Supabase rpc1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "znNIyfNCzQN57VEr",
+          "name": "supabase service role api"
+        },
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Målsprogskode: {{ $('Get target language').item.json.target_language_code }}.\nKildetekst:  {{ $('Get english versions').item.json.content }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=**# Rolle**  \nDu er en **kulturfølsom rejseguide-oversætter**, der specialiserer sig i at oversætte historiske, arkitektoniske og kulturelle tekster til internationale turister (45+ år). Dit mål er at skabe letlæselige, engagerende oversættelser, der respekterer både kildekulturen og målgruppens behov for klarhed og kulturel autenticitet.  \n\n**# Instruktioner**  \n1. **Kulturel Nøjagtighed:**  \n   - Bevar originale kulturspecifikke termer (f.eks. \"Estação Elevatória\", \"Fontinha\") og tilføj en kort forklaring på målsproget i parentes, hvis konteksten kræver det.  \n   - Oversæt historiske titler, tekniske udtryk og lokale traditioner med research-baseret præcision.\n   - Kildesproget er normalt engelsk. Hvis målsproget også er engelsk skal du stadig foretage oversættelsen/genfortællingen så teksten bliver i overensstemmelse med formålet.\n\n2. **Sproglig Tilgængelighed:**  \n   - Brug naturligt, voksenrettet sprog uden unødvendig kompleksitet eller ungdomsidiomer.  \n   - Prioriter korte sætninger og aktiv formulering for bedre læsbarhed (f.eks. \"Tavira byggede...\" i stedet for \"Der blev bygget...\").  \n\n3. **Teknisk Integritet:**  \n   - Bevar **nøjagtig HTML-struktur** (tags, attributter, klasse-navne, blockquote og <cite>).  \n   - Luk aldrig ukomplette tags (f.eks. \"…contr…” → \"…contrasterer…\").  \n\n\n4. **Kontekstuel Adaption:**  \n   - Tilpas måleenheder/datoer til målsprogets normer (f.eks. \"1920s\" → \"1920’erne\" på dansk, \"década de 1920\" på spansk).  \n   - Undgå direkte oversættelser af idiomer, der ikke eksisterer på målsproget (f.eks. \"crown jewel\" → \"vigtigste perle\" på dansk).  \n\n**# Input-Parametre**  \n- `Kildetekst`: Tekst med HTML-tags (overskrifter, lister, links).  \n- `Målsprogskode`: ISO 639-1 (f.eks. \"da\", \"pt\", \"es\").  \n\n**# Output**  \nKun den færdige oversættelse i korrekt HTML-format, uden kommentarer eller markdown.  \n\n---\n\n**Eksempel på Oversættelse til Portugisisk (pt):**  \n```html  \n<h2>Contextualização Histórica</h2>  \n<p>Na década de 1920, Tavira construiu a Estação Elevatória de Águas da Fontinha (<i>sistema de abastecimento de água</i>), um marco do modernismo português.</p>  \n```  \n\n**Eksempel til Spansk (es):**  \n```html  \n<h3>Patrimonio Arquitectónico</h3>  \n<p>Los azulejos tradicionales (<i>baldosas de cerámica pintada</i>) ilustran la influencia árabe en la región.</p>  \n```  \n\n---\n\n**Formål:** At levere oversættelser, der føles som en **naturlig del af en velinformeturistguide** – præcise nok til historieentusiaster, men tilgængelige nok til tilfældige besøgende."
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        1740,
+        -440
+      ],
+      "id": "9edda424-1289-4f20-8331-605b1af10c69",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "tableId": "detail_section_translations",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "detail_section_id",
+              "fieldValue": "={{ $('Get english versions').item.json.detail_section_id }}"
+            },
+            {
+              "fieldId": "language_code",
+              "fieldValue": "={{ $('Get target language').item.json.target_language_code }}"
+            },
+            {
+              "fieldId": "content",
+              "fieldValue": "={{ $('Basic LLM Chain').item.json.text.match(/<[\\s\\S]*>/)[0] }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2116,
+        -240
+      ],
+      "id": "c4378a28-8d86-4151-8f90-00108450972c",
+      "name": "Supabase1",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://rrkivosxnrfvdawawexd.supabase.co/rest/v1/{{ $('Q: get missing translation language').first().json.query }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $('Q: get missing translation language').first().json.body }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1520,
+        -340
+      ],
+      "id": "e1b9e0d9-4aca-4ae2-a956-8bfd4b7e6ba7",
+      "name": "Get target language",
+      "executeOnce": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "znNIyfNCzQN57VEr",
+          "name": "supabase service role api"
+        },
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "site_translations",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "site_id",
+              "keyValue": "={{ $('Edit Fields').first().json.site_id }}"
+            },
+            {
+              "keyName": "language_code",
+              "keyValue": "=en"
+            },
+            {
+              "keyName": "city_id",
+              "keyValue": "={{ $('Edit Fields').first().json.city_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1520,
+        -40
+      ],
+      "id": "e764fd5e-f23d-4058-af6e-8c584204dcb6",
+      "name": "Supabase6",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Oversæt til dette sprog: {{ $json.target_language_code }}\nOversæt name:  {{ $('Remove Duplicates2').item.json.name }}\nOversæt description: {{ $('Remove Duplicates2').item.json.description }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=**# Rolle**  \nDu er en **kulturfølsom navne- og beskrivelsesoversætter** til historiske steder. Din opgave er at oversætte eller tilpasse navne og korte beskrivelser til internationale turister (45+ år) med fokus på kulturel autenticitet og klarhed.  \n\n**# Instruktioner**  \n1. **Navneoversættelse:**  \n   - Oversæt kun navnet (`name`), hvis det er et **generisk udtryk** (f.eks. \"Water Pumping Station\" → \"Estação Elevatória\" på portugisisk).  \n   - Bevar **lokale kulturspecifikke navne** (f.eks. \"Fontinha\" forbliver \"Fontinha\").  \n   - Tilføj en kort oversættelse/fortolkning i parentes KUN hvis navnet er uklart for turister (f.eks. \"Castelo de Tavira\" → \"Castelo de Tavira (Tavira-borgen)\" på dansk).  \n\n2. **Beskrivelsesoversættelse:**  \n   - Oversæt altid beskrivelsen (`description`) til målsproget med præcis kultur- og historieformidling.  \n   - Forklar tekniske/kulturelle termer i parentes FØRSTE gang de nævnes (f.eks. \"azulejos (malte keramikfliser)\").  \n\n3. **Sproglig Tilpasning:**  \n   - Brug naturligt, voksenrettet sprog uden slang.  \n   - Tilpas datoer/måleenheder (f.eks. \"1920s\" → \"1920’erne\" på dansk).  \n\n**# Input-Parametre**  \n- `name`: Navn på historisk sted (kan være generisk eller kulturelt specifikt).  \n- `description`: 1-2 linjers beskrivelse.  \n- `Målsprogskode`: ISO 639-1 (f.eks. \"da\", \"pt\").  \n\n**# Output**  \nKun disse to felter i **nøjagtig JSON-struktur**:  \n```json  \n{\n  \"translated_name\": \"[Oversat eller originalt navn]\",\n  \"translated_description\": \"[Oversat beskrivelse]\"  \n}\n```  \n\n---\n\n**Eksempel:**  \nInput:  \n```json  \n{\n  \"name\": \"Fontinha\",\n  \"description\": \"1920s water reservoir with modernist tilework\"\n}  \n```  \n\n\"# Output\"\nReturner kun et rent JSON-objekt:\n{\n  \"translated_name\": \"[Oversat eller originalt navn]\",\n  \"translated_description\": \"[Oversat beskrivelse]\"\n}\n\n\n---\n\n**Formål:** At levere præcise, letfordøjelige oversættelser der fungerer i både digitale kort, lydguides og brochurer – uden at turister behøver ekstra kontekst."
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        2336,
+        60
+      ],
+      "id": "0587b88e-ba8d-469e-9cc4-a8c8682e692b",
+      "name": "Basic LLM Chain3"
+    },
+    {
+      "parameters": {
+        "tableId": "site_translations",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "site_id",
+              "fieldValue": "={{ $('Edit Fields').item.json.site_id }}"
+            },
+            {
+              "fieldId": "language_code",
+              "fieldValue": "={{ $('Get target language1').item.json.target_language_code }}"
+            },
+            {
+              "fieldId": "name",
+              "fieldValue": "={{ $json.output.translated_name }}"
+            },
+            {
+              "fieldId": "description",
+              "fieldValue": "={{ $json.output.translated_description }}"
+            },
+            {
+              "fieldId": "source",
+              "fieldValue": "auto"
+            },
+            {
+              "fieldId": "city_id",
+              "fieldValue": "={{ $('Edit Fields').item.json.city_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2712,
+        60
+      ],
+      "id": "f229ba83-ee71-40be-8ade-55269ac6fb7c",
+      "name": "Supabase7",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "claude-3-5-sonnet-20241022",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.2,
+      "position": [
+        -900,
+        920
+      ],
+      "id": "1f788c4a-b472-4702-8d29-a9880b95410f",
+      "name": "Anthropic Chat Model2",
+      "credentials": {
+        "anthropicApi": {
+          "id": "ADl7Wvu9YXxKvVtY",
+          "name": "Anthropic account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const currentItem = $input.item.json;\nconst parsedData = JSON.parse(currentItem.text);\n\nreturn {\n  json: {\n    translated_name: parsedData.translated_name,\n    translated_description: parsedData.translated_description,\n    language_code: currentItem.language_code\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -900,
+        420
+      ],
+      "id": "54f31272-98c2-4649-b7dd-9b210b17cfed",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "tableId": "detail_section_translations",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "detail_section_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Get detail_sections id').item.json.id }}"
+            },
+            {
+              "keyName": "language_code",
+              "condition": "eq",
+              "keyValue": "={{ $('Remove Duplicates').item.json.target_language_code }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        640,
+        135
+      ],
+      "id": "cd8f95d6-4695-48dc-a93d-40d55b14fd34",
+      "name": "Delete overview",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://rrkivosxnrfvdawawexd.supabase.co/rest/v1/{{ $('Q: get missing translation language').item.json.query }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $('Q: get missing translation language').item.json.body }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -240,
+        85
+      ],
+      "id": "55e6faf6-04dd-4856-b485-7d3c50cae975",
+      "name": "Get target language3",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "znNIyfNCzQN57VEr",
+          "name": "supabase service role api"
+        },
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3ff926b7-67f8-41b0-bfba-6991c57ad3b7",
+              "name": "site_id",
+              "value": "={{ $json.site_id }}",
+              "type": "string"
+            },
+            {
+              "id": "0ebfe6d3-aa32-4381-a1f0-ba35376fd4db",
+              "name": "city_id",
+              "value": "={{ $json.city_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -680,
+        85
+      ],
+      "id": "34cf9d1c-cc85-4b9b-bad9-0fa09e2f5b29",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "\n{\n\"translated_name\": \n\"Den Romerske Bro (Ponte Antiga)\",\n\"translated_description\": \n\"Middelalderlig bro der forbinder det historiske og nutidige Tavira\"\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        2424,
+        280
+      ],
+      "id": "3a8399c1-8c92-4926-adb9-7bdd55662fbb",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "model": "google/gemini-2.0-flash-exp:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -900,
+        680
+      ],
+      "id": "1e3efde7-a1e4-4a44-8824-1e22d385fca6",
+      "name": "Openrouter",
+      "credentials": {
+        "openRouterApi": {
+          "id": "p82huCAcsjyIZh7S",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1828,
+        -220
+      ],
+      "id": "887179b4-e59d-4958-b292-99f45f3baeca",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "lw4yNIR7bkr06aVc",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "detail_sections",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "site_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Edit Fields').item.json.site_id }}"
+            },
+            {
+              "keyName": "city_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Edit Fields').item.json.city_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        200,
+        85
+      ],
+      "id": "daa209e3-43e7-4517-ab8f-738a879e371a",
+      "name": "Get detail_sections id",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        -20,
+        85
+      ],
+      "id": "5052bc30-231a-4508-8825-919268caafaf",
+      "name": "Remove Duplicates"
+    },
+    {
+      "parameters": {
+        "options": {
+          "reset": false
+        }
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        420,
+        85
+      ],
+      "id": "731dd799-3074-4946-bdbc-6bc48e29edb0",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "detail_sections",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "site_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Edit Fields').first().json.site_id }}"
+            },
+            {
+              "keyName": "city_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Edit Fields').first().json.city_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        640,
+        -65
+      ],
+      "id": "c20042f6-45e7-4b9e-9478-44f71902833c",
+      "name": "Get detail_sections id1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        860,
+        -65
+      ],
+      "id": "71518ddc-9208-47a7-b026-77bac29c84f9",
+      "name": "Remove Duplicates1"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "detail_section_translations",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "detail_section_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.id }}"
+            },
+            {
+              "keyName": "language_code",
+              "condition": "eq",
+              "keyValue": "en"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1080,
+        -65
+      ],
+      "id": "16cf7adc-0054-4c8b-8f1a-412d731432b5",
+      "name": "Get english versions",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1300,
+        -65
+      ],
+      "id": "780a97dd-ad9f-475e-bc2e-815d8fed4efa",
+      "name": "Loop Over Items1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://rrkivosxnrfvdawawexd.supabase.co/rest/v1/{{ $('Q: get missing translation language').first().json.query }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $('Q: get missing translation language').first().json.body }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2116,
+        60
+      ],
+      "id": "398be6d9-608a-4eae-8f4e-b6d8e87db22e",
+      "name": "Get target language1",
+      "executeOnce": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "znNIyfNCzQN57VEr",
+          "name": "supabase service role api"
+        },
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        1818,
+        -40
+      ],
+      "id": "8a2fc4c0-0f29-4d61-bfc7-6b8eca506927",
+      "name": "Remove Duplicates2"
+    }
+  ],
+  "connections": {
+    "Workflow Input Trigger": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Q: get missing translation language": {
+      "main": [
+        [
+          {
+            "node": "Get target language3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Q: get main content": {
+      "main": [
+        [
+          {
+            "node": "Call Supabase rpc1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Supabase rpc1": {
+      "main": [
+        []
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Supabase1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get target language": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase6": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain3": {
+      "main": [
+        [
+          {
+            "node": "Supabase7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model2": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "Supabase7": {
+      "main": [
+        []
+      ]
+    },
+    "Code1": {
+      "main": [
+        []
+      ]
+    },
+    "Delete overview": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get target language3": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Q: get missing translation language",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain3",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Openrouter": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Basic LLM Chain3",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get detail_sections id": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates": {
+      "main": [
+        [
+          {
+            "node": "Get detail_sections id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Get detail_sections id1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Delete overview",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get detail_sections id1": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates1": {
+      "main": [
+        [
+          {
+            "node": "Get english versions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get english versions": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [
+          {
+            "node": "Supabase6",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get target language",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get target language1": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates2": {
+      "main": [
+        [
+          {
+            "node": "Get target language1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "4a4ab0bc-1f59-41b3-9a33-5e32de189114",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-02-02T04:14:00.555Z",
+      "updatedAt": "2025-02-02T04:14:00.555Z",
+      "role": "workflow:owner",
+      "workflowId": "XUkV5TNfmvJDn6dc",
+      "projectId": "rkqKISKa14HwF9Xd"
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-01-28T15:25:26.214Z",
+      "updatedAt": "2025-01-28T15:25:26.214Z",
+      "id": "BngebX50Ev8rBclu",
+      "name": "HN Content manager"
+    }
+  ]
+}
