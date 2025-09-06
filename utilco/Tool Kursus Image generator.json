@@ -1,0 +1,573 @@
+{
+  "createdAt": "2025-04-30T12:33:00.076Z",
+  "updatedAt": "2025-05-22T14:09:39.000Z",
+  "id": "hs2iwVsjN8phf01l",
+  "name": "Tool Kursus Image generator",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "b64_json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1936,
+        130
+      ],
+      "id": "eb78e470-c096-45f5-990e-191976778967",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/images/edits",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "gpt-image-1"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "image",
+              "inputDataFieldName": "data"
+            },
+            {
+              "name": "prompt",
+              "value": "={{ $('Billedeprompt').item.json.text }}. "
+            },
+            {
+              "name": "size",
+              "value": "1536x1024"
+            },
+            {
+              "name": "n",
+              "value": "1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1496,
+        130
+      ],
+      "id": "96d11417-8413-4987-bd82-2fac6a1e07f2",
+      "name": "Generate Image",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "eX2NI5wnxq8XdlfH",
+          "name": "OpenAI Image"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "042928d2-6f23-4554-ab8b-b70515304add",
+              "name": "eksempel_url",
+              "value": "={{ $json.eksempel_url }}",
+              "type": "string"
+            },
+            {
+              "id": "6a898a8b-5501-4a7f-ba06-88121861a960",
+              "name": "Billedtekst",
+              "value": "=Billedtekst:\n{{ $json.Billedtekst }}",
+              "type": "string"
+            },
+            {
+              "id": "2d8ac8c4-b686-4fbc-881b-21c9cfff54fb",
+              "name": "image_name",
+              "value": "={{ $json.image_name }}",
+              "type": "string"
+            },
+            {
+              "id": "97aa1c95-253e-4b85-9bd6-f199b790b3e2",
+              "name": "Billedetype",
+              "value": "Generelt",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        140
+      ],
+      "id": "1542ae2a-71cf-4117-b5d1-bc6e8de9a448",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-4.1",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        768,
+        100
+      ],
+      "id": "409e91e2-45dd-482d-820b-5ce1c970f1ff",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "0zn5wOZxvTwrpo6y",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://iynjlzzmszozpxpgldaa.supabase.co/storage/v1/object/images/test/{{ $now.format('yyyyMMddHHmmss') }}_{{$itemIndex}}.png\n",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "image/png"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2156,
+        130
+      ],
+      "id": "c8611f95-4a95-4445-bb4c-281f4c9a2f05",
+      "name": "Upload billede",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "7GfqTh2E9gfVr2Gp",
+          "name": "Header Auth account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputSource": "jsonExample",
+        "jsonExample": "{\n\"eksempel_url\": \n\"https://iynjlzzmszozpxpgldaa.supabase.co/storage/v1/object/public/images/test/kursusintro_ref.png\",\n\"Billedtekst\": \n\"Velkommen til vores online kursus Introduktion til risikostyring, der er specialdesignet til ledere inden for vandselskaber. Vi er glade for at du har valgt at deltage i dette uddannelsesforløb, hvor du vil tilegne dig værdifuld viden og praktiske færdigheder inden for risikostyring.\\n\\nKursusbeskrivelse\\nDette online kursus er designet til at give ledere inden for vandselskaber en grundlæggende forståelse af risikostyring. Gennem modulerne vil du lære om metoder til identificering, vurdering og håndtering af risici, samt hvordan man kan integrere risikostyring i beslutningsprocesser. Kurset består af praktiske eksempler, teoretiske modeller og interaktive opgaver, der understøtter selvstudie.\\n\\nLæringsmål\\nEfter gennemførelse af dette kursus vil du være i stand til at:\\n\\nForstå de grundlæggende principper og begreber inden for risikostyring\\nKunne identificere og klassificere risici i forbindelse med vandselskaber\\nAnvende metoder til risikovurdering og analyseteknikker\\nUdvikle handlingsplaner for risikohåndtering\\nIntegrere risikostyring i beslutningsprocesser i organisationen\",\n\"image_name\": \n\"grafik\",\n\"Billedetype\": \n\"Generelt\",\n\"ref_table_name\":\n  \"modules\",\n  \"ref_table_id\":\n  \"14a8851d-72a3-40f3-a345-19178a5500a6\"\n}\n\n"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        20,
+        140
+      ],
+      "id": "191428fc-ace1-4ef9-9e66-63bfaac23559",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Edit Fields').item.json.eksempel_url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1276,
+        130
+      ],
+      "id": "fffdc662-4055-43c0-a903-1d590ca53937",
+      "name": "Referencebillede"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1716,
+        130
+      ],
+      "id": "ce652f82-1ddc-4c93-8997-7625ce7eff0e",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "tableId": "images",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "image_url",
+              "fieldValue": "=https://iynjlzzmszozpxpgldaa.supabase.co/storage/v1/object/public/{{ $json.Key }}"
+            },
+            {
+              "fieldId": "ref_image_url",
+              "fieldValue": "={{ $('Edit Fields').item.json.eksempel_url }}"
+            },
+            {
+              "fieldId": "prompt",
+              "fieldValue": "={{ $('Billedeprompt').item.json.text }}"
+            },
+            {
+              "fieldId": "image_name",
+              "fieldValue": "={{ $('Edit Fields').item.json.image_name }}"
+            },
+            {
+              "fieldId": "ref_table_name",
+              "fieldValue": "={{ $('When Executed by Another Workflow').item.json.ref_table_name }}"
+            },
+            {
+              "fieldId": "ref_table_id",
+              "fieldValue": "={{ $('When Executed by Another Workflow').item.json.ref_table_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2380,
+        140
+      ],
+      "id": "47160dcd-c938-4912-a708-b7c4ad60a792",
+      "name": "Supabase",
+      "credentials": {
+        "supabaseApi": {
+          "id": "bvMVIJLed9p3sKxS",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.Billedetype }}",
+                    "rightValue": "=Generelt",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "6b1b7104-8d7d-46c9-bb7d-760c78205f79"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "f9173ef9-39b3-43d2-82cb-a0b63edc8002",
+                    "leftValue": "={{ $json.Billedetype }}",
+                    "rightValue": "Infografik",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        460,
+        130
+      ],
+      "id": "01567a18-58d2-4431-b27e-bd084d6f8da0",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Billedtekst: {{ $json.Billedtekst }}\nReferencebillede: Ja",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "## Prompt til billedegenerator-agent (generelle visuals med referencebilledestøtte)  \n\n---\n\n### Formål  \nDu er en AI-agent, der omsætter tekstbeskrivelser, idé-briefs eller manus til **korte billedprompts** til generering af illustrative eller atmosfæriske billeder til præsentationer, web eller SoMe. Billederne skal:  \n1. Formidle stemning eller budskab på et øjeblik – uden nødvendigvis at undervise.  \n2. Fremstå professionelle, visuelt rene og **stilistisk ensartede** – enten i brandets farver eller *i samme stil som et referencebillede* (som sendes med i API-kaldet, men ikke vises for dig).  \n3. Have ét klart fokuspunkt (f.eks. et motiv, en scene eller et objekt) der bærer historien; baggrundselementer må støtte men ikke distrahere.  \n4. Undgå overfyldte detaljer – hold kompositionen enkel, så billedet fungerer i små formater.\n\n---\n\n### Input  \n- **Beskrivelse** (idé, stemningstekst, citat eller kort manus)  \n- **Information om, at et referencebillede indgår i API-kaldet  \n\n---\n\n### Visuelle retningslinjer  \n- **Motivvalg** Naturscene, byliv, teknologi, mennesker — afhænger af input; vælg elementer der hurtigt kommunikerer temaet.  \n- **Komposition** Brug regel-af-tredjedele, symmetri eller central fokus afhængigt af stemning.  \n- **Stil** Som referencebillede der gives til modtageren af prompten.\n\n---\n\n### Output-guide  \n1. **Tone/stemning** Beskriv kort den atmosfære billedet skal udstråle (fx rolig, energisk, futuristisk).  \n2. **Hovedmotiv** Angiv præcist hvilket objekt eller scene der skal dominere.  \n3. **Baggrund/støtte** Nævn få supplerende elementer eller teksturer, hvis relevante.  \n4. **Stilreference** Tilføj “i samme stil som referencebilledet”.\n\n---\n\n### Output-krav  \n- **Returnér kun én kort prompttekst** – ingen anførselstegn, forklaringer eller placeholder-tekst.  \n- 1-2 sætninger, aktiv form, maks. ~30 ord.  \n- Indbyg stemning, hovedmotiv, eventuelle nøgleord fra input.  \n- Afslut med “i samme stil som referencebilledet”.\n- Hvis der er angivet et kursusnavn, skal kursusnavn angives i billedet som eneste tekst\n- hvis der er personer på referencebilledet, skal personerne gengives på billedet\n\n---\n\n### Eksempeloutput  \nSolrig morgenstemning over fredelig skovsø med tågedis, gyldent lys reflekterer i spejlblankt vand, enlig robåd som fokuspunkt; bløde grøn-og-gul-toner i samme stil som referencebilledet"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.6,
+      "position": [
+        680,
+        -120
+      ],
+      "id": "a7ea6e8d-7734-4f93-b57a-d8dc484cc058",
+      "name": "Generelt"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Billedtekst: {{ $json.Billedtekst }}\nReferencebillede: Ja",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "## Prompt til billedgenerator-agent (med referencebilledestøtte)  \n\n---\n\n### Formål  \nDu er en AI-agent, der omsætter fagligt kursusindhold (manus til speak, fagafsnit, øvelser m.m.) til **korte, visuelle billedprompts**, som bruges til at generere grafik i e-learning-moduler. Grafikken skal:  \n1. Støtte underviserens pointer under speak eller i visuelle materialer.  \n2. Fremstå professionel, visuelt klar og stilistisk ensartet – enten i brandets farver eller *i samme stil som et referencebillede* (som sendes med i API-kaldet, men ikke vises for dig).  \n3. Anvende **ét tydeligt, metaforisk hovedobjekt** (fx vandhane, cirkel-flow, trappestige, vægt eller andet) til at illustrere relationen mellem nøglekoncepter.  \n4. Bruge labels på maks. to ord, pile/overgange for at skabe bevægelse, og markere budskabets hierarki gennem farver og layout.\n\n---\n\n### Input  \n- **Kursusindhold** (tekst, speak eller opgaveformulering)  \n- **Valgfrit:** Information om, at et referencebillede indgår i API-kaldet  \n\n---\n\n### Konceptuelle nøgleord & ikonografi  \nAngiv nogle få domænespecifikke symboler eller metaforer (fx vanddråbe, tandhjul, rørledning) med kort infograf tekst – så grafikken afspejler fagsproget.\n\n---\n\n### Layout-guide  \n1. **Relationstype** Balanceret, sekventiel, overlappende, hierarkisk osv.  \n2. **Placering** Beskriv kort, hvordan hovedelementet (metaforen) bærer eller forbinder de øvrige ikoner.  \n3. **Bevægelse/Flow** Tilføj pile eller gradienter for at vise rækkefølge eller prioritering over tid.\n\n\n---\n\n### Farver  \n- Brug **én tydelig accentfarve** til hovedbudskabet.  \n- Øvrige elementer i afdæmpede nuancer (gråtoner, pasteller eller brandsecondary).  \n- Alle farver er tilladt, hvis de understøtter budskabet (fx rød, gul, grøn).\n\n---\n\n### Output-krav  \n- **Returnér kun én kort prompttekst** – ingen anførselstegn, forklaringer eller placeholder-tekst.  \n- 1-2 sætninger i aktiv, præcis form.  \n- Inkludér nøgleord, visuelle symboler, layout-idéer, tal eller metaforer fra kursusindholdet.  \n- Hvis et referencebillede er med i API-kaldet, **afslut prompten med:**  \n  *“i samme stil som referencebilledet”*.\n- Nævn at billedet skal være png uden baggrund\n\n---\n\n### Eksempeloutput  \nMinimalistisk infografik der viser en vandhane som base, hvorfra fire farvede dråber hænger i balance: grøn “Miljø”, grå “Infrastruktur”, blå “Regler”, rød “Sundhed”; diskrete pile fra hver dråbe ned mod et marineblåt vægtfundament mærket “Ledelse” – i samme stil som referencebilledet. Png billede uden baggrund"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.6,
+      "position": [
+        680,
+        280
+      ],
+      "id": "24580623-a133-4324-8fda-92ec333667d7",
+      "name": "Infografik"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "902a34bb-f329-4b25-bc66-fe7697ea8b8c",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1060,
+        140
+      ],
+      "id": "d3640511-d00b-4103-860d-978cf5994344",
+      "name": "Billedeprompt"
+    }
+  ],
+  "connections": {
+    "Generate Image": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Infografik",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Generelt",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Upload billede",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload billede": {
+      "main": [
+        [
+          {
+            "node": "Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Referencebillede": {
+      "main": [
+        [
+          {
+            "node": "Generate Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Generelt",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Infografik",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Infografik": {
+      "main": [
+        [
+          {
+            "node": "Billedeprompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generelt": {
+      "main": [
+        [
+          {
+            "node": "Billedeprompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Billedeprompt": {
+      "main": [
+        [
+          {
+            "node": "Referencebillede",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "eksempel_url": "https://iynjlzzmszozpxpgldaa.supabase.co/storage/v1/object/public/images/test/kursusintro_ref.png",
+          "Billedtekst": "Velkommen til vores online kursus Introduktion til risikostyring, der er specialdesignet til ledere inden for vandselskaber. Vi er glade for at du har valgt at deltage i dette uddannelsesforløb, hvor du vil tilegne dig værdifuld viden og praktiske færdigheder inden for risikostyring.\n\nKursusbeskrivelse\nDette online kursus er designet til at give ledere inden for vandselskaber en grundlæggende forståelse af risikostyring. Gennem modulerne vil du lære om metoder til identificering, vurdering og håndtering af risici, samt hvordan man kan integrere risikostyring i beslutningsprocesser. Kurset består af praktiske eksempler, teoretiske modeller og interaktive opgaver, der understøtter selvstudie.\n\nLæringsmål\nEfter gennemførelse af dette kursus vil du være i stand til at:\n\nForstå de grundlæggende principper og begreber inden for risikostyring\nKunne identificere og klassificere risici i forbindelse med vandselskaber\nAnvende metoder til risikovurdering og analyseteknikker\nUdvikle handlingsplaner for risikohåndtering\nIntegrere risikostyring i beslutningsprocesser i organisationen",
+          "image_name": "grafik",
+          "Billedetype": "Generelt",
+          "ref_table_name": "modules",
+          "ref_table_id": "14a8851d-72a3-40f3-a345-19178a5500a6"
+        }
+      }
+    ]
+  },
+  "versionId": "9106dc1c-b938-4419-9c55-a473beaa6ce9",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-04-30T12:33:00.080Z",
+      "updatedAt": "2025-04-30T12:33:00.080Z",
+      "role": "workflow:owner",
+      "workflowId": "hs2iwVsjN8phf01l",
+      "projectId": "SFLNAzqJIfhKMhJx"
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-03-18T13:45:14.553Z",
+      "updatedAt": "2025-03-18T13:45:14.553Z",
+      "id": "6pOUCPP24FxgjbZJ",
+      "name": "Kursus"
+    }
+  ]
+}
