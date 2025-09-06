@@ -1,0 +1,153 @@
+{
+  "createdAt": "2025-06-08T05:55:57.998Z",
+  "updatedAt": "2025-08-14T10:08:46.000Z",
+  "id": "IZrX1epHYgKahRP9",
+  "name": "Generate file",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "toText",
+        "sourceProperty": "outline",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        640,
+        32
+      ],
+      "id": "5d03f1d8-011d-4cc9-9089-8d417895b4e3",
+      "name": "Convert to File1"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "/* ----------------------------------------------------------\n * Læsevenlig outline med\n *  – dobbeltlinje før hvert modul\n *  – lektioner (inkl. content + videoscript)\n *  – spørgsmål & svarmuligheder\n * ---------------------------------------------------------- */\nWITH \n     /* 1) Svarmuligheder pr. spørgsmål ----------------------- */\noption_lines AS (\n  SELECT\n    mqo.module_question_id,\n\n    string_agg(\n      format(\n        E'          - [%s] %s',\n        CASE WHEN mqo.is_correct THEN '✔' ELSE ' ' END,\n        coalesce(mqot.option_text, '(ingen tekst)')\n      ),\n      E'\\n' ORDER BY mqo.position\n    ) AS option_block\n  FROM module_question_options            mqo\n  JOIN module_question_option_translations mqot\n       ON  mqot.module_question_option_id = mqo.id\n  GROUP BY mqo.module_question_id\n),\n\n/* 2) Spørgsmål + deres svarmuligheder ------------------------- */\nquestion_lines AS (\n  SELECT\n    mq.module_id,\n\n    string_agg(\n      format(\n        E'      ? Spørgsmål %s (%s): %s\\n%s',\n        mq.position,\n        mqt.language_code,\n        coalesce(mqt.question_text, '(ingen tekst)'),\n        coalesce(ol.option_block, E'          (ingen svarmuligheder)')\n      ),\n      E'\\n' ORDER BY mq.position\n    ) AS question_block\n  FROM module_questions            mq\n  JOIN module_question_translations mqt ON mqt.module_question_id = mq.id\n  LEFT JOIN option_lines            ol  ON ol.module_question_id = mq.id\n  GROUP BY mq.module_id\n),\n\n/* 3) Lektioner pr. modul (MED content + videoscript) --------- */\nlesson_lines AS (\n  SELECT\n    l.module_id,\n\n    string_agg(\n      (\n        /* ---------- lektion-titel ---------- */\n        '    • Lektion ' || l.position || ' (' || lt.language_code || '): '\n        || coalesce(lt.title, '(ingen titel)') || E'\\n'\n\n        /* ---------- lesson-felter ---------- */\n        || CASE WHEN lt.content IS NOT NULL THEN\n             E'\\n    ----------------------------------------\\n'\n             || '    Indhold:' || E'\\n'\n             || lt.content || E'\\n'\n           ELSE '' END\n\n        || CASE WHEN lt.videoscript IS NOT NULL THEN\n             E'\\n    ----------------------------------------\\n'\n             || '    Videoscript:' || E'\\n'\n             || lt.videoscript || E'\\n'\n           ELSE '' END\n      ),\n      E'\\n' ORDER BY l.position\n    ) AS lesson_block\n  FROM lessons            l\n  JOIN lesson_translations lt ON lt.lesson_id = l.id\n  GROUP BY l.module_id\n),\n\n/* 4) Hele modul-blokken -------------------------------------- */\nmodule_lines AS (\n  SELECT\n    m.course_id,\n\n    string_agg(\n      /* ==== dobbeltlinje før hvert modul ==================== */\n      E'========================================\\n' ||\n\n      /* ---------- modul-titel -------------------------------- */\n      '◦ Modul ' || m.position || ' (' || mt.language_code || '): '\n        || coalesce(mt.title, '(ingen titel)') || E'\\n'\n\n      /* ---------- modul-felter ------------------------------ */\n      || CASE WHEN mt.description IS NOT NULL THEN\n           E'\\n----------------------------------------\\n'\n           || 'Beskrivelse:' || E'\\n'\n           || mt.description || E'\\n'\n         ELSE '' END\n\n      || CASE WHEN mt.content IS NOT NULL THEN\n           E'\\n----------------------------------------\\n'\n           || 'Indhold:' || E'\\n'\n           || mt.content || E'\\n'\n         ELSE '' END\n\n      || CASE WHEN mt.videoscript IS NOT NULL THEN\n           E'\\n----------------------------------------\\n'\n           || 'Videoscript:' || E'\\n'\n           || mt.videoscript || E'\\n'\n         ELSE '' END\n\n      || CASE WHEN mt.case_text IS NOT NULL THEN\n           E'\\n----------------------------------------\\n'\n           || 'Case-text:' || E'\\n'\n           || mt.case_text || E'\\n'\n         ELSE '' END\n\n      /* ---------- lektioner (med indhold) ------------------- */\n      || CASE\n           WHEN ll.lesson_block IS NOT NULL THEN\n             E'\\n----------------------------------------\\n'\n             || 'Lektioner:' || E'\\n'\n             || ll.lesson_block\n           ELSE '(ingen lektioner)'\n         END\n\n      /* ---------- spørgsmål & svar --------------------------- */\n      || CASE\n           WHEN ql.question_block IS NOT NULL THEN\n             E'\\n----------------------------------------\\n'\n             || 'Spørgsmål:' || E'\\n'\n             || ql.question_block\n           ELSE ''\n         END\n      ,\n      E'\\n' ORDER BY m.position\n    ) AS module_block\n  FROM modules             m\n  JOIN module_translations mt ON mt.module_id = m.id\n  LEFT JOIN lesson_lines   ll ON ll.module_id = m.id\n  LEFT JOIN question_lines ql ON ql.module_id = m.id\n  GROUP BY m.course_id\n)\n\n/* 5) Kursus-header + moduler ---------------------------------- */\nSELECT\n  'Kursus (' || ct.language_code || '): ' || ct.title || E'\\n'\n  || '========================================' || E'\\n'\n\n  /* ---- Beskrivelse ---- */\n  || CASE WHEN ct.description IS NOT NULL THEN\n       E'\\n----------------------------------------\\n'\n       || 'Beskrivelse:' || E'\\n'\n       || ct.description || E'\\n'\n     ELSE '' END\n\n  /* ---- Indhold ---- */\n  || CASE WHEN ct.content IS NOT NULL THEN\n       E'\\n----------------------------------------\\n'\n       || 'Indhold:' || E'\\n'\n       || ct.content || E'\\n'\n     ELSE '' END\n\n  /* ---- Læringsmål ---- */\n  || CASE WHEN ct.learning_objectives IS NOT NULL THEN\n       E'\\n----------------------------------------\\n'\n       || 'Læringsmål:' || E'\\n'\n       || '• ' || array_to_string(ct.learning_objectives, E'\\n• ') || E'\\n'\n     ELSE '' END\n\n  /* ---- Videoscript ---- */\n  || CASE WHEN ct.videoscript IS NOT NULL THEN\n       E'\\n----------------------------------------\\n'\n       || 'Videoscript:' || E'\\n'\n       || ct.videoscript || E'\\n'\n     ELSE '' END\n\n  /* ---- Moduler ---- */\n  || E'\\n' || coalesce(ml.module_block, '(ingen moduler)')   AS outline\nFROM courses              c\nJOIN course_translations  ct ON ct.course_id = c.id\nLEFT JOIN module_lines    ml ON ml.course_id = c.id\nWHERE c.id = '{{ $json.course_id }}';   -- ← dit course_id",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        432,
+        32
+      ],
+      "id": "db4b9cd0-06a5-4705-8939-258a408c1611",
+      "name": "Module review",
+      "credentials": {
+        "postgres": {
+          "id": "RUVxlMmZvsZC2IGe",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        32
+      ],
+      "id": "4b0a4947-5c7c-4095-8d01-01b4dc99f87c",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "content": "## HUSK \nAt vi skal kunne håndtere flere kurser og referere til det rigtige kursusid"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -128,
+        -208
+      ],
+      "id": "50264f89-e6c6-43f5-824b-a7f780235a16",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cd571cd5-6a3c-4aa0-a05e-ef342c9e2791",
+              "name": "course_id",
+              "value": "74f636ab-2998-46f3-aff9-3165f9d1de3b",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        192,
+        32
+      ],
+      "id": "b091679f-64c1-41ce-af81-85a01f563b15",
+      "name": "Course_id"
+    }
+  ],
+  "connections": {
+    "Module review": {
+      "main": [
+        [
+          {
+            "node": "Convert to File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Course_id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Course_id": {
+      "main": [
+        [
+          {
+            "node": "Module review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "a6a5604c-a3a0-41b5-8e79-19a0ce8d4ca9",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-06-08T05:55:58.005Z",
+      "updatedAt": "2025-06-08T05:55:58.005Z",
+      "role": "workflow:owner",
+      "workflowId": "IZrX1epHYgKahRP9",
+      "projectId": "SFLNAzqJIfhKMhJx"
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-03-18T13:45:14.553Z",
+      "updatedAt": "2025-03-18T13:45:14.553Z",
+      "id": "6pOUCPP24FxgjbZJ",
+      "name": "Kursus"
+    }
+  ]
+}
