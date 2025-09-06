@@ -1,0 +1,258 @@
+{
+  "createdAt": "2025-08-22T08:35:55.064Z",
+  "updatedAt": "2025-08-22T08:40:40.000Z",
+  "id": "lCya5Mn4UTGmQPJN",
+  "name": "Course Translation via Webhook",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "id": "webhook_1",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "translate-course",
+        "authentication": "headerAuth",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "1",
+          "name": "Webhook Auth"
+        }
+      }
+    },
+    {
+      "id": "validate_input",
+      "name": "Validate Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        450,
+        300
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const items = $input.all();\nconst errors = [];\n\nfor (const item of items) {\n  const { course_id, source_language, target_language } = item.json;\n  \n  // Validate required fields\n  if (!course_id) errors.push('course_id is required');\n  if (!source_language) errors.push('source_language is required');\n  if (!target_language) errors.push('target_language is required');\n  \n  // Validate language codes (ISO 639-1)\n  const validLangs = ['da', 'en', 'de', 'fr', 'es', 'sv', 'no'];\n  if (source_language && !validLangs.includes(source_language)) {\n    errors.push(`Invalid source_language: ${source_language}`);\n  }\n  if (target_language && !validLangs.includes(target_language)) {\n    errors.push(`Invalid target_language: ${target_language}`);\n  }\n  \n  // Check not same language\n  if (source_language === target_language) {\n    errors.push('source_language and target_language cannot be the same');\n  }\n}\n\nif (errors.length > 0) {\n  throw new Error(`Validation failed: ${errors.join(', ')}`);\n}\n\n// Add workflow metadata\nfor (const item of items) {\n  item.json.workflow_id = $execution.id;\n  item.json.started_at = new Date().toISOString();\n  item.json.processed_tables = [];\n  item.json.errors = [];\n}\n\nreturn items;"
+      }
+    },
+    {
+      "id": "fetch_course_context",
+      "name": "Fetch Course Context",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        650,
+        300
+      ],
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "course_translations",
+        "returnAll": false,
+        "limit": 1,
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "course_id",
+              "keyValue": "={{ $json.course_id }}",
+              "condition": "equals"
+            },
+            {
+              "keyName": "language_code",
+              "keyValue": "={{ $json.source_language }}",
+              "condition": "equals"
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "supabaseApi": {
+          "id": "1",
+          "name": "Supabase Staging"
+        }
+      }
+    },
+    {
+      "id": "set_context",
+      "name": "Set Context Variables",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        850,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "fields": {
+          "values": [
+            {
+              "name": "course_context",
+              "type": "string",
+              "value": "={{ $json.title }} - {{ $json.description }}. {{ $json.content }}"
+            },
+            {
+              "name": "course_id",
+              "value": "={{ $('Validate Input').item.json.course_id }}"
+            },
+            {
+              "name": "source_language",
+              "value": "={{ $('Validate Input').item.json.source_language }}"
+            },
+            {
+              "name": "target_language",
+              "value": "={{ $('Validate Input').item.json.target_language }}"
+            },
+            {
+              "name": "workflow_metadata",
+              "type": "json",
+              "value": "={{ $('Validate Input').item.json }}"
+            }
+          ]
+        },
+        "options": {
+          "dotNotation": false
+        }
+      }
+    },
+    {
+      "id": "openai_model",
+      "name": "OpenRouter Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1050,
+        150
+      ],
+      "parameters": {
+        "model": "google/gemini-2.0-flash-exp:free",
+        "options": {
+          "baseURL": "https://openrouter.ai/api/v1",
+          "temperature": 0.3,
+          "maxTokens": 2000
+        }
+      },
+      "credentials": {
+        "openAiApi": {
+          "id": "2",
+          "name": "OpenRouter"
+        }
+      }
+    },
+    {
+      "id": "translate_course",
+      "name": "Translate Course",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        1250,
+        300
+      ],
+      "parameters": {
+        "promptType": "define",
+        "text": "Context: {{ $json.course_context }}\n\nTranslate the following content from {{ $json.source_language }} to {{ $json.target_language }}.\nMaintain the educational tone, technical accuracy, and pedagogical intent.\n\nContent to translate:\nTitle: {{ $json.title }}\nDescription: {{ $json.description }}\nContent: {{ $json.content }}\nLearning Objectives: {{ $json.learning_objectives }}\n\nProvide the translation in JSON format with the same field names."
+      }
+    },
+    {
+      "id": "fetch_course_trans",
+      "name": "Fetch Course Translation",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1050,
+        400
+      ],
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "course_translations",
+        "returnAll": false,
+        "limit": 1,
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "course_id",
+              "keyValue": "={{ $json.course_id }}",
+              "condition": "equals"
+            },
+            {
+              "keyName": "language_code",
+              "keyValue": "={{ $json.source_language }}",
+              "condition": "equals"
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "supabaseApi": {
+          "id": "1",
+          "name": "Supabase Staging"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validate Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Input": {
+      "main": [
+        [
+          {
+            "node": "Fetch Course Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Course Context": {
+      "main": [
+        [
+          {
+            "node": "Set Context Variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/Copenhagen",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveManualExecutions": true,
+    "saveExecutionProgress": true
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": "591c4f16-3f21-4e02-9159-2366a8044b05",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-08-22T08:35:55.065Z",
+      "updatedAt": "2025-08-22T08:35:55.065Z",
+      "role": "workflow:owner",
+      "workflowId": "lCya5Mn4UTGmQPJN",
+      "projectId": "amlePLldrdBTzDyr"
+    }
+  ],
+  "tags": []
+}
