@@ -1,0 +1,166 @@
+{
+  "createdAt": "2025-04-25T05:03:14.201Z",
+  "updatedAt": "2025-05-05T14:25:09.000Z",
+  "id": "3SCy1CTnIN59P5KY",
+  "name": "Create multiple period images",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        -100
+      ],
+      "id": "dbbe41e8-d4a2-49af-a32e-705ad599d3bf",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "Select cp.period_id, cp.city_id\nfrom periods p join city_periods cp on\np.id = cp.period_id\nwhere \n  cp.city_id = 'rome'\n  -- and cp.period_id = 'tavira_enlightenment'\n  -- and cp.period_id not in ('tavira_pre-roman', 'tavira_roman', 'tavira_contemporary')\n  -- p.icon_url is null",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -100,
+        -100
+      ],
+      "id": "0eef4eea-c629-4bbb-b25a-98e9c4f1ef0a",
+      "name": "Postgres",
+      "credentials": {
+        "postgres": {
+          "id": "EzZYFEVPXxVDpNLe",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Ret Postgres \n**Vigtigt!** \n"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -200,
+        -300
+      ],
+      "id": "ba6ab42a-1a2d-4d24-86d1-40a24e57a451",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "Rd36ihKTpjRIw05V",
+          "mode": "list",
+          "cachedResultName": "Heritage Navigator — Create Period Image"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "By": "={{ $json.city_id }}",
+            "period_id": "={{ $json.period_id }}",
+            "language_code": "en"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "By",
+              "displayName": "By",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "period_id",
+              "displayName": "period_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "language_code",
+              "displayName": "language_code",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "mode": "each",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        120,
+        -100
+      ],
+      "id": "db047425-0c82-4960-b420-fb776319219d",
+      "name": "Create Period Image"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Postgres",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres": {
+      "main": [
+        [
+          {
+            "node": "Create Period Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "85e933aa-9c4a-4d31-8994-3bce96babfb6",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-04-25T05:03:14.205Z",
+      "updatedAt": "2025-04-25T05:03:14.205Z",
+      "role": "workflow:owner",
+      "workflowId": "3SCy1CTnIN59P5KY",
+      "projectId": "rkqKISKa14HwF9Xd"
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-01-28T15:25:26.214Z",
+      "updatedAt": "2025-01-28T15:25:26.214Z",
+      "id": "BngebX50Ev8rBclu",
+      "name": "HN Content manager"
+    }
+  ]
+}
