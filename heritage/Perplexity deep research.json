@@ -1,0 +1,96 @@
+{
+  "createdAt": "2025-03-08T15:55:55.418Z",
+  "updatedAt": "2025-03-08T16:33:05.000Z",
+  "id": "UsOr8kJyouJJQ6rw",
+  "name": "Perplexity deep research",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "a378d3f2-0995-4ea6-896f-2d193dd6b782",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.perplexity.ai/chat/completions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"model\": \"sonar-deep-research\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are researcher for historical background reports.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Can you  make a background research about Tavira?\"\n    }\n  ]\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        220,
+        0
+      ],
+      "id": "4167ec76-2401-4318-b0dd-a4827cd55f2d",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "RH0dq0iszu04kMr3",
+          "name": "Perplexity"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "7e98436a-b1f1-4d30-a644-e659fddea001",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-03-08T15:55:55.422Z",
+      "updatedAt": "2025-03-08T15:55:55.422Z",
+      "role": "workflow:owner",
+      "workflowId": "UsOr8kJyouJJQ6rw",
+      "projectId": "rkqKISKa14HwF9Xd"
+    }
+  ],
+  "tags": []
+}
