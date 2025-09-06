@@ -1,0 +1,28 @@
+{
+  "createdAt": "2025-08-25T05:57:45.222Z",
+  "updatedAt": "2025-08-25T05:58:47.000Z",
+  "id": "8Bvg8tERawu2DTTZ",
+  "name": "Course Translations CC",
+  "active": false,
+  "isArchived": true,
+  "nodes": [],
+  "connections": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "e05759b6-7108-4f99-bdc0-58a707375ae8",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-08-25T05:57:45.226Z",
+      "updatedAt": "2025-08-25T05:57:45.226Z",
+      "role": "workflow:owner",
+      "workflowId": "8Bvg8tERawu2DTTZ",
+      "projectId": "SFLNAzqJIfhKMhJx"
+    }
+  ],
+  "tags": []
+}
