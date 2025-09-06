@@ -1,0 +1,584 @@
+{
+  "createdAt": "2025-04-24T10:59:19.312Z",
+  "updatedAt": "2025-05-01T12:35:23.000Z",
+  "id": "TfCfIheIc5Ogo5i0",
+  "name": "Image generator",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "toolDescription": "Use this tool to search the web. ",
+        "method": "POST",
+        "url": "https://api.tavily.com/search",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"query\": \"{searchTerm}\",\n  \"topic\": \"general\",\n  \"search_depth\": \"advanced\",\n  \"chunks_per_source\": 3,\n  \"max_results\": 1,\n  \"time_range\": null,\n  \"days\": 7,\n  \"include_answer\": true,\n  \"include_raw_content\": false,\n  \"include_images\": false,\n  \"include_image_descriptions\": false,\n  \"include_domains\": [],\n  \"exclude_domains\": []\n}",
+        "placeholderDefinitions": {
+          "values": [
+            {
+              "name": "searchTerm",
+              "description": "What the user is searching for. "
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        1120,
+        380
+      ],
+      "id": "28e8010b-4471-4912-af32-25834ee7dc0d",
+      "name": "Tavily"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-4.1",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1260,
+        380
+      ],
+      "id": "a814d23e-d53b-424d-819b-8f9c5c7a5772",
+      "name": "GPT_4.1"
+    },
+    {
+      "parameters": {
+        "person": "=",
+        "shareMediaCategory": "IMAGE",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.linkedIn",
+      "typeVersion": 1,
+      "position": [
+        2620,
+        100
+      ],
+      "id": "9d186157-4fac-4aee-b18a-9a29123f9185",
+      "name": "LinkedIn",
+      "disabled": true
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        1100,
+        100
+      ],
+      "id": "67f34313-f570-43dc-9d5c-bb05066a408b",
+      "name": "LinkedIn Post Agent"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        1540,
+        100
+      ],
+      "id": "c68b6b51-8f64-4b9d-af56-1a19aa87b214",
+      "name": "Image Prompt Agent"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/images/generations",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR API KEY"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "gpt-image-1"
+            },
+            {
+              "name": "prompt",
+              "value": "={{ $json.output }}"
+            },
+            {
+              "name": "size",
+              "value": "1024x1024"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1980,
+        100
+      ],
+      "id": "25f8abdd-4792-4be3-91f3-2a4f7b245dff",
+      "name": "Generate Image"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "data[0].b64_json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        2180,
+        100
+      ],
+      "id": "26922dbd-eb8c-4001-9acd-8bcc9ec9cf6a",
+      "name": "Convert to Binary"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('On form submission').item.json.Email }}",
+        "subject": "Your LinkedIn Post is Here!",
+        "emailType": "text",
+        "message": "=Here you go Nate!\n\n\n{{ $('LinkedIn Post Agent').item.json.output }}",
+        "options": {
+          "appendAttribution": false,
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {}
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2440,
+        100
+      ],
+      "id": "2dcc80b2-60b6-4f98-9ca2-49e0e159760b",
+      "name": "Send Post",
+      "webhookId": "20f8ef41-7183-41f1-9104-a6a042b807ce"
+    },
+    {
+      "parameters": {
+        "formTitle": "LinkedIn Post Generator",
+        "formDescription": "Fill out these fields and you'll have a full LinkedIn post ready to go in a minute. ",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "placeholder": "name@example.com",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Topic of Post",
+              "placeholder": "Robots",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Target Audience",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        820,
+        100
+      ],
+      "id": "90251397-bc95-416e-be49-7dfd00a2d654",
+      "name": "On form submission",
+      "webhookId": "359fa996-5531-40ae-be37-4a6e136952e2"
+    },
+    {
+      "parameters": {
+        "content": "# Content Generation",
+        "height": 260,
+        "width": 380
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1040,
+        0
+      ],
+      "id": "6b403e22-b70e-4f01-b018-c47d5787a233",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# Generate Image\n",
+        "height": 260,
+        "width": 460,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1900,
+        0
+      ],
+      "id": "33a769a4-39ea-4eda-acb6-a46e9431f2cb",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "# Post",
+        "height": 260,
+        "width": 400,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2380,
+        0
+      ],
+      "id": "510eae3b-b9f6-4a81-a75c-f0d83f7bccb9",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "# Image Prompt\n",
+        "height": 260,
+        "width": 440,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1440,
+        0
+      ],
+      "id": "c7abbc2a-d28d-4a45-a91f-b7d7a8b4eead",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "# Form Trigger",
+        "height": 260,
+        "width": 280,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        740,
+        0
+      ],
+      "id": "31cd2d01-7cce-44e5-b426-c8db615eddcc",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "## Tool & Model",
+        "height": 240,
+        "width": 380,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1040,
+        280
+      ],
+      "id": "77bff24b-a0be-4869-bd30-59f252f3ada8",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "# 🛠️ Setup Guide  \n**Author:** [Nate Herk](https://www.youtube.com/@nateherk)\n\nThis guide will walk you through the four steps to fully configure your automation workflow using OpenRouter, Tavily, OpenAI, and either Gmail or LinkedIn.\n\n---\n\n## ✅ Step 1: Set Up OpenRouter Credentials  \n1. Go to [openrouter.ai](https://openrouter.ai/)  \n2. Create an account and generate your API key  \n3. In n8n, create a new credential and paste in your OpenRouter API key for use with chat models  \n\n---\n\n## ✅ Step 2: Add Your Tavily Credential  \n1. Visit [tavily.com](https://tavily.com/)  \n2. Sign up and retrieve your API key  \n3. Create a new HTTP credential in n8n and input your Tavily key for web search capabilities  \n\n---\n\n## ✅ Step 3: Configure OpenAI for Image Generation  \n1. Go to the [OpenAI API Platform](https://platform.openai.com/docs/overview)  \n2. Generate an API key  \n3. In n8n, create a credential and use it in your HTTP Request node for generating images  \n\n---\n\n## ✅ Step 4: Connect Gmail or LinkedIn  \nTo distribute your AI-generated content, connect one of the following:  \n- **Gmail:** Use OAuth2 credentials and the Gmail node to send content via email  \n- **LinkedIn:** Use OAuth2 or an HTTP node (with access token) to post content directly to your feed  \n\n---\n\nNow you're ready to run your workflow. Happy automating!\n",
+        "height": 980,
+        "width": 720
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "0073d06a-d967-47f6-a36e-b63b733b5ed6",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        840,
+        740
+      ],
+      "id": "4a0ea2aa-cc4c-4136-95b8-c33d92c5b88c",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "data[0].b64_json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1860,
+        740
+      ],
+      "id": "fb3ea741-b584-4bb1-ad81-f46256613a0e",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/images/generations",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "gpt-image-1"
+            },
+            {
+              "name": "prompt",
+              "value": "={{ $json.output.Billedeprompt }}"
+            },
+            {
+              "name": "size",
+              "value": "1024x1024"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1640,
+        740
+      ],
+      "id": "d80adb08-b713-4add-8122-889af6168a9f",
+      "name": "Generate Image1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "eX2NI5wnxq8XdlfH",
+          "name": "OpenAI Image"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# Generation Image -> Binary Building Block",
+        "height": 520,
+        "width": 1380,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        740,
+        600
+      ],
+      "id": "87a4c227-bc5b-474f-b542-2cad66cf9ce4",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9615dabf-33d2-4732-bb19-0d1d0606ab14",
+              "name": "Lektionsindhold",
+              "value": "=Særlige hensyn for vandselskaber\nSom vandselskab står du over for en række unikke risikokategorier:\n\nMiljømæssige risici: Forurening, klimaforandringer\nInfrastrukturelle risici: Ældning af udstyr, brud på ledningsnet\nRegulatoriske risici: Ændringer i lovgivning, krav til benchmarking\nSundhedsrelaterede risici: Vandkvalitet, kontaminering\n\nEn effektiv risikostyring kræver, at disse forskellige risikotyper balanceres med andre ledelsesmæssige prioriteter i din organisation.\n",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1060,
+        740
+      ],
+      "id": "b03f154c-c69e-4d71-8543-6ad32ab9cd59",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Kursusindhold: {{ $json.Lektionsindhold }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=## Prompt til billedgenerator-agent (opdateret)\n\n### Overblik  \nDu er en AI-agent, der omsætter kursusindhold (fx manus til videospeak, faglige afsnit eller øvelser) til visuelle prompt-beskrivelser, som bruges til at generere grafik til e-learning-moduler. Grafikken skal:  \n\n1. Understøtte og tydeliggøre det faglige budskab, mens underviseren taler (videospeak).  \n2. Passe ind i skriftlige kursusmaterialer – f.eks. bokse, infografikker eller figurer i PDF/online-tekster.  \n3. Fremstå professionel, ensartet med kursusbrandet og relevant for emner som risikostyring i forsynings- og infrastruktursektoren (vand, el, varme, affald m.m.).  \n\n### Mål  \n- Læs og analysér det givne kursusafsnit.  \n- Identificér hovedpointe(r), data eller nøglemetaforer.  \n- Udform en kort, klar billedprompt, der kan sendes direkte til et tekst-til-billede-værktøj.  \n\n### Farve- og stilretningslinjer  \n- **Baggrund:** altid ren hvid `#ffffff`.  \n- **Primære brandfarver** (brug i 60-80 % af grafikken)  \n  - Foreground `#1d5971`  \n  - Accent 1 `#276c86`  \n  - Accent 2 `#317f9b`  \n  - Accent 3 `#3b93b1`  \n- **Komplementærfarver** (til highlights eller små flader – max 20-40 %)  \n  - `#71351d`, `#864127`, `#9b4d31`, `#b1593b`  \n- Neutrale mellemflader/skygger: lys grå `#e5e5e5` kan anvendes sparsomt.  \n- Rene linjer, enkle former, højtlæselig typografi målrettet B2B/e-learning.  \n\n### Outputinstruktioner  \n- **Returnér kun den endelige billedprompt** – ingen citationstegn, forklaringer eller gentagelse af kildeteksten, dog skal korte stikord medtages, hvis de er gavnlige for forståelsen af billedets elementer  \n- Inkludér numeriske data, grafer eller procentsatser, hvis de fremgår af kildeteksten.  \n- **Skriv aldrig placeholder-tekst i selve grafikken** (fx “definitionstekst”, “Header”, “Lorem ipsum”). Hvis der skal reserveres plads, beskriv blot “tomt område” uden tekst.  \n- Undlad alt, hvad der ligner instruktioner til grafikeren; prompten skal være klar til brug i et tekst-til-billede-værktøj.  \n\n### Layoutidéer  \n- Infografikker, ikoner, enkle diagrammer eller proces-flows.  \n- Abstrakte former/overlays i primærfarver, med komplementærfarver til centrale pointer.  \n- Venstrestillet piktogram + højrestillet tekstfelt fungerer godt til voice-over.  \n\n### Eksempel på ønsket output  \nMinimalistisk infografik med hvid baggrund, der illustrerer risikobegrebet som en balanceret vægt med to vægtskåle: venstre skål mærket “Sandsynlighed”, højre skål mærket “Konsekvens”. Vægten og titelfelt i `#1d5971`, venstre ikon (terning) i `#276c86`, højre ikon (advarselstrekant) i `#317f9b`, balanceringspunkt markeret med komplementærfarve `#b1593b`. Under vægten to pile: blå pil mod venstre med teksten “Trusler” og rustrød pil mod højre med teksten “Muligheder”. Diskrete grå netstreger i `#e5e5e5`. Øverst til højre efterlades et tomt område uden tekst."
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.6,
+      "position": [
+        1280,
+        740
+      ],
+      "id": "5070dd7a-c8f6-4609-b017-7cea52abbc18",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-4.1",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1380,
+        960
+      ],
+      "id": "914304f0-7078-4a08-9340-a603e57d532b",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "0zn5wOZxvTwrpo6y",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"Billedeprompt\": \"en sød bæver\"\t\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        1520,
+        960
+      ],
+      "id": "77838e20-1c80-4ff8-9df4-0e06e485363e",
+      "name": "Structured Output Parser"
+    }
+  ],
+  "connections": {
+    "Generate Image": {
+      "main": [
+        [
+          {
+            "node": "Convert to Binary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to Binary": {
+      "main": [
+        [
+          {
+            "node": "Send Post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Image1": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Generate Image1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "dd811a45-89f2-4f9f-a597-bd9616f9ae37",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "createdAt": "2025-04-24T11:15:54.307Z",
+      "updatedAt": "2025-04-24T11:15:54.307Z",
+      "role": "workflow:owner",
+      "workflowId": "TfCfIheIc5Ogo5i0",
+      "projectId": "SFLNAzqJIfhKMhJx"
+    }
+  ],
+  "tags": []
+}
