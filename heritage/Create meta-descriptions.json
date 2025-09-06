@@ -1,0 +1,507 @@
+{
+  "createdAt": "2025-05-12T18:20:01.774Z",
+  "updatedAt": "2025-05-12T20:06:52.000Z",
+  "id": "oK0keVVUPVu8nOX7",
+  "name": "Create meta-descriptions",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8afabc9a-474e-4d1d-89b7-78a065a7a705",
+              "name": "site_id",
+              "value": "={{ $json.site_id }}",
+              "type": "string"
+            },
+            {
+              "id": "d139d174-79d9-41c1-9af2-08f434564dd6",
+              "name": "city_id",
+              "value": "={{ $json.city_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -60,
+        -220
+      ],
+      "id": "283123d2-19a6-4f0e-a2bd-026c1de54b92",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select detail_section_id, content, s.site_id\nfrom detail_section_translations t join detail_sections s on\nt.detail_section_id = s.id join sites si on\ns.site_id = si.id\nwhere s.city_id = '{{ $json.city_id }}'\n--and si.primary_period is null\nand s.site_id = '{{ $json.site_id }}'\nand t.language_code = 'en'\norder by case\n    when detail_section_id like '%overview' then 1\n    when detail_section_id like '%main' then 2\n    when detail_section_id like '%background' then 3\n    else 4 -- Tilføjet en default værdi for sektioner der ikke matcher\nend;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        160,
+        -220
+      ],
+      "id": "850bf12a-7ff4-4450-8f62-0dd87115392e",
+      "name": "Postgres",
+      "credentials": {
+        "postgres": {
+          "id": "EzZYFEVPXxVDpNLe",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -500,
+        165
+      ],
+      "id": "29a86f15-e949-4fb3-9d4a-d8f00eaf367c",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "ZjiR1Y4tdzymEK1L",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "content"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        380,
+        -220
+      ],
+      "id": "a8d0e92a-4154-4edd-91dd-64a14b8a768e",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"meta_description\": \"Casa do Cipreste i Sintra – Oplev Raul Linos unikke hjem, hvor tradition møder innovation. Se billeder og kort over dette arkitektoniske mesterværk i dag.\",\n  \"length\": 153\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        1188,
+        0
+      ],
+      "id": "4736691f-8326-4c95-9686-a812a26f0b5d",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-3-7-sonnet-20250219",
+          "cachedResultName": "Claude 3.7 Sonnet"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        -500,
+        405
+      ],
+      "id": "fc641cab-8745-4185-a23b-5b1148229bee",
+      "name": "Anthropic Chat Model",
+      "credentials": {
+        "anthropicApi": {
+          "id": "ADl7Wvu9YXxKvVtY",
+          "name": "Anthropic account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select language_code\nfrom city_translations\nwhere city_id = '{{ $('Edit Fields').first().json.city_id }}'",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        820,
+        -220
+      ],
+      "id": "8876baa1-bda1-4776-8e01-d076aa5b8dad",
+      "name": "Languages",
+      "credentials": {
+        "postgres": {
+          "id": "EzZYFEVPXxVDpNLe",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "google/gemini-2.5-flash-preview",
+          "mode": "list",
+          "cachedResultName": "google/gemini-2.5-flash-preview"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1068,
+        0
+      ],
+      "id": "ab6e467d-ab2c-4a62-8387-dad71f52e4bc",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "7oESUrXOypaiYfq2",
+          "name": "openrouter"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Sprogkode: {{ $json.language_code }}\n\nSite: {{ $('Edit Fields').first().json.site_id }}\n\nBeskrivelse: {{ $('Content').item.json.content }}\n\n",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=**Rolle**\nDu er en AI-specialist i meta-descriptions. Din opgave er at skrive én SEO-optimeret meta-description på 150-160 tegn (inkl. mellemrum).\n\n**Input**\n1. Stedets navn  \n2. En engelsk beskrivelse af stedet  \n3. Sprogkode (fx \"da\" for dansk) – meta-description skal skrives på dette sprog\n\n**Regler**\n- Maks. 160 tegn; klip resterende tekst af.\n- Så tæt på 155 tegn som muligt\n- Tæl præcist antal tegn og returnér i length\n- Inkludér stedets navn + vigtigste søgeord tidligt.\n- Brug aktivt sprog og en diskret call-to-action (fx “Udforsk …” eller “Læs historien”).\n- Overdriv ikke keywords; naturlig læsning vægter højest.\n- Ingen ekstra forklaringer eller data – returnér kun selve meta-description som ren tekst.\n- Hvis nødvendige input mangler, returnér en tom streng: `\"\"`.\n\n\n"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        1040,
+        -220
+      ],
+      "id": "df53bdcd-930d-45c9-8e94-981cd0b280e0",
+      "name": "Create meta-descriptions"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "site_translations",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "city_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Edit Fields').item.json.city_id }}"
+            },
+            {
+              "keyName": "site_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Edit Fields').item.json.site_id }}"
+            },
+            {
+              "keyName": "language_code",
+              "condition": "eq",
+              "keyValue": "={{ $('Languages').item.json.language_code }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "meta_description",
+              "fieldValue": "={{ $json.output.meta_description }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1416,
+        -95
+      ],
+      "id": "bc084595-b5ac-4513-b2b7-be33009f8cdd",
+      "name": "Update meta_description",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputSource": "jsonExample",
+        "jsonExample": "\n{\n\"site_id\": \n\"casa-do-cipreste\",\n\"city_id\": \n\"sintra\"\n}"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -500,
+        -95
+      ],
+      "id": "0a928e5b-5f23-484d-a053-22e2aa7da1c0",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "286f2120-a8bc-4291-809d-b372862ac21f",
+              "name": "content",
+              "value": "={{ $json.content }}",
+              "type": "array"
+            },
+            {
+              "id": "ba04aa71-1b73-47ac-b01d-43701748169e",
+              "name": "site_id",
+              "value": "={{ $('Postgres').first().json.site_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        600,
+        -220
+      ],
+      "id": "946efa27-04f8-44bf-850d-0ca36c0a1daa",
+      "name": "Content"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -280,
+        -95
+      ],
+      "id": "1d85e981-745e-42b9-b6e7-65f8d035d83a",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        1640,
+        -100
+      ],
+      "id": "ce654e24-fb51-42eb-b79c-a8b792ab9c77",
+      "name": "Limit"
+    }
+  ],
+  "connections": {
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Postgres",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Create meta-descriptions",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "Languages": {
+      "main": [
+        [
+          {
+            "node": "Create meta-descriptions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Create meta-descriptions",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create meta-descriptions": {
+      "main": [
+        [
+          {
+            "node": "Update meta_description",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update meta_description": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Content": {
+      "main": [
+        [
+          {
+            "node": "Languages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "site_id": "basilica-di-san-clemente-al-laterano",
+          "city_id": "rome"
+        }
+      },
+      {
+        "json": {
+          "site_id": "basilica-di-san-giovanni-in-laterano",
+          "city_id": "rome"
+        }
+      }
+    ]
+  },
+  "versionId": "897fa4fc-02d0-45b2-a4a6-b87275076d6e",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-05-12T18:20:01.777Z",
+      "updatedAt": "2025-05-12T18:20:01.777Z",
+      "role": "workflow:owner",
+      "workflowId": "oK0keVVUPVu8nOX7",
+      "projectId": "rkqKISKa14HwF9Xd"
+    }
+  ],
+  "tags": []
+}
