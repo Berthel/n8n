@@ -1,0 +1,179 @@
+{
+  "createdAt": "2025-05-19T07:04:50.737Z",
+  "updatedAt": "2025-05-22T11:26:11.000Z",
+  "id": "ysud21prfRmX8f2d",
+  "name": "Translate all missing",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -340,
+        -180
+      ],
+      "id": "8fbc77d3-4825-45ee-a55a-d94b759159ee",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "/* Engelske originalrækker pr. site i den ønskede by */\nWITH en AS (\n    SELECT\n        site_id,\n        city_id,\n        updated_at AS en_updated_at\n    FROM site_translations\n    WHERE language_code = 'en'\n      -- AND city_id = 'rome'              -- evt. by-filter\n)\n\n/* Find alle sprog for byen i city_translations,\n   og check om site-oversættelsen mangler eller er forældet */\nSELECT DISTINCT\n       en.site_id,\n       en.city_id,\n       ct.language_code            AS missing_or_outdated_lang\nFROM       en\nJOIN       city_translations ct    -- alle sprog der findes for byen\n       ON  ct.city_id = en.city_id\n       AND ct.language_code <> 'en'  -- udeluk engelsk\nLEFT JOIN  site_translations st     -- tilstedeværende site-oversættelser\n       ON  st.site_id       = en.site_id\n       AND st.city_id       = en.city_id\n       AND st.language_code = ct.language_code\nWHERE  st.updated_at IS NULL        -- mangler helt\n    OR st.updated_at < en.en_updated_at;  -- eller ældre end engelsk\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -120,
+        -180
+      ],
+      "id": "65d5156f-bcea-4755-8829-74120920ec9b",
+      "name": "Get all missing translations",
+      "credentials": {
+        "postgres": {
+          "id": "EzZYFEVPXxVDpNLe",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "4acZAWNWRJCo7Qeb",
+          "mode": "list",
+          "cachedResultName": "Heritage Navigator — Translate Next missing"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "site_id": "={{ $json.site_id }}",
+            "city_id": "={{ $json.city_id }}",
+            "missing_or_outdated_lang": "={{ $json.missing_or_outdated_lang }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "site_id",
+              "displayName": "site_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "city_id",
+              "displayName": "city_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "missing_or_outdated_lang",
+              "displayName": "missing_or_outdated_lang",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        460,
+        -180
+      ],
+      "id": "a1e1c9f2-5375-4cda-8b2e-59ed3d0c030f",
+      "name": "Execute Workflow"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        100,
+        -180
+      ],
+      "id": "e4ec9907-8090-4fa7-bc42-6831730e91a2",
+      "name": "Loop Over Items"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get all missing translations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get all missing translations": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Execute Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Workflow": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "3713f24b-0c2a-46ad-a98c-25ae82dda50b",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-05-19T07:04:50.741Z",
+      "updatedAt": "2025-05-19T07:04:50.741Z",
+      "role": "workflow:owner",
+      "workflowId": "ysud21prfRmX8f2d",
+      "projectId": "rkqKISKa14HwF9Xd"
+    }
+  ],
+  "tags": []
+}
