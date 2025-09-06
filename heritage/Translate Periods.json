@@ -1,0 +1,741 @@
+{
+  "createdAt": "2025-03-26T06:47:49.773Z",
+  "updatedAt": "2025-05-18T14:07:44.000Z",
+  "id": "1C84HVR28Ja8HepD",
+  "name": "Translate Periods",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "model": "claude-3-5-sonnet-20241022",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.2,
+      "position": [
+        -680,
+        1345
+      ],
+      "id": "bd3e6bae-c774-42b6-aff9-d141bab10ede",
+      "name": "Anthropic Chat Model2",
+      "credentials": {
+        "anthropicApi": {
+          "id": "ADl7Wvu9YXxKvVtY",
+          "name": "Anthropic account 2"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -680,
+        -295
+      ],
+      "id": "03c30e00-f950-443f-96c6-fbf1f8271aa4",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "model": "google/gemini-2.0-flash-exp:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -680,
+        845
+      ],
+      "id": "486a5ec0-82e6-4473-bbaa-5f97445377c3",
+      "name": "Openrouter",
+      "credentials": {
+        "openRouterApi": {
+          "id": "p82huCAcsjyIZh7S",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1764,
+        -200
+      ],
+      "id": "0cec5ceb-70a6-40ff-a9b7-e42dbd38fd68",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "lw4yNIR7bkr06aVc",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "period_translations",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "period_id",
+              "keyValue": "={{ $json.id }}"
+            },
+            {
+              "keyName": "language_code",
+              "keyValue": "en"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        200,
+        -195
+      ],
+      "id": "23623c91-cd10-43f2-a6ad-f6e39d49dd7d",
+      "name": "Get English Text",
+      "executeOnce": false,
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "tableId": "period_translations",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "period_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Get Periods').item.json.id }}"
+            },
+            {
+              "keyName": "language_code",
+              "condition": "eq",
+              "keyValue": "={{ $('Get Languages').first().json.language_code }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -680,
+        325
+      ],
+      "id": "8714d503-9439-4853-bbc9-c7e0c20dc9ea",
+      "name": "Supabase",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "period_translations",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "period_id",
+              "fieldValue": "={{ $('Get Periods').first().json.id }}"
+            },
+            {
+              "fieldId": "language_code",
+              "fieldValue": "={{ $('Get Languages').first().json.language_code }}"
+            },
+            {
+              "fieldId": "name",
+              "fieldValue": "={{ $('Translate name').first().json.output.periodenavn }}"
+            },
+            {
+              "fieldId": "description",
+              "fieldValue": "={{ $('Translate text').first().json.text }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -460,
+        325
+      ],
+      "id": "1dc8083f-e372-4c9b-bf8c-63ed03e18bd9",
+      "name": "Supabase1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "view_city_periods",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "city_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Edit Fields').item.json.city_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -20,
+        -195
+      ],
+      "id": "1b32d170-d803-4829-96eb-211a9b9992a7",
+      "name": "Get Periods",
+      "executeOnce": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Målsprogskode: {{ $('Get Languages').item.json.language_code }}.\nKildetekst:  {{ $('Merge').item.json.description }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=**# Rolle**  \nDu er en **kulturfølsom rejseguide-oversætter**, der specialiserer sig i at oversætte historiske, arkitektoniske og kulturelle tekster til internationale turister (45+ år). Dit mål er at skabe letlæselige, engagerende oversættelser, der respekterer både kildekulturen og målgruppens behov for klarhed og kulturel autenticitet.  \n\n**# Instruktioner**  \n1. **Kulturel Nøjagtighed:**  \n   - Bevar originale kulturspecifikke termer (f.eks. \"Estação Elevatória\", \"Fontinha\") og tilføj en kort forklaring på målsproget i parentes, hvis konteksten kræver det.  \n   - Oversæt historiske titler, tekniske udtryk og lokale traditioner med research-baseret præcision.\n   - Kildesproget er normalt engelsk. Hvis målsproget også er engelsk skal du stadig foretage oversættelsen/genfortællingen så teksten bliver i overensstemmelse med formålet.\n\n2. **Sproglig Tilgængelighed:**  \n   - Brug naturligt, voksenrettet sprog uden unødvendig kompleksitet eller ungdomsidiomer.  \n   - Prioriter korte sætninger og aktiv formulering for bedre læsbarhed (f.eks. \"Tavira byggede...\" i stedet for \"Der blev bygget...\").  \n\n3. **Teknisk Integritet:**  \n   - Bevar **nøjagtig formaterings  strukturer** (tags, attributter, klasse-navne).  \n\n\n4. **Kontekstuel Adaption:**  \n   - Tilpas måleenheder/datoer til målsprogets normer (f.eks. \"1920s\" → \"1920’erne\" på dansk, \"década de 1920\" på spansk).  \n   - Undgå direkte oversættelser af idiomer, der ikke eksisterer på målsproget (f.eks. \"crown jewel\" → \"vigtigste perle\" på dansk).  \n\n**# Input-Parametre**  \n- `Kildetekst`: Tekst med HTML-tags (overskrifter, lister, links).  \n- `Målsprogskode`: ISO 639-1 (f.eks. \"da\", \"pt\", \"es\").  \n\n**# Output**  \nKun den færdige oversættelse i korrekt markdown format \n\n---\n\n**Formål:** At levere oversættelser, der føles som en **naturlig del af en velinformeturistguide** – præcise nok til historieentusiaster, men tilgængelige nok til tilfældige besøgende."
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        1840,
+        -480
+      ],
+      "id": "e8ecfd79-72ac-44b5-8eb8-50751ddb07cd",
+      "name": "Translate text"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Målsprogskode: {{ $('Get Languages').item.json.language_code }}.\nEngelsk periodenavn: {{ $json.name }}\nPeriode start år: {{ $('Get Periods').first().json.start_year }}\nPeriode slut år: {{ $('Get Periods').first().json.end_year }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=**# Rolle**  \nDu er en **kulturfølsom rejseguide-oversætter**, der specialiserer sig i at oversætte historiske, arkitektoniske og kulturelle tekster til internationale turister (45+ år). Dit mål er at skabe letlæselige, engagerende oversættelser, der respekterer både kildekulturen og målgruppens behov for klarhed og kulturel autenticitet.  \n\n- `Målsprogskode`: ISO 639-1 (f.eks. \"da\", \"pt\", \"es\").  \n\nDu skal oversætte det engelske periodenavn til målsproget.\nDu har fået årstallene for perioden som kontekst.\n\nDu skal ikke angive årstallene i det oversatte periodenavn."
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        1080,
+        -295
+      ],
+      "id": "3d8f70ef-d371-4a51-9fb4-823519af574b",
+      "name": "Translate name"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1108,
+        -75
+      ],
+      "id": "7bd6a270-fbf0-4964-abcb-44cf1a566dc8",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "ZjiR1Y4tdzymEK1L",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"periodenavn\": \"Moderne\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        1228,
+        -75
+      ],
+      "id": "2f4f5e2b-cbf7-441c-a80f-1e5c040d17f8",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c61eec84-9031-4020-80a2-b942a27ca58d",
+              "name": "city_id",
+              "value": "rome",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -460,
+        -295
+      ],
+      "id": "4bf2d79e-229f-4e69-8a53-4caac15e4faf",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -680,
+        585
+      ],
+      "id": "f185e372-3ba3-4942-b493-7d47c53096f0",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://rrkivosxnrfvdawawexd.supabase.co/rest/v1/period_translations?on_conflict=language_code,period_id\n",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Prefer",
+              "value": "resolution=merge-duplicates,return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify([$json]) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2700,
+        -400
+      ],
+      "id": "d3f0f659-72db-4f23-a96a-a81ab1a04073",
+      "name": "Upsert",
+      "executeOnce": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "znNIyfNCzQN57VEr",
+          "name": "supabase service role api"
+        },
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "af85ee85-e86c-4e6e-8fc0-df30335b7f29",
+              "name": "period_id",
+              "value": "={{ $('Get Periods').item.json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "317c8da8-0495-40b2-be83-8c81ff9674f7",
+              "name": "name",
+              "value": "={{ $('Translate name').item.json.output.periodenavn }}",
+              "type": "string"
+            },
+            {
+              "id": "1b051c4a-59de-4c15-838b-21a372253753",
+              "name": "description",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "7a48d3e2-cd0f-464c-968f-14acf937cce1",
+              "name": "language_code",
+              "value": "={{ $('Get Languages').item.json.language_code }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2380,
+        -500
+      ],
+      "id": "e546a3ae-4a4f-4725-b5cc-ba69bd80a3f5",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://rrkivosxnrfvdawawexd.supabase.co/rest/v1/period_translations\n    ?on_conflict=language_code,period_id",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendQuery": true,
+        "specifyQuery": "json",
+        "jsonQuery": "={{ $json }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -680,
+        1085
+      ],
+      "id": "1b047846-3138-442f-b263-22b735062551",
+      "name": "Upsert1",
+      "executeOnce": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "znNIyfNCzQN57VEr",
+          "name": "supabase service role api"
+        },
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "name": "Replace Me",
+      "typeVersion": 1,
+      "position": [
+        -680,
+        65
+      ],
+      "id": "3f25c303-18f4-476b-b771-f74c9af50021"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        420,
+        -295
+      ],
+      "id": "a93857d5-84a2-4acc-a2de-84aa0d469374",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1480,
+        -480
+      ],
+      "id": "3dff9417-4898-45a2-96f8-37422455e9b8",
+      "name": "Små batches"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT language_code\nfrom city_translations\nwhere city_id = '{{ $json.city_id }}'\nand language_code <> 'en'",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -100,
+        -400
+      ],
+      "id": "b8262988-5baa-455a-938d-fe9ea181d015",
+      "name": "Get Languages",
+      "credentials": {
+        "postgres": {
+          "id": "EzZYFEVPXxVDpNLe",
+          "name": "Postgres account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Anthropic Chat Model2": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Openrouter": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Translate text",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get English Text": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Supabase": {
+      "main": [
+        [
+          {
+            "node": "Supabase1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Periods": {
+      "main": [
+        [
+          {
+            "node": "Get English Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Translate text": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Translate name": {
+      "main": [
+        [
+          {
+            "node": "Små batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Translate name",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Translate name",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Get Periods",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Languages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        []
+      ]
+    },
+    "Supabase1": {
+      "main": [
+        []
+      ]
+    },
+    "Upsert": {
+      "main": [
+        [
+          {
+            "node": "Små batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Upsert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace Me": {
+      "main": [
+        []
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Translate name",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Små batches": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Translate text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Languages": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When clicking ‘Test workflow’": [
+      {
+        "json": {}
+      }
+    ]
+  },
+  "versionId": "f42e635c-398c-4846-acf5-5d39c8db960b",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-03-26T06:47:49.776Z",
+      "updatedAt": "2025-03-26T06:47:49.776Z",
+      "role": "workflow:owner",
+      "workflowId": "1C84HVR28Ja8HepD",
+      "projectId": "rkqKISKa14HwF9Xd"
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-01-28T15:25:26.214Z",
+      "updatedAt": "2025-01-28T15:25:26.214Z",
+      "id": "BngebX50Ev8rBclu",
+      "name": "HN Content manager"
+    }
+  ]
+}
