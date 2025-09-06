@@ -1,0 +1,166 @@
+{
+  "createdAt": "2025-04-27T06:05:44.420Z",
+  "updatedAt": "2025-05-17T03:13:03.000Z",
+  "id": "VFUOcDJABClTLLiM",
+  "name": "Get wikimedia photos for multiple sites",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        -100
+      ],
+      "id": "bed074b5-48ce-45e3-964d-44d95ad59d37",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select id as site_id, city_id\nfrom sites s\nwhere not exists (select 1 from site_images where site_id = s.id)\n--and city_id = 'rome'",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -100,
+        -100
+      ],
+      "id": "cbc03624-4836-473a-b560-cd48e168d974",
+      "name": "Postgres",
+      "credentials": {
+        "postgres": {
+          "id": "EzZYFEVPXxVDpNLe",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Ret Postgres \n**Vigtigt!** \n"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -200,
+        -300
+      ],
+      "id": "ce315731-c50d-4d9b-bbe9-bc4c9317ec13",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "EDn9SOU8mLc0SkwH",
+          "mode": "list",
+          "cachedResultName": "Heritage Navigator — Add wikmedia image"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "By": "={{ $json.site_id }}",
+            "period_id": "={{ $json.city_id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "By",
+              "displayName": "By",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "period_id",
+              "displayName": "period_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "language_code",
+              "displayName": "language_code",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "mode": "each",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        120,
+        -100
+      ],
+      "id": "0828e64f-0f16-4b69-8a66-a3d8aafb28aa",
+      "name": "Add wikimedia image"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Postgres",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres": {
+      "main": [
+        [
+          {
+            "node": "Add wikimedia image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "26fbe3b7-f3a5-46fa-a52e-4aca389b86e0",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-04-27T06:05:44.423Z",
+      "updatedAt": "2025-04-27T06:05:44.423Z",
+      "role": "workflow:owner",
+      "workflowId": "VFUOcDJABClTLLiM",
+      "projectId": "rkqKISKa14HwF9Xd"
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-01-28T15:25:26.214Z",
+      "updatedAt": "2025-01-28T15:25:26.214Z",
+      "id": "BngebX50Ev8rBclu",
+      "name": "HN Content manager"
+    }
+  ]
+}
