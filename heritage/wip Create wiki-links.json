@@ -1,0 +1,579 @@
+{
+  "createdAt": "2025-05-13T05:37:59.084Z",
+  "updatedAt": "2025-05-13T14:18:28.000Z",
+  "id": "Rem1OdG2zbRkHUYL",
+  "name": "wip Create wiki-links",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8afabc9a-474e-4d1d-89b7-78a065a7a705",
+              "name": "site_id",
+              "value": "={{ $json.site_id }}",
+              "type": "string"
+            },
+            {
+              "id": "d139d174-79d9-41c1-9af2-08f434564dd6",
+              "name": "city_id",
+              "value": "={{ $json.city_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -60,
+        -300
+      ],
+      "id": "67d2349c-44ee-485b-bd35-bc19f1b8cf47",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select latitude, longitude\nfrom sites s\nwhere s.city_id = '{{ $json.city_id }}'\n--and si.primary_period is null\nand s.id = '{{ $json.site_id }}'\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        160,
+        -300
+      ],
+      "id": "490adde6-5198-4df1-b1b1-81480a70aafb",
+      "name": "Postgres",
+      "credentials": {
+        "postgres": {
+          "id": "EzZYFEVPXxVDpNLe",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -500,
+        60
+      ],
+      "id": "50cb368c-1b95-4f3f-9682-f978d0002e00",
+      "name": "OpenAI Chat Model"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-3-7-sonnet-20250219",
+          "cachedResultName": "Claude 3.7 Sonnet"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        -500,
+        300
+      ],
+      "id": "d64bbf71-dea0-4cff-ac9b-c3baa785b813",
+      "name": "Anthropic Chat Model"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select language_code\nfrom city_translations\nwhere city_id = '{{ $('Edit Fields').first().json.city_id }}'",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        1260,
+        -200
+      ],
+      "id": "bb815c25-4b77-4405-a6e6-d41b8d7a22ba",
+      "name": "Languages",
+      "credentials": {
+        "postgres": {
+          "id": "EzZYFEVPXxVDpNLe",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputSource": "jsonExample",
+        "jsonExample": "\n{\n\"site_id\": \n\"casa-do-cipreste\",\n\"city_id\": \n\"sintra\"\n}"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -500,
+        -225
+      ],
+      "id": "a9c8ed8b-32c5-466f-ba71-1c8c7bd203e1",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -280,
+        -225
+      ],
+      "id": "eae33760-5b32-4393-b295-504a8507e173",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        2140,
+        -225
+      ],
+      "id": "ebfa2359-139d-494f-b92c-0739840d1908",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "site_translations",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "site_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Loop Over Items').first().json.site_id }}"
+            },
+            {
+              "keyName": "city_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Loop Over Items').first().json.city_id }}"
+            },
+            {
+              "keyName": "language_code",
+              "condition": "eq",
+              "keyValue": "={{ $json.language_code }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "wiki_url",
+              "fieldValue": "={{ $json.wikipedia_url }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1920,
+        -300
+      ],
+      "id": "7af9b295-3e74-474e-bc9e-f664e63dcfd0",
+      "name": "Supabase",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7ec818de-f0d3-4f3b-ac0a-2c8f45706969",
+              "name": "wiki",
+              "value": "={{ $json.results.bindings[0].item.value }}",
+              "type": "string"
+            },
+            {
+              "id": "ed87a3ee-f301-435c-b64f-507f1ceb89ef",
+              "name": "wikidataId",
+              "value": "={{ $json.results.bindings[0].item.value.split('/').pop() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        600,
+        -300
+      ],
+      "id": "ad3c809d-2302-416d-b9e0-4647088acb3d",
+      "name": "Wiki Url"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://query.wikidata.org/sparql",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "query",
+              "value": "=SELECT ?item ?itemLabel ?dist WHERE {\n  SERVICE wikibase:around {\n    ?item wdt:P625 ?loc .\n    bd:serviceParam wikibase:center \"Point({{ $('Postgres').item.json.longitude }} {{ $('Postgres').item.json.latitude }})\"^^geo:wktLiteral .\n    bd:serviceParam wikibase:radius \"0.1\" .          # lidt større radius\n    bd:serviceParam wikibase:distance ?dist .\n  }\n\nFILTER(CONTAINS(LCASE(?label), \"ara\"))   # <- navnet\n\n\n}\nORDER BY ?dist     # nærmeste først\nLIMIT 1\n"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        380,
+        -300
+      ],
+      "id": "590c4724-03b6-4a07-ae98-00561687d578",
+      "name": "Get Wikidata ID"
+    },
+    {
+      "parameters": {
+        "url": "https://www.wikidata.org/w/api.php",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "action",
+              "value": "wbgetentities"
+            },
+            {
+              "name": "ids",
+              "value": "={{ $json.wikidataId }}"
+            },
+            {
+              "name": "props",
+              "value": "sitelinks/urls"
+            },
+            {
+              "name": "format",
+              "value": "json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        820,
+        -400
+      ],
+      "id": "4c9d97ba-27bd-404c-a811-dab5c47c6c5c",
+      "name": "Get Wiki Sites"
+    },
+    {
+      "parameters": {
+        "jsCode": "const entity   = Object.values(items[0].json.entities)[0]; // første/ eneste\nconst sitelinks = entity.sitelinks ?? {};\nconst id        = entity.id;                               // fx Q117184423\n\nconst links  = {};\nlet commons  = null;\n\nfor (const k in sitelinks) {\n  const { site, url } = sitelinks[k];\n  if (site === 'commonswiki') commons = url;\n  else if (site.endsWith('wiki')) links[site.replace('wiki','')] = url;\n}\n\n// fallback hvis intet Commons\nif (!commons) commons = `https://www.wikidata.org/wiki/${id}`;\n\nitems[0].json = { links, commons, id };   // ← nu har du altid alle tre felter\nreturn items;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        -400
+      ],
+      "id": "3f2135c1-90dc-4b6c-9cb3-9bfbfc7a1336",
+      "name": "BuildLinkMap"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2382d99d-9609-458d-8ebf-12f39d93bfc0",
+              "name": "links",
+              "value": "={{ $json.links }}",
+              "type": "object"
+            },
+            {
+              "id": "4641756d-ed54-4441-a286-b0fb05a68564",
+              "name": "commons",
+              "value": "={{ $json.commons }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1260,
+        -400
+      ],
+      "id": "8ae75e22-e6cc-4813-b8da-d49280cf7297",
+      "name": "GetWikiLinks"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        1480,
+        -300
+      ],
+      "id": "84a2d517-f244-4424-a93a-a417629752db",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * Inputs:\n *   - items from node \"Languages\": 7 items med { language_code }\n *   - 1 item from node \"GetWikiLinks\": { links: {...}, commons: ... }\n *\n * Output:\n *   7 items, ét pr. sprog, med det valgte URL (eller null)\n */\n\nconst langItems = $items(\"Languages\");           // 7 stk.\nconst linkData  = $items(\"GetWikiLinks\")[0].json;\nconst links     = linkData.links;\nconst commons   = linkData.commons ?? null;\n\nreturn langItems.map(li => {\n  const lang = li.json.language_code;\n  const url  =\n        links[lang]          // præcis sprog\n     || links[\"en\"]          // fallback → engelsk artikel (hvis den findes)\n     || commons              // fallback → Commons-kategori\n     || null;                // ellers tom\n\n  return {\n    json: {\n      language_code: lang,\n      wikipedia_url: url\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1700,
+        -300
+      ],
+      "id": "f9f0fe6e-c04f-4b0e-adaa-3e3e3ec85282",
+      "name": "Get Wiki Link pr language"
+    }
+  ],
+  "connections": {
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Postgres",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "Postgres": {
+      "main": [
+        [
+          {
+            "node": "Get Wikidata ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "Languages": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wiki Url": {
+      "main": [
+        [
+          {
+            "node": "Get Wiki Sites",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Languages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Wikidata ID": {
+      "main": [
+        [
+          {
+            "node": "Wiki Url",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Wiki Sites": {
+      "main": [
+        [
+          {
+            "node": "BuildLinkMap",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BuildLinkMap": {
+      "main": [
+        [
+          {
+            "node": "GetWikiLinks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetWikiLinks": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Get Wiki Link pr language",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Wiki Link pr language": {
+      "main": [
+        [
+          {
+            "node": "Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "site_id": "antigo-mercado-do-peixe-mercado-de-peixe-antigo",
+          "city_id": "tavira"
+        }
+      },
+      {
+        "json": {
+          "site_id": "ara-pacis",
+          "city_id": "rome"
+        }
+      }
+    ]
+  },
+  "versionId": "34cfb528-0662-4036-8335-5472bcf0822b",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-05-13T05:37:59.088Z",
+      "updatedAt": "2025-05-13T05:37:59.088Z",
+      "role": "workflow:owner",
+      "workflowId": "Rem1OdG2zbRkHUYL",
+      "projectId": "rkqKISKa14HwF9Xd"
+    }
+  ],
+  "tags": []
+}
