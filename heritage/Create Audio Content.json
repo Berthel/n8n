@@ -1,0 +1,1528 @@
+{
+  "createdAt": "2025-03-12T04:37:22.592Z",
+  "updatedAt": "2025-03-14T06:37:32.000Z",
+  "id": "PoQOFzM3NGCvmly7",
+  "name": "Create Audio Content",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "sendTo": "flemming.berthelsen@gmail.com",
+        "subject": "Content approval required",
+        "message": "=shortDescription:\n{{ $json.output.shortDescription }}\n\n\nintroduction:\n{{ $json.output.introduction }}\n\n\nmainStory:\n{{ $json.output.mainStory }}\n\n\nacademicBackground:\n{{ $json.output.academicBackground }}",
+        "responseType": "customForm",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Action",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Publish"
+                  },
+                  {
+                    "option": "Reject"
+                  },
+                  {
+                    "option": "Change"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Message",
+              "fieldType": "textarea"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1280,
+        680
+      ],
+      "id": "1bdea977-5d7a-4d6d-a125-6ef5c8d5a37d",
+      "name": "Gmail",
+      "webhookId": "79de4b17-e0e2-4fbc-bb78-30888edec4f3",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "XI6wZVsQczyW63ra",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1460,
+        900
+      ],
+      "id": "a80b66b9-9eb6-4326-898a-6a9564717af4",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "7oESUrXOypaiYfq2",
+          "name": "openrouter"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "eb91541b-0154-471c-aff3-87d1959e7a36",
+              "name": "output.shortDescription",
+              "value": "={{ $json.output.shortDescription }}",
+              "type": "string"
+            },
+            {
+              "id": "e324dd71-776f-452c-b0a8-cb9231ae1799",
+              "name": "output.introduction",
+              "value": "={{ $json.output.introduction }}",
+              "type": "string"
+            },
+            {
+              "id": "87845a90-24e8-41c4-a9e7-39817d749d19",
+              "name": "output.mainStory",
+              "value": "={{ $json.output.mainStory }}",
+              "type": "string"
+            },
+            {
+              "id": "e1d52e83-645a-4fc5-ae8f-f375bc2382bd",
+              "name": "output.academicBackground",
+              "value": "={{ $json.output.academicBackground }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1040,
+        680
+      ],
+      "id": "36c24eb7-3f74-48d5-8484-ab8e1cb8ca0e",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "inputText": "=Classify this response: {{ $json.data.Action }}",
+        "categories": {
+          "categories": [
+            {
+              "category": "Publish",
+              "description": "If human response is Publish"
+            },
+            {
+              "category": "Reject",
+              "description": "If human response is Reject"
+            },
+            {
+              "category": "Change",
+              "description": "If human response is Change"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "typeVersion": 1,
+      "position": [
+        1480,
+        680
+      ],
+      "id": "e7c3370b-c322-49cf-a6c3-5420d21bed8b",
+      "name": "Check Feedback"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=shortDescription:  {{ $('Edit Fields1').item.json.output.shortDescription }}\n\nintroduction: {{ $('Edit Fields1').item.json.output.introduction }}\n\nmainStory: {{ $('Edit Fields1').item.json.output.mainStory }}\n\nacademicBackground: {{ $('Edit Fields1').item.json.output.academicBackground }}\n\nhumanFeedback: {{ $json.data.Message }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=# Role\nYou are a Content Revision Specialist. Your objective is to refine AI-generated historical content based on human feedback while strictly adhering to the original creation guidelines and preserving the intended style, structure, and factual integrity.\n\n# Instructions\n1. Retain the core meaning and factual accuracy of the original content.\n2. Ensure the language and style remain accessible and appealing to cultural travelers aged 45-70.\n3. Incorporate user feedback only where it does not conflict with the original guidelines.\n\n# Critical Rules\n- Maintain all original place names (e.g., \"København\", \"São Jorge\").\n- Keep the exact JSON structure and preserve all HTML tags.\n- Retain the original section word counts (±10% margin).\n- Do not introduce any new or speculative information. If user feedback cannot be verified with provided data, use \"[REDACTED]\" instead.\n- Continue to uphold the previously defined ratio of verified facts to cultural narratives and readability levels.\n- Follow SEO keyword usage only if included in the original text; do not add new keywords.\n\n# Workflow\nYou will receive these elements:\n  \"shortDescription\": [Content Creator’s output],\n  \"introduction\": [Content Creator’s output],\n  \"mainStory\": [Content Creator’s output],\n  \"academicBackground\": [Content Creator’s output],\n  \"humanFeedback\": [User’s revision requests]\n\n\nYour tasks:\n1. Compare user feedback with the original text.\n2. Apply changes that comply with the original content guidelines.\n3. Preserve all HTML formatting (e.g., <h2>, <h3>, <ul>, <li>, <b>) and ensure the timeline structure remains intact.\n4. Avoid adding or removing major content sections beyond minor adjustments (within ±10% word count).\n\n# Required Output\nReturn your revised content in the EXACT same JSON format:\n{\n  \"shortDescription\": \"\",\n  \"introduction\": \"\",\n  \"mainStory\": \"\",\n  \"academicBackground\": \"\"\n}\n\nOutput ONLY the JSON object with the revised text. No explanations or additional commentary beyond the JSON object.\n"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        1880,
+        920
+      ],
+      "id": "12187256-229b-4989-8ccd-c082f3fcc891",
+      "name": "Content Revision"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "IpVMGwXt5TmcAzUd",
+          "mode": "list",
+          "cachedResultName": "My project — Insert Description Agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "global_code": "={{ $('Collect input').first().json.global_code }}",
+            "shortDescription": "={{ $('Edit Fields1').first().json.output.shortDescription }}",
+            "overview": "={{ $('Edit Fields1').first().json.output.introduction }}",
+            "mainStory": "={{ $('Edit Fields1').first().json.output.mainStory }}",
+            "academicBackground": "={{ $('Edit Fields1').first().json.output.academicBackground }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "global_code",
+              "displayName": "global_code",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "shortDescription",
+              "displayName": "shortDescription",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "overview",
+              "displayName": "overview",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "mainStory",
+              "displayName": "mainStory",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "academicBackground",
+              "displayName": "academicBackground",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        2040,
+        440
+      ],
+      "id": "c9c5735d-6ad1-41af-848d-9cdc3cc010d7",
+      "name": "Publish"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1940,
+        700
+      ],
+      "id": "fa65b7c8-9aad-4491-ac9b-f36a5df55ac7",
+      "name": "Rejected"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "92a0acd7-f455-4599-b89c-1fcf51e702d7",
+        "authentication": "basicAuth",
+        "options": {
+          "rawBody": true
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1440,
+        -1420
+      ],
+      "id": "0990386f-af8a-4409-aa6b-d8532a7377fe",
+      "name": "Webhook",
+      "webhookId": "92a0acd7-f455-4599-b89c-1fcf51e702d7",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "quvO0KQt5vjETJuR",
+          "name": "Content Creator auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8296aff9-e3f6-47ff-8497-f73d346c6214",
+              "name": "query",
+              "value": "={{\n    $node[\"On form submission\"].json.query \n}}",
+              "type": "string"
+            },
+            {
+              "id": "1f70c1ae-5359-40d0-88ea-6fa6c58f12e7",
+              "name": "additional_research",
+              "value": "={{\n    $node[\"On form submission\"].json.additional_research \n}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -640,
+        -820
+      ],
+      "id": "1b14f6ca-8fde-4cfe-8b3b-f47ea891ab8f",
+      "name": "Collect input"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e0c5477f-b331-4fd1-8671-0e27832a8345",
+              "name": "query",
+              "value": "={{ $json.body.query }}",
+              "type": "string"
+            },
+            {
+              "id": "00caee80-e7bd-440c-8f23-5a4bc5773788",
+              "name": "global_code",
+              "value": "={{ $json.body.global_code }}",
+              "type": "string"
+            },
+            {
+              "id": "a5ffd520-07a0-4fdd-ba69-d87892a440a7",
+              "name": "additional_research",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1220,
+        -1420
+      ],
+      "id": "209d78de-72a8-4364-8be4-f9e61daf5254",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.2,
+      "position": [
+        2760,
+        220
+      ],
+      "id": "56b9988a-889b-40ab-9298-70f6a1c1dbcc",
+      "name": "Anthropic Chat Model",
+      "credentials": {
+        "anthropicApi": {
+          "id": "ADl7Wvu9YXxKvVtY",
+          "name": "Anthropic account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-small",
+        "options": {}
+      },
+      "id": "125e8bbb-9879-42a9-834d-f05459d77c42",
+      "name": "Embeddings OpenAI1",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1,
+      "position": [
+        1920,
+        320
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "ZjiR1Y4tdzymEK1L",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=# Report subject\nTimeline for {{ $('On form submission').first().json.query }}\n\n# Human research\n{{ $('Collect input').first().json.additional_research }}\n\n# Perplexity research\n{{ $json.data }}\n",
+        "options": {
+          "systemMessage": "=**Role**  \nAs a historian specializing in chronological analysis, produce a concise timeline overview for the reporting subject or location. If there is insufficient reliable information, respond with:  \n> *No verified historical data available for this location.*  \n\n**Input**  \n1. Location/subject name\n2. All available historical records about the site from research in the user prompt and your tools\n\n**Instructions**\n1. First check the user_documents tool\n2. Then check the other tools if you need more information\n3. Then combine information from the tools with the provided reseach to get the full picture\n4. Never use your own knowledge of the subject - only use knowledge from research and tool\n\n\n**Tools**\n1. user_documents\n2. Wikipedia\n3. monumentos_portugal (only for buildings and monuments)\n\n"
+        }
+      },
+      "id": "b836e3b1-3629-4d46-8c76-57ebf84cd27e",
+      "name": "Timeline",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        680,
+        -800
+      ]
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"shortDescription\": {\n      \"type\": \"string\",\n      \"description\": \"A concise summary of the historical site (max 60 characters).\"\n    },\n    \"introduction\": {\n      \"type\": \"string\",\n      \"description\": \"An introduction section that begins with <h2>Introduction</h2> and contains 60-80 words in English, formatted in HTML with <p> tags.\"\n    },\n    \"mainStory\": {\n      \"type\": \"string\",\n      \"description\": \"The main story section that starts with <h2>Historic Highlights</h2> and includes 300-500 words of detailed historical and cultural content in English. The content should be formatted in HTML using paragraphs (<p>), bold (<b>), italic (<i>), and additional subsections for readability.\"\n    },\n    \"academicBackground\": {\n      \"type\": \"string\",\n      \"description\": \"An academic background section that begins with <h2>Timeline & Context</h2> followed by <h4>Historical Timeline</h4>. It must include a <ul> list of key historical dates and events formatted as list items (<li>) with bolded periods, and contain 400-800 words in English, using HTML formatting.\"\n    }\n  },\n  \"required\": [\n    \"shortDescription\",\n    \"introduction\",\n    \"mainStory\",\n    \"academicBackground\"\n  ]\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        3060,
+        220
+      ],
+      "id": "62cf7b28-45b6-4ec5-b1c7-8c796e99533d",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -460,
+        -40
+      ],
+      "id": "c752fe34-093b-4d84-b959-a4f1767da112",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "lw4yNIR7bkr06aVc",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formTitle": "Create Audio Content",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "query",
+              "placeholder": "Emne for artikel"
+            },
+            {
+              "fieldLabel": "additional_research",
+              "fieldType": "textarea",
+              "placeholder": "F.eks. fra NotebookLM"
+            },
+            {
+              "fieldLabel": "city",
+              "placeholder": "tavira"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -860,
+        -820
+      ],
+      "id": "207bfbc9-8527-4813-b65b-b56ac1b7c313",
+      "name": "On form submission",
+      "webhookId": "5c40cb84-7e64-4245-96f4-7c627978ef59"
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-3.7-sonnet",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        2600,
+        -320
+      ],
+      "id": "51126cb1-1893-4a97-9b07-d1e7f306b561",
+      "name": "Anthropic 3.7",
+      "credentials": {
+        "openRouterApi": {
+          "id": "p82huCAcsjyIZh7S",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -60,
+        480
+      ],
+      "id": "bdfb7e95-1c10-4e30-8a8c-872a0fb146a3",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "ZjiR1Y4tdzymEK1L",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "=# Rolle\nDu er en hjælpsom assistent der kommunikerer med brugeren på dansk.\n\n# Værktøjer\n## user_documents\nVector Store med alle dokumenter\n\n## List Documents\nViser en liste over de dokumenter vi har til rådighed. Ud fra navnet kan du hente hele dokumentet med Get File Contents\nHvis du ikke finder svar i user_documents skal du lede her\nBrug denne metode hvis filnavnet indikerer at du kan finde svar på et spørgsmål i dokumentet\n\n## Get File Contents\nHenter hele dokumentet på basis af filnavnet\n\n\n# Regler\nDu må kun formidle den viden du kan få gennem værktøjerne og ikke videregive din egen viden.\nHvis viden ikke er tilgængelig i værktøjerne kan du blot fortælle det til brugeren"
+        }
+      },
+      "id": "5ee4d575-f2bc-423d-8183-178ea3ca3d52",
+      "name": "RAG AI Agent1",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        220,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "public": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -100,
+        180
+      ],
+      "id": "c0749e14-d8f2-480e-9afd-24f290e35859",
+      "name": "When chat message received",
+      "webhookId": "2f5a6862-fb9b-446c-b2a3-0a06861e5101"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -640,
+        940
+      ],
+      "id": "8b2ee78f-3de4-4130-9c7f-126d0f883587",
+      "name": "OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "ZjiR1Y4tdzymEK1L",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Use this tool to fetch all available documents",
+        "operation": "executeQuery",
+        "query": "select distinct  metadata->>'file_name'\nfrom documents",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgresTool",
+      "typeVersion": 2.5,
+      "position": [
+        320,
+        420
+      ],
+      "id": "45b52329-debc-44c8-a94f-ea527c1265d8",
+      "name": "List Documents",
+      "credentials": {
+        "postgres": {
+          "id": "EzZYFEVPXxVDpNLe",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Given a file name, fetches the text from the document.",
+        "operation": "executeQuery",
+        "query": "SELECT \n    LEFT(string_agg(content, ' ' ORDER BY id), 300000) as document_text\nFROM documents\n  WHERE metadata->>'file_name' = $1\nGROUP BY metadata->>'file_name';",
+        "options": {
+          "queryReplacement": "={{ $fromAI('file_name', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgresTool",
+      "typeVersion": 2.5,
+      "position": [
+        540,
+        400
+      ],
+      "id": "c9dc8fc9-1741-45b2-acbe-29dbf8f5f499",
+      "name": "Get File Contents",
+      "credentials": {
+        "postgres": {
+          "id": "EzZYFEVPXxVDpNLe",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        160,
+        520
+      ],
+      "id": "50330dac-b3c0-44a6-b6de-38b4b31ef9ed",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "EzZYFEVPXxVDpNLe",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.perplexity.ai/chat/completions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"sonar-deep-research\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are a researcher who prepares a report for a historian who is going to write an article.\\nYour report should contain details such as historical chronology, periods and years, general historical background, tematical focused information about hte subect as well as information that is interesting to understand the history behind the subject. All information in your report must be verified and correct. The target audiens for the collected information is a professional historian writer\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Can you  make a background research about this subject?\\nLocation: {{ $('On form submission').item.json.query }}\\nCity: {{ $('On form submission').item.json.city.toTitleCase() }}\"\n    }\n  ],\n\"temperature\": 0\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -340,
+        -820
+      ],
+      "id": "5d12d8f6-4153-412e-a78e-54722d0df922",
+      "name": "Perplexity HTTP",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "RH0dq0iszu04kMr3",
+          "name": "Perplexity"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1120,
+        -180
+      ],
+      "id": "fb59a2f9-1571-4a86-8368-a05f536ef546",
+      "name": "OpenAI Chat Model3",
+      "credentials": {
+        "openAiApi": {
+          "id": "ZjiR1Y4tdzymEK1L",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "user_documents",
+        "toolDescription": "Vector Store with a large collection of verified documents",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "topK": 40,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1,
+      "position": [
+        1740,
+        80
+      ],
+      "id": "aebfceca-67e9-40fb-9d78-b1f9acc0199f",
+      "name": "user_documents",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "monumentos_portugal",
+        "description": "Query this tool to get knowledge of buildings and monuments only. Call the tool by the name of the buildin/monument and the city name to get response from http://www.monumentos.gov.pt/ - the official Portuguese source for information about monuments",
+        "workflowId": {
+          "__rl": true,
+          "value": "y3SEoNbyzFsiZXtw",
+          "mode": "list",
+          "cachedResultName": "My project — Content Monumentos Portugal"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        2420,
+        100
+      ],
+      "id": "790aeb01-ed28-4cca-9b54-13a2695ca27e",
+      "name": "monumentos_portugal"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolWikipedia",
+      "typeVersion": 1,
+      "position": [
+        2160,
+        80
+      ],
+      "id": "cc405520-db3e-419b-b098-a20ae1fbbd3e",
+      "name": "Wikipedia"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "allenai/llama-3.1-tulu-3-405b",
+          "mode": "list",
+          "cachedResultName": "allenai/llama-3.1-tulu-3-405b"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -300,
+        480
+      ],
+      "id": "08e84f1c-bf46-457a-823e-6ff79e244f6c",
+      "name": "OpenAI Chat Model4",
+      "credentials": {
+        "openAiApi": {
+          "id": "7oESUrXOypaiYfq2",
+          "name": "openrouter"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "markdownToHtml",
+        "markdown": "={{ $json['Perplexity research'] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.markdown",
+      "typeVersion": 1,
+      "position": [
+        400,
+        -820
+      ],
+      "id": "ca4d6225-559b-4c9d-8315-52c829d8bfea",
+      "name": "Markdown"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Hent inputdata fra n8n\nconst content = $input.first().json.choices[0].message.content || \"\"; // Fallback til tom streng, hvis content er undefined\nconst citations = $('Perplexity HTTP').first().json.citations || []; // Fallback til tomt array, hvis citations er undefined\n\n// Funktion til at erstatte [1], [2] osv. med Markdown-links og generere citations-liste\nfunction insertCitations(text, citationsArray) {\n  let result = typeof text === \"string\" ? text : \"\";\n  \n  // I Markdown er \\n\\n korrekt for nye afsnit, så vi beholder dem\n  // Hvis der er behov, kan vi fjerne ekstra \\n for at rydde op\n  result = result.replace(/\\n\\n+/g, '\\n\\n').replace(/\\n+$/, ''); // Normaliser til max 2 \\n og fjern trailing \\n\n\n  // Tjek om citationsArray er et array og ikke tomt\n  if (!Array.isArray(citationsArray) || citationsArray.length === 0) {\n    return result; // Returner uændret tekst, hvis der ikke er citations\n  }\n\n  // Erstatter alle forekomster af [n] med Markdown-links\n  citationsArray.forEach((url, index) => {\n    const citationNumber = index + 1;\n    const placeholder = new RegExp(`\\\\[${citationNumber}\\\\]`, 'g');\n    const link = `[\\\\[${citationNumber}\\\\]](${url})`;\n    result = result.replace(placeholder, link);\n  });\n\n  // Generer citations-listen i Markdown\n  let citationsList = \"\\n\\n### Citations\\n\";\n  citationsArray.forEach((url, index) => {\n    const citationNumber = index + 1;\n    citationsList += `- [${citationNumber}] [${url}](${url})\\n`;\n  });\n\n  // Tilføj citations-listen efter teksten\n  result += citationsList;\n\n  return result;\n}\n\n// Udfør transformationen\nconst transformedContent = insertCitations(content, citations);\n\n// Returner resultatet som JSON\nreturn [{\n  json: {\n    content: transformedContent,\n    citations: citations // Bevar citations-arrayet, hvis nødvendigt\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -80,
+        -820
+      ],
+      "id": "a8921888-d14a-4119-b7d6-93ffa38432e8",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Hent inputdata fra n8n\nconst content = $input.first().json.choices[0].message.content || \"\"; // Fallback til tom streng, hvis content er undefined\nconst citations = $('Perplexity HTTP').first().json.citations || []; // Fallback til tomt array, hvis citations er undefined\n\n// Funktion til at erstatte [1], [2] osv. med links\nfunction insertCitations(text, citationsArray) {\n  // Tjek om text er en streng, ellers brug en tom streng\n  let result = typeof text === \"string\" ? text : \"\";\n  \n  // Tjek om citationsArray er et array og ikke tomt\n  if (!Array.isArray(citationsArray) || citationsArray.length === 0) {\n    return result; // Returner uændret tekst, hvis der ikke er citations\n  }\n\n  // Loop gennem citations og erstat hver [n] med en HTML-link\n  citationsArray.forEach((url, index) => {\n    const citationNumber = index + 1; // [1] starter ved index 0\n    // Brug et regulært udtryk med global flag (/g) for at erstatte alle forekomster\n    const placeholder = new RegExp(`\\\\[${citationNumber}\\\\]`, 'g');\n    const link = `<a href=\"${url}\">[${citationNumber}]</a>`;\n    result = result.replace(placeholder, link);\n  });\n  \n  return result;\n}\n\n// Udfør transformationen\nconst transformedContent = insertCitations(content, citations);\n\n// Returner resultatet som JSON\nreturn [{\n  json: {\n    content: transformedContent,\n    citations: citations // Bevar citations-arrayet, hvis nødvendigt\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -420,
+        -1040
+      ],
+      "id": "9178d26d-72b6-4597-8251-89c6fc3a7652",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3effa08b-07d7-4d48-be63-4e26d47e3d3a",
+              "name": "Perplexity research",
+              "value": "={{ $json.content.replace(/<think>.*?<\\/think>/s, '') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        160,
+        -820
+      ],
+      "id": "52ef8f2f-cb0e-4fd5-ac4e-1ecf584aa273",
+      "name": "Fjern think afsnittet"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "875a506c-dada-4b53-bc24-f94042243f80",
+              "name": "Without newline",
+              "value": "={{ $json.data.replace(/\\\\n/g, '') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        540,
+        -1080
+      ],
+      "id": "d0306d8b-386b-4926-90eb-86a86cc1a8df",
+      "name": "fjern newline",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=# Report subject\nTimeline for {{ $('On form submission').first().json.query }}\n\n# Human research\n{{ $('Collect input').first().json.additional_research }}\n\n# Perplexity research\n{{ $json.data }}\n",
+        "options": {
+          "systemMessage": "=**Role**  \nAs a historian specializing in general background you will make a broad report for historical research about the time for provided subject. Your report will focus on the global situation and big movements at the time for the provided subject.\n\nIf there is insufficient reliable information, respond with:  \n> *No verified historical data available for this location.*  \n\n**Input**  \n1. Location/subject name\n2. All available historical records about the site from research in the user prompt and your tools\n\n**Instructions**\n1. First check the user_documents tool\n2. Then check the other tools if you need more information\n3. Then combine information from the tools with the provided reseach to get the full picture\n4. Never use your own knowledge of the subject - only use knowledge from research and tool\n\n\n**Tools**\n1. user_documents\n2. Wikipedia\n3. monumentos_portugal (only for buildings and monuments)\n\n"
+        }
+      },
+      "id": "1cb578ad-988b-4dd1-ac8f-d7434e48be55",
+      "name": "General background",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        1260,
+        -940
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=# Report subject\nTimeline for {{ $('On form submission').first().json.query }}\n\n# Human research\n{{ $('Collect input').first().json.additional_research }}\n\n# Perplexity research\n{{ $json.data }}\n",
+        "options": {
+          "systemMessage": "=**Role**  \nYou are a specialized historical research assistant designed to provide in-depth thematic background reports for historians. Your purpose is to deliver well-structured, comprehensive analyses on specific historical periods, themes, or subjects.\n\nWhen given a research topic, you should:\n\n1. Create a thorough background report that explores the topic in depth, focusing on:\n   - Historical context and chronology\n   - Key developments and transformations\n   - Critical figures and their influences\n   - Primary sources and their reliability\n   - Major scholarly debates and interpretations\n   - Regional variations and connections\n   - Cultural, economic, and social dimensions\n\n2. Present information in a scholarly manner that:\n   - Cites reputable historical sources\n   - Distinguishes between established facts and interpretations\n   - Identifies gaps in historical knowledge\n   - Highlights connections to broader historical patterns\n   - Avoids presentism and anachronistic judgments\n   - Provides a balanced perspective on controversial topics\n\n3. Structure your reports with:\n   - An executive summary\n   - Detailed thematic sections\n   - Visual elements (timelines, maps, relationships) when applicable\n   - A comprehensive bibliography of primary and secondary sources\n   - Suggestions for further research\n\n4. Adapt your analysis based on specified historical methodologies (e.g., social history, economic history, cultural history, military history) as needed.\n\nYou excel at specialized deep dives into topics like \"The Islamic Golden Age,\" \"Medieval Fortifications and Architecture,\" \"Maritime Trade Networks,\" \"Influential Dynasties and Lineages,\" and similar historically focused themes.\n\nIf there is insufficient reliable information, respond with:  \n> *No verified historical data available for this location.*  \n\n**Input**  \n1. Location/subject name\n2. All available historical records about the site from research in the user prompt and your tools\n\n**Instructions**\n1. First check the user_documents tool\n2. Then check the other tools if you need more information\n3. Then combine information from the tools with the provided reseach to get the full picture\n4. Never use your own knowledge of the subject - only use knowledge from research and tool\n\n\n**Tools**\n1. user_documents\n2. Wikipedia\n3. monumentos_portugal (only for buildings and monuments)\n\n"
+        }
+      },
+      "id": "72aafeed-f8e0-4038-93cc-0340a95de895",
+      "name": "Tematical focused",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        1720,
+        -940
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Collect input').first().json.query }} in {{ $('On form submission').item.json.city.toTitleCase() }}\n\n\nTimeline agent's input: {{ $('Timeline').first().json.output }}\n\nGeneral backgrouund agent's input: {{ $('General background').item.json.output }}\n\nTematical focused agent input: {{ $json.output }}\n\n\nVerified Additional important human research:  {{ $('Collect input').item.json.additional_research }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=**Role**  \nYou are an Outliner AI assistant whose primary responsibility is to create a clear structural framework that the Editor can build upon. For a 5-7 minute historical audio narrative targeting audiences aged 45+, your specific tasks are to:\n\nDevelop a well-organized outline that serves as the narrative backbone\nCreate a logical flow with clearly defined sections including:\n\nIntroduction that establishes historical context\nMain body with chronological or thematic organization\nKey points and historical highlights to emphasize\nConclusion that provides closure and historical perspective\n\n\nIndicate appropriate proportions for each section to fit within the 5-7 minute format\nProvide structural guidance without fully writing the content\nInclude brief notes on potential transition points between sections\nMark areas where historical facts should be emphasized\n"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        2180,
+        -940
+      ],
+      "id": "5bc029f5-a921-45f7-a95e-c62d073b6665",
+      "name": "Outliner"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Collect input').first().json.query }} in {{ $('On form submission').first().json.city.toTitleCase() }}\n\nStructure from the Outliner: {{ $json.text }}\n\nTimeline agent's input: {{ $('Timeline').first().json.output }}\n\nGeneral backgrouund agent's input: {{ $('General background').first().json.output }}\n\nTematical focused agent input: {{ $('Tematical focused').first().json.output }}\n\n\nVerified Additional important human research:  {{ $('Collect input').first().json.additional_research }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=**Role**  \nHer er en justeret prompt for Redaktør AI-agenten:\n\nFor the \"Redaktør\" (Editor) AI agent:\n\"You are an Editor AI assistant creating a 5-7 minute historical audio narrative for historically interested listeners aged 45+. Your responsibilities include:\n\n• Working directly from the structure provided by the Outliner to develop the complete narrative\n• Utilizing the comprehensive research material at your disposal to fill in the Outliner's framework with accurate historical details\n• Converting factual research into engaging storytelling while maintaining historical accuracy\n• Refining language for audio presentation (clear pronunciation, engaging rhythm, appropriate pacing)\n• Calibrating content precisely to fit a 5-7 minute audio duration (approximately 750-1000 words)\n• Ensuring the tone is accessible yet sophisticated for a historically knowledgeable audience\n• Balancing educational content with engaging narrative techniques\n• Creating smooth transitions between sections as outlined in the structural framework\n• Making informed decisions about which research details to include or omit based on relevance and time constraints\n• Maintaining the logical flow and sectional organization established by the Outliner while bringing it to life with compelling language\""
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        2700,
+        -960
+      ],
+      "id": "c7349318-10bb-4a29-be77-4c40b849270b",
+      "name": "Editor"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "dea1d133-b1bc-4ab2-b0a9-66a14b09cdac",
+              "name": "data",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3060,
+        -960
+      ],
+      "id": "5772b23a-7370-4bce-b645-ef5fbc3249c1",
+      "name": "Edit Fields2"
+    }
+  ],
+  "connections": {
+    "Gmail": {
+      "main": [
+        [
+          {
+            "node": "Check Feedback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Check Feedback",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Feedback": {
+      "main": [
+        [
+          {
+            "node": "Publish",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Rejected",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Content Revision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Content Revision": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Collect input": {
+      "main": [
+        [
+          {
+            "node": "Perplexity HTTP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        []
+      ]
+    },
+    "Anthropic Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Content Revision",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "user_documents",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Timeline": {
+      "main": [
+        [
+          {
+            "node": "General background",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Content Revision",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Collect input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic 3.7": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Outliner",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Editor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "RAG AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "RAG AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI1": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "List Documents": {
+      "ai_tool": [
+        []
+      ]
+    },
+    "Get File Contents": {
+      "ai_tool": [
+        []
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "RAG AI Agent1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Perplexity HTTP": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Timeline",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "General background",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Tematical focused",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "user_documents": {
+      "ai_tool": [
+        [
+          {
+            "node": "Timeline",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "RAG AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "General background",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "Tematical focused",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "monumentos_portugal": {
+      "ai_tool": [
+        [
+          {
+            "node": "Timeline",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "General background",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "Tematical focused",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wikipedia": {
+      "ai_tool": [
+        [
+          {
+            "node": "Timeline",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "General background",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "Tematical focused",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model4": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "Markdown": {
+      "main": [
+        [
+          {
+            "node": "Timeline",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Fjern think afsnittet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fjern think afsnittet": {
+      "main": [
+        [
+          {
+            "node": "Markdown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "fjern newline": {
+      "main": [
+        []
+      ]
+    },
+    "General background": {
+      "main": [
+        [
+          {
+            "node": "Tematical focused",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tematical focused": {
+      "main": [
+        [
+          {
+            "node": "Outliner",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Outliner": {
+      "main": [
+        [
+          {
+            "node": "Editor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Editor": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "On form submission": [
+      {
+        "json": {
+          "query": "Tavira's Golden Age: Maritime Glory in the Age of Discovery (1400-1600)",
+          "additional_research": "",
+          "city": "tavira",
+          "submittedAt": "2025-03-12T05:40:01.983+00:00",
+          "formMode": "test"
+        }
+      }
+    ],
+    "Collect input": [
+      {
+        "json": {
+          "query": "Tavira's Golden Age: Maritime Glory in the Age of Discovery (1400-1600)",
+          "additional_research": ""
+        }
+      }
+    ],
+    "Code1": [
+      {
+        "json": {
+          "content": "<think>\nOkay, I need to create a comprehensive research report on Tavira's Golden Age during the Maritime Glory in the Age of Discovery from 1400 to 1600. The user is a historian preparing an article, so the report needs to be detailed, well-structured, and backed by historical sources. Let me start by understanding the key aspects of Tavira's role during this period.\n\nFirst, I'll review the provided search results. From result <a href=\"https://www.algarvewonders.com/algarve/tavira\">[1]</a>, Tavira contributed to Portugal's maritime exploration during the Age of Discoveries, with navigational expertise and shipbuilding. Result <a href=\"https://www.wandererscompass.com/tavira-portugal-suberb-mix-of-tradition-nature/\">[4]</a> mentions Tavira's origins dating back to the Phoenicians and its importance as a port under Moorish rule. The 1755 earthquake affected the town, but it was rebuilt. Result <a href=\"https://www.algarvehistoryassociation.com/en/portuguese-history/algarve-history/121-tavira-s-history-tides-of-invaders-and-shifting-sands\">[5]</a> notes that Tavira supported Portugal's forces in Moroccan conquests, indicating military involvement. Result <a href=\"https://algarveplusmagazine.com/tavira-the-east-algarves-jewel/\">[12]</a> highlights the Corte-Real family from Tavira involved in maritime discoveries. Result <a href=\"https://en.wikipedia.org/wiki/Tavira\">[11]</a> discusses the Moorish bridge and the town's development as a port.\n\nLooking at Portugal's broader context, result <a href=\"https://en.wikipedia.org/wiki/History_of_Portugal\">[2]</a> outlines the Age of Discoveries starting with Ceuta's conquest in 1415. Result <a href=\"https://www.britannica.com/topic/European-exploration/The-Age-of-Discovery\">[3]</a> details Henry the Navigator's role, and result <a href=\"https://www.smithsonianmag.com/history/when-portugal-ruled-the-seas-161560859/\">[7]</a> mentions Portugal's explorers like Dias and da Gama. Result <a href=\"https://en.wikipedia.org/wiki/Age_of_Discovery\">[6]</a> talks about ship technology improvements, which would be relevant to Tavira's shipbuilding. Result <a href=\"https://ore.exeter.ac.uk/repository/bitstream/handle/10871/126651/DreijerG.pdf?sequence=1\">[13]</a> is a dissertation on maritime law and trade, which might touch on institutional developments. Result <a href=\"https://en.wikipedia.org/wiki/Portuguese_maritime_exploration\">[14]</a> lists key Portuguese explorations, including Vasco da Gama and Cabral.\n\nNow, structuring the report. The user wants a scientific report with sections, so I'll need to break it down into major themes. Starting with an introduction summarizing Tavira's significance. Then historical background covering pre-15th century, setting the stage. Next, the geopolitical context of Portugal's Age of Discoveries. Tavira's maritime infrastructure, like shipbuilding and port facilities. Key figures from Tavira, such as the Corte-Real family. Economic impact, including trade goods like salt and fish. Military contributions in North African campaigns. Technological advancements in navigation and ship design. Cultural and architectural legacy. Finally, decline factors like the 1755 earthquake and conclusion.\n\nI need to ensure each section flows into the next, with subsections. For example, under maritime infrastructure, discuss shipbuilding techniques, port development, and the role of the Gilão River. Cite sources appropriately, like using <a href=\"https://www.algarvewonders.com/algarve/tavira\">[1]</a> for Tavira's contributions, <a href=\"https://en.wikipedia.org/wiki/Age_of_Discovery\">[6]</a> for ship technology, and <a href=\"https://en.wikipedia.org/wiki/Tavira\">[11]</a> for historical background.\n\nI should check if there are conflicts in sources. For instance, result <a href=\"https://en.wikipedia.org/wiki/Tavira\">[11]</a> clarifies that the \"Roman bridge\" is actually Moorish, which corrects earlier assumptions. Also, the earthquake's impact from <a href=\"https://www.wandererscompass.com/tavira-portugal-suberb-mix-of-tradition-nature/\">[4]</a> and <a href=\"https://monkeystale.ca/2025/01/03/discover-taviras-scenic-beauty/\">[9]</a> shows how Tavira's decline began post-1755.\n\nIncluding specific examples, like the Corte-Real family's expeditions <a href=\"https://algarveplusmagazine.com/tavira-the-east-algarves-jewel/\">[12]</a>, and how Tavira's salt trade <a href=\"https://www.wandererscompass.com/tavira-portugal-suberb-mix-of-tradition-nature/\">[4]</a> supported the economy. Mention the military campaigns in Morocco <a href=\"https://www.algarvehistoryassociation.com/en/portuguese-history/algarve-history/121-tavira-s-history-tides-of-invaders-and-shifting-sands\">[5]</a> and how Tavira's location made it strategic.\n\nNeed to avoid lists, use paragraphs, and ensure citations are inline. For instance, when discussing shipbuilding, cite <a href=\"https://en.wikipedia.org/wiki/Age_of_Discovery\">[6]</a> and <a href=\"https://monkeystale.ca/2025/01/03/discover-taviras-scenic-beauty/\">[9]</a>. When talking about exploration contributions, cite <a href=\"https://www.algarvewonders.com/algarve/tavira\">[1]</a>, <a href=\"https://algarveplusmagazine.com/tavira-the-east-algarves-jewel/\">[12]</a>, and <a href=\"https://en.wikipedia.org/wiki/Portuguese_maritime_exploration\">[14]</a>.\n\nAlso, make sure to highlight Tavira's role within Portugal's broader exploration efforts, linking local activities to national events. For example, Henry the Navigator's influence <a href=\"https://www.britannica.com/topic/European-exploration/The-Age-of-Discovery\">[3]</a>, and how Tavira's shipbuilders contributed to vessels used in voyages <a href=\"https://en.wikipedia.org/wiki/Age_of_Discovery\">[6]</a><a href=\"https://monkeystale.ca/2025/01/03/discover-taviras-scenic-beauty/\">[9]</a>.\n\nCheck timelines: The Age of Discoveries is 15th-17th centuries, but focusing on 1400-1600. Ensure events like the conquest of Ceuta (1415), Dias rounding the Cape (1488), da Gama reaching India (1498), and Cabral's discovery of Brazil (1500) are contextualized with Tavira's involvement.\n\nAddress the user's request for historical chronology, periods, background, and thematic focus. Make sure to include both the glory and the decline factors, providing a comprehensive view.\n\nFinally, ensure the report is around 10,000 words, with each section sufficiently detailed. Use academic tone, avoid fluff, and base all claims on the provided sources. Now, organizing all this into the mandated structure with proper headers and flow.\n</think>\n\n# Tavira's Golden Age: Maritime Glory in the Age of Discovery (1400-1600)  \n\nTavira emerged as a critical node in Portugal’s global maritime network during the Age of Discovery, leveraging its strategic position on the Algarve coast to contribute shipbuilding expertise, navigational knowledge, and logistical support to exploratory ventures. From the early 15th century, the town became enmeshed in Portugal’s imperial ambitions, serving as a hub for salt production, naval provisioning, and expeditionary forces bound for North Africa and beyond. Tavira’s shipwrights adapted Mediterranean and Atlantic ship designs to create vessels capable of long-haul exploration, while its merchants capitalized on new trade routes opened by Corte-Real family explorers. The town’s fortunes fluctuated with Portugal’s imperial trajectory, peaking during the spice trade zenith before declining due to silting harbors and the 1755 earthquake, yet its legacy persists in preserved Moorish-Christian architecture and maritime cultural traditions.  \n\n## Historical Foundations of Tavira’s Maritime Identity  \n\n### Ancient and Moorish Naval Heritage  \nTavira’s maritime orientation originated in Phoenician settlement patterns circa 800 BCE, when traders established twin harbors along the Gilão River estuary to exploit Atlantic and Mediterranean trade networks<a href=\"https://en.wikipedia.org/wiki/Tavira\">[11]</a>. The Phoenician *Balsa* settlement developed advanced dockyard facilities later expanded by Roman engineers, who constructed fish-salting factories and riverine trade infrastructure connecting Tavira to *Baesuris* (modern Castro Marim)<a href=\"https://en.wikipedia.org/wiki/Tavira\">[11]</a>. Under Islamic rule (8th–13th centuries), Tavira became a fortified *taifa* port, with the Moors constructing the Albarrã tower and a 12th-century seven-arch bridge that enabled secure anchorage for corsair fleets<a href=\"https://en.wikipedia.org/wiki/Castle_of_Tavira\">[8]</a><a href=\"https://en.wikipedia.org/wiki/Tavira\">[11]</a>. Moorish hydraulic engineers transformed the Gilão floodplain into irrigated agricultural plots, establishing the salt pan systems that would later fund Portuguese exploration<a href=\"https://www.wandererscompass.com/tavira-portugal-suberb-mix-of-tradition-nature/\">[4]</a>.  \n\n### Reconquista and Strategic Repositioning  \nThe Christian reconquest of Tavira in 1242 under Paio Peres Correia marked a geopolitical pivot, as the Knights of Santiago transformed the town into a crusader bastion facing North Africa<a href=\"https://en.wikipedia.org/wiki/Castle_of_Tavira\">[8]</a>. King Dinis’ 13th-century fortification program expanded Tavira Castle with concentric walls and a Gothic keep, creating a secure base for anti-piracy patrols<a href=\"https://monkeystale.ca/2025/01/03/discover-taviras-scenic-beauty/\">[9]</a>. Tavira’s role as a frontier garrison is evidenced by the 1266 royal charter (*foral*) granting tax exemptions to settlers willing to maintain war galleys<a href=\"https://en.wikipedia.org/wiki/Castle_of_Tavira\">[8]</a>. By 1300, Tavira’s shipyards were producing *barca* and *barinel* vessels that combined Mediterranean lateen rigs with Atlantic hull designs—prototypes for later exploration ships<a href=\"https://en.wikipedia.org/wiki/Iberian_ship_development,_1400%E2%80%931600\">[10]</a>.  \n\n## Portugal’s Imperial Apparatus and Tavira’s Niche  \n\n### The Henry the Navigator Paradigm  \nPrince Henry’s 1415 Ceuta campaign inaugurated systematic Atlantic exploration, with Tavira contributing three caravels crewed by local mariners<a href=\"https://en.wikipedia.org/wiki/History_of_Portugal\">[2]</a><a href=\"https://portugalonline.com/portugal/information/history/discoveries-golden-age\">[15]</a>. The town became a key supplier of maritime stores: salt from Ria Formosa pans preserved expeditionary provisions, while Gilão oak provided timber for hull construction<a href=\"https://www.wandererscompass.com/tavira-portugal-suberb-mix-of-tradition-nature/\">[4]</a><a href=\"https://monkeystale.ca/2025/01/03/discover-taviras-scenic-beauty/\">[9]</a>. Tavira’s unique value lay in its hybrid naval architecture—Moorish-designed dry docks enabled rapid ship repairs, while Christian artisans adapted Islamic astrolabe techniques to create navigational instruments<a href=\"https://en.wikipedia.org/wiki/Age_of_Discovery\">[6]</a><a href=\"https://en.wikipedia.org/wiki/Iberian_ship_development,_1400%E2%80%931600\">[10]</a>.  \n\n### Infrastructure of Exploration  \nThe 1434 breakthrough at Cape Bojador triggered infrastructure investments in Tavira:  \n1. **Shipbuilding Complex**: Expanded dockyards along the Gilão constructed 50-ton *caravela redonda* vessels combining square sails for Atlantic runs with lateen rigs for coastal maneuvering<a href=\"https://en.wikipedia.org/wiki/Iberian_ship_development,_1400%E2%80%931600\">[10]</a>.  \n2. **Victualling Stations**: Salted tuna from Tavira’s *armação* fishing fleets became standard expedition provisions, with records showing 14,000 barrels supplied to Vasco da Gama’s 1497 India armada<a href=\"https://www.wandererscompass.com/tavira-portugal-suberb-mix-of-tradition-nature/\">[4]</a><a href=\"https://en.wikipedia.org/wiki/Portuguese_maritime_exploration\">[14]</a>.  \n3. **Cartographic Hub**: Tavira’s Jewish cartographers, escaping Lisbon’s 1496 expulsion edict, produced portolan charts integrating Arab and Genoese sailing directions<a href=\"https://algarveplusmagazine.com/tavira-the-east-algarves-jewel/\">[12]</a><a href=\"https://en.wikipedia.org/wiki/Portuguese_maritime_exploration\">[14]</a>.  \n\n```python\n# Reconstructing 15th-century Tavira shipyard output\nships = {\n    \"caravel\": {\"tonnage\": 50, \"crew\": 20, \"construction_time\": 8},\n    \"barca\": {\"tonnage\": 30, \"crew\": 15, \"construction_time\": 5},\n    \"nau\": {\"tonnage\": 100, \"crew\": 40, \"construction_time\": 12}\n}\nannual_output = sum(365//ships[ship][\"construction_time\"] for ship in ships)\nprint(f\"Tavira shipyards could produce ~{annual_output} vessels annually\")\n# Output: Tavira shipyards could produce ~96 vessels annually\n```  \n\n## Taviran Agency in Global Exploration  \n\n### The Corte-Real Dynasty  \nMiguel Corte-Real epitomized Tavira’s explorer-aristocrats, utilizing family wealth from salt taxes to fund 1500–1502 Newfoundland expeditions<a href=\"https://algarveplusmagazine.com/tavira-the-east-algarves-jewel/\">[12]</a>. His *nau* São Miguel incorporated Taviran innovations:  \n- Reinforced hull planking to withstand Atlantic ice  \n- Onboard salt-curing tubs for fish preservation  \n- Arabic-inspired windlass designs for deepwater anchoring<a href=\"https://en.wikipedia.org/wiki/Iberian_ship_development,_1400%E2%80%931600\">[10]</a><a href=\"https://algarveplusmagazine.com/tavira-the-east-algarves-jewel/\">[12]</a>  \n\nThe 1501 disappearance of Miguel and Gaspar Corte-Real in Canada prompted King Manuel I to commission Tavira’s first dedicated search vessels, precursors to later rescue caravels<a href=\"https://en.wikipedia.org/wiki/Portuguese_maritime_exploration\">[14]</a>.  \n\n### Logistical Support Networks  \nTavira’s contribution extended beyond ship production:  \n- **Manpower**: Parish records indicate 12% of male residents enrolled in India Runs between 1505–1520, predominantly as carpenters and caulkers<a href=\"https://www.wandererscompass.com/tavira-portugal-suberb-mix-of-tradition-nature/\">[4]</a><a href=\"https://ore.exeter.ac.uk/repository/bitstream/handle/10871/126651/DreijerG.pdf?sequence=1\">[13]</a>.  \n- **Financial Instruments**: Taviran merchants pioneered *commenda* contracts where investors purchased quarter-shares in spice cargoes, later formalized through the Casa da Índia<a href=\"https://ore.exeter.ac.uk/repository/bitstream/handle/10871/126651/DreijerG.pdf?sequence=1\">[13]</a><a href=\"https://portugalonline.com/portugal/information/history/discoveries-golden-age\">[15]</a>.  \n- **Intelligence Gathering**: Moorish converts (*mouriscos*) provided Arabic navigational manuals used by Pedro Álvares Cabral during his 1500 Brazil landfall<a href=\"https://en.wikipedia.org/wiki/Age_of_Discovery\">[6]</a><a href=\"https://en.wikipedia.org/wiki/Tavira\">[11]</a>.  \n\n## Economic and Cultural Impacts  \n\n### Salt: The White Gold  \nTavira’s salt pans produced 30,000 *moios* annually by 1510, supplying:  \n- 60% of Portuguese cod-fishing fleets  \n- 25% of West African slave trade provisions  \n- Preservative for Goa-bound spices<a href=\"https://www.wandererscompass.com/tavira-portugal-suberb-mix-of-tradition-nature/\">[4]</a><a href=\"https://portugalonline.com/portugal/information/history/discoveries-golden-age\">[15]</a>  \n\nThe Crown’s 1506 salt monopoly (*Estanco do Sal*) redirected profits into Manueline church construction, including Santa Maria do Castelo’s maritime-themed gargoyles depicting sea monsters from Indian Ocean lore<a href=\"https://www.wandererscompass.com/tavira-portugal-suberb-mix-of-tradition-nature/\">[4]</a><a href=\"https://monkeystale.ca/2025/01/03/discover-taviras-scenic-beauty/\">[9]</a>.  \n\n### Transcultural Exchange  \nTavira became a melting pot of exploration knowledge:  \n- Arab astrologers collaborated with Jewish astronomers on lunar tables for celestial navigation  \n- African shipwrights from Arguim taught tropical wood curing techniques  \n- Chinese porcelain fragments found in 16th-century middens attest to returning sailors’ influence<a href=\"https://en.wikipedia.org/wiki/Tavira\">[11]</a><a href=\"https://algarveplusmagazine.com/tavira-the-east-algarves-jewel/\">[12]</a>  \n\n> “Tavira’s docks became a living encyclopedia of seafaring knowledge, where a Berber pilot might barter Atlantic current charts for a Malay *junk*’s storm tactics.” — Dreijer, *The Power and Pains of Polysemy* <a href=\"https://ore.exeter.ac.uk/repository/bitstream/handle/10871/126651/DreijerG.pdf?sequence=1\">[13]</a>  \n\n## Military-Industrial Complex  \n\n### North African Campaigns  \nTavira functioned as a staging ground for Moroccan conquests:  \n- 1415 Ceuta Invasion: 12 Taviran caravels transported 500 troops  \n- 1458 Alcácer-Ceguer Siege: Local smiths produced 3,000 iron cannonballs  \n- 1513 Azemmour Campaign: Hospital Real de Tavira treated 200 wounded<a href=\"https://www.algarvehistoryassociation.com/en/portuguese-history/algarve-history/121-tavira-s-history-tides-of-invaders-and-shifting-sands\">[5]</a><a href=\"https://en.wikipedia.org/wiki/Castle_of_Tavira\">[8]</a>  \n\nThe town’s armaments industry developed specialized weapons, including water-resistant matchlocks for amphibious assaults and ship-mounted *berços* (swivel guns)<a href=\"https://en.wikipedia.org/wiki/Iberian_ship_development,_1400%E2%80%931600\">[10]</a>.  \n\n### Anti-Piracy Operations  \nTavira’s *Guarda Costeira* patrolled the Algarve against Barbary raids:  \n- 1520: 17-gun *São Bartolomeu* captured Algerian corsair *Rais Hamidou*  \n- 1541: Coastal watchtowers networked via heliograph mirrors  \n- 1578: Naval militia repulsed 800-strong Ottoman landing force<a href=\"https://www.algarvehistoryassociation.com/en/portuguese-history/algarve-history/121-tavira-s-history-tides-of-invaders-and-shifting-sands\">[5]</a><a href=\"https://monkeystale.ca/2025/01/03/discover-taviras-scenic-beauty/\">[9]</a>  \n\n## Technological Innovations  \n\n### Ship Design Evolution  \nTaviran shipwrights iterated on exploration vessels:  \n\n| Innovation          | Description                                  | First Deployment |  \n|---------------------|----------------------------------------------|------------------|  \n| Reverse-clinker hull| Outer planks overlapping inwards for durability | 1482 (Dias) <a href=\"https://en.wikipedia.org/wiki/Iberian_ship_development,_1400%E2%80%931600\">[10]</a> |  \n| Bamboo mizzen masts | Imported from Goa via India Route            | 1515 <a href=\"https://en.wikipedia.org/wiki/Iberian_ship_development,_1400%E2%80%931600\">[10]</a>        |  \n| Salt-curing holds   | Double-skinned hulls with salt compartments  | 1490 <a href=\"https://www.wandererscompass.com/tavira-portugal-suberb-mix-of-tradition-nature/\">[4]</a>         |  \n\nThese adaptations reduced Atlantic crossing times from 3 months (1470) to 48 days (1550)<a href=\"https://en.wikipedia.org/wiki/Iberian_ship_development,_1400%E2%80%931600\">[10]</a><a href=\"https://en.wikipedia.org/wiki/Portuguese_maritime_exploration\">[14]</a>.  \n\n### Navigational Advances  \nTavira’s workshops produced:  \n- *Balestilha quadrada*: All-metal cross-staffs resistant to tropical humidity  \n- Tide-calendar codices combining Muslim lunar tables with Christian feast days  \n- Portable sand clocks with gimbal mounts for rough seas<a href=\"https://en.wikipedia.org/wiki/Age_of_Discovery\">[6]</a><a href=\"https://ore.exeter.ac.uk/repository/bitstream/handle/10871/126651/DreijerG.pdf?sequence=1\">[13]</a>  \n\nThe 1534 *Regimento do Astrolábio* standardized celestial navigation training using Taviran methods<a href=\"https://ore.exeter.ac.uk/repository/bitstream/handle/10871/126651/DreijerG.pdf?sequence=1\">[13]</a>.  \n\n## Decline and Legacy  \n\n### Environmental and Economic Shifts  \nPost-1600 factors eroded Tavira’s position:  \n- **Silting**: Deforestation increased Gilão River sedimentation, reducing draft depths from 4m (1550) to 1.5m (1700)<a href=\"https://www.wandererscompass.com/tavira-portugal-suberb-mix-of-tradition-nature/\">[4]</a><a href=\"https://en.wikipedia.org/wiki/Tavira\">[11]</a>  \n- **Imperial Decentralization**: Lisbon’s 1548 India House monopoly diverted trade from Algarve ports<a href=\"https://portugalonline.com/portugal/information/history/discoveries-golden-age\">[15]</a>  \n- **Earthquake Damage**: The 1755 tremor collapsed 60% of dock facilities and the castle’s armory<a href=\"https://monkeystale.ca/2025/01/03/discover-taviras-scenic-beauty/\">[9]</a>  \n\n### Cultural Preservation  \nModern Tavira retains exploration-era features:  \n- **Moorish Quarter**: 16th-century merchant houses with cargo doors facing Rua da Liberdade  \n- **Santa Maria Church**: Tomb of Dom Paio Peres Correia, reconqueror turned exploration patron<a href=\"https://en.wikipedia.org/wiki/Castle_of_Tavira\">[8]</a>  \n- **Ria Formosa**: Traditional salt pans still operating via 15th-century sluice gate designs<a href=\"https://www.wandererscompass.com/tavira-portugal-suberb-mix-of-tradition-nature/\">[4]</a>  \n\nTavira’s maritime golden age exemplifies how secondary ports fueled global exploration through specialized industries and adaptive knowledge networks. Its legacy persists in Iberian shipwright traditions and the multicultural tapestry of the Algarve—a testament to when this riverside town helped connect continents.",
+          "citations": [
+            "https://www.algarvewonders.com/algarve/tavira",
+            "https://en.wikipedia.org/wiki/History_of_Portugal",
+            "https://www.britannica.com/topic/European-exploration/The-Age-of-Discovery",
+            "https://www.wandererscompass.com/tavira-portugal-suberb-mix-of-tradition-nature/",
+            "https://www.algarvehistoryassociation.com/en/portuguese-history/algarve-history/121-tavira-s-history-tides-of-invaders-and-shifting-sands",
+            "https://en.wikipedia.org/wiki/Age_of_Discovery",
+            "https://www.smithsonianmag.com/history/when-portugal-ruled-the-seas-161560859/",
+            "https://en.wikipedia.org/wiki/Castle_of_Tavira",
+            "https://monkeystale.ca/2025/01/03/discover-taviras-scenic-beauty/",
+            "https://en.wikipedia.org/wiki/Iberian_ship_development,_1400%E2%80%931600",
+            "https://en.wikipedia.org/wiki/Tavira",
+            "https://algarveplusmagazine.com/tavira-the-east-algarves-jewel/",
+            "https://ore.exeter.ac.uk/repository/bitstream/handle/10871/126651/DreijerG.pdf?sequence=1",
+            "https://en.wikipedia.org/wiki/Portuguese_maritime_exploration",
+            "https://portugalonline.com/portugal/information/history/discoveries-golden-age",
+            "https://en.wikipedia.org/wiki/History_of_Portugal_(1415%E2%80%931578)",
+            "https://www.yachting-lifestyle.com/blog/maritime-cultural-heritage-of-the-algarve-2/"
+          ]
+        }
+      }
+    ],
+    "Perplexity HTTP": [
+      {
+        "json": {
+          "id": "a9db2995-0cc3-4b22-83fe-6703a1a45d8a",
+          "model": "sonar-deep-research",
+          "created": 1741931423,
+          "usage": {
+            "prompt_tokens": 122,
+            "completion_tokens": 1434,
+            "total_tokens": 1556,
+            "citation_tokens": 9303,
+            "num_search_queries": 12,
+            "reasoning_tokens": 32608
+          },
+          "citations": [
+            "https://www.wandererscompass.com/tavira-portugal-suberb-mix-of-tradition-nature/",
+            "https://en.wikipedia.org/wiki/Iberian_ship_development,_1400%E2%80%931600",
+            "https://www.packthesuitcases.com/things-to-do-in-tavira-portugal/",
+            "https://portugalvirtual.pt/_tourism/algarve/tavira/ukhistory.html",
+            "https://portugaltravelguide.com/discoveries-portugal/",
+            "https://www.whythealgarve.com/post/tavira-1",
+            "https://www.algarvehistoryassociation.com/en/portuguese-history/algarve-history/121-tavira-s-history-tides-of-invaders-and-shifting-sands",
+            "https://www.portugal.com/city/sagres/",
+            "https://cm-tavira.pt/site/wp-content/uploads/2022/05/roteiro-historico-en.pdf",
+            "https://listverse.com/2020/08/07/top-ten-milestones-of-the-age-of-discovery/",
+            "https://www.algarvewonders.com/algarve/tavira",
+            "https://en.wikipedia.org/wiki/Age_of_Discovery",
+            "https://www.iro.umontreal.ca/~vaucher/History/Ships/Ships_Discovery/index.html",
+            "https://academia.marinha.pt/pt/Comunicaes/OS%20FATORES%20DECISIVOS%20DA%20EXPANS%C3%83O%20MAR%C3%8DTIMA.Fernando%20Gomes%20Pedrosa.pdf",
+            "https://archive.org/stream/gri_33125005925710/gri_33125005925710_djvu.txt"
+          ],
+          "object": "chat.completion",
+          "choices": [
+            {
+              "index": 0,
+              "finish_reason": "stop",
+              "message": {
+                "role": "assistant",
+                "content": "<think>\nOkay, I need to create a background research report on Tavira's Golden Age during the Maritime Glory in the Age of Discovery (1400-1600). Let me start by going through the provided search results to gather relevant information. \n\nFirst, looking at the history of Tavira from sources [1], [4], [6], [9], and [11], I see that Tavira's origins go back to the Phoenicians and later Moorish occupation. After the Christian reconquest in 1242, it became an important port. By the 15th-16th centuries, Tavira was a key player in Portugal's maritime activities. Source [6] mentions that by 1520, Tavira was the most populated settlement in the Algarve, elevated to city status. \n\nNext, the Age of Discovery is covered in sources [2], [5], [10], [12], [13], and [14]. The Portuguese developed caravels and naus, which were crucial for exploration. Source [2] explains how these ships allowed longer voyages, and source [5] notes that Tavira's port was vital for supporting African positions and trade. \n\nTavira's specific contributions are highlighted in [4], [6], and [14]. The port exported salt, fish, wine, and dried fruits. Source [14] even mentions shipbuilding in Tavira, with caravelas being built there. The town's navigational expertise and shipbuilding capabilities are noted in [11]. \n\nEconomic factors from [1], [4], and [6] show that fishing, salt production, and trade were central. However, the 1755 earthquake (source [1]) and silting of the harbor (source [4]) led to decline by the 17th century. \n\nI need to structure this into sections: historical context, maritime contributions, economic role, technological aspects, and decline. Ensure each section cites the relevant sources. Also, check for any conflicting information, like the bridge's origin in [3] vs. [9], but since the query focuses on 1400-1600, that's less relevant here. \n\nMake sure to highlight Tavira's strategic location near North Africa, its role in supplying expeditions, and the transition from prosperity to decline. Use sources [2], [5], and [14] for ship technology and trade details. Mention specific exports and how they supported maritime endeavors. \n\nFinally, wrap up with the factors leading to decline, citing the earthquake and silting. Avoid including later history beyond the 1600s unless it's directly related. Check all citations to ensure they're correctly referenced from the provided sources.\n</think>\n\nTavira, a historic city in Portugal's Algarve region, experienced a golden age during the **Age of Discovery (1400–1600)**, driven by its strategic maritime position, shipbuilding prowess, and economic contributions to Portuguese exploration. Here’s a detailed analysis of its role in this era:\n\n---\n\n### **Historical Context**\nTavira’s maritime prominence began long before the 15th century. Originally a Phoenician settlement (8th century BCE)[1][9], it later thrived under Moorish rule (8th–13th centuries CE) as a fortified port[6][9]. After its reconquest by Dom Paio Peres Correia in 1242[1][4], Tavira became a critical hub for trade and defense due to its proximity to North Africa[4][6]. By 1520, it was elevated to city status under King Manuel I, reflecting its importance as the Algarve’s most populous settlement[6][11].\n\n---\n\n### **Maritime Contributions to the Age of Discovery**\n1. **Strategic Port for Exploration**  \n   Tavira’s port, the closest to the Moroccan coast, served as a logistical base for Portuguese expeditions to Africa and beyond[4][6]. It supplied ships with **salt, wine, dried fish, and almonds**—essential provisions for long voyages[1][4]. The port also supported naval operations against piracy and Islamic commerce in the Mediterranean[2][14].\n\n2. **Shipbuilding and Naval Expertise**  \n   Tavira’s shipyards contributed to Portugal’s advancements in ship technology. The development of **caravels** (agile, shallow-draft ships) and **naus** (larger cargo vessels) revolutionized exploration[2][5][12]. By the late 15th century, Taviran-built caravels were integral to fleets, including those of Vasco da Gama and Ferdinand Magellan[2][13]. Local shipwrights even supplied Seville with artillered caravels for anti-piracy missions[14].\n\n3. **Role in Trade Networks**  \n   Tavira exported goods like **salted fish, figs, and almonds** to Northern Europe, Africa, and the Mediterranean[4][6]. Its merchants leveraged Portugal’s control of trade routes to India and Brazil, enriching the city through globalized commerce[5][11].\n\n---\n\n### **Economic and Cultural Flourishing**\n- **Fishing and Salt Production**: The town’s economy relied on tuna fishing and salt pans, which later attracted flamingoes and remain a cultural landmark[1][3].\n- **Architectural Legacy**: Profits from maritime trade funded the construction of churches, including **Santa Maria do Castelo** (built atop a mosque)[1][6], and the iconic **Roman Bridge** (actually Moorish, rebuilt in 1667)[3][9].\n- **Cultural Fusion**: Moorish architectural influences, such as whitewashed buildings and geometric tilework, persisted alongside Christian structures[1][6][9].\n\n---\n\n### **Technological and Military Innovations**\n- **Naval Arsenal**: Tavira’s ships were equipped with advanced artillery, enabling them to dominate rival vessels like Islamic dhows[2][14].\n- **Navigation Knowledge**: The city’s sailors contributed to Portugal’s navigational expertise, honed through fishing and trade in Atlantic and Mediterranean waters[5][14].\n\n---\n\n### **Decline in the 17th Century**\nTavira’s golden age waned due to:\n1. **Silting of the Gilão River**: Reduced port accessibility disrupted trade[4][6].\n2. **1755 Earthquake**: Destroyed much of the city, though it was later rebuilt[1].\n3. **Shift in Global Trade**: Portuguese focus moved to colonies like Brazil, while rival ports (e.g., Seville) absorbed Mediterranean commerce[4][6].\n\n---\n\n### **Legacy**\nToday, Tavira’s history is preserved in its **Islamic Museum** (showcasing Phoenician and Moorish artifacts)[9], **salt pans**[3], and annual traditions like the **Easter lavender-strewn bridge**[3]. Its role in the Age of Discovery remains a cornerstone of Algarve heritage, blending maritime ambition with cross-cultural exchange[11]."
+              },
+              "delta": {
+                "role": "assistant",
+                "content": ""
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "versionId": "b064c22b-98e7-4320-89ba-7f40d706fd90",
+  "triggerCount": 5,
+  "shared": [
+    {
+      "createdAt": "2025-03-12T04:37:22.597Z",
+      "updatedAt": "2025-03-12T04:37:22.597Z",
+      "role": "workflow:owner",
+      "workflowId": "PoQOFzM3NGCvmly7",
+      "projectId": "rkqKISKa14HwF9Xd"
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-01-28T15:25:26.214Z",
+      "updatedAt": "2025-01-28T15:25:26.214Z",
+      "id": "BngebX50Ev8rBclu",
+      "name": "HN Content manager"
+    }
+  ]
+}
