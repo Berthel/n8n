@@ -1,0 +1,75 @@
+{
+  "createdAt": "2025-03-31T13:25:25.691Z",
+  "updatedAt": "2025-07-23T16:51:40.000Z",
+  "id": "3VWiQm8stMjt2QkE",
+  "name": "Grafisk designer",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "2dceb1cc-394d-41e5-a77d-2884c1c8206d",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "17a68ac1-ca0a-4057-8f54-2a92654ed775",
+              "name": "Billede prompt",
+              "value": "Solnedgang",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "id": "f90043e1-b3d4-4d15-88e0-64da09b5a464",
+      "name": "Edit Fields"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "57e5fa50-c73f-4ec9-9f17-93f8afecdfb0",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-03-31T13:25:25.694Z",
+      "updatedAt": "2025-03-31T13:25:25.694Z",
+      "role": "workflow:owner",
+      "workflowId": "3VWiQm8stMjt2QkE",
+      "projectId": "SFLNAzqJIfhKMhJx"
+    }
+  ],
+  "tags": []
+}
