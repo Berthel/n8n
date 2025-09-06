@@ -1,0 +1,460 @@
+{
+  "createdAt": "2025-02-05T19:23:10.697Z",
+  "updatedAt": "2025-02-05T20:44:31.000Z",
+  "id": "zSmGnvMNmoVzRvwt",
+  "name": "Manuel ocr",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "7d3e6882-9333-49f5-b858-2a77f42c88e1",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1sPcuajG8Y_qHhQ6Ym3ywPG_93ug67Y2Z",
+          "mode": "list",
+          "cachedResultName": "Duas-Descricoes-Algarve-Sec-XVI-completo.pdf",
+          "cachedResultUrl": "https://drive.google.com/file/d/1sPcuajG8Y_qHhQ6Ym3ywPG_93ug67Y2Z/view?usp=drivesdk"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        480,
+        0
+      ],
+      "id": "12b2eab8-cfb4-46bf-a8bf-b7e1d7fb9bf7",
+      "name": "Google Drive",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "PJ6id5UZ4SjuKSnf",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "projectId": "nodal-descent-289813",
+        "bucketName": "bog",
+        "createAcl": {},
+        "createBody": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.googleCloudStorage",
+      "typeVersion": 1,
+      "position": [
+        240,
+        0
+      ],
+      "id": "9ec529df-ff25-45a1-98fe-40d493b165d0",
+      "name": "Google Cloud Storage",
+      "credentials": {
+        "googleCloudStorageOAuth2Api": {
+          "id": "qlOTGVSWNisBnwf4",
+          "name": "Google Cloud Storage account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "object",
+        "operation": "create",
+        "bucketName": "bog",
+        "objectName": "Duas-Descricoes-Algarve-Sec-XVI-completo.pdf",
+        "createData": {},
+        "createQuery": {},
+        "encryptionHeaders": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.googleCloudStorage",
+      "typeVersion": 1,
+      "position": [
+        700,
+        0
+      ],
+      "id": "a0614aab-f32d-4165-9718-09b6d61009d4",
+      "name": "Google Cloud Storage1",
+      "credentials": {
+        "googleCloudStorageOAuth2Api": {
+          "id": "qlOTGVSWNisBnwf4",
+          "name": "Google Cloud Storage account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://vision.googleapis.com/v1/files:asyncBatchAnnotate",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"requests\": [{\n    \"inputConfig\": {\n      \"gcsSource\": {\n        \"uri\": \"gs://bog/Duas-Descricoes-Algarve-Sec-XVI-completo.pdf\"\n      },\n      \"mimeType\": \"application/pdf\"\n    },\n    \"features\": [{\n      \"type\": \"DOCUMENT_TEXT_DETECTION\"\n    }],\n    \"outputConfig\": {\n      \"gcsDestination\": {\n        \"uri\": \"gs://bog/output/\"\n      },\n      \"batchSize\": 100\n    }\n  }]\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        920,
+        0
+      ],
+      "id": "42241f25-3e2f-4b9f-ba11-659551b0b226",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "RBY53ewF7tAnXKlY",
+          "name": "Google API"
+        },
+        "googleOAuth2Api": {
+          "id": "gWuhqhUSJEDb1w1d",
+          "name": "Google account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://vision.googleapis.com/v1/operations/2f018997de44c278",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleOAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1140,
+        0
+      ],
+      "id": "6c70ecc1-1333-4e86-9e73-d7a080fb3f7e",
+      "name": "HTTP Request1",
+      "credentials": {
+        "googleOAuth2Api": {
+          "id": "gWuhqhUSJEDb1w1d",
+          "name": "Google account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "object",
+        "bucketName": "bog",
+        "listFilters": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.googleCloudStorage",
+      "typeVersion": 1,
+      "position": [
+        1360,
+        0
+      ],
+      "id": "aed185d6-1df8-42ac-88ce-a78916e01e1f",
+      "name": "Google Cloud Storage2",
+      "credentials": {
+        "googleCloudStorageOAuth2Api": {
+          "id": "qlOTGVSWNisBnwf4",
+          "name": "Google Cloud Storage account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "object",
+        "operation": "get",
+        "bucketName": "bog",
+        "objectName": "output%2Foutput-101-to-177.json",
+        "alt": "media",
+        "getParameters": {},
+        "encryptionHeaders": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.googleCloudStorage",
+      "typeVersion": 1,
+      "position": [
+        1580,
+        0
+      ],
+      "id": "cba577c9-ad5d-41bb-a8e1-263f01648fea",
+      "name": "Google Cloud Storage3",
+      "credentials": {
+        "googleCloudStorageOAuth2Api": {
+          "id": "qlOTGVSWNisBnwf4",
+          "name": "Google Cloud Storage account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Google Cloud Storage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive": {
+      "main": [
+        [
+          {
+            "node": "Google Cloud Storage1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Cloud Storage": {
+      "main": [
+        [
+          {
+            "node": "Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Cloud Storage1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Google Cloud Storage2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Cloud Storage2": {
+      "main": [
+        [
+          {
+            "node": "Google Cloud Storage3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Google Cloud Storage": [
+      {
+        "json": {
+          "kind": "storage#bucket",
+          "selfLink": "https://www.googleapis.com/storage/v1/b/bog",
+          "id": "bog",
+          "name": "bog",
+          "projectNumber": "352727078639",
+          "generation": "1738784411546334230",
+          "metageneration": "1",
+          "location": "US",
+          "storageClass": "STANDARD",
+          "etag": "CAE=",
+          "timeCreated": "2025-02-05T19:40:11.800Z",
+          "updated": "2025-02-05T19:40:11.800Z",
+          "softDeletePolicy": {
+            "retentionDurationSeconds": "604800",
+            "effectiveTime": "2025-02-05T19:40:11.800Z"
+          },
+          "iamConfiguration": {
+            "bucketPolicyOnly": {
+              "enabled": false
+            },
+            "uniformBucketLevelAccess": {
+              "enabled": false
+            },
+            "publicAccessPrevention": "inherited"
+          },
+          "locationType": "multi-region",
+          "rpo": "DEFAULT"
+        }
+      }
+    ],
+    "Google Cloud Storage1": [
+      {
+        "json": {
+          "kind": "storage#object",
+          "id": "bog/Duas-Descricoes-Algarve-Sec-XVI-completo.pdf/1738784864001805",
+          "selfLink": "https://www.googleapis.com/storage/v1/b/bog/o/Duas-Descricoes-Algarve-Sec-XVI-completo.pdf",
+          "mediaLink": "https://storage.googleapis.com/download/storage/v1/b/bog/o/Duas-Descricoes-Algarve-Sec-XVI-completo.pdf?generation=1738784864001805&alt=media",
+          "name": "Duas-Descricoes-Algarve-Sec-XVI-completo.pdf",
+          "bucket": "bog",
+          "generation": "1738784864001805",
+          "metageneration": "1",
+          "contentType": "application/pdf",
+          "storageClass": "STANDARD",
+          "size": "66935504",
+          "md5Hash": "ddQNxuUARQDGO2kKqIGj4w==",
+          "crc32c": "aqRnjg==",
+          "etag": "CI2+o7GmrYsDEAE=",
+          "timeCreated": "2025-02-05T19:47:44.048Z",
+          "updated": "2025-02-05T19:47:44.048Z",
+          "timeStorageClassUpdated": "2025-02-05T19:47:44.048Z",
+          "timeFinalized": "2025-02-05T19:47:44.048Z",
+          "acl": [
+            {
+              "kind": "storage#objectAccessControl",
+              "object": "Duas-Descricoes-Algarve-Sec-XVI-completo.pdf",
+              "generation": "1738784864001805",
+              "id": "bog/Duas-Descricoes-Algarve-Sec-XVI-completo.pdf/1738784864001805/project-owners-352727078639",
+              "selfLink": "https://www.googleapis.com/storage/v1/b/bog/o/Duas-Descricoes-Algarve-Sec-XVI-completo.pdf/acl/project-owners-352727078639",
+              "bucket": "bog",
+              "entity": "project-owners-352727078639",
+              "role": "OWNER",
+              "etag": "CI2+o7GmrYsDEAE=",
+              "projectTeam": {
+                "projectNumber": "352727078639",
+                "team": "owners"
+              }
+            },
+            {
+              "kind": "storage#objectAccessControl",
+              "object": "Duas-Descricoes-Algarve-Sec-XVI-completo.pdf",
+              "generation": "1738784864001805",
+              "id": "bog/Duas-Descricoes-Algarve-Sec-XVI-completo.pdf/1738784864001805/project-editors-352727078639",
+              "selfLink": "https://www.googleapis.com/storage/v1/b/bog/o/Duas-Descricoes-Algarve-Sec-XVI-completo.pdf/acl/project-editors-352727078639",
+              "bucket": "bog",
+              "entity": "project-editors-352727078639",
+              "role": "OWNER",
+              "etag": "CI2+o7GmrYsDEAE=",
+              "projectTeam": {
+                "projectNumber": "352727078639",
+                "team": "editors"
+              }
+            },
+            {
+              "kind": "storage#objectAccessControl",
+              "object": "Duas-Descricoes-Algarve-Sec-XVI-completo.pdf",
+              "generation": "1738784864001805",
+              "id": "bog/Duas-Descricoes-Algarve-Sec-XVI-completo.pdf/1738784864001805/project-viewers-352727078639",
+              "selfLink": "https://www.googleapis.com/storage/v1/b/bog/o/Duas-Descricoes-Algarve-Sec-XVI-completo.pdf/acl/project-viewers-352727078639",
+              "bucket": "bog",
+              "entity": "project-viewers-352727078639",
+              "role": "READER",
+              "etag": "CI2+o7GmrYsDEAE=",
+              "projectTeam": {
+                "projectNumber": "352727078639",
+                "team": "viewers"
+              }
+            },
+            {
+              "kind": "storage#objectAccessControl",
+              "object": "Duas-Descricoes-Algarve-Sec-XVI-completo.pdf",
+              "generation": "1738784864001805",
+              "id": "bog/Duas-Descricoes-Algarve-Sec-XVI-completo.pdf/1738784864001805/user-flemming.berthelsen@gmail.com",
+              "selfLink": "https://www.googleapis.com/storage/v1/b/bog/o/Duas-Descricoes-Algarve-Sec-XVI-completo.pdf/acl/user-flemming.berthelsen@gmail.com",
+              "bucket": "bog",
+              "entity": "user-flemming.berthelsen@gmail.com",
+              "role": "OWNER",
+              "email": "flemming.berthelsen@gmail.com",
+              "etag": "CI2+o7GmrYsDEAE="
+            }
+          ],
+          "owner": {
+            "entity": "user-flemming.berthelsen@gmail.com"
+          }
+        }
+      }
+    ],
+    "HTTP Request": [
+      {
+        "json": {
+          "name": "projects/nodal-descent-289813/operations/2f018997de44c278"
+        }
+      }
+    ],
+    "HTTP Request1": [
+      {
+        "json": {
+          "name": "operations/2f018997de44c278",
+          "metadata": {
+            "@type": "type.googleapis.com/google.cloud.vision.v1.OperationMetadata",
+            "state": "DONE",
+            "createTime": "2025-02-05T20:06:49.415949077Z",
+            "updateTime": "2025-02-05T20:07:36.731917976Z"
+          },
+          "done": true,
+          "response": {
+            "@type": "type.googleapis.com/google.cloud.vision.v1.AsyncBatchAnnotateFilesResponse",
+            "responses": [
+              {
+                "outputConfig": {
+                  "gcsDestination": {
+                    "uri": "gs://bog/output/"
+                  },
+                  "batchSize": 100
+                }
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "versionId": "5a43e7e6-042a-4763-99c5-e0844396037a",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-02-05T19:23:10.700Z",
+      "updatedAt": "2025-02-05T19:23:10.700Z",
+      "role": "workflow:owner",
+      "workflowId": "zSmGnvMNmoVzRvwt",
+      "projectId": "rkqKISKa14HwF9Xd"
+    }
+  ],
+  "tags": []
+}
