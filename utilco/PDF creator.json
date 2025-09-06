@@ -1,0 +1,246 @@
+{
+  "createdAt": "2025-04-01T12:41:43.761Z",
+  "updatedAt": "2025-04-01T12:47:31.000Z",
+  "id": "kmO42ABrmCQiKf7N",
+  "name": "PDF creator",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "url": "={{ $json.download_url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        480,
+        0
+      ],
+      "id": "44447865-9343-489a-8dc7-5464ab2bbc46",
+      "name": "Download PDF"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('On form submission').first().json.Email }}",
+        "subject": "=Deep Research Report: {{ $('On form submission').first().json['Search Topic'] }}",
+        "emailType": "text",
+        "message": "=Your Deep Research Report on {{ $('On form submission').first().json['Search Topic'] }} is complete.\n\nYou can find it attached below.",
+        "options": {
+          "appendAttribution": false,
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {}
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        80,
+        -260
+      ],
+      "id": "d81676c2-d36a-4812-bf46-c90bd7dd849b",
+      "name": "Send Report",
+      "webhookId": "e066c2ef-6c8c-413e-a70e-05c88f29b9f6",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "rINyK0DNFxXhuS2J",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://rest-us.apitemplate.io/v2/create-pdf-from-html",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "apiTemplateIoApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "filename",
+              "value": "=Test.pdf"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"body\": \"{{ $json.data }}\",\n  \"css\": \"<style>.bg{background: red};</style>\",\n  \"data\": {\n    \"name\": \"This is a title\"\n  },\n  \"settings\": {\n    \"paper_size\": \"A4\",\n    \"orientation\": \"1\",\n    \"header_font_size\": \"9px\",\n    \"margin_top\": \"40\",\n    \"margin_right\": \"10\",\n    \"margin_bottom\": \"40\",\n    \"margin_left\": \"10\",\n    \"print_background\": \"1\",\n    \"displayHeaderFooter\": true,\n    \"custom_header\": \"<style>#header, #footer { padding: 0 !important; }</style>\\n<table style=\\\"width: 100%; padding: 0px 5px;margin: 0px!important;font-size: 8px\\\">\\n  <tr>\\n    <td style=\\\"text-align:left; width:30%!important;\\\"><span class=\\\"date\\\"></span></td>\\n    <td style=\\\"text-align:center; width:30%!important;\\\"><span class=\\\"pageNumber\\\"></span></td>\\n    <td style=\\\"text-align:right; width:30%!important;\\\"><span class=\\\"totalPages\\\"></span></td>\\n  </tr>\\n</table>\",\n    \"custom_footer\": \"<style>#header, #footer { padding: 0 !important; }</style>\\n<table style=\\\"width: 100%; padding: 0px 5px;margin: 0px!important;font-size: 8px\\\">\\n  <tr>\\n    <td style=\\\"text-align:left; width:30%!important;\\\"><span class=\\\"date\\\"></span></td>\\n    <td style=\\\"text-align:center; width:30%!important;\\\"><span class=\\\"pageNumber\\\"></span></td>\\n    <td style=\\\"text-align:right; width:30%!important;\\\"><span class=\\\"totalPages\\\"></span></td>\\n  </tr>\\n</table>\"\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        320,
+        0
+      ],
+      "id": "e516569c-6591-48ce-8381-1f3f779fc8f6",
+      "name": "Generate PDF",
+      "credentials": {
+        "apiTemplateIoApi": {
+          "id": "Ma4TLszBz6pQ7jKa",
+          "name": "APITemplate.io account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -260,
+        0
+      ],
+      "id": "26074bc3-973a-4871-b62c-b9d08fbcae41",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "aac38a32-09ac-4485-9d79-98a8454f6aa2",
+              "name": "Mark down",
+              "value": "# Lektionsdesign: Betydningen af risikostyring i ledelse  ## Lektionsstruktur  **Titel**: Betydningen af risikostyring i ledelse **Formål**: At give deltagerne indsigt i, hvordan risikostyring integreres i ledelsesarbejdet i vandselskaber, og hvordan ledere kan drive risikostyring som en kerneopgave. **Hovedelementer**: - Risikostyring som et ledelsesansvar - Integration af risikostyring i beslutningsprocesser - Kultur og kommunikation omkring risikostyring **Varighed**: 10 minutter **Placering**: Lektion 1 i Modul 1: Introduktion til Risikostyring  ## Tekstkomponenter  ### 1. Introduktion En kort velkomst til lektionen med fremhævning af, hvorfor risikostyring er en central ledelsesopgave i moderne vandselskaber, ikke blot en teknisk støttefunktion.  ### 2. Risikostyring som et ledelsesansvar - Topledelsens rolle i at definere organisationens tilgang til risikostyring - Hvordan risikoejerskab fordeles på forskellige ledelseslag - Eksempler på, hvordan ledere kan demonstrere engagement i risikostyring  ### 3. Integration i beslutningsprocesser - Konkrete metoder til at integrere risikoperspektiver i beslutningsstrukturer - Betydningen af strukturerede beslutningsrammer med indbygget risikovurdering - Hvordan risikoinformation kan præsenteres effektivt som beslutningsgrundlag  ### 4. Kultur og kommunikation - Ledelsens rolle i at forme en risikobevidst organisationskultur - Balancen mellem formelle systemer og en levende risikokultur - Principper for transparent risikokommunikation til interne og eksterne interessenter  ### 5. Nøglebegreber Præsentation af de fire nøglebegreber med deres definitioner, med fokus på hvordan de relaterer til ledelsesopgaven.  ### 6. Sammenfatning Opsummering af hovedpunkter og deres indbyrdes sammenhæng, med fokus på ledelsens rolle som drivkraft for effektiv risikostyring.  ## Grafiske Elementer  ### 1. Risikostyring som ledelsesansvar - Pyramidemodel **Beskrivelse**: En visualisering af risikostyring gennem en organisationspyramide, der viser forskellige ledelsesniveauer i et vandselskab og deres respektive roller i risikostyring.  **Formål**: At visualisere hvordan risikoejerskab fordeles på forskellige ledelseslag, fra bestyrelse og direktør til afdelingsledere og teamledere.  **Teknisk implementation**: - SVG-format med interaktive elementer - Pyramide med 3-4 lag repræsenterende ledelsesniveauer - Hver niveau har et tilknyttet tekstfelt med ansvarsområder - Farvegraduering fra mørkeblå (top) til lysere blå (bund) - Ved mouse-over fremhæves det pågældende niveau og viser detaljeret beskrivelse af ansvarsområder  ![Risikostyringspyramide](/placeholderImage1.svg)  ### 2. Risikointegreret beslutningsproces - Flowdiagram **Beskrivelse**: Et cirkulært flowdiagram der illustrerer, hvordan risikostyring integreres i beslutningsprocesser i et vandselskab.  **Formål**: At vise den cykliske natur af risikointegrerede beslutninger og hvordan risikoinformation indgår på forskellige stadier.  **Teknisk implementation**: - SVG-format - Cirkulært design med 5 faser: Planlægning → Risikovurdering → Beslutning → Implementering → Opfølgning → (tilbage til Planlægning) - Hver fase har et ikon og kort beskrivelse - Centrale ikoner relaterer til vandselskabets aktiviteter (rør, pumper, vandbehandling) - Farveskema i blå og grønne nuancer - Simple animerede pile der indikerer flowets retning  ![Risikointegreret beslutningsproces](/placeholderImage2.svg)  ### 3. Nøglebegreber - Interaktivt kort **Beskrivelse**: Et interaktivt koncept-kort der viser de fire nøglebegreber og deres indbyrdes relationer.  **Formål**: At hjælpe deltagerne med at forstå sammenhængen mellem nøglebegreberne og hvordan de sammen danner grundlag for risikointegreret ledelse.  **Teknisk implementation**: - HTML/CSS-baseret interaktivt element - Fire hovedbobler med nøglebegreberne: \"Risikointegreret ledelse\", \"Risikoejerskab\", \"Beslutningsrammer\" og \"Risikokommunikation\" - Forbindelseslinjer mellem boblerne viser deres indbyrdes relationer - Ved klik på en boble fremhæves definitionen af begrebet - Ved mouse-over på forbindelseslinjerne vises korte tekster om relationerne  ![Nøglebegreber i risikostyring](/placeholderImage3.svg)  ### 4. Kultur- og kommunikationsmatrix **Beskrivelse**: En 2×2 matrix der viser balancen mellem formaliserede systemer og fleksibel risikokultur, samt mellem intern og ekstern risikokommunikation.  **Formål**: At illustrere de forskellige dimensioner af risikokommunikation og -kultur, og hvordan ledere skal balancere disse aspekter.  **Teknisk implementation**: - PNG-format - X-akse: Formaliseret ↔ Fleksibel - Y-akse: Intern ↔ Ekstern - Hvert kvadrant indeholder eksempler på kommunikations- og kulturaktiviteter - Farvegraduering fra rød (høj formalitet/ekstern) til grøn (høj fleksibilitet/intern) - Simple ikoner i hvert kvadrant repræsenterer eksemplerne  ![Kultur- og kommunikationsmatrix](/placeholderImage4.png)  ### 5. Interaktiv case-illustration **Beskrivelse**: En visualisering af et fiktivt vandselskab med markerede risikoområder, der kan udforskes interaktivt.  **Formål**: At give deltagerne et konkret eksempel på, hvordan risikostyring kan implementeres i et vandselskab, og hvilke typer risici der typisk skal håndteres.  **Teknisk implementation**: - Interaktiv SVG/HTML-kombination - Simpelt diagram af et vandselskabs hovedkomponenter (vandindvinding, behandling, distribution) - Markerede \"hotspots\" på diagrammet repræsenterer forskellige risikotyper - Ved klik på et hotspot åbnes en pop-up med beskrivelse af risikotypen og relevant ledelsesansvar - Baggrundsillustration i dæmpede farver med fremhævede interaktive elementer  ![Vandselskab med risikozoner](/placeholderImage5.svg)  ## Praktiske elementer  ### Risikoworkshop-simulering **Beskrivelse**: En interaktiv simulering af en risikoworkshop, hvor deltageren kan vælge mellem forskellige ledelsesbeslutninger og se, hvordan risikostyring kan integreres.  **Formål**: At give deltagerne praktisk erfaring med at anvende risikostyringsprincipper i realistiske beslutningsscenarier.  **Teknisk implementation**: - Interaktivt HTML/JavaScript-element - Præsentation af 3-5 typiske ledelsesbeslutninger i et vandselskab - For hver beslutning kan deltageren vælge forskellige tilgange til risikostyring - Feedback på valg med fordele og ulemper ved hver tilgang - Afsluttende refleksionsspørgsmål om, hvordan deltageren kan anvende lignende tilgange i egen organisation  ### Risikokommunikationsplan-skabelon **Beskrivelse**: En skabelon til at udvikle en risikokommunikationsplan, som deltagerne kan udfylde med deres egne refleksioner.  **Formål**: At hjælpe deltagerne med at omsætte lektionens principper til konkrete kommunikationsaktiviteter.  **Teknisk implementation**: - Downloadbar PDF-skabelon - Struktureret med sektioner for forskellige interessentgrupper - Inkluderer eksempler og vejledende spørgsmål - Visuel opstilling med plads til at tilføje egne noter  ## Lektionsafslutning  En kort opsummering af hovedpunkterne fra lektionen, med særligt fokus på, hvordan deltagerne kan begynde at implementere risikointegreret ledelse i deres egen organisation. Afsluttes med en henvisning til næste lektion om konkrete metoder til integration af risikostyring.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -80,
+        0
+      ],
+      "id": "31537dad-1260-474b-b49d-a3d95989555d",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "root",
+          "cachedResultName": "/ (Root folder)"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        660,
+        0
+      ],
+      "id": "ef6c99fe-2eab-4f57-98de-a81f9330ddd8",
+      "name": "Google Drive",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "iqKibuWvWktI99Br",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "markdownToHtml",
+        "markdown": "={{ $json['Mark down'] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.markdown",
+      "typeVersion": 1,
+      "position": [
+        120,
+        0
+      ],
+      "id": "580db69c-6646-42d3-b0f9-e41d678f4c02",
+      "name": "Markdown"
+    }
+  ],
+  "connections": {
+    "Download PDF": {
+      "main": [
+        [
+          {
+            "node": "Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate PDF": {
+      "main": [
+        [
+          {
+            "node": "Download PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Markdown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Markdown": {
+      "main": [
+        [
+          {
+            "node": "Generate PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "7f1cbd03-8f97-4a14-86db-7277c6a74a1e",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-04-01T12:41:43.763Z",
+      "updatedAt": "2025-04-01T12:41:43.763Z",
+      "role": "workflow:owner",
+      "workflowId": "kmO42ABrmCQiKf7N",
+      "projectId": "SFLNAzqJIfhKMhJx"
+    }
+  ],
+  "tags": []
+}
