@@ -1,0 +1,401 @@
+{
+  "createdAt": "2025-08-14T13:12:09.892Z",
+  "updatedAt": "2025-08-14T16:17:23.068Z",
+  "id": "jdth5EnsH2IhHfRZ",
+  "name": "docling-claude",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {
+        "fileSelector": "/data/shared/*.pdf",
+        "options": {
+          "dataPropertyName": "pdf"
+        }
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        832,
+        144
+      ],
+      "id": "88bc6ff3-b74e-414c-a21a-07ef1e7b0992",
+      "name": "Read/Write Files from Disk"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        608,
+        144
+      ],
+      "id": "1b159293-bd55-4626-8769-1885bdec7cb7",
+      "name": "When clicking 'Execute workflow'"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://docling:5001/v1/convert/file",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "pdf"
+            },
+            {
+              "name": "to_formats",
+              "value": "md"
+            },
+            {
+              "name": "do_ocr",
+              "value": "true"
+            },
+            {
+              "name": "image_export_mode",
+              "value": "embedded"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 120000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1056,
+        144
+      ],
+      "id": "eac2edb5-dc2a-469b-b3a6-f66287fefc55",
+      "name": "Docling Convert to Markdown",
+      "notes": "Konverterer PDF til Markdown med automatisk OCR hvis nødvendigt"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "76b72965-8eba-4f8f-81c4-2b4f52e6e632",
+              "name": "text",
+              "value": "={{ $json.result?.md || $json.result?.markdown || $json.result?.text || $json.md || $json.markdown || $json.text || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+              "name": "filename",
+              "value": "={{ $('Read/Write Files from Disk').item.json.fileName }}",
+              "type": "string"
+            },
+            {
+              "id": "b2c3d4e5-f6a7-8901-bcde-f23456789012",
+              "name": "processing_time",
+              "value": "={{ $json.processing_time || 0 }}",
+              "type": "number"
+            },
+            {
+              "id": "c3d4e5f6-a7b8-9012-cdef-g34567890123",
+              "name": "status",
+              "value": "={{ $json.status || 'completed' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1280,
+        144
+      ],
+      "id": "e54e7017-1ddd-43c8-a4e4-48c793b0a7e0",
+      "name": "Extract and Clean Text",
+      "notes": "Ekstraherer og renser teksten fra Docling response"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "c462deb9-9285-4646-9d0d-a6aa46d9758e",
+              "leftValue": "={{ $json.text.length }}",
+              "rightValue": 50,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1504,
+        144
+      ],
+      "id": "9a3e9b95-f701-471d-a871-f0ea38931b35",
+      "name": "Check Text Quality",
+      "notes": "Checker om vi har fået nok tekst ud"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://docling:5001/v1/convert/file",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "pdf"
+            },
+            {
+              "name": "to_formats",
+              "value": "text"
+            },
+            {
+              "name": "do_ocr",
+              "value": "true"
+            },
+            {
+              "name": "pipeline",
+              "value": "standard"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 180000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1728,
+        216
+      ],
+      "id": "f824f975-1f0a-4baf-a05d-c642f8fd13c1",
+      "name": "Docling Force OCR",
+      "notes": "Tvinger fuld OCR hvis første forsøg gav for lidt tekst"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f486fa5c-2db5-4055-bbf2-0c0fd50c198e",
+              "name": "text",
+              "value": "={{ $json.result?.text || $json.result?.content || $json.text || $json.content || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "g3h4i5j6-k7l8-9012-mnop-q34567890123",
+              "name": "filename",
+              "value": "={{ $('Read/Write Files from Disk').item.json.fileName }}",
+              "type": "string"
+            },
+            {
+              "id": "h4i5j6k7-l8m9-0123-nopq-r45678901234",
+              "name": "ocr_applied",
+              "value": "true",
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1952,
+        216
+      ],
+      "id": "c085d8f3-babd-4c81-b1de-91836023040a",
+      "name": "Extract OCR Text"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        2176,
+        144
+      ],
+      "id": "cdb44ad0-ce8b-4417-85dc-8e7bae6d0778",
+      "name": "Merge Results"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "i5j6k7l8-m9n0-1234-opqr-s56789012345",
+              "name": "final_text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "j6k7l8m9-n0o1-2345-pqrs-t67890123456",
+              "name": "filename",
+              "value": "={{ $json.filename }}",
+              "type": "string"
+            },
+            {
+              "id": "k7l8m9n0-o1p2-3456-qrst-u78901234567",
+              "name": "processing_method",
+              "value": "={{ $json.ocr_applied ? 'OCR' : 'Direct extraction' }}",
+              "type": "string"
+            },
+            {
+              "id": "l8m9n0o1-p2q3-4567-rstu-v89012345678",
+              "name": "timestamp",
+              "value": "={{ new Date().toISOString() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2400,
+        144
+      ],
+      "id": "b6d46d9c-6baf-4ae2-a1c5-b7ac36383317",
+      "name": "Final Output"
+    }
+  ],
+  "connections": {
+    "Read/Write Files from Disk": {
+      "main": [
+        [
+          {
+            "node": "Docling Convert to Markdown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking 'Execute workflow'": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Docling Convert to Markdown": {
+      "main": [
+        [
+          {
+            "node": "Extract and Clean Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract and Clean Text": {
+      "main": [
+        [
+          {
+            "node": "Check Text Quality",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Text Quality": {
+      "main": [
+        [
+          {
+            "node": "Docling Force OCR",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Docling Force OCR": {
+      "main": [
+        [
+          {
+            "node": "Extract OCR Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract OCR Text": {
+      "main": [
+        [
+          {
+            "node": "Merge Results",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Results": {
+      "main": [
+        [
+          {
+            "node": "Final Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "85ad5552-3465-426a-bf5a-29fea8be4393",
+  "triggerCount": 0,
+  "tags": []
+}
