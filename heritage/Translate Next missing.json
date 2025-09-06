@@ -1,0 +1,812 @@
+{
+  "createdAt": "2025-05-18T20:01:19.248Z",
+  "updatedAt": "2025-05-19T07:08:23.000Z",
+  "id": "4acZAWNWRJCo7Qeb",
+  "name": "Translate Next missing",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Målsprogskode: {{ $('Translate This').item.json.missing_or_outdated_lang }}\nKildetekst:  {{ $('Get english versions').item.json.content }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=**# Rolle**  \nDu er en **kulturfølsom rejseguide-oversætter**, der specialiserer sig i at oversætte historiske, arkitektoniske og kulturelle tekster til internationale turister (45+ år). Dit mål er at skabe letlæselige, engagerende oversættelser, der respekterer både kildekulturen og målgruppens behov for klarhed og kulturel autenticitet.  \n\n**# Instruktioner**  \n1. **Kulturel Nøjagtighed:**  \n   - Bevar originale kulturspecifikke termer (f.eks. \"Estação Elevatória\", \"Fontinha\") og tilføj en kort forklaring på målsproget i parentes, hvis konteksten kræver det.  \n   - Oversæt historiske titler, tekniske udtryk og lokale traditioner med research-baseret præcision.\n   - Kildesproget er normalt engelsk. Hvis målsproget også er engelsk skal du stadig foretage oversættelsen/genfortællingen så teksten bliver i overensstemmelse med formålet.\n\n2. **Sproglig Tilgængelighed:**  \n   - Brug naturligt, voksenrettet sprog uden unødvendig kompleksitet eller ungdomsidiomer.  \n   - Prioriter korte sætninger og aktiv formulering for bedre læsbarhed (f.eks. \"Tavira byggede...\" i stedet for \"Der blev bygget...\").  \n\n3. **Teknisk Integritet:**  \n   - Bevar **nøjagtig HTML-struktur** (tags, attributter, klasse-navne, blockquote og <cite>).  \n   - Luk aldrig ukomplette tags (f.eks. \"…contr…” → \"…contrasterer…\").  \n\n\n4. **Kontekstuel Adaption:**  \n   - Tilpas måleenheder/datoer til målsprogets normer (f.eks. \"1920s\" → \"1920’erne\" på dansk, \"década de 1920\" på spansk).  \n   - Undgå direkte oversættelser af idiomer, der ikke eksisterer på målsproget (f.eks. \"crown jewel\" → \"vigtigste perle\" på dansk).  \n\n**# Input-Parametre**  \n- `Kildetekst`: Tekst med HTML-tags (overskrifter, lister, links).  \n- `Målsprogskode`: ISO 639-1 (f.eks. \"da\", \"pt\", \"es\").  \n\n**# Output**  \nKun den færdige oversættelse i korrekt HTML-format, uden kommentarer eller markdown.  \n\n---\n\n**Eksempel på Oversættelse til Portugisisk (pt):**  \n```html  \n<h2>Contextualização Histórica</h2>  \n<p>Na década de 1920, Tavira construiu a Estação Elevatória de Águas da Fontinha (<i>sistema de abastecimento de água</i>), um marco do modernismo português.</p>  \n```  \n\n**Eksempel til Spansk (es):**  \n```html  \n<h3>Patrimonio Arquitectónico</h3>  \n<p>Los azulejos tradicionales (<i>baldosas de cerámica pintada</i>) ilustran la influencia árabe en la región.</p>  \n```  \n\n---\n\n**Formål:** At levere oversættelser, der føles som en **naturlig del af en velinformeturistguide** – præcise nok til historieentusiaster, men tilgængelige nok til tilfældige besøgende."
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        1400,
+        -440
+      ],
+      "id": "b89a4a23-cf8d-4a70-bd4a-1f464ab5194c",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "tableId": "detail_section_translations",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "detail_section_id",
+              "fieldValue": "={{ $('Get english versions').item.json.detail_section_id }}"
+            },
+            {
+              "fieldId": "language_code",
+              "fieldValue": "={{ $('Translate This').item.json.missing_or_outdated_lang }}"
+            },
+            {
+              "fieldId": "content",
+              "fieldValue": "={{ $('Basic LLM Chain').item.json.text.match(/<[\\s\\S]*>/)[0] }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1776,
+        -215
+      ],
+      "id": "7671394f-e835-4b46-85a7-83a7a8292663",
+      "name": "Supabase1",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "site_translations",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "site_id",
+              "keyValue": "={{ $('Translate This').item.json.site_id }}"
+            },
+            {
+              "keyName": "language_code",
+              "keyValue": "=en"
+            },
+            {
+              "keyName": "city_id",
+              "keyValue": "={{ $('Translate This').item.json.city_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1478,
+        -40
+      ],
+      "id": "1e016d28-14de-4cc1-800c-82a049f5a152",
+      "name": "Supabase6",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Oversæt til dette sprog: {{ $('Translate This').item.json.missing_or_outdated_lang }}\nOversæt name:  {{ $('Remove Duplicates2').item.json.name }}\nOversæt description: {{ $('Remove Duplicates2').item.json.description }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=**# Rolle**  \nDu er en **kulturfølsom navne- og beskrivelsesoversætter** til historiske steder. Din opgave er at oversætte eller tilpasse navne og korte beskrivelser til internationale turister (45+ år) med fokus på kulturel autenticitet og klarhed.  \n\n**# Instruktioner**  \n1. **Navneoversættelse:**  \n   - Oversæt kun navnet (`name`), hvis det er et **generisk udtryk** (f.eks. \"Water Pumping Station\" → \"Estação Elevatória\" på portugisisk).  \n   - Bevar **lokale kulturspecifikke navne** (f.eks. \"Fontinha\" forbliver \"Fontinha\").  \n   - Tilføj en kort oversættelse/fortolkning i parentes KUN hvis navnet er uklart for turister (f.eks. \"Castelo de Tavira\" → \"Castelo de Tavira (Tavira-borgen)\" på dansk).  \n\n2. **Beskrivelsesoversættelse:**  \n   - Oversæt altid beskrivelsen (`description`) til målsproget med præcis kultur- og historieformidling.  \n   - Forklar tekniske/kulturelle termer i parentes FØRSTE gang de nævnes (f.eks. \"azulejos (malte keramikfliser)\").  \n\n3. **Sproglig Tilpasning:**  \n   - Brug naturligt, voksenrettet sprog uden slang.  \n   - Tilpas datoer/måleenheder (f.eks. \"1920s\" → \"1920’erne\" på dansk).  \n\n**# Input-Parametre**  \n- `name`: Navn på historisk sted (kan være generisk eller kulturelt specifikt).  \n- `description`: 1-2 linjers beskrivelse.  \n- `Målsprogskode`: ISO 639-1 (f.eks. \"da\", \"pt\").  \n\n**# Output**  \nKun disse to felter i **nøjagtig JSON-struktur**:  \n```json  \n{\n  \"translated_name\": \"[Oversat eller originalt navn]\",\n  \"translated_description\": \"[Oversat beskrivelse]\"  \n}\n```  \n\n---\n\n**Eksempel:**  \nInput:  \n```json  \n{\n  \"name\": \"Fontinha\",\n  \"description\": \"1920s water reservoir with modernist tilework\"\n}  \n```  \n\n\"# Output\"\nReturner kun et rent JSON-objekt:\n{\n  \"translated_name\": \"[Oversat eller originalt navn]\",\n  \"translated_description\": \"[Oversat beskrivelse]\"\n}\n\n\n---\n\n**Formål:** At levere præcise, letfordøjelige oversættelser der fungerer i både digitale kort, lydguides og brochurer – uden at turister behøver ekstra kontekst."
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        1996,
+        85
+      ],
+      "id": "5f85e806-f6c2-4d53-a293-dcfd8fe2815e",
+      "name": "Basic LLM Chain3"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "tableId": "detail_section_translations",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "detail_section_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Get detail_sections id').item.json.id }}"
+            },
+            {
+              "keyName": "language_code",
+              "condition": "eq",
+              "keyValue": "={{ $('Translate This').item.json.missing_or_outdated_lang }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        520,
+        160
+      ],
+      "id": "4ef09067-f242-4fff-ad73-019359f0a787",
+      "name": "Delete overview",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "\n{\n\"translated_name\": \n\"Den Romerske Bro (Ponte Antiga)\",\n\"translated_description\": \n\"Middelalderlig bro der forbinder det historiske og nutidige Tavira\"\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        2084,
+        305
+      ],
+      "id": "cd3e38b3-3ddc-444e-b6b3-c19148b30425",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1488,
+        -220
+      ],
+      "id": "a30b9f63-021e-42f3-b839-7f644df17de7",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "lw4yNIR7bkr06aVc",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "detail_sections",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "site_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.site_id }}"
+            },
+            {
+              "keyName": "city_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.city_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        80,
+        10
+      ],
+      "id": "39d61550-6241-4145-844e-30d6bb668ce8",
+      "name": "Get detail_sections id",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "reset": false
+        }
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        300,
+        10
+      ],
+      "id": "7a12b3b3-8eb3-4de3-9b69-b7560af71992",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "detail_sections",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "site_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Translate This').item.json.site_id }}"
+            },
+            {
+              "keyName": "city_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Translate This').item.json.city_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        520,
+        -115
+      ],
+      "id": "ccf6ec88-587c-4002-8425-35f8a0970f61",
+      "name": "Get detail_sections id1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        740,
+        -115
+      ],
+      "id": "ff805f86-3035-4c4a-b242-5498dff40f12",
+      "name": "Remove Duplicates1"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "detail_section_translations",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "detail_section_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.id }}"
+            },
+            {
+              "keyName": "language_code",
+              "condition": "eq",
+              "keyValue": "en"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        960,
+        -115
+      ],
+      "id": "fef45d17-96f3-423c-8495-4a5ed8fcd017",
+      "name": "Get english versions",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1180,
+        -115
+      ],
+      "id": "e7bdb2e2-11ab-436d-b4ad-c3c3a5847390",
+      "name": "Loop Over Items1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        1776,
+        85
+      ],
+      "id": "9fcdc358-b9c0-42a0-a5ce-592511f69b02",
+      "name": "Remove Duplicates2"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -800,
+        310
+      ],
+      "id": "92c925e5-68b6-4219-beab-ec4beebbe5dc",
+      "name": "When clicking ‘Test workflow’",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "/* Engelske originalrækker i den ønskede by                       */\nWITH en AS (\n    SELECT site_id,\n           city_id,\n           updated_at AS en_updated_at\n    FROM   site_translations\n    WHERE  language_code = 'en'\n      --AND  city_id       = 'rome'       -- samme by-filter som før\n)\n\n/* Slå alle andre sprog op og check om de mangler/er forældede    */\nSELECT DISTINCT\n       en.site_id,\n       en.city_id,\n       tr.language_code       AS missing_or_outdated_lang\nFROM        en\nLEFT  JOIN  site_translations tr\n       ON   tr.site_id       = en.site_id\n       AND  tr.city_id       = en.city_id\n       --AND  tr.language_code = 'da'\n       AND  tr.language_code <> 'en'      -- alle andre sprog\nWHERE  tr.updated_at IS NULL              -- mangler helt\n    OR tr.updated_at <  en.en_updated_at  -- eller er ældre end engelsk\nlimit 1;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -580,
+        310
+      ],
+      "id": "7ec85ced-56aa-412e-8e2f-72b937e67918",
+      "name": "Get all missing translations",
+      "credentials": {
+        "postgres": {
+          "id": "EzZYFEVPXxVDpNLe",
+          "name": "Postgres account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e5cba16a-057a-43ff-9bc4-9bae309e6fcc",
+              "name": "site_id",
+              "value": "={{ $('Translate This').item.json.site_id }}",
+              "type": "string"
+            },
+            {
+              "id": "b8e2fdc3-cb88-4f34-99d0-d1656846d0c9",
+              "name": "language_code",
+              "value": "={{ $('Translate This').item.json.missing_or_outdated_lang }}",
+              "type": "string"
+            },
+            {
+              "id": "4e7844f3-109b-4eef-8c61-c02e9041e26f",
+              "name": "city_id",
+              "value": "={{ $('Translate This').item.json.city_id }}",
+              "type": "string"
+            },
+            {
+              "id": "6b561c54-7e1c-4689-a454-dbe05cec4105",
+              "name": "name",
+              "value": "={{ $json.output.translated_name }}",
+              "type": "string"
+            },
+            {
+              "id": "3003a51c-aaaa-41fe-b1a0-7e25246db232",
+              "name": "updated_at",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            },
+            {
+              "id": "38c9a3ce-053e-4fac-802a-545a7a9f486d",
+              "name": "description",
+              "value": "={{ $json.output.translated_description }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2372,
+        85
+      ],
+      "id": "8c90864d-b70e-4708-bb4e-ae7c0f719b54",
+      "name": "Upsert Values"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://rrkivosxnrfvdawawexd.supabase.co/rest/v1/site_translations?on_conflict=language_code,site_id,city_id\n",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Prefer",
+              "value": "resolution=merge-duplicates,return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify([$json]) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2812,
+        210
+      ],
+      "id": "55246e1b-fbf4-40a7-b52a-155f9a697d63",
+      "name": "Upsert site_translations",
+      "executeOnce": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "znNIyfNCzQN57VEr",
+          "name": "supabase service role api"
+        },
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a675e6d5-0240-469c-999e-8bda18e6f99b",
+              "name": "site_id",
+              "value": "={{ $json.site_id }}",
+              "type": "string"
+            },
+            {
+              "id": "38ca1d3e-27bd-469c-829d-d2e770e40530",
+              "name": "city_id",
+              "value": "={{ $json.city_id }}",
+              "type": "string"
+            },
+            {
+              "id": "22b295e2-296e-4fb8-86a5-f9c66ca29ccd",
+              "name": "missing_or_outdated_lang",
+              "value": "={{ $json.missing_or_outdated_lang }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -280,
+        280
+      ],
+      "id": "e390f0f7-b6f4-4377-b224-8c19f2d2b862",
+      "name": "Translate This"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "site_id"
+            },
+            {
+              "name": "city_id"
+            },
+            {
+              "name": "missing_or_outdated_lang"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -500,
+        880
+      ],
+      "id": "908717e1-7f73-4a51-9739-ae4683e34963",
+      "name": "When Executed by Another Workflow"
+    }
+  ],
+  "connections": {
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Supabase1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase6": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain3": {
+      "main": [
+        [
+          {
+            "node": "Upsert Values",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete overview": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain3",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Basic LLM Chain3",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get detail_sections id": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Get detail_sections id1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Delete overview",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get detail_sections id1": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates1": {
+      "main": [
+        [
+          {
+            "node": "Get english versions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get english versions": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [
+          {
+            "node": "Supabase6",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates2": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get all missing translations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get all missing translations": {
+      "main": [
+        []
+      ]
+    },
+    "Upsert Values": {
+      "main": [
+        [
+          {
+            "node": "Upsert site_translations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert site_translations": {
+      "main": [
+        []
+      ]
+    },
+    "Translate This": {
+      "main": [
+        [
+          {
+            "node": "Get detail_sections id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Translate This",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When clicking ‘Test workflow’": [
+      {
+        "json": {}
+      }
+    ],
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "site_id": "arco-di-costantino",
+          "city_id": "rome",
+          "missing_or_outdated_lang": "fr"
+        }
+      }
+    ]
+  },
+  "versionId": "d3f4e6f6-f9e3-4d47-9d93-1041226ec5b5",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-05-18T20:01:19.252Z",
+      "updatedAt": "2025-05-18T20:01:19.252Z",
+      "role": "workflow:owner",
+      "workflowId": "4acZAWNWRJCo7Qeb",
+      "projectId": "rkqKISKa14HwF9Xd"
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-01-28T15:25:26.214Z",
+      "updatedAt": "2025-01-28T15:25:26.214Z",
+      "id": "BngebX50Ev8rBclu",
+      "name": "HN Content manager"
+    }
+  ]
+}
