@@ -1,0 +1,662 @@
+{
+  "createdAt": "2025-08-22T12:31:50.297Z",
+  "updatedAt": "2025-08-22T13:01:19.000Z",
+  "id": "5kEXj9vDdsdv4ccU",
+  "name": "My workflow 3",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "translate-course",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "09b0b86f-3213-4023-a054-10fc5c9ded0d",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        160,
+        160
+      ],
+      "webhookId": "af75f8fd-93a4-479d-87af-86dbe4497399"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": "public",
+        "table": "courses",
+        "returnAll": true,
+        "where": {
+          "values": [
+            {
+              "column": "id",
+              "value": "={{ $json.body.course_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "af0a9c6b-7ba6-4656-b0bc-8195f7fb840a",
+      "name": "Fetch Course Info",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        384,
+        64
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "RUVxlMmZvsZC2IGe",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": "public",
+        "table": "course_translations",
+        "returnAll": true,
+        "where": {
+          "values": [
+            {
+              "column": "course_id",
+              "value": "={{ $json.body.course_id }}"
+            },
+            {
+              "column": "language_code",
+              "value": "={{ $json.body.source_language }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "565b5321-76ea-40dc-bc6a-9ccdc2bc9d78",
+      "name": "Fetch Source Translation",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        384,
+        256
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "RUVxlMmZvsZC2IGe",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Prepare translation context and data\nconst webhookData = $input.first().json;\nconst courseInfo = $('Fetch Course Info').first().json;\nconst sourceTranslation = $('Fetch Source Translation').first().json;\n\n// Check if we have source translation\nif (!sourceTranslation) {\n  return [{\n    json: {\n      error: true,\n      message: `No translation found for course ${webhookData.course_id} in language ${webhookData.source_language}`\n    }\n  }];\n}\n\n// Prepare data for translation\nconst translationData = {\n  course_id: webhookData.course_id,\n  source_language: webhookData.source_language,\n  target_language: webhookData.target_language,\n  course_title: courseInfo.draft_title || sourceTranslation.title || '',\n  course_language: courseInfo.course_language || '',\n  \n  // Content to translate\n  content_to_translate: {\n    title: sourceTranslation.title,\n    description: sourceTranslation.description,\n    content: sourceTranslation.content,\n    videoscript: sourceTranslation.videoscript,\n    learning_objectives: sourceTranslation.learning_objectives,\n    image_text: sourceTranslation.image_text\n  },\n  \n  // Metadata to preserve\n  metadata: {\n    id: sourceTranslation.id,\n    video_url: sourceTranslation.video_url,\n    image_url: sourceTranslation.image_url,\n    thumbnail_url: sourceTranslation.thumbnail_url,\n    image_prompt: sourceTranslation.image_prompt,\n    status: sourceTranslation.status\n  }\n};\n\nreturn [{ json: translationData }];"
+      },
+      "id": "6e51bf55-985a-4f0a-a556-f0ac0278db64",
+      "name": "Prepare Translation Context",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        608,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "text": "={{ `You are a professional course translator. Translate the following course content from ${$json.source_language} to ${$json.target_language}.\n\nCourse Context:\n- Course Title: ${$json.course_title}\n- Course Language: ${$json.course_language}\n\nImportant Instructions:\n1. Maintain the professional educational tone\n2. Preserve any technical terms that should remain in English\n3. Keep formatting and structure intact\n4. For learning_objectives array, translate each item but maintain the array structure\n5. Return the translation in JSON format with the exact same keys\n\nContent to translate:\n${JSON.stringify($json.content_to_translate, null, 2)}\n\nReturn ONLY a valid JSON object with the translated content using the same keys.` }}",
+        "batching": {}
+      },
+      "id": "588d02a3-b6ec-4c27-b98b-16cfe301f68e",
+      "name": "Translate Content",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        832,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4-turbo-preview",
+        "options": {}
+      },
+      "id": "c7fb0763-1fde-4eb7-9397-befde7a69976",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        904,
+        384
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "Gvr9qL4I7djxEhHC",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Process translation results\nconst translationContext = $('Prepare Translation Context').first().json;\nconst llmResponse = $('Translate Content').first().json;\n\n// Parse the LLM response\nlet translatedContent;\ntry {\n  // Extract the text content from LLM response\n  const responseText = llmResponse.text || llmResponse.response || llmResponse.output || JSON.stringify(llmResponse);\n  \n  // Try to parse as JSON\n  if (typeof responseText === 'string') {\n    // Clean up the response if needed (remove markdown code blocks)\n    const cleanedResponse = responseText.replace(/```json\\n?|```\\n?/g, '').trim();\n    translatedContent = JSON.parse(cleanedResponse);\n  } else {\n    translatedContent = responseText;\n  }\n} catch (error) {\n  return [{\n    json: {\n      error: true,\n      message: 'Failed to parse translation response',\n      details: error.message,\n      raw_response: llmResponse\n    }\n  }];\n}\n\n// Prepare data for database upsert\nconst upsertData = {\n  course_id: translationContext.course_id,\n  language_code: translationContext.target_language,\n  title: translatedContent.title || '',\n  description: translatedContent.description || '',\n  content: translatedContent.content || null,\n  videoscript: translatedContent.videoscript || null,\n  learning_objectives: translatedContent.learning_objectives || null,\n  image_text: translatedContent.image_text || null,\n  \n  // Preserve metadata\n  video_url: translationContext.metadata.video_url,\n  image_url: translationContext.metadata.image_url,\n  thumbnail_url: translationContext.metadata.thumbnail_url,\n  image_prompt: translationContext.metadata.image_prompt,\n  status: 'draft' // Set as draft for review\n};\n\nreturn [{ json: upsertData }];"
+      },
+      "id": "e051ac58-96d2-4b41-b3f5-b45418782995",
+      "name": "Process Translation Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1184,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "schema": "public",
+        "table": "course_translations",
+        "columns": {
+          "0": "c",
+          "1": "o",
+          "2": "u",
+          "3": "r",
+          "4": "s",
+          "5": "e",
+          "6": "_",
+          "7": "i",
+          "8": "d",
+          "9": ",",
+          "10": "l",
+          "11": "a",
+          "12": "n",
+          "13": "g",
+          "14": "u",
+          "15": "a",
+          "16": "g",
+          "17": "e",
+          "18": "_",
+          "19": "c",
+          "20": "o",
+          "21": "d",
+          "22": "e",
+          "23": ",",
+          "24": "t",
+          "25": "i",
+          "26": "t",
+          "27": "l",
+          "28": "e",
+          "29": ",",
+          "30": "d",
+          "31": "e",
+          "32": "s",
+          "33": "c",
+          "34": "r",
+          "35": "i",
+          "36": "p",
+          "37": "t",
+          "38": "i",
+          "39": "o",
+          "40": "n",
+          "41": ",",
+          "42": "c",
+          "43": "o",
+          "44": "n",
+          "45": "t",
+          "46": "e",
+          "47": "n",
+          "48": "t",
+          "49": ",",
+          "50": "v",
+          "51": "i",
+          "52": "d",
+          "53": "e",
+          "54": "o",
+          "55": "s",
+          "56": "c",
+          "57": "r",
+          "58": "i",
+          "59": "p",
+          "60": "t",
+          "61": ",",
+          "62": "l",
+          "63": "e",
+          "64": "a",
+          "65": "r",
+          "66": "n",
+          "67": "i",
+          "68": "n",
+          "69": "g",
+          "70": "_",
+          "71": "o",
+          "72": "b",
+          "73": "j",
+          "74": "e",
+          "75": "c",
+          "76": "t",
+          "77": "i",
+          "78": "v",
+          "79": "e",
+          "80": "s",
+          "81": ",",
+          "82": "i",
+          "83": "m",
+          "84": "a",
+          "85": "g",
+          "86": "e",
+          "87": "_",
+          "88": "t",
+          "89": "e",
+          "90": "x",
+          "91": "t",
+          "92": ",",
+          "93": "v",
+          "94": "i",
+          "95": "d",
+          "96": "e",
+          "97": "o",
+          "98": "_",
+          "99": "u",
+          "100": "r",
+          "101": "l",
+          "102": ",",
+          "103": "i",
+          "104": "m",
+          "105": "a",
+          "106": "g",
+          "107": "e",
+          "108": "_",
+          "109": "u",
+          "110": "r",
+          "111": "l",
+          "112": ",",
+          "113": "t",
+          "114": "h",
+          "115": "u",
+          "116": "m",
+          "117": "b",
+          "118": "n",
+          "119": "a",
+          "120": "i",
+          "121": "l",
+          "122": "_",
+          "123": "u",
+          "124": "r",
+          "125": "l",
+          "126": ",",
+          "127": "i",
+          "128": "m",
+          "129": "a",
+          "130": "g",
+          "131": "e",
+          "132": "_",
+          "133": "p",
+          "134": "r",
+          "135": "o",
+          "136": "m",
+          "137": "p",
+          "138": "t",
+          "139": ",",
+          "140": "s",
+          "141": "t",
+          "142": "a",
+          "143": "t",
+          "144": "u",
+          "145": "s",
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "course_id",
+              "displayName": "course_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "language_code",
+              "displayName": "language_code",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "video_url",
+              "displayName": "video_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "image_url",
+              "displayName": "image_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "videoscript",
+              "displayName": "videoscript",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "learning_objectives",
+              "displayName": "learning_objectives",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "array",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "thumbnail_url",
+              "displayName": "thumbnail_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "image_text",
+              "displayName": "image_text",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "image_prompt",
+              "displayName": "image_prompt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "9e1d7cb1-4a20-44a3-8a95-4f8e2817c56d",
+      "name": "Upsert Translation",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1408,
+        160
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "RUVxlMmZvsZC2IGe",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Prepare response\nconst webhookData = $input.first().json;\nconst translationData = $('Process Translation Results').first().json;\nconst upsertResult = $('Upsert Translation').all();\n\n// Check for errors\nif (translationData.error) {\n  return [{\n    json: {\n      success: false,\n      error: translationData.message,\n      details: translationData.details\n    }\n  }];\n}\n\n// Success response\nconst response = {\n  success: true,\n  message: 'Course translation completed successfully',\n  details: {\n    course_id: webhookData.course_id,\n    source_language: webhookData.source_language,\n    target_language: webhookData.target_language,\n    translated_fields: [\n      'title',\n      'description',\n      'content',\n      'videoscript',\n      'learning_objectives',\n      'image_text'\n    ],\n    records_affected: upsertResult.length,\n    status: 'draft'\n  },\n  timestamp: new Date().toISOString()\n};\n\nreturn [{ json: response }];"
+      },
+      "id": "c5213cc5-e516-4337-9e9a-c128ee8a9527",
+      "name": "Prepare Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1632,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "bdb4b913-1f53-4a95-a0a8-f0a55886196c",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1856,
+        160
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Fetch Course Info",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fetch Source Translation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Course Info": {
+      "main": [
+        [
+          {
+            "node": "Prepare Translation Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Source Translation": {
+      "main": [
+        [
+          {
+            "node": "Prepare Translation Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Translation Context": {
+      "main": [
+        [
+          {
+            "node": "Translate Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Translate Content": {
+      "main": [
+        [
+          {
+            "node": "Process Translation Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Translate Content",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Translation Results": {
+      "main": [
+        [
+          {
+            "node": "Upsert Translation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert Translation": {
+      "main": [
+        [
+          {
+            "node": "Prepare Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Webhook Trigger": [
+      {
+        "json": {
+          "headers": {
+            "host": "utilco.app.n8n.cloud",
+            "user-agent": "curl/8.7.1",
+            "content-length": "119",
+            "accept": "*/*",
+            "accept-encoding": "gzip, br",
+            "cdn-loop": "cloudflare; loops=1; subreqs=1",
+            "cf-connecting-ip": "2001:8a0:58dc:d500:2155:606d:6a71:778d",
+            "cf-ew-via": "15",
+            "cf-ipcountry": "PT",
+            "cf-ray": "97326ff2171fd92d-LIS",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "cf-worker": "n8n.cloud",
+            "content-type": "application/json",
+            "x-forwarded-for": "2001:8a0:58dc:d500:2155:606d:6a71:778d, 172.68.102.64",
+            "x-forwarded-host": "utilco.app.n8n.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "traefik-prod-users-gwc-10-6888ffdd77-9vgr4",
+            "x-is-trusted": "yes",
+            "x-real-ip": "2001:8a0:58dc:d500:2155:606d:6a71:778d"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "course_id": "fe7e5cbf-1c42-4054-a871-e203ac5377db",
+            "source_language": "da",
+            "target_language": "en"
+          },
+          "webhookUrl": "https://utilco.app.n8n.cloud/webhook/translate-course",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "versionId": "23bce547-dac5-4165-aec1-e113a7ef4b03",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "createdAt": "2025-08-22T12:31:50.301Z",
+      "updatedAt": "2025-08-22T12:31:50.301Z",
+      "role": "workflow:owner",
+      "workflowId": "5kEXj9vDdsdv4ccU",
+      "projectId": "SFLNAzqJIfhKMhJx"
+    }
+  ],
+  "tags": []
+}
