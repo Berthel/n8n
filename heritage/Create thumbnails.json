@@ -1,0 +1,567 @@
+{
+  "createdAt": "2025-05-06T19:24:04.976Z",
+  "updatedAt": "2025-05-22T11:17:26.000Z",
+  "id": "XJ1CV3z6lerRHNDU",
+  "name": "Create thumbnails",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -145
+      ],
+      "id": "b146c659-5dcc-4de9-a6c0-117808fd55d2",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select id, url\nfrom images\nwhere NOT EXISTS (\n  select 1 from unnest(contexts) c where c like '%youtube%'\n)\nand thumbnail_url = url\n  --and id like 'rome-ara-pacis%'\n--where id like 'DJI_20250220144046_0158_D.JPG%'\n--where (url = thumbnail_url\n--or thumbnail_url like '%wikimedia%')\n--and url not like '%pdf%'\n--limit 20",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        220,
+        -145
+      ],
+      "id": "6ea519ee-cd9f-4f55-9ce7-c6129082631d",
+      "name": "Get image data",
+      "credentials": {
+        "postgres": {
+          "id": "EzZYFEVPXxVDpNLe",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Loop Over Items').item.json.url }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "n8n/1.0 (mailto:info@heritage_navigator.com)"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1540,
+        -220
+      ],
+      "id": "5bec0446-286b-44bf-b187-69186d96c5a0",
+      "name": "Get Images",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "resize",
+        "width": 640,
+        "height": 480,
+        "resizeOption": "minimumArea",
+        "options": {
+          "format": "webp"
+        }
+      },
+      "type": "n8n-nodes-base.editImage",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        -120
+      ],
+      "id": "cb356236-8eb7-4536-ad88-5d7f288af640",
+      "name": "Edit Image",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://rrkivosxnrfvdawawexd.supabase.co/storage/v1/object/images/thumbnails/{{ $('Loop Over Items').item.json.id.trim() }}.webp",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "image/webp"
+            },
+            {
+              "name": "Cache-Control",
+              "value": "public,max-age=31536000,immutable"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1980,
+        -120
+      ],
+      "id": "8253b83b-db94-4e65-88a1-4171372a8abe",
+      "name": "Upload billede",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "znNIyfNCzQN57VEr",
+          "name": "supabase service role api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "images",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $('Get image data').item.json.id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "thumbnail_url",
+              "fieldValue": "=https://rrkivosxnrfvdawawexd.supabase.co/storage/v1/object/public/images/thumbnails/{{ $('Loop Over Items').item.json.id.trim() }}.webp"
+            },
+            {
+              "fieldId": "last_updated",
+              "fieldValue": "={{ new Date().toISOString() }}"
+            },
+            {
+              "fieldId": "medium_url",
+              "fieldValue": "=https://rrkivosxnrfvdawawexd.supabase.co/storage/v1/object/public/images/medium/{{ $('Loop Over Items').item.json.id.trim() }}.webp"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2420,
+        -145
+      ],
+      "id": "ffa51957-ec21-43b1-8d1e-e0fb9dd2d7c1",
+      "name": "Supabase",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "batchSize": 5,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        660,
+        -145
+      ],
+      "id": "faa7fac5-6016-40aa-abb4-73eab1649067",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "amount": 0.5
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        880,
+        -220
+      ],
+      "id": "9b75a008-c594-4c8a-b4e8-05b6fff1a6af",
+      "name": "Wait1",
+      "webhookId": "16791821-edac-4b54-ac11-32993526ec93"
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "=https://rrkivosxnrfvdawawexd.supabase.co/storage/v1/object/images/thumbnails/{{ $json.id.trim() }}.webp",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "image/webp"
+            },
+            {
+              "name": "Cache-Control",
+              "value": "public,max-age=31536000,immutable"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1100,
+        -220
+      ],
+      "id": "dc2f8d6a-4147-4104-8a6e-183c5e06fde7",
+      "name": "Delete",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "znNIyfNCzQN57VEr",
+          "name": "supabase service role api"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3a929354-d009-4632-8632-a76add67cbd4",
+              "name": "id",
+              "value": "={{ $json.id.replace(/(\\r\\n|\\n|\\r)/gm, '') }}\n",
+              "type": "string"
+            },
+            {
+              "id": "be2cc74a-3d23-4fa3-a51a-1c0a40773390",
+              "name": "url",
+              "value": "={{ $json.url }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        440,
+        -145
+      ],
+      "id": "0036a351-8220-4b96-ae8e-eeb5fa8b9ae4",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "resize",
+        "width": 2000,
+        "height": 1500,
+        "resizeOption": "minimumArea",
+        "options": {
+          "format": "webp"
+        }
+      },
+      "type": "n8n-nodes-base.editImage",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        -320
+      ],
+      "id": "40948d6e-168c-4f7e-95a4-ddecbe643391",
+      "name": "2000 px",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://rrkivosxnrfvdawawexd.supabase.co/storage/v1/object/images/medium/{{ $('Loop Over Items').item.json.id.trim() }}.webp",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "image/webp"
+            },
+            {
+              "name": "Cache-Control",
+              "value": "public,max-age=31536000,immutable"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1980,
+        -320
+      ],
+      "id": "6f98b317-5379-4089-82ca-2f556ee1e45b",
+      "name": "Upload medium size photo",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "znNIyfNCzQN57VEr",
+          "name": "supabase service role api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        2200,
+        -220
+      ],
+      "id": "185fb8a8-289c-45cc-bd54-ae07f04fed17",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "=https://rrkivosxnrfvdawawexd.supabase.co/storage/v1/object/images/medium/{{ $('Wait1').item.json.id.trim() }}.webp",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "image/webp"
+            },
+            {
+              "name": "Cache-Control",
+              "value": "public,max-age=31536000,immutable"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1320,
+        -220
+      ],
+      "id": "21289033-e1d2-4dbc-b0b7-945a15deea9a",
+      "name": "Delete medium",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "znNIyfNCzQN57VEr",
+          "name": "supabase service role api"
+        }
+      },
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get image data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get image data": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Images": {
+      "main": [
+        [
+          {
+            "node": "Edit Image",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "2000 px",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Edit Image": {
+      "main": [
+        [
+          {
+            "node": "Upload billede",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Upload billede": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Delete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete": {
+      "main": [
+        [
+          {
+            "node": "Delete medium",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2000 px": {
+      "main": [
+        [
+          {
+            "node": "Upload medium size photo",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Upload medium size photo": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete medium": {
+      "main": [
+        [
+          {
+            "node": "Get Images",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "ff8b4091-3c5b-4126-9716-e21af6f2e425",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-05-06T19:24:04.980Z",
+      "updatedAt": "2025-05-06T19:24:04.980Z",
+      "role": "workflow:owner",
+      "workflowId": "XJ1CV3z6lerRHNDU",
+      "projectId": "rkqKISKa14HwF9Xd"
+    }
+  ],
+  "tags": []
+}
