@@ -1,0 +1,498 @@
+{
+  "createdAt": "2025-02-08T15:07:43.373Z",
+  "updatedAt": "2025-05-22T11:09:43.000Z",
+  "id": "3ATDUYVe1bGFc4De",
+  "name": "Add multiple photo from google drive",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c49ef23c-974d-4275-8658-60223cb02df8",
+              "name": "NewFilename",
+              "value": "={{ $json.name.startsWith('DJI') \n    ? $json.name \n    : $now.format('yyyyMMddhhmmss') + '_' + $json.name.trim()}}\n",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1640,
+        135
+      ],
+      "id": "4938587c-3f94-41de-97ab-c7dd90b46dbc",
+      "name": "Nyt filnavn"
+    },
+    {
+      "parameters": {
+        "tableId": "images",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "id",
+              "fieldValue": "={{ $('Nyt filnavn').item.json.NewFilename.trim() }}"
+            },
+            {
+              "fieldId": "url",
+              "fieldValue": "=https://rrkivosxnrfvdawawexd.supabase.co/storage/v1/object/public/{{ $json.Key }}"
+            },
+            {
+              "fieldId": "credit",
+              "fieldValue": "={{ $('Stamdata').first().json.Artist }}"
+            },
+            {
+              "fieldId": "year",
+              "fieldValue": "={{ $('Stamdata').first().json.Year }}"
+            },
+            {
+              "fieldId": "thumbnail_url",
+              "fieldValue": "=https://rrkivosxnrfvdawawexd.supabase.co/storage/v1/object/public/{{ $json.Key }}"
+            },
+            {
+              "fieldId": "medium_url",
+              "fieldValue": "=https://rrkivosxnrfvdawawexd.supabase.co/storage/v1/object/public/{{ $json.Key }}"
+            },
+            {
+              "fieldId": "large_url",
+              "fieldValue": "=https://rrkivosxnrfvdawawexd.supabase.co/storage/v1/object/public/{{ $json.Key }}"
+            },
+            {
+              "fieldId": "width",
+              "fieldValue": "0"
+            },
+            {
+              "fieldId": "height",
+              "fieldValue": "0"
+            },
+            {
+              "fieldId": "contexts",
+              "fieldValue": "{\"gallery\"}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2520,
+        60
+      ],
+      "id": "807f24ed-eed9-4f2e-8de2-8088977bdc8c",
+      "name": "Insert Images",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "site_images",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "site_id",
+              "fieldValue": "={{ $('Stamdata').item.json.globalCode }}"
+            },
+            {
+              "fieldId": "image_id",
+              "fieldValue": "={{ $json.id }}"
+            },
+            {
+              "fieldId": "city_id",
+              "fieldValue": "={{ $('Get city').item.json.city_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2740,
+        60
+      ],
+      "id": "673c75f8-6fab-4f49-b176-da9782ff694a",
+      "name": "Insert site_images",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "sites",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{ $json.globalCode }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        135
+      ],
+      "id": "4382867b-f8af-48bd-a85f-75c25bca7bd5",
+      "name": "Get city",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Get Photos inbox').item.json.id.trim() }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "id": "757210d1-c2d8-4868-ad6e-32d78b9d42d6",
+      "name": "Download File",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2080,
+        60
+      ],
+      "executeOnce": false,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "PJ6id5UZ4SjuKSnf",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "queryString": "=",
+        "returnAll": true,
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "value": "1QwBiNvqlTKlloOtzd_iD2fSusKFJdbH6",
+            "mode": "list",
+            "cachedResultName": "Photos inbox",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1QwBiNvqlTKlloOtzd_iD2fSusKFJdbH6"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1420,
+        135
+      ],
+      "id": "50762132-d714-4fe1-b923-77d2691a342f",
+      "name": "Get Photos inbox",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "PJ6id5UZ4SjuKSnf",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2b245026-031d-463c-89a2-d3bc3daf727b",
+              "name": "globalCode",
+              "value": "monte-pio-artistico-tavirense",
+              "type": "string"
+            },
+            {
+              "id": "c0eea2f6-4f6a-463c-b13d-252ca363fe2d",
+              "name": "Artist",
+              "value": "Flemming Berthelsen",
+              "type": "string"
+            },
+            {
+              "id": "73ba3313-ba08-408c-9f98-fb726d4bb7cd",
+              "name": "Year",
+              "value": "={{$now.format('yyyy')}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        980,
+        135
+      ],
+      "id": "d90c66b8-9703-477e-b081-d5a93da233ca",
+      "name": "Stamdata"
+    },
+    {
+      "parameters": {
+        "operation": "deleteFile",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Get Photos inbox').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2960,
+        135
+      ],
+      "id": "9b9f1226-e902-4012-af47-f37389cf9212",
+      "name": "Google Drive",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "PJ6id5UZ4SjuKSnf",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        760,
+        135
+      ],
+      "id": "1930e63e-7ade-4027-b9bb-09364f9e7d84",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1860,
+        135
+      ],
+      "id": "489f45a0-22fe-4191-8ccf-d4b06186c3d8",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://rrkivosxnrfvdawawexd.supabase.co/storage/v1/object/images/img-{{ $('Get city').item.json.city_id }}/original/{{ $('Nyt filnavn').item.json.NewFilename }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "image/jpeg"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2300,
+        60
+      ],
+      "id": "690f0c50-2614-4a3d-bb96-1d7cf17cbbdd",
+      "name": "Upload billede",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "znNIyfNCzQN57VEr",
+          "name": "supabase service role api"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Nyt filnavn": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Images": {
+      "main": [
+        [
+          {
+            "node": "Insert site_images",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get city": {
+      "main": [
+        [
+          {
+            "node": "Get Photos inbox",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download File": {
+      "main": [
+        [
+          {
+            "node": "Upload billede",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Photos inbox": {
+      "main": [
+        [
+          {
+            "node": "Nyt filnavn",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Stamdata": {
+      "main": [
+        [
+          {
+            "node": "Get city",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert site_images": {
+      "main": [
+        [
+          {
+            "node": "Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Stamdata",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Download File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload billede": {
+      "main": [
+        [
+          {
+            "node": "Insert Images",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When clicking ‘Test workflow’": [
+      {
+        "json": {}
+      }
+    ]
+  },
+  "versionId": "a125e403-0a60-4b81-90a1-9c8d9241fcd1",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-02-08T15:07:43.376Z",
+      "updatedAt": "2025-02-08T15:07:43.376Z",
+      "role": "workflow:owner",
+      "workflowId": "3ATDUYVe1bGFc4De",
+      "projectId": "rkqKISKa14HwF9Xd"
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-01-28T15:25:26.214Z",
+      "updatedAt": "2025-01-28T15:25:26.214Z",
+      "id": "BngebX50Ev8rBclu",
+      "name": "HN Content manager"
+    },
+    {
+      "createdAt": "2025-02-09T16:38:26.099Z",
+      "updatedAt": "2025-02-09T16:38:26.099Z",
+      "id": "YEStJInGeLpvHEQ8",
+      "name": "tool"
+    }
+  ]
+}
