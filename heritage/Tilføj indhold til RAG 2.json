@@ -1,0 +1,1067 @@
+{
+  "createdAt": "2025-02-18T04:28:45.553Z",
+  "updatedAt": "2025-03-09T10:44:18.000Z",
+  "id": "WrTRCWmkoSbRpoOe",
+  "name": "Tilføj indhold til RAG 2",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.file_id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "id": "a296f569-e2a8-4101-810e-63ce7c974e4f",
+      "name": "Download File",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        140,
+        800
+      ],
+      "executeOnce": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "PJ6id5UZ4SjuKSnf",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1180,
+        780
+      ],
+      "id": "d470a222-45e1-4864-ab39-e2a4bd658d41",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8d61fa4b-1dbd-44cb-93e7-f4165f642e43",
+              "name": "city_id",
+              "value": "tavira",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -940,
+        780
+      ],
+      "id": "2e821a65-93bf-47b6-97a9-40a2a8b91a38",
+      "name": "Set city_id"
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "=file_id",
+                "value": "={{ $('Loop Over Items').item.json.id }}"
+              },
+              {
+                "name": "file_name",
+                "value": "={{ $('Loop Over Items').item.json.name }}"
+              },
+              {
+                "name": "city_id",
+                "value": "={{ $('Set city_id').item.json.city_id }}"
+              },
+              {
+                "name": "file_type",
+                "value": "binary"
+              }
+            ]
+          }
+        }
+      },
+      "id": "c574802c-da4a-449f-a833-92f7fbd02434",
+      "name": "Default Data Loader1",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1,
+      "position": [
+        2040,
+        1440
+      ]
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-small",
+        "options": {}
+      },
+      "id": "90859ad0-1629-481f-92d2-e48d189116ad",
+      "name": "Embeddings OpenAI2",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1,
+      "position": [
+        1880,
+        1420
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "ZjiR1Y4tdzymEK1L",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chunkSize": 2000,
+        "chunkOverlap": 400,
+        "options": {}
+      },
+      "id": "49dfe156-b3ce-4e3b-9439-ba3ed56de721",
+      "name": "Recursive Character Text Splitter1",
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        2080,
+        1640
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "id"
+        },
+        "options": {
+          "queryName": "match_documents"
+        }
+      },
+      "id": "a32542d0-373a-448f-85c6-56dea8afc61c",
+      "name": "binary supabase",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1,
+      "position": [
+        1880,
+        1220
+      ],
+      "executeOnce": false,
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Loop Over Items').item.json.file_id }}",
+          "mode": "id"
+        },
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1ib0TYxRfSjqIFEWBxf4sN6xiZ2AHl6GJ",
+          "mode": "list",
+          "cachedResultName": "RAG Storage",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1ib0TYxRfSjqIFEWBxf4sN6xiZ2AHl6GJ"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2900,
+        1480
+      ],
+      "id": "34247668-763d-4ddc-9871-b372d8e01f79",
+      "name": "Move to RAG Storage2",
+      "alwaysOutputData": false,
+      "executeOnce": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "PJ6id5UZ4SjuKSnf",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -100,
+        780
+      ],
+      "id": "c362e7c1-acf5-42a8-a9db-78ac3bd0905f",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Loop Over Items').item.json.file_id }}",
+          "mode": "id"
+        },
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1GEjy6Fo2kMWj02gO9NDo9hKuYWr3eyNT",
+          "mode": "list",
+          "cachedResultName": "RAG Unprocessed",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1GEjy6Fo2kMWj02gO9NDo9hKuYWr3eyNT"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2460,
+        1400
+      ],
+      "id": "a655de1a-39ff-47f3-b09a-9ab6cb7e9ec8",
+      "name": "Move to RAG Unprocessed",
+      "alwaysOutputData": false,
+      "executeOnce": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "PJ6id5UZ4SjuKSnf",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "17b8b7b6-d4b9-48e6-9a2e-60da64f7997c",
+              "leftValue": "={{ $json }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2240,
+        1220
+      ],
+      "id": "64c66a52-f848-4461-8b6b-d127863eda52",
+      "name": "If isempty"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "id": "8e273b7a-8b98-403a-bd83-7c41eb145ca2",
+      "name": "Aggregate1",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        840
+      ]
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "concatenate",
+              "field": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3ec82abd-26b4-40bf-8604-34603ae8c6c4",
+      "name": "Summarize1",
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1,
+      "position": [
+        1320,
+        840
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "id": "669a92fd-fb30-4fdc-ad99-b6ff6ee88a82",
+      "name": "Extract PDF Text",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        920,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "options": {}
+      },
+      "id": "37d643e8-fcff-4313-9932-5fe62aa4a348",
+      "name": "Extract from Excel",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        920,
+        840
+      ]
+    },
+    {
+      "parameters": {
+        "chunkSize": 2000,
+        "chunkOverlap": 200,
+        "options": {
+          "splitCode": "markdown"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        2000,
+        880
+      ],
+      "id": "59a1ce70-6fae-423f-8cbd-73e9b0a55f16",
+      "name": "Recursive Character Text Splitter"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.1,
+      "position": [
+        1760,
+        820
+      ],
+      "id": "2fe4874d-44bb-4a68-8f60-2d6868fd6400",
+      "name": "Embeddings OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "ZjiR1Y4tdzymEK1L",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonMode": "expressionData",
+        "jsonData": "={{ $json.data || $json.text || $json.concatenated_data }}",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "=file_id",
+                "value": "={{ $('Set File ID1').item.json.file_id }}"
+              },
+              {
+                "name": "last_modified",
+                "value": "={{ $('Get RAG Inbox').item.json.modifiedTime }}"
+              },
+              {
+                "name": "file_name",
+                "value": "={{ $('Get RAG Inbox').item.json.name }}"
+              },
+              {
+                "name": "file_extension",
+                "value": "={{ $('Loop Over Items').item.json.file_type }}"
+              },
+              {
+                "name": "city_id",
+                "value": "={{ $('Set city_id').item.json.city_id }}"
+              }
+            ]
+          }
+        }
+      },
+      "id": "bbf2a8c3-ff07-44df-a77e-a41e98befb16",
+      "name": "Enhanced Default Data Loader1",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1,
+      "position": [
+        1920,
+        720
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "options": {}
+      },
+      "id": "babc184a-dd57-481d-ba6a-ea311fd82f5d",
+      "name": "Extract from Text File",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        920,
+        660
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.file_type }}",
+                    "rightValue": "application/pdf",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "PDF"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "fc193b06-363b-4699-a97d-e5a850138b0e",
+                    "leftValue": "={{ $json.file_type }}",
+                    "rightValue": "text/plain",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Text File"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "2ae7faa7-a936-4621-a680-60c512163034",
+                    "leftValue": "={{ $json.file_type }}",
+                    "rightValue": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Excel"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "id": "30852513-ee94-44ee-bd7f-b09056add665",
+      "name": "Switch2",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [
+        340,
+        720
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "value": "=documents",
+          "mode": "id"
+        },
+        "options": {
+          "queryName": "match_documents"
+        }
+      },
+      "id": "08d60365-b863-48e0-8057-e662e2493b7e",
+      "name": "Insert into Supabase Vectorstore1",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1,
+      "position": [
+        1740,
+        520
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "10646eae-ae46-4327-a4dc-9987c2d76173",
+              "name": "file_id",
+              "value": "={{ $('Get RAG Inbox').item.json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "f4536df5-d0b1-4392-bf17-b8137fb31a44",
+              "name": "file_type",
+              "value": "={{ $('Get RAG Inbox').item.json.mimeType }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "13e5fe3a-e0fa-489f-a648-72054876a4c1",
+      "name": "Set File ID1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -440,
+        780
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "queryString": "=",
+        "returnAll": true,
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "value": "12U_typ9QZfgkVw8PKsOAFj19OB0Z40IO",
+            "mode": "list",
+            "cachedResultName": "RAG Inbox",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/12U_typ9QZfgkVw8PKsOAFj19OB0Z40IO"
+          }
+        },
+        "options": {
+          "fields": [
+            "*"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -680,
+        780
+      ],
+      "id": "b0c6239f-8916-4371-8a04-05d1b964f50c",
+      "name": "Get RAG Inbox",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "PJ6id5UZ4SjuKSnf",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nconst cleanText = (text) => {\n  if (!text) return '';\n  \n  return text\n    // Remove null characters and their escape sequences\n    .replace(/\\u0000/g, '')\n    .replace(/\\\\u0000/g, '')\n    // Remove non-ASCII characters and their escape sequences\n    .replace(/[^\\x00-\\x7F]/g, '')\n    .replace(/\\\\u[\\dA-Fa-f]{4}/g, '')\n    // Remove multiple spaces\n    .replace(/\\s+/g, ' ')\n    // Remove multiple newlines\n    .replace(/\\n+/g, '\\n')\n    // Trim whitespace\n    .trim();\n};\n\nreturn items.map(item => {\n  if (item.json && item.json.text) {\n    item.json.text = cleanText(item.json.text);\n  }\n  return item;\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1560,
+        420
+      ],
+      "id": "85783367-3b73-4685-b5b2-49cd509161bd",
+      "name": "Code",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "75732e4a-c551-43ef-966b-618b20a2ab5f",
+              "leftValue": "={{ $json.text.length }}",
+              "rightValue": 20,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1140,
+        500
+      ],
+      "id": "11742930-4ad6-40b2-a326-957f13f45037",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Loop Over Items').item.json.file_id }}",
+          "mode": "id"
+        },
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1ib0TYxRfSjqIFEWBxf4sN6xiZ2AHl6GJ",
+          "mode": "list",
+          "cachedResultName": "RAG Storage",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1ib0TYxRfSjqIFEWBxf4sN6xiZ2AHl6GJ"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2520,
+        560
+      ],
+      "id": "0fa4247c-2819-4bd1-9bc1-80e3bedcfae4",
+      "name": "Move to RAG Storage",
+      "alwaysOutputData": false,
+      "executeOnce": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "PJ6id5UZ4SjuKSnf",
+          "name": "Google Drive account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Download File": {
+      "main": [
+        [
+          {
+            "node": "Switch2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Set city_id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set city_id": {
+      "main": [
+        [
+          {
+            "node": "Get RAG Inbox",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader1": {
+      "ai_document": [
+        [
+          {
+            "node": "binary supabase",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI2": {
+      "ai_embedding": [
+        [
+          {
+            "node": "binary supabase",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter1": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader1",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "binary supabase": {
+      "main": [
+        [
+          {
+            "node": "If isempty",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Move to RAG Storage2": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Download File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move to RAG Unprocessed": {
+      "main": [
+        []
+      ]
+    },
+    "If isempty": {
+      "main": [
+        [
+          {
+            "node": "Move to RAG Unprocessed",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Move to RAG Storage2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate1": {
+      "main": [
+        [
+          {
+            "node": "Summarize1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize1": {
+      "main": [
+        [
+          {
+            "node": "Insert into Supabase Vectorstore1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract PDF Text": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from Excel": {
+      "main": [
+        [
+          {
+            "node": "Aggregate1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Enhanced Default Data Loader1",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Insert into Supabase Vectorstore1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enhanced Default Data Loader1": {
+      "ai_document": [
+        [
+          {
+            "node": "Insert into Supabase Vectorstore1",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from Text File": {
+      "main": [
+        [
+          {
+            "node": "Insert into Supabase Vectorstore1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch2": {
+      "main": [
+        [
+          {
+            "node": "Extract PDF Text",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract from Text File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract from Excel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set File ID1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get RAG Inbox": {
+      "main": [
+        [
+          {
+            "node": "Set File ID1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Insert into Supabase Vectorstore1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "binary supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert into Supabase Vectorstore1": {
+      "main": [
+        [
+          {
+            "node": "Move to RAG Storage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move to RAG Storage": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:File Created": {
+      "lastTimeChecked": "2025-01-23T13:04:35Z"
+    },
+    "node:File Updated": {
+      "lastTimeChecked": "2025-01-23T13:04:35Z"
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "cb13dbc2-5608-4bba-94ce-76cf882942f6",
+  "triggerCount": 4,
+  "shared": [
+    {
+      "createdAt": "2025-02-18T04:28:45.558Z",
+      "updatedAt": "2025-02-18T04:28:45.558Z",
+      "role": "workflow:owner",
+      "workflowId": "WrTRCWmkoSbRpoOe",
+      "projectId": "rkqKISKa14HwF9Xd"
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-01-28T15:25:26.214Z",
+      "updatedAt": "2025-01-28T15:25:26.214Z",
+      "id": "BngebX50Ev8rBclu",
+      "name": "HN Content manager"
+    },
+    {
+      "createdAt": "2025-02-09T16:38:26.099Z",
+      "updatedAt": "2025-02-09T16:38:26.099Z",
+      "id": "YEStJInGeLpvHEQ8",
+      "name": "tool"
+    }
+  ]
+}
