@@ -1,0 +1,697 @@
+{
+  "createdAt": "2025-01-25T19:34:00.010Z",
+  "updatedAt": "2025-01-26T14:24:08.000Z",
+  "id": "CeUjNURcCXf4jPIE",
+  "name": "Get Google Places",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "2df60867-5652-4a95-81ad-e22a71b428fa",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://places.googleapis.com/v1/places:searchText",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Goog-FieldMask",
+              "value": "places.id,places.displayName,places.types,places.formattedAddress,places.location,places.rating,places.websiteUri,places.priceLevel,places.primaryType,places.plusCode,places.business_status"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "textQuery",
+              "value": "={{ $json.GoogleMapsQuery }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        440,
+        0
+      ],
+      "id": "c40cd919-160b-4d3c-afb1-46cece027944",
+      "name": "Get Place ID",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "RBY53ewF7tAnXKlY",
+          "name": "Google API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "15f1411f-0e01-41f4-a192-9005c5d38560",
+              "name": "GoogleMapsQuery",
+              "value": "Castelo de Tavira",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "id": "1670e0ad-bf99-467c-8133-2a178f0dd67f",
+      "name": "GoogleMapSearchQuery"
+    },
+    {
+      "parameters": {
+        "url": "=https://maps.googleapis.com/maps/api/place/details/json?place_id={{ $json.places[0].id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        660,
+        0
+      ],
+      "id": "c9cf75bb-240a-48e4-9c48-23616fdf5db4",
+      "name": "Get Place Details",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "RBY53ewF7tAnXKlY",
+          "name": "Google API"
+        },
+        "httpQueryAuth": {
+          "id": "5qlgt2xyQqxMW8o9",
+          "name": "Query Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://places.googleapis.com/v1/places:searchNearby",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Goog-FieldMask",
+              "value": "places.displayName,places.types,places.formattedAddress,places.location,places.editorialSummary,places.rating,places.websiteUri,places.priceLevel,places.primaryType,places.plusCode,places.googleMapsLinks,places.business_status"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"includedTypes\": \"restaurant\", \n\n  \"locationRestriction\": {\n    \"circle\": {\n      \"center\": {\n        \"latitude\": {{ $json.result.geometry.location.lat }},\n        \"longitude\": {{ $json.result.geometry.location.lng }}\n      },\n      \"radius\": 200\n    }\n  },\n  \"maxResultCount\": 20\n}",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        420,
+        -220
+      ],
+      "id": "f704599c-d286-47cb-b44c-f55dee753b61",
+      "name": "Search Nearby",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "RBY53ewF7tAnXKlY",
+          "name": "Google API"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "GoogleMapSearchQuery",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Place ID": {
+      "main": [
+        [
+          {
+            "node": "Get Place Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GoogleMapSearchQuery": {
+      "main": [
+        [
+          {
+            "node": "Get Place ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Place Details": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Get Place ID": [
+      {
+        "json": {
+          "places": [
+            {
+              "id": "ChIJMRWk13kDEA0RMxV2CQpZ_UA",
+              "types": [
+                "tourist_attraction",
+                "historical_place",
+                "point_of_interest",
+                "establishment"
+              ],
+              "formattedAddress": "Largo Abu-Otmane, 8800-407 Tavira, Portugal",
+              "plusCode": {
+                "globalCode": "8C9J48GX+4G",
+                "compoundCode": "48GX+4G Tavira, Portugal"
+              },
+              "location": {
+                "latitude": 37.125306699999996,
+                "longitude": -7.6512366
+              },
+              "rating": 4.3,
+              "businessStatus": "OPERATIONAL",
+              "displayName": {
+                "text": "Castelo de Tavira",
+                "languageCode": "en"
+              },
+              "primaryType": "historical_place"
+            }
+          ]
+        }
+      }
+    ],
+    "Get Place Details": [
+      {
+        "json": {
+          "html_attributions": [],
+          "result": {
+            "address_components": [
+              {
+                "long_name": "Largo Abu-Otmane",
+                "short_name": "Largo Abu-Otmane",
+                "types": [
+                  "route"
+                ]
+              },
+              {
+                "long_name": "Tavira",
+                "short_name": "Tavira",
+                "types": [
+                  "locality",
+                  "political"
+                ]
+              },
+              {
+                "long_name": "União das freguesias de Tavira (Santa Maria e Santiago)",
+                "short_name": "União das freguesias de Tavira (Santa Maria e Santiago)",
+                "types": [
+                  "administrative_area_level_3",
+                  "political"
+                ]
+              },
+              {
+                "long_name": "Tavira",
+                "short_name": "Tavira",
+                "types": [
+                  "administrative_area_level_2",
+                  "political"
+                ]
+              },
+              {
+                "long_name": "Faro",
+                "short_name": "Faro",
+                "types": [
+                  "administrative_area_level_1",
+                  "political"
+                ]
+              },
+              {
+                "long_name": "Portugal",
+                "short_name": "PT",
+                "types": [
+                  "country",
+                  "political"
+                ]
+              },
+              {
+                "long_name": "8800-407",
+                "short_name": "8800-407",
+                "types": [
+                  "postal_code"
+                ]
+              }
+            ],
+            "adr_address": "<span class=\"street-address\">Largo Abu-Otmane</span>, <span class=\"postal-code\">8800-407</span> <span class=\"locality\">Tavira</span>, <span class=\"country-name\">Portugal</span>",
+            "business_status": "OPERATIONAL",
+            "current_opening_hours": {
+              "open_now": false,
+              "periods": [
+                {
+                  "close": {
+                    "date": "2025-01-26",
+                    "day": 0,
+                    "time": "1900"
+                  },
+                  "open": {
+                    "date": "2025-01-26",
+                    "day": 0,
+                    "time": "1000"
+                  }
+                },
+                {
+                  "close": {
+                    "date": "2025-01-27",
+                    "day": 1,
+                    "time": "1900"
+                  },
+                  "open": {
+                    "date": "2025-01-27",
+                    "day": 1,
+                    "time": "0830"
+                  }
+                },
+                {
+                  "close": {
+                    "date": "2025-01-28",
+                    "day": 2,
+                    "time": "1900"
+                  },
+                  "open": {
+                    "date": "2025-01-28",
+                    "day": 2,
+                    "time": "0830"
+                  }
+                },
+                {
+                  "close": {
+                    "date": "2025-01-29",
+                    "day": 3,
+                    "time": "1900"
+                  },
+                  "open": {
+                    "date": "2025-01-29",
+                    "day": 3,
+                    "time": "0830"
+                  }
+                },
+                {
+                  "close": {
+                    "date": "2025-01-30",
+                    "day": 4,
+                    "time": "1900"
+                  },
+                  "open": {
+                    "date": "2025-01-30",
+                    "day": 4,
+                    "time": "0830"
+                  }
+                },
+                {
+                  "close": {
+                    "date": "2025-01-31",
+                    "day": 5,
+                    "time": "1900"
+                  },
+                  "open": {
+                    "date": "2025-01-31",
+                    "day": 5,
+                    "time": "0830"
+                  }
+                },
+                {
+                  "close": {
+                    "date": "2025-02-01",
+                    "day": 6,
+                    "time": "1900"
+                  },
+                  "open": {
+                    "date": "2025-02-01",
+                    "day": 6,
+                    "time": "1000"
+                  }
+                }
+              ],
+              "weekday_text": [
+                "Monday: 8:30 AM – 7:00 PM",
+                "Tuesday: 8:30 AM – 7:00 PM",
+                "Wednesday: 8:30 AM – 7:00 PM",
+                "Thursday: 8:30 AM – 7:00 PM",
+                "Friday: 8:30 AM – 7:00 PM",
+                "Saturday: 10:00 AM – 7:00 PM",
+                "Sunday: 10:00 AM – 7:00 PM"
+              ]
+            },
+            "editorial_summary": {
+              "language": "en",
+              "overview": "Compact, 11th-century castle ruins featuring sweeping town & park views from its battlement walls."
+            },
+            "formatted_address": "Largo Abu-Otmane, 8800-407 Tavira, Portugal",
+            "geometry": {
+              "location": {
+                "lat": 37.1253067,
+                "lng": -7.6512366
+              },
+              "viewport": {
+                "northeast": {
+                  "lat": 37.1267159802915,
+                  "lng": -7.649808069708498
+                },
+                "southwest": {
+                  "lat": 37.1240180197085,
+                  "lng": -7.652506030291502
+                }
+              }
+            },
+            "icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/generic_business-71.png",
+            "icon_background_color": "#13B5C7",
+            "icon_mask_base_uri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/generic_pinlet",
+            "name": "Castelo de Tavira",
+            "opening_hours": {
+              "open_now": false,
+              "periods": [
+                {
+                  "close": {
+                    "day": 0,
+                    "time": "1900"
+                  },
+                  "open": {
+                    "day": 0,
+                    "time": "1000"
+                  }
+                },
+                {
+                  "close": {
+                    "day": 1,
+                    "time": "1900"
+                  },
+                  "open": {
+                    "day": 1,
+                    "time": "0830"
+                  }
+                },
+                {
+                  "close": {
+                    "day": 2,
+                    "time": "1900"
+                  },
+                  "open": {
+                    "day": 2,
+                    "time": "0830"
+                  }
+                },
+                {
+                  "close": {
+                    "day": 3,
+                    "time": "1900"
+                  },
+                  "open": {
+                    "day": 3,
+                    "time": "0830"
+                  }
+                },
+                {
+                  "close": {
+                    "day": 4,
+                    "time": "1900"
+                  },
+                  "open": {
+                    "day": 4,
+                    "time": "0830"
+                  }
+                },
+                {
+                  "close": {
+                    "day": 5,
+                    "time": "1900"
+                  },
+                  "open": {
+                    "day": 5,
+                    "time": "0830"
+                  }
+                },
+                {
+                  "close": {
+                    "day": 6,
+                    "time": "1900"
+                  },
+                  "open": {
+                    "day": 6,
+                    "time": "1000"
+                  }
+                }
+              ],
+              "weekday_text": [
+                "Monday: 8:30 AM – 7:00 PM",
+                "Tuesday: 8:30 AM – 7:00 PM",
+                "Wednesday: 8:30 AM – 7:00 PM",
+                "Thursday: 8:30 AM – 7:00 PM",
+                "Friday: 8:30 AM – 7:00 PM",
+                "Saturday: 10:00 AM – 7:00 PM",
+                "Sunday: 10:00 AM – 7:00 PM"
+              ]
+            },
+            "photos": [
+              {
+                "height": 3672,
+                "html_attributions": [
+                  "<a href=\"https://maps.google.com/maps/contrib/101053416025606445519\">Bernard THEROND</a>"
+                ],
+                "photo_reference": "AVzFdbmZKZUIo9TcOj3ABlr71NFQNv8rVugG9_NlUAm-1INYvULPtAud6zbwXKAAqQMVw7kp_9xkFkXC3Nc0XrlVkcx1WhWnePCozOq5ec7OH3FM16gqdQ3P90fbuS-UXd6DYGkZx-RgtYoc8N1menFBgcjcmnfZFtgzqNqZ1hIJPP5XmG9U",
+                "width": 4896
+              },
+              {
+                "height": 3072,
+                "html_attributions": [
+                  "<a href=\"https://maps.google.com/maps/contrib/104267923832694466497\">Maciej Borski</a>"
+                ],
+                "photo_reference": "AVzFdbnH-nH4lyBmt2BqlolnXBswM-7aLAocZMKw_4_7bTl31GEBhVz6LZ3E_05m9JCLBElgetxPElPXH0ULOpmDtCfibD9B8R_jqfy3fWMOaHIYYeqGi7g6vIY_HOxaHwUKmoCyKPSCWhVFrjlofqMCK8o00dU1FyCEpiwtTNDP63TLubf9",
+                "width": 4096
+              },
+              {
+                "height": 2656,
+                "html_attributions": [
+                  "<a href=\"https://maps.google.com/maps/contrib/102800406057245922243\">Anton Reinelt</a>"
+                ],
+                "photo_reference": "AVzFdbnrfXqGFsbcB9PtPYvrdOUeU28jh2zDiLuhojwff6JQE5uf91nXxRXlwpy-szFnrgX-kwYNGF58WxM2N7s9jKoMrFP07dJC4vbDAoiuXW6ZLP8Eub3S5DZhGDWYxIqOndYyqdWwZOGuBPKv3L6jHL2q6FAElqSIMlTr_8q-zCgBp8bQ",
+                "width": 3907
+              },
+              {
+                "height": 2003,
+                "html_attributions": [
+                  "<a href=\"https://maps.google.com/maps/contrib/108731622745708406494\">Ingrid Leitner</a>"
+                ],
+                "photo_reference": "AVzFdbmC1C2SPkZOSnc2gsFEHXyebG2lyh911AUzehkAcwdgvIfm8PlDvynpCkNbKChgpV-YY8a_wsFwT8IjRZ6_JsU0eAneW9nfhn4M9UUsbExYgPGlYyz5J4nvc6EbmnuZera57Ak1bvtD2mMXoNujZ8epJUkk7Jwi7zSo9rusRoPS5bsf",
+                "width": 3251
+              },
+              {
+                "height": 2363,
+                "html_attributions": [
+                  "<a href=\"https://maps.google.com/maps/contrib/104760215626879910522\">gregory rulliere</a>"
+                ],
+                "photo_reference": "AVzFdbl-w4l9BgxBPv9IbPWIaM6qmJnce22NCDXPTtVE36dEIL_PQ0oB48_gYe71C6OgoJvFM7hWbNvtFkb7fLqcfoBaqhkgKTwel-aHdqEllnREGidndDklVxyzkKMBZKmYalEym0ooFTxxcN1IOiP_5fgdPtdfeTTnJvg6jNM8vyHryROh",
+                "width": 2662
+              },
+              {
+                "height": 3472,
+                "html_attributions": [
+                  "<a href=\"https://maps.google.com/maps/contrib/108546257870327825895\">Matteo “TeoMagni” Magni</a>"
+                ],
+                "photo_reference": "AVzFdbnhL0532dkxtnXgo0QFUmgb6ssgPMjo-J0G7oR-TpXkuJXtvaa-Nag_zHAY4VhTfGOARba6S_hH04J7BVaRcBXAhvdnWUqqfRe1PkuYc0O7KvJbML09pmxpGzkKx3lIAPqQwsA4Aw28B6sKcYHsHa3OtsMVMaSNUsJ3OVrTy7UU9qpc",
+                "width": 4640
+              },
+              {
+                "height": 4080,
+                "html_attributions": [
+                  "<a href=\"https://maps.google.com/maps/contrib/114493096372108556679\">Zsolt Kallai</a>"
+                ],
+                "photo_reference": "AVzFdbnuxQaFvT2yHS28uBTAlji6q4QIOepvbgYfHAiqKopM24nFFGWVJS1f3_JbBGnY1aI0MlYbXim2myDTaxUxx0I9doIoi0mXiH21SYSu0223Ei_iXs71h7ZL8LqF_-UfVL5IqRwfyU7XLUTA-qFZ13nvd8PBO494L79FdyO7m7cjI4VO",
+                "width": 3072
+              },
+              {
+                "height": 3456,
+                "html_attributions": [
+                  "<a href=\"https://maps.google.com/maps/contrib/112102052939859915914\">Jörg Hackspiel</a>"
+                ],
+                "photo_reference": "AVzFdbl9DYPDWM4bWg59oE9Oks-HxV93KrFvS-MXEmPB8FA7IhpOvplAeSk7dn5h-b4viKlE7gsS-yTFOERaFnYpiLRelI2rqrw4oVB98l1D0JkYTU-3FSKQGAH3iqb8b_SJx8J56vF8q-bZ7zZym7QUpi5AC6y7AlBGp3vo151o_8V9gNtK",
+                "width": 4608
+              },
+              {
+                "height": 3024,
+                "html_attributions": [
+                  "<a href=\"https://maps.google.com/maps/contrib/102250543016971414222\">Jacob Smart</a>"
+                ],
+                "photo_reference": "AVzFdbmD9mNV4nACUJF98hwqiXqqmRMNO3ZqTZiNSEfym4a1GVqsBQMfabbhHzQOV6AaiPGqTqnSa6Ywj5R8dBwLYkRTH58yJUKf7byxaXw8j1kySL-na0HMHutwmZLW7dtosyhHQUvL1C9wFPO8mxI3GUmkBNDV2JDvAEExiOETT5jfTAvF",
+                "width": 4032
+              },
+              {
+                "height": 3120,
+                "html_attributions": [
+                  "<a href=\"https://maps.google.com/maps/contrib/101778934362404299665\">Alexandre Costa</a>"
+                ],
+                "photo_reference": "AVzFdbnxSb5u8I6v0eNlkgXhI2yl0if8Vjm2_7BW5fjrUHKOAHw8gtO3LfJxeLUTYIwHlr5trCxSToBtKe5lgX2A0PcGYlnk1vWwroD7x-LX8xAg7oxRhtbRh8Jn0ypJdHKpWHsOYHUY9f5KNzmLcAn7s96gPJbT8C1DMV6vdWJUK0Ry7hh4",
+                "width": 4160
+              }
+            ],
+            "place_id": "ChIJMRWk13kDEA0RMxV2CQpZ_UA",
+            "plus_code": {
+              "compound_code": "48GX+4G Tavira, Portugal",
+              "global_code": "8C9J48GX+4G"
+            },
+            "rating": 4.3,
+            "reference": "ChIJMRWk13kDEA0RMxV2CQpZ_UA",
+            "reviews": [
+              {
+                "author_name": "Steven Webb",
+                "author_url": "https://www.google.com/maps/contrib/113770455223825093176/reviews",
+                "language": "en",
+                "original_language": "en",
+                "profile_photo_url": "https://lh3.googleusercontent.com/a-/ALV-UjXsbyMU5qPMpZ0imu6JLI5L6mLndHVrQsVXuHdolSmxMjMFje-p=s128-c0x00000000-cc-rp-mo-ba6",
+                "rating": 5,
+                "relative_time_description": "3 weeks ago",
+                "text": "No reason not to visit. Gratis, pretty garden, small, easy to see, high steps to the viewpoints. Not awesome but decent views of the town, other castles, river, island.  Lots of gorgeous trees and plants, nice garden, and... WCs right by the door.  Good job done here.  Nothing historically awesome or much interesting but a nice place to walk around.",
+                "time": 1735662582,
+                "translated": false
+              },
+              {
+                "author_name": "L and D O C",
+                "author_url": "https://www.google.com/maps/contrib/117940329685433035170/reviews",
+                "language": "en",
+                "original_language": "en",
+                "profile_photo_url": "https://lh3.googleusercontent.com/a/ACg8ocKl3TMx7x9JlFcMIFNCx4EMcsVEsB607g2pNiOkMcEGh5AFuw=s128-c0x00000000-cc-rp-mo-ba4",
+                "rating": 3,
+                "relative_time_description": "3 months ago",
+                "text": "Free entry. Small castle.\nDecent views from the top of the castle walls.\nNice garden in the courtyard.\nWorth a walk up the hill if you are in Tavira.\nDon't travel too far to see it.",
+                "time": 1728829342,
+                "translated": false
+              },
+              {
+                "author_name": "Chris S",
+                "author_url": "https://www.google.com/maps/contrib/116864445669877409115/reviews",
+                "language": "en",
+                "original_language": "en",
+                "profile_photo_url": "https://lh3.googleusercontent.com/a/ACg8ocJ86sv7CM0iUY45WH28VwCxoimQeP9cb975u3wNUldDJtnotg=s128-c0x00000000-cc-rp-mo-ba4",
+                "rating": 5,
+                "relative_time_description": "3 months ago",
+                "text": "The castle is beautiful, and entry is free. The central courtyard features a variety of trees and flowers, and there are nice views of the church and town from the grounds. It’s a peaceful spot that’s worth a visit.",
+                "time": 1727624262,
+                "translated": false
+              },
+              {
+                "author_name": "Daniel Fry-Andrade",
+                "author_url": "https://www.google.com/maps/contrib/100821132798781620008/reviews",
+                "language": "en",
+                "original_language": "en",
+                "profile_photo_url": "https://lh3.googleusercontent.com/a-/ALV-UjUkyNbNnrBgB7V7NyvYgDLP1uMrHkyTCF7bJq-G4B_2MyblXeg=s128-c0x00000000-cc-rp-mo-ba3",
+                "rating": 4,
+                "relative_time_description": "3 months ago",
+                "text": "This is beautiful, Gardens immaculate and lovingly maintained and the views of Tavira leave you wanting to see more. It was over cast when I came but photos would be way better on a sunny day. It was free",
+                "time": 1729444969,
+                "translated": false
+              },
+              {
+                "author_name": "Denny Carty",
+                "author_url": "https://www.google.com/maps/contrib/104314426637225619420/reviews",
+                "language": "en",
+                "original_language": "en",
+                "profile_photo_url": "https://lh3.googleusercontent.com/a/ACg8ocL-lvS2_I4fqh9ghF4R0Beu1aYF9ToG3psOdkjWf0PoM4-hsQ=s128-c0x00000000-cc-rp-mo-ba4",
+                "rating": 5,
+                "relative_time_description": "5 months ago",
+                "text": "A small but very interesting stop. It's possible to climb on the battlements and get good views over the town. There is an expertly arranged garden inside the walls with a variety of flowering shrubs and herbs.",
+                "time": 1723844646,
+                "translated": false
+              }
+            ],
+            "types": [
+              "tourist_attraction",
+              "point_of_interest",
+              "establishment"
+            ],
+            "url": "https://maps.google.com/?cid=4682997087178462515",
+            "user_ratings_total": 9990,
+            "utc_offset": 0,
+            "vicinity": "Largo Abu-Otmane, Tavira"
+          },
+          "status": "OK"
+        }
+      }
+    ],
+    "GoogleMapSearchQuery": [
+      {
+        "json": {
+          "GoogleMapsQuery": "Castelo de Tavira"
+        }
+      }
+    ]
+  },
+  "versionId": "6d11a0b1-269b-4602-83b4-2e36d4dcd179",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-01-25T19:34:00.014Z",
+      "updatedAt": "2025-01-25T19:34:00.014Z",
+      "role": "workflow:owner",
+      "workflowId": "CeUjNURcCXf4jPIE",
+      "projectId": "rkqKISKa14HwF9Xd"
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-01-26T14:24:07.274Z",
+      "updatedAt": "2025-01-26T14:24:07.274Z",
+      "id": "qneX5ZMmFiQm5Mhs",
+      "name": "research"
+    }
+  ]
+}
