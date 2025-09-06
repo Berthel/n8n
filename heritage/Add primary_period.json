@@ -1,0 +1,433 @@
+{
+  "createdAt": "2025-05-09T05:14:13.006Z",
+  "updatedAt": "2025-05-09T05:57:39.000Z",
+  "id": "rrKFJ3dES0fY4n5p",
+  "name": "Add primary_period",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1248,
+        60
+      ],
+      "id": "e3739065-a649-488c-9133-5382230b5cf0",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "ZjiR1Y4tdzymEK1L",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "view_city_periods",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "city_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Edit Fields').item.json.city_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        560,
+        -160
+      ],
+      "id": "cc308d47-e8e0-4dff-bd96-ae9212b681b0",
+      "name": "Get Periods",
+      "executeOnce": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        780,
+        -160
+      ],
+      "id": "7298d46a-724d-4cad-a010-c3fb897dd3fd",
+      "name": "Periods"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Site: {{ $('Postgres').item.json.site_id }}\n\nBeskrivelse: {{ $('Aggregate').item.json.content }}\n\nPeriods: {{ $json.Periods }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=**Titel / Rollebeskrivelse**  \nDu er en AI-specialist i historiske perioder. Din opgave er at analysere en beskrivelse af et historisk sted og vælge den primære og vigtigste periode fra en foruddefineret liste af perioder.\n\n---\n\n**Vejledning**  \n1. **Vælg kun fra nedenstående periode-liste.** Du må ikke opfinde nye perioder eller ændre deres navne.\n2. **Match** beskrivelsens årstal og oplysninger med de perioder, hvis tidsintervaller tydeligt passer til beskrivelsens tidsramme.  \n3. Hvis ingen perioder passer, returner en tom liste `[]`.\n4. **Output** kun ét periode-id i **JSON-format** som vist nedenfor, **uden** forklarende tekst.\n5. Følg nøjagtigt dette format i dit endelige svar, og **intet andet**:\n   \"period1\"\n   ```\n6. Ingen anden tekst eller begrundelse må inkluderes i svaret.\n\n---\n\n**Liste over perioder**  \nFølgende perioder er de eneste, du må vælge fra (med deres start- og slutår efter kommaet):  \n\n{{ $json.Periods }}\n\n---\n\n**Eksempel**  \n\nBeskrivelse:\n\"Forte do Rato blev bygget i det 16. århundrede (1568-1578) under kong Sebastian og spillede en rolle i Taviras forsvar frem til det 19. århundrede. Det gennemgik renoveringer i 1640 og 1672 og blev endeligt opgivet i 1840.\"\n\nOutput:\n\"renaissance\"\n```\n\nIngen forklaringer, ingen andre data. Hvis ingenting matcher, skal listen være tom: `[]`."
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        1220,
+        -160
+      ],
+      "id": "ae4d0b4a-adda-462b-b551-6f85f4ddde8f",
+      "name": "Find perids"
+    },
+    {
+      "parameters": {
+        "jsCode": "const allItems = $input.all();\nconst periods = allItems[0].json.data;\n\n// Sortér efter start_year (stigende)\nperiods.sort((a, b) => a.start_year - b.start_year);\n\n// Map hver periode til et letlæseligt strengformat, fx \"[id, start-end]\"\nconst formattedPeriods = periods.map(period => {\n  const endYear = period.end_year === null ? 'nuværende' : period.end_year;\n  return `[${period.id}, ${period.start_year}-${endYear}]`;\n});\n\n// Her gemmer vi hele arrayet i feltet \"Periods\"\nreturn [\n  {\n    json: {\n      Periods: formattedPeriods\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        -160
+      ],
+      "id": "571506a7-56cb-4dd1-ae48-237ecad104d2",
+      "name": "Code"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -540,
+        -160
+      ],
+      "id": "afba890e-f66b-4dbc-b94f-ec8be6708f12",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "604ef2f8-1d14-4c23-96dc-ef6332585c3c",
+              "name": "city_id",
+              "value": "rome",
+              "type": "string"
+            },
+            {
+              "id": "785fceea-ddf7-40ad-9d2f-45ea667c31ce",
+              "name": "site_id",
+              "value": "ara-pacis",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -320,
+        -160
+      ],
+      "id": "36149545-ab46-4e8a-bc3c-175d2bc4732f",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select detail_section_id, content, s.site_id\nfrom detail_section_translations t join detail_sections s on\nt.detail_section_id = s.id join sites si on\ns.site_id = si.id\nwhere s.city_id = '{{ $json.city_id }}'\nand si.primary_period is null\n--and s.site_id = '{{ $json.site_id }}'\nand t.language_code = 'en'\norder by case\n    when detail_section_id like '%overview' then 1\n    when detail_section_id like '%main' then 2\n    when detail_section_id like '%background' then 3\n    else 4 -- Tilføjet en default værdi for sektioner der ikke matcher\nend;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -100,
+        -160
+      ],
+      "id": "b7c5a0b4-0bf5-49f1-ab42-c3461bad98cf",
+      "name": "Postgres",
+      "credentials": {
+        "postgres": {
+          "id": "EzZYFEVPXxVDpNLe",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "content"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        340,
+        -160
+      ],
+      "id": "6b0dc3c5-3284-42cd-9853-798a2f8f096c",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"primary_period\": \"renaissance\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        1368,
+        60
+      ],
+      "id": "cb710fca-248b-44c2-8851-4760e93de785",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "sites",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "city_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Edit Fields').item.json.city_id }}"
+            },
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $('Postgres').item.json.site_id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "primary_period",
+              "fieldValue": "={{ $json.output.primary_period }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1596,
+        -160
+      ],
+      "id": "c627d034-7e2e-4c1a-a7e9-2744cd170e25",
+      "name": "Update primary_period",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Opdatér where clause!"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        -220
+      ],
+      "id": "91dadcdd-7d53-438d-b25b-aea7a110eeb3",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        120,
+        -160
+      ],
+      "id": "2f57eb7d-6dba-4774-8954-d65f0dc6070b",
+      "name": "Loop Over Items"
+    }
+  ],
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Find perids",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Periods": {
+      "main": [
+        [
+          {
+            "node": "Periods",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Periods": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find perids": {
+      "main": [
+        [
+          {
+            "node": "Update primary_period",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Find perids",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Postgres",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Get Periods",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Find perids",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update primary_period": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "cec7d1ab-9a18-45da-abc6-605fd016f35f",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-05-09T05:14:13.011Z",
+      "updatedAt": "2025-05-09T05:14:13.011Z",
+      "role": "workflow:owner",
+      "workflowId": "rrKFJ3dES0fY4n5p",
+      "projectId": "rkqKISKa14HwF9Xd"
+    }
+  ],
+  "tags": []
+}
