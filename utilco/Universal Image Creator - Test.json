@@ -1,0 +1,175 @@
+{
+  "createdAt": "2025-07-27T08:56:33.266Z",
+  "updatedAt": "2025-07-27T08:57:17.541Z",
+  "id": "w9iMrK1mtX5s4i1D",
+  "name": "Universal Image Creator - Test",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "universal-image-creator-test",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-test",
+      "name": "Webhook Trigger Test",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -3040,
+        224
+      ],
+      "webhookId": "universal-image-creator-test"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "lesson_id",
+              "value": "={{ $json.body.lesson_id }}",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "module_id",
+              "value": "={{ $json.body.module_id }}",
+              "type": "string"
+            },
+            {
+              "id": "3",
+              "name": "course_id",
+              "value": "={{ $json.body.course_id }}",
+              "type": "string"
+            },
+            {
+              "id": "4",
+              "name": "image_type",
+              "value": "={{ $json.body.image_type || 'illustration' }}",
+              "type": "string"
+            },
+            {
+              "id": "5",
+              "name": "webhook_data",
+              "value": "={{ $json.body.webhook_data }}",
+              "type": "string"
+            },
+            {
+              "id": "6",
+              "name": "direct_prompt",
+              "value": "={{ $json.body.direct_prompt || false }}",
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "set-vars",
+      "name": "Set Variables",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2816,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Determine content type based on which ID is provided\nconst item = items[0].json;\n\nlet contentType = null;\nlet contentId = null;\n\nif (item.lesson_id && item.lesson_id !== '') {\n  contentType = 'lesson';\n  contentId = item.lesson_id;\n} else if (item.module_id && item.module_id !== '') {\n  contentType = 'module';\n  contentId = item.module_id;\n} else if (item.course_id && item.course_id !== '') {\n  contentType = 'course';\n  contentId = item.course_id;\n} else {\n  throw new Error('No valid ID provided. Must provide either lesson_id, module_id, or course_id');\n}\n\nreturn [{\n  json: {\n    ...item,\n    contentType,\n    contentId\n  }\n}];"
+      },
+      "id": "detect-type",
+      "name": "Detect Content Type",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2592,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"success\": true,\n  \"message\": \"Test workflow received data\",\n  \"data\": {\n    \"content_type\": \"{{ $json.contentType }}\",\n    \"content_id\": \"{{ $json.contentId }}\",\n    \"received_at\": \"{{ $now.toISO() }}\"\n  }\n}",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "id": "success-resp",
+      "name": "Success Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        -2368,
+        224
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger Test": {
+      "main": [
+        [
+          {
+            "node": "Set Variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Variables": {
+      "main": [
+        [
+          {
+            "node": "Detect Content Type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Detect Content Type": {
+      "main": [
+        [
+          {
+            "node": "Success Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveManualExecutions": true,
+    "saveExecutionProgress": true
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": "2969dea0-e52c-4eff-8efd-8cadb396e32e",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-07-27T08:56:33.268Z",
+      "updatedAt": "2025-07-27T08:56:33.268Z",
+      "role": "workflow:owner",
+      "workflowId": "w9iMrK1mtX5s4i1D",
+      "projectId": "amlePLldrdBTzDyr"
+    }
+  ],
+  "tags": []
+}
