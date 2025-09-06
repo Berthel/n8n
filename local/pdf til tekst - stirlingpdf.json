@@ -1,0 +1,377 @@
+{
+  "createdAt": "2025-08-10T14:31:36.781Z",
+  "updatedAt": "2025-08-20T05:26:41.106Z",
+  "id": "OLukWHAvN8NaA0MP",
+  "name": "pdf til tekst - stirlingpdf",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {
+        "fileSelector": "/data/shared/*.pdf",
+        "options": {
+          "dataPropertyName": "pdf"
+        }
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        448,
+        112
+      ],
+      "id": "2e2ab919-2167-47a4-b1bf-b339efc3870a",
+      "name": "Read/Write Files from Disk"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        224,
+        112
+      ],
+      "id": "1429fadc-8fec-4f48-8c31-4822ef5b0392",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://stirlingpdf:8080/api/v1/convert/pdf/markdown",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "fileInput",
+              "inputDataFieldName": "pdf"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "markdown"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        672,
+        32
+      ],
+      "id": "01360442-6f36-42ff-90b1-19cc76602e91",
+      "name": "Markdown"
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "binaryPropertyName": "=markdown",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        896,
+        32
+      ],
+      "id": "76b9bb68-9b10-4058-80f8-13380e57b46f",
+      "name": "Extract from File",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "76b72965-8eba-4f8f-81c4-2b4f52e6e632",
+              "name": "text",
+              "value": "=={{ ($json.data || $json.text).replace(/^!\\[background image\\]\\([^\\)]+\\)\\s*/i, '') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2240,
+        112
+      ],
+      "id": "c14118f1-e415-4a14-8290-16be6405dbde",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "c462deb9-9285-4646-9d0d-a6aa46d9758e",
+              "leftValue": "={{ $json.data.length }}",
+              "rightValue": 200,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        32
+      ],
+      "id": "e080a153-d91a-4e71-8bc8-352ce9f42b14",
+      "name": "Har vi tekst?"
+    },
+    {
+      "parameters": {
+        "mode": "chooseBranch",
+        "output": "input2"
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2,
+      "position": [
+        1344,
+        176
+      ],
+      "id": "3a582648-3fd5-4e86-ad65-4fe1572dca46",
+      "name": "Gate til OCR (Merge)"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "=pdf_ocr",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        1952,
+        192
+      ],
+      "id": "463fa3e8-a61a-44e3-8787-72462f5a12da",
+      "name": "Extract from File (OCR)"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://stirlingpdf:8080/api/v1/misc/ocr-pdf",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "fileInput",
+              "inputDataFieldName": "pdf"
+            },
+            {
+              "name": "languages",
+              "value": "eng"
+            },
+            {
+              "name": "ocrRenderType",
+              "value": "sandwich"
+            },
+            {
+              "name": "ocrType",
+              "value": "force-ocr"
+            },
+            {
+              "name": "deskew",
+              "value": "true"
+            },
+            {
+              "name": "clean",
+              "value": "true"
+            },
+            {
+              "name": "cleanFinal",
+              "value": "true"
+            },
+            {
+              "name": "removeImagesAfter",
+              "value": "true"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "pdf_ocr"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1664,
+        192
+      ],
+      "id": "81ca615d-5066-4db5-8773-4b6b476380d7",
+      "name": "OCR1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f486fa5c-2db5-4055-bbf2-0c0fd50c198e",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2432,
+        96
+      ],
+      "id": "bc65bd10-b9d6-4c45-bc21-1b244e7547e2",
+      "name": "Edit Fields1"
+    }
+  ],
+  "connections": {
+    "Read/Write Files from Disk": {
+      "main": [
+        [
+          {
+            "node": "Markdown",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Gate til OCR (Merge)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Markdown": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Har vi tekst?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Har vi tekst?": {
+      "main": [
+        [
+          {
+            "node": "Gate til OCR (Merge)",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gate til OCR (Merge)": {
+      "main": [
+        [
+          {
+            "node": "OCR1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File (OCR)": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OCR1": {
+      "main": [
+        [
+          {
+            "node": "Extract from File (OCR)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "39adaa96-a7e1-45cb-ad06-3dc0707cbb6d",
+  "triggerCount": 0,
+  "tags": []
+}
