@@ -1,0 +1,203 @@
+{
+  "createdAt": "2025-06-13T13:21:37.380Z",
+  "updatedAt": "2025-06-13T13:59:27.000Z",
+  "id": "b2FN2HkXXRDQoRWN",
+  "name": "Template creator",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        220,
+        0
+      ],
+      "id": "adffcf59-30a0-4a68-b211-c620d2fb8438",
+      "name": "When chat message received",
+      "webhookId": "9a77bcce-3191-4af7-b859-a86855abf25f"
+    },
+    {
+      "parameters": {
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "Du genererer templates i html, som senere kan konverteres til pdf i A4 format. Output skal være ren html og uden forklaringer"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        440,
+        0
+      ],
+      "id": "032b148f-f9b9-4dc7-96ca-2606fb66e6be",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "operation": "URL/HTML to PDF",
+        "convertType": "htmlToPDF",
+        "html": "={{ $json.output['html-output'] }}",
+        "advancedOptions": {}
+      },
+      "type": "n8n-nodes-pdfco.PDFco Api",
+      "typeVersion": 1,
+      "position": [
+        820,
+        0
+      ],
+      "id": "45569d81-9cee-4042-8729-55cda7e540d6",
+      "name": "PDFco Api",
+      "credentials": {
+        "pdfcoApi": {
+          "id": "ZasCl4mnzWQOLxJl",
+          "name": "PDF.co account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"html-output\": \"Ren html output\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        600,
+        200
+      ],
+      "id": "a329fa4e-ad5a-4511-bdb3-6f45ca91e65d",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "google/gemini-2.5-flash-preview",
+          "mode": "list",
+          "cachedResultName": "google/gemini-2.5-flash-preview"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        440,
+        200
+      ],
+      "id": "b6ebbdac-6148-4546-807e-7a73012f540e",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "wLbV0srlBMaP36mY",
+          "name": "Open Router"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1040,
+        0
+      ],
+      "id": "d03cd8ab-72fa-48d1-ba53-fabd4eb787fe",
+      "name": "HTTP Request"
+    }
+  ],
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "PDFco Api",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PDFco Api": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "5a76cacc-e5b5-4631-b862-974f4388c1ad",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-06-13T13:21:37.384Z",
+      "updatedAt": "2025-06-13T13:21:37.384Z",
+      "role": "workflow:owner",
+      "workflowId": "b2FN2HkXXRDQoRWN",
+      "projectId": "SFLNAzqJIfhKMhJx"
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-03-18T13:45:14.553Z",
+      "updatedAt": "2025-03-18T13:45:14.553Z",
+      "id": "6pOUCPP24FxgjbZJ",
+      "name": "Kursus"
+    }
+  ]
+}
