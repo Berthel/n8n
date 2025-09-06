@@ -1,0 +1,123 @@
+{
+  "createdAt": "2025-01-27T12:50:45.266Z",
+  "updatedAt": "2025-01-27T15:06:04.000Z",
+  "id": "ayEPA5vEl8XzXAwm",
+  "name": "Find Wikimedia Photo by Geolocation",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "url": "=https://commons.wikimedia.org/w/api.php?action=query&generator=geosearch&prop=imageinfo&iiprop=url|extmetadata&iiurlwidth=800&iiurlheight=800&ggscoord={{ $json.latitude }}|{{ $json.longitude }}&ggsradius={{ $json.radius }}&ggslimit=10&ggsnamespace=6&format=json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        660,
+        0
+      ],
+      "id": "3ba190a8-b67e-447c-b2c4-54e8d92aa6be",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "radius"
+            },
+            {
+              "name": "latitude"
+            },
+            {
+              "name": "longitude"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "772da012-0fe8-4602-9986-e354a3f54902",
+      "name": "Workflow Input Trigger"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(item => {\n  const data = item.json;\n  return {\n    json: {\n      radius: parseFloat(data.radius),\n      latitude: parseFloat(data.latitude),\n      longitude: parseFloat(data.longitude),\n    },\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        0
+      ],
+      "id": "646694cc-e263-4a5a-be66-42d86149a1fd",
+      "name": "Code"
+    }
+  ],
+  "connections": {
+    "Workflow Input Trigger": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Workflow Input Trigger": [
+      {
+        "json": {
+          "radius": 100,
+          "latitude": 15.1,
+          "longitude": -7.2
+        }
+      }
+    ]
+  },
+  "versionId": "77ef2f33-869f-4259-9c05-545bc1a626e3",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-01-27T12:50:45.270Z",
+      "updatedAt": "2025-01-27T12:50:45.270Z",
+      "role": "workflow:owner",
+      "workflowId": "ayEPA5vEl8XzXAwm",
+      "projectId": "rkqKISKa14HwF9Xd"
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-01-27T04:16:57.472Z",
+      "updatedAt": "2025-01-27T04:16:57.472Z",
+      "id": "twGRqDemoRyf0IES",
+      "name": "sub"
+    }
+  ]
+}
