@@ -1,0 +1,195 @@
+{
+  "createdAt": "2025-04-08T15:02:50.242Z",
+  "updatedAt": "2025-04-08T18:16:16.000Z",
+  "id": "4zIGzoLdfRSKGj5r",
+  "name": "vodafon fakturaer til google drive",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "a1818746-7970-456f-9ed6-61ab6a38f364",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "returnAll": true,
+        "filters": {
+          "q": "subject:(Faturação) has:attachment",
+          "sender": " apoiocliente@vodafone.pt"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        220,
+        0
+      ],
+      "id": "91ea4789-1ae6-472f-bab2-c755844ee692",
+      "name": "Gmail",
+      "webhookId": "bcbbc7d0-372f-4917-9856-3d2040a2e479",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "XI6wZVsQczyW63ra",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "messageId": "={{ $json.id }}",
+        "simple": false,
+        "options": {
+          "downloadAttachments": true
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        660,
+        0
+      ],
+      "id": "8b99181e-1202-4929-a806-4fa67ec638ef",
+      "name": "Gmail1",
+      "webhookId": "06ba653c-e57e-47e9-ad8e-44895b6f5000",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "XI6wZVsQczyW63ra",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputDataFieldName": "attachment_0",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1n6R5cMdE-QyP74WIaogcHwgGnAgiz5fc",
+          "mode": "list",
+          "cachedResultName": "vodafone",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1n6R5cMdE-QyP74WIaogcHwgGnAgiz5fc"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        920,
+        -120
+      ],
+      "id": "c90a7d38-daba-4edf-8f37-9189d439a842",
+      "name": "Google Drive",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "UAOjLkQzFGJLtPGd",
+          "name": "Google Drive account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputDataFieldName": "attachment_1",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1n6R5cMdE-QyP74WIaogcHwgGnAgiz5fc",
+          "mode": "list",
+          "cachedResultName": "vodafone",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1n6R5cMdE-QyP74WIaogcHwgGnAgiz5fc"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        920,
+        120
+      ],
+      "id": "abb6af43-af0f-4525-91d6-0347498a399b",
+      "name": "Google Drive1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "UAOjLkQzFGJLtPGd",
+          "name": "Google Drive account 3"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail": {
+      "main": [
+        [
+          {
+            "node": "Gmail1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail1": {
+      "main": [
+        [
+          {
+            "node": "Google Drive",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Google Drive1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "8a8156f8-bed8-473b-84c4-d7e1550e0242",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-04-08T18:03:48.565Z",
+      "updatedAt": "2025-04-08T18:03:48.565Z",
+      "role": "workflow:owner",
+      "workflowId": "4zIGzoLdfRSKGj5r",
+      "projectId": "Oe16LxplPC150asV"
+    }
+  ],
+  "tags": []
+}
