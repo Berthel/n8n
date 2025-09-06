@@ -1,0 +1,154 @@
+{
+  "createdAt": "2025-01-29T05:06:58.840Z",
+  "updatedAt": "2025-03-09T16:44:35.000Z",
+  "id": "znzJxasalRG76iJz",
+  "name": "Search Photos Agent",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "0389ff73-599f-4448-97d4-d054767a54cb",
+      "name": "Workflow Input Trigger"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.1,
+      "position": [
+        200,
+        200
+      ],
+      "id": "1419d21d-1f64-4fde-ab0e-1b20dede5b71",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "ZjiR1Y4tdzymEK1L",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.query }}",
+        "options": {
+          "systemMessage": "=Du er en AI Agent, der har til opgave at hente og returnere foto-data.\n\n\n   - Inputparameter:\n     - Søgestreng: En tekststreng, f.eks. \"Castelo de Tavira\".\n   - Værktøj: **Wikimedia Search** (HTTP-værktøj).\n   - Output: Returner hele det rå datasæt, der returneres af Wikimedia Search, uden ændringer.\n\n\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        220,
+        0
+      ],
+      "id": "2449a9d1-a815-4168-86df-355b5addc4a2",
+      "name": "Photos Agent"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Get photo info by searching",
+        "url": "=https://commons.wikimedia.org/w/api.php?action=query&list=search&srsearch={search_string}}&srnamespace=6&format=json"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        620,
+        200
+      ],
+      "id": "19e9fed7-5183-400a-8a76-061b3466d94b",
+      "name": "Wikimedia Search"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Get info about one specific photo by pageid (also known as wikimediapageid)",
+        "url": "https://commons.wikimedia.org/w/api.php?action=query&pageids={pageid}&prop=imageinfo&iiprop=url|extmetadata&iiurlwidth=800&iiurlheight=800&format=json"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        780,
+        200
+      ],
+      "id": "8c255ddc-2220-45e7-b41b-33194e51b1c7",
+      "name": "Wikimedia Get Photo"
+    }
+  ],
+  "connections": {
+    "Workflow Input Trigger": {
+      "main": [
+        [
+          {
+            "node": "Photos Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Photos Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wikimedia Search": {
+      "ai_tool": [
+        [
+          {
+            "node": "Photos Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wikimedia Get Photo": {
+      "ai_tool": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "84f4b649-6876-40f6-a9a9-aafc93cbb208",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-01-29T05:06:58.844Z",
+      "updatedAt": "2025-01-29T05:06:58.844Z",
+      "role": "workflow:owner",
+      "workflowId": "znzJxasalRG76iJz",
+      "projectId": "rkqKISKa14HwF9Xd"
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-01-28T15:25:26.214Z",
+      "updatedAt": "2025-01-28T15:25:26.214Z",
+      "id": "BngebX50Ev8rBclu",
+      "name": "HN Content manager"
+    }
+  ]
+}
