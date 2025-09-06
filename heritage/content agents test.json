@@ -1,0 +1,361 @@
+{
+  "createdAt": "2025-02-18T10:52:06.438Z",
+  "updatedAt": "2025-02-18T14:46:29.000Z",
+  "id": "F7ttj0crM7jPVbcS",
+  "name": "content agents test",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "name": "user_documents",
+        "description": "Contains all the user's documents that you can check for context to answer user questions. Before beginning, scan and identify all relevant occurrences of the topic or subject matter to ensure a comprehensive overview of the best descriptions. Use this overview to prioritize and refine responses effectively.",
+        "topK": 20
+      },
+      "id": "9587466a-088c-4896-b979-a80b187ba8f0",
+      "name": "Retrieve Documents",
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-small",
+        "options": {}
+      },
+      "id": "90918be7-07bf-4579-865f-a4f7611982b4",
+      "name": "Embeddings OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1,
+      "position": [
+        920,
+        840
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "ZjiR1Y4tdzymEK1L",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {
+          "queryName": "match_documents"
+        }
+      },
+      "id": "55ddd5ca-7da4-4d96-a44c-30a48ff7ae54",
+      "name": "Supabase Vector Store",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1,
+      "position": [
+        960,
+        680
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolWikipedia",
+      "typeVersion": 1,
+      "position": [
+        840,
+        560
+      ],
+      "id": "6ff3cd40-e37a-4516-accf-8725406ade3d",
+      "name": "Wikipedia"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1360,
+        680
+      ],
+      "id": "5101ce64-0bda-47d5-a5c8-39b9bae176d9",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "ZjiR1Y4tdzymEK1L",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=Here's a refined English version of your architectural analysis prompt, optimized for the Heritage Navigator project's context and aligned with the technical specifications from your project documents:\n\n---\n\n**Architectural Analysis Protocol for \"{{placeName}}\"**  \n\n**Objective**  \nAs an architectural expert integrated with Heritage Navigator's cultural heritage platform, provide a structural analysis of key buildings that combines technical precision with public accessibility.  \n\n**Input Requirements**  \n1. Location name: \"{{placeName}}\"  \n2. Available architectural documentation  \n3. Heritage Navigator's core content parameters (from project-reference.md v1.6)  \n\n**Output Specifications**  \n_A multi-part analysis containing:_  \n\n1. **Style Identification**  \n   - Primary architectural style(s) with date ranges  \n   - 3 key identifying characteristics  \n   - Notable regional variations  \n\n2. **Material Composition Table**  \n   | Building Element | Primary Material | Construction Technique | Preservation Status |  \n   |---|---|---|---|  \n   | Example: Roof | Terracotta tiles | Moorish-style interlocking | 80% original |  \n\n3. **Evolution Timeline**  \n   - Major stylistic transitions  \n   - Key renovation/restoration phases  \n   - Contemporary adaptations  \n\n4. **Signature Features**  \n   - List of 5-7 distinctive elements (e.g. Manueline portals, Arabesque tilework)  \n   - Functional vs decorative purposes  \n\n**Quality Requirements**  \n✓ Cross-reference with Heritage Navigator's verified historical data[1][2]  \n✓ Align descriptions with mobile UI content patterns from screenshots.pdf[3]  \n✓ Highlight connections to broader cultural narratives  \n✓ Use standardized architectural terminology from project glossary  \n✓ Flag any conflicts between academic sources  \n\n**Formatting Rules**  \n▲ Begin with 2-sentence contextual overview  \n▲ Use **bold** for style names and _italics_ for uncertain dates  \n▲ Prioritize visual clarity using bullet points and tables  \n▲ Include GPS coordinates for key structures  \n▲ Apply Heritage Navigator's three-text-layer approach:  \n   1. Brief intro (15-20 words)  \n   2. Technical details (50-75 words)  \n   3. Cultural significance (30-50 words)  \n\n**Example Output Structure**  \n```markdown  \n## [Architectural Profile of [{{placeName}}]  ](pplx://action/followup)\n\n[A concise overview linking architecture to cultural identity]  \n\n### Dominant Styles  \n**Manueline-Gothic Hybrid (1490-1525)**  \n- Nautical motif stonework  \n- Twisted rope window framing  \n- Vaulted nave with ribbed ceiling  \n\n**Neoclassical Additions (1820-1840)**  \n- Symmetrical porticoes  \n- Corinthian column capitals  \n- Triangular pediments  \n\n### Material Breakdown  \n| Element | Material | Technique |  \n|---|---|---|  \n| Facade | Golden sandstone | Ashlar masonry |  \n| Windows | Stained glass | Leadlight joining |  \n\n... [additional sections]  \n```\n\n---\n\nThis version enhances the original by:  \n1. Aligning with Heritage Navigator's three-text-layer content strategy[1][2]  \n2. Incorporating mobile-first presentation patterns from UI screenshots[3]  \n3. Adding material preservation status tracking  \n4. Implementing project-specific GPS coordinate requirements  \n5. Using verifiable architectural taxonomy from project references\n\nThe structure supports seamless integration with your existing technical stack (Next.js/Leaflet/Supabase) while maintaining academic rigor for cultural heritage contexts. Would you like me to explain how this connects to specific components in your project-reference.md?\n\nCitations:\n[1] https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/collection_58290b7e-68f2-4f8a-8468-c91f51ddc800/33bceef0-6455-422c-a981-43382ce0d806/project-reference.md\n[2] https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/collection_58290b7e-68f2-4f8a-8468-c91f51ddc800/1e45711f-c1b9-45e0-89ee-32537db646c2/Opdateret-projektbeskrivelse.docx\n[3] https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/collection_58290b7e-68f2-4f8a-8468-c91f51ddc800/06ea9d00-a20b-445b-9cf7-3ef6955b2b09/mobile-screenshots.pdf\n[4] https://tipseason.com/midjourney-prompts-for-architecture/\n[5] https://aimakerslab.io/architecture/top-chatgpt-prompts-for-architects/"
+        }
+      },
+      "id": "fdfa8dbb-f93f-4ca7-a2e9-890385213038",
+      "name": "Researcher",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        840,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "name": "monumentos_portugal",
+        "description": "Query this tool with the name of the historical site and the city name to get response from http://www.monumentos.gov.pt/",
+        "workflowId": {
+          "__rl": true,
+          "value": "y3SEoNbyzFsiZXtw",
+          "mode": "list",
+          "cachedResultName": "My project — Content Monumentos Portugal"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        1260,
+        380
+      ],
+      "id": "633d6b3f-454d-4909-a41e-692de615d334",
+      "name": "Monumentos Portugal"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash-001",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        60,
+        600
+      ],
+      "id": "9a2809ae-d5eb-4642-a1ab-6baaf0f37d47",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "lw4yNIR7bkr06aVc",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        460,
+        40
+      ],
+      "id": "7ba007a2-b4f9-4d1d-bdf9-fcb557d29633",
+      "name": "When chat message received",
+      "webhookId": "8f9e474d-2c54-4336-9b85-ac435296d1b8"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        60,
+        440
+      ],
+      "id": "2e228cf5-d47b-43c3-8784-b21afc2569a3",
+      "name": "openai",
+      "credentials": {
+        "openAiApi": {
+          "id": "ZjiR1Y4tdzymEK1L",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.2,
+      "position": [
+        720,
+        340
+      ],
+      "id": "2238fcf3-23cf-453c-bbac-044aa1db65fa",
+      "name": "Anthropic Chat Model",
+      "credentials": {
+        "anthropicApi": {
+          "id": "ADl7Wvu9YXxKvVtY",
+          "name": "Anthropic account 2"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Retrieve Documents": {
+      "ai_tool": [
+        [
+          {
+            "node": "Researcher",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Retrieve Documents",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wikipedia": {
+      "ai_tool": [
+        [
+          {
+            "node": "Researcher",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Retrieve Documents",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Monumentos Portugal": {
+      "ai_tool": [
+        [
+          {
+            "node": "Researcher",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Researcher",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "openai": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "Anthropic Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Researcher",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When chat message received": [
+      {
+        "json": {
+          "sessionId": "39fd476b08064df79676aa2bf072e7fa",
+          "action": "sendMessage",
+          "chatInput": "Castelo de Tavira"
+        }
+      }
+    ]
+  },
+  "versionId": "d519d0c4-ca6c-49b1-826b-e2e6c59b2d32",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-02-18T10:52:06.441Z",
+      "updatedAt": "2025-02-18T10:52:06.441Z",
+      "role": "workflow:owner",
+      "workflowId": "F7ttj0crM7jPVbcS",
+      "projectId": "rkqKISKa14HwF9Xd"
+    }
+  ],
+  "tags": []
+}
