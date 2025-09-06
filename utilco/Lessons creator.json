@@ -1,0 +1,735 @@
+{
+  "createdAt": "2025-05-23T12:23:10.568Z",
+  "updatedAt": "2025-07-31T19:04:08.000Z",
+  "id": "JFxTvX4GDNqmUX0R",
+  "name": "Lessons creator",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "jsonExample",
+        "jsonExample": "{\n  \"module_id\": \"a string\"\n}"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        784
+      ],
+      "id": "12cb3263-719f-4819-a733-a35b12166cf4",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "courses",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{ $json.course_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        448,
+        784
+      ],
+      "id": "c056b915-09c4-4ff7-bc22-ec78a1333ced",
+      "name": "Get course",
+      "credentials": {
+        "supabaseApi": {
+          "id": "bvMVIJLed9p3sKxS",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "course_translations",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "course_id",
+              "keyValue": "={{ $json.id }}"
+            },
+            {
+              "keyName": "language_code",
+              "keyValue": "={{ $json.language_code }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        672,
+        784
+      ],
+      "id": "991202ef-f1c9-49a9-b6aa-4b8da1b1587a",
+      "name": "Get course content",
+      "credentials": {
+        "supabaseApi": {
+          "id": "bvMVIJLed9p3sKxS",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1792,
+        784
+      ],
+      "id": "df76781b-a665-46e3-9801-c74404ee0e19",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-sonnet-4-20250514",
+          "mode": "list",
+          "cachedResultName": "Claude Sonnet 4"
+        },
+        "options": {
+          "maxTokensToSample": 4096
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        1008
+      ],
+      "id": "9e0b87ab-208d-4015-9f9c-03d174c3035c",
+      "name": "Anthropic Chat Model1",
+      "credentials": {
+        "anthropicApi": {
+          "id": "hvw52FHiqSCDBq6Q",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "modules",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{ $json.module_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        224,
+        784
+      ],
+      "id": "6ad22f16-9626-46cd-a7e0-aaf5067e71ac",
+      "name": "Get module",
+      "credentials": {
+        "supabaseApi": {
+          "id": "bvMVIJLed9p3sKxS",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "module_translations",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "module_id",
+              "keyValue": "={{ $('When Executed by Another Workflow').item.json.module_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        896,
+        784
+      ],
+      "id": "6833734e-b3d7-4642-acd1-b54ad4390a5e",
+      "name": "Get module content",
+      "credentials": {
+        "supabaseApi": {
+          "id": "bvMVIJLed9p3sKxS",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "lessons",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "module_id",
+              "condition": "eq",
+              "keyValue": "={{ $('When Executed by Another Workflow').item.json.module_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1344,
+        784
+      ],
+      "id": "df58ded4-e98b-4d6f-a591-6862e2c74ba1",
+      "name": "Get lessons_id",
+      "credentials": {
+        "supabaseApi": {
+          "id": "bvMVIJLed9p3sKxS",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "lesson_translations",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "lesson_id",
+              "keyValue": "={{ $json.id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1568,
+        784
+      ],
+      "id": "4c267e3a-25af-4a18-b137-7718c0524bbf",
+      "name": "Get lessons_title",
+      "credentials": {
+        "supabaseApi": {
+          "id": "bvMVIJLed9p3sKxS",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=#Input\n\n##Kursusinformation\n\nKursustitel: {{ $('Get course content').item.json.title }}\n\nKursusniveau: {{ $('Get course').item.json.course_level }}\n\nMålgruppe: {{ $('Get course').item.json.target_audience }}\n\nSprog: {{ $('Get course').item.json.course_language }}\n\nSektor: {{ $('Get course').item.json.sector }}\n\nKursusbeskrivelse: {{ $('Get course content').item.json.description }}\n\nKursusindhold: {{ $('Get course content').item.json.content }}\n\nKursusresearch: {{ $('Get course').item.json.research }}\n\n##Modulinformation\n\nModulnavn: {{ $('Get module content').item.json.title }}\n\nModulbeskrivelse: {{ $('Get module content').item.json.description }}\n\nModulindhold: {{ $('Get module content').item.json.content }}\n\nAntal moduler i kurset: {{ $('Get no of modules and lessons').item.json.no_of_modules }}\n\n##Lektioner\n\nLektionstitel: {{ $('Loop Over Items').item.json.title }}\n\nLektionsindhold: {{ $json.text }}\n\nLektionsnummer i kurset: {{ $('Get lessons_id').item.json.position }}\n\nAntal lektioner i modulet: {{ $('Get no of modules and lessons').item.json.no_of_lessons }}\n\n",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "# Rolle\nDu er en professionel manuskriptforfatter specialiseret i instruktionsvideoer til e-learning.\n\n# Input\n- lektionsindhold: (Markdown-tekst med komplet lektionsindhold fra forrige agent)\n- lektionstitel: (Navn på den aktuelle lektion)\n- modulnavn: (Navn på det overordnede modul)\n- lektionsnummer: (Nummer i rækken af lektioner)\n- totalt_antal_lektioner: (Samlet antal lektioner i modulet)\n\n# Opgave\nSkriv et videomanuskript til en **3-4 minutters introduktionsvideo** opdelt i cirka **6 scener**.\n\nFor hver scene skal du levere:\n1. **Scene-titel**\n2. **Speak-tekst** (2-4 korte, mundrette sætninger som instruktøren siger)\n3. **Understøttende visuelle elementer** – 2-4 bullets med tekst, grafik eller animationer som vises på skærmen\n\n# Indhold der SKAL dækkes\n\n**Scene 1-2: Velkomst og kontekst**\n- Scene 1: Direkte til lektionens kerne-indhold\n- Scene 2: Reference til \"hvor vi er\" KORT (max 2 linjer)\n- Fokus: 80% nyt indhold, 20% kontekst/reference\n\n**Scene 3-4: Lektionsindhold**\n- Præsentation af hovedemner (baseret på sektionerne i lektionsindholdet)\n- Konkrete eksempler på hvad deltageren lærer\n- Praktisk anvendelse af stoffet\n\n**Scene 5: Læringsmål**\n- De vigtigste læringsmål (uddrag fra lektionens læringsmål)\n- Hvad deltageren konkret kan efter lektionen\n\n**Scene 6: Call-to-action**\n- Motiverende opsummering\n- Opfordring til at læse lektionsteksten grundigt\n- Reminder om øvelser og refleksionsspørgsmål\n\n# Sprogkrav – tal direkte til deltageren\n\n**Brug et naturligt, instruerende sprog:**\n- Henvendelse direkte til \"du\" eller \"I\"\n- Aktive formuleringer: \"Nu skal vi se på...\" frem for \"Der vil blive gennemgået...\"\n- Konkrete eksempler frem for abstrakte begreber\n\n**Undgå:**\n- Buzzwords og corporate-speak\n- Lange, komplicerede sætninger (max 15-20 ord)\n- Overdreven entusiasme eller salgssprog\n- Engelske termer hvor danske findes\n\n**Vælg i stedet:**\n- \"Du lærer\" frem for \"Du vil opnå kompetencer inden for\"\n- \"Praktiske eksempler\" frem for \"best practice cases\"\n- \"Øvelser\" frem for \"hands-on aktiviteter\"\n\n# Format\nSvar kun med Markdown som nedenfor:\n\n```markdown\n### Scene 1 – <titel>\n**Speak:** <tekst>\n\n**Vis på skærmen:**\n* punkt 1\n* punkt 2\n* punkt 3\n\n### Scene 2 – <titel>\n**Speak:** <tekst>\n\n**Vis på skærmen:**\n* punkt 1\n* punkt 2\n* punkt 3\n\n[...fortsæt til Scene 6]\n---\n#Vigtige noter\n\nHold speak-teksten kort og præcis – husk det skal kunne siges naturligt\nVisuelle elementer skal understøtte, ikke gentage speak\nSkab en rød tråd gennem alle scener\nAfslut med energi og motivation til at gå i gang med lektionen"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.6,
+      "position": [
+        0,
+        320
+      ],
+      "id": "424b893f-2f5f-4f70-965d-7fdf1e1e123a",
+      "name": "Lesson videotekst creator",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select\n  (select count(*)\n     from modules\n     where course_id = '{{ $(\"Get course\").item.json.id }}')  as no_of_modules,\n  (select count(*)\n     from lessons\n     where module_id = '{{ $json.module_id }}')              as no_of_lessons;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1120,
+        784
+      ],
+      "id": "3cb1d80b-6e01-4e2f-8eb7-a1da276c3eb0",
+      "name": "Get no of modules and lessons",
+      "credentials": {
+        "postgres": {
+          "id": "RUVxlMmZvsZC2IGe",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "lesson_translations",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "lesson_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Loop Over Items').item.json.lesson_id }}"
+            },
+            {
+              "keyName": "language_code",
+              "condition": "eq",
+              "keyValue": "={{ $('Loop Over Items').item.json.language_code }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "content",
+              "fieldValue": "={{ $('Lesson Content Creator').item.json.text }}"
+            },
+            {
+              "fieldId": "exercises",
+              "fieldValue": "={{ $('Lesson Exercises Creator').item.json.text }}"
+            },
+            {
+              "fieldId": "reflection_questions",
+              "fieldValue": "={{ $('Lesson Reflection Questions').item.json.text }}"
+            },
+            {
+              "fieldId": "resources",
+              "fieldValue": "={{ $json.text }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        3616,
+        784
+      ],
+      "id": "254b3be7-b972-48fe-8922-71c784c2ac13",
+      "name": "Update lessons translation",
+      "credentials": {
+        "supabaseApi": {
+          "id": "bvMVIJLed9p3sKxS",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "openai/gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "openai/gpt-4.1"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        1216
+      ],
+      "id": "451ad9bd-b57c-4875-b24b-87056331fc9a",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "wLbV0srlBMaP36mY",
+          "name": "Open Router"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"content\": \"## Introduktion\\n...\\n\",\n  \"exercises\": \"### Øvelse 1\\n...\\n\",\n  \"reflection_questions\": \"- Hvad er forskellen på...\\n\",\n  \"resources\": \"- [Postman guide](https://...): Kort beskrivelse\\n...\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        1424
+      ],
+      "id": "799c8b13-74e8-4465-b120-822fd5a6003a",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "google/gemini-2.5-pro",
+          "mode": "list",
+          "cachedResultName": "google/gemini-2.5-pro"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2112,
+        880
+      ],
+      "id": "06ef9691-571e-4a40-9bf3-28a089644fac",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "wLbV0srlBMaP36mY",
+          "name": "Open Router"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=#Input\n\n##Kursusinformation\n\nKursustitel: {{ $('Get course content').item.json.title }}\n\nKursusniveau: {{ $('Get course').item.json.course_level }}\n\nMålgruppe: {{ $('Get course').item.json.target_audience }}\n\nSprog: {{ $('Get course').item.json.course_language }}\n\nSektor: {{ $('Get course').item.json.sector }}\n\nKursusbeskrivelse: {{ $('Get course content').item.json.description }}\n\nKursusindhold: {{ $('Get course content').item.json.content }}\n\nKursusresearch: {{ $('Get course').item.json.research }}\n\n##Modulinformation\n\nModulnavn: {{ $('Get module content').item.json.title }}\n\nModulbeskrivelse: {{ $('Get module content').item.json.description }}\n\nModulcontent: {{ $('Get module content').item.json.content }}\n\nAntal moduler i kurset: {{ $('Get no of modules and lessons').item.json.no_of_modules }}\n\n##Lektioner\nLektionstitel: {{ $('Loop Over Items').item.json.title }}\n\nAntal lektioner i modulet: {{ $('Get no of modules and lessons').item.json.no_of_lessons }}\n\nLektionsnummer i kurset: {{ $('Get lessons_id').item.json.position }}\n\nLektionsindhold: {{ $json.text }}\n",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=# Rolle\nDu er ekspert i at udvikle øvelser til lektionsindhold til online kurser.\n\n# Opgave\n1. Analysér de lektionsparametre, du får i **user message**  \n   (lektionstitel, modulnavn, kursustitel, niveau, målgruppe, varighed, sprog, lektionsnr., totalt antal lektioner, lektionsindholld).\n2. Udarbejd 2-3 praktiske øvelser der denne lektionens indhold\n\n## Øvelser\n- 2-3 praktiske øvelser der træner lektionens indhold\n- Gradvis sværhedsgrad (let → middel → svær)\n- Klare instruktioner for hver øvelse \n  – kort beskrivelse\n- Tilpas længde og sværhedsgrad så hver øvelse kan løses på 2-10 minutter\n\n# Regler\n- START direkte med lektionsspecifikt indhold.   \n- Brug klar markdown (##, ###, -, *).  \n- Ingen ekstra forklaringer før eller efter output.\n\n\n"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.6,
+      "position": [
+        2416,
+        656
+      ],
+      "id": "373eae15-4bc9-43a1-9940-bc3983806eff",
+      "name": "Lesson Exercises Creator"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=#Input\n\n##Kursusinformation\n\nKursustitel: {{ $('Get course content').item.json.title }}\n\nKursusniveau: {{ $('Get course').item.json.course_level }}\n\nMålgruppe: {{ $('Get course').item.json.target_audience }}\n\nSprog: {{ $('Get course').item.json.course_language }}\n\nSektor: {{ $('Get course').item.json.sector }}\n\nKursusbeskrivelse: {{ $('Get course content').item.json.description }}\n\nKursusindhold: {{ $('Get course content').item.json.content }}\n\nKursusresearch: {{ $('Get course').item.json.research }}\n\n##Modulinformation\n\nModulnavn: {{ $('Get module content').item.json.title }}\n\nModulbeskrivelse: {{ $('Get module content').item.json.description }}\n\nModulcontent: {{ $('Get module content').item.json.content }}\n\nAntal moduler i kurset: {{ $('Get no of modules and lessons').item.json.no_of_modules }}\n\n##Lektioner\nLektionstitel: {{ $json.title }}\n\nAntal lektioner i modulet: {{ $('Get no of modules and lessons').item.json.no_of_lessons }}\n\nLektionsnummer i kurset: {{ $('Get lessons_id').item.json.position }}\n\nAntal ord pr lektion: {{ $('Get course').item.json.no_of_words_per_lesson }}\n",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=# Rolle\nDu er ekspert i at udvikle engagerende og pædagogisk lektionsindhold til online kurser.\n\n# Instruktion\nBaseret på de parametre du får i **user message** (fx lektionstitel, modulnavn, kursustitel, niveau, målgruppe, varighed, sprog, lektionsnummer, totalt antal lektioner i modulet og antal ord pr lektion) skal du:\n\n1. Analysere lektions­parametrene og konteksten.\n2. Udarbejde komplet lektionsindhold, der **præcist** omfatter følgende struktur:\n\n# Progressiv kontekstbehandling\nDu modtager både kursus- og modulinformation som kontekst.\n\n## Konteksthierarki:\n- Kursusniveau: Overordnet ramme (ANTAG dette er kendt)\n- Modulniveau: Modulets fokus (ANTAG dette er læst)\n- Lektionsniveau: DIT FOKUS - specifik, dybdegående viden\n\n\n# Lektionsstruktur\n\n## Introduktion\n- Velkommen og kort præsentation af lektionens emne (2-3 linjer)\n- Hvordan lektionen bygger videre på tidligere viden\n- Hvad deltageren kan forvente at lære\n\n## Læringsmål for lektionen\n- 3-5 specifikke, målbare mål (start hvert punkt med et handlingsverbum)\n- Mål der direkte relaterer til det praktiske indhold\n\n## Hovedindhold (1500-1700 ord)\nOpdel i 3-5 logiske sektioner med:\n- **Sektionsoverskrift**\n- Teoretisk gennemgang med konkrete eksempler\n- Praktiske anvendelser og cases\n- Tips og best practices hvor relevant\n\n## Opsummering\n- Hovedpunkter fra lektionen (punktliste)\n- Kobling til næste lektion (hvis relevant)\n\n\n# Regler\n## SKAL-regler for lektioner:\n1. START direkte med lektionsspecifikt indhold\n2. HENVIS kun til modul/kursus når absolut nødvendigt for forståelse\n3. BRUG progression: \"Vi dykker nu ned i...\" frem for \"Dette kursus handler om...\"\n4. FOKUSER på praktisk anvendelse og konkrete eksempler\n\n## SKAL IKKE-regler:\n1. Gentag IKKE kursusbeskrivelse eller modultekst\n2. Brug IKKE tid på at forklare hvor lektionen passer ind (det ved de)\n3. Start IKKE med \"Velkommen til [kurstitel]\" eller lignende\n4. Gentag IKKE læringsmål fra modul/kursus niveau\n\n# Output\n* Returnér **kun selve lektionsindholdet** (Markdown).\n* Brug klar struktur med overskrifter (##, ###).\n* Skriv engagerende og tilpasset målgruppen.\n* Ingen JSON-felter eller ekstra forklarende tekst før/efter indholdet.\n* Hold sprogtonen professionel men tilgængelig."
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.6,
+      "position": [
+        2016,
+        656
+      ],
+      "id": "cc664d61-3f78-4fd9-ba91-6764eb720c6e",
+      "name": "Lesson Content Creator"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=#Input\n\n##Kursusinformation\n\nKursustitel: {{ $('Get course content').item.json.title }}\n\nKursusniveau: {{ $('Get course').item.json.course_level }}\n\nMålgruppe: {{ $('Get course').item.json.target_audience }}\n\nSprog: {{ $('Get course').item.json.course_language }}\n\nSektor: {{ $('Get course').item.json.sector }}\n\nKursusbeskrivelse: {{ $('Get course content').item.json.description }}\n\nKursusindhold: {{ $('Get course content').item.json.content }}\n\nKursusresearch: {{ $('Get course').item.json.research }}\n\n##Modulinformation\n\nModulnavn: {{ $('Get module content').item.json.title }}\n\nModulbeskrivelse: {{ $('Get module content').item.json.description }}\n\nModulcontent: {{ $('Get module content').item.json.content }}\n\nAntal moduler i kurset: {{ $('Get no of modules and lessons').item.json.no_of_modules }}\n\n##Lektioner\nLektionstitel: {{ $('Loop Over Items').item.json.title }}\n\nAntal lektioner i modulet: {{ $('Get no of modules and lessons').item.json.no_of_lessons }}\n\nLektionsnummer i kurset: {{ $('Get lessons_id').item.json.position }}\n\nLektionsindhold: {{ $('Lesson Content Creator').item.json.text }}\n\nLektions øvelser: {{ $json.text }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=# Rolle\nDu er ekspert i at udvikle reflektionsspørgsmål til lektionsindhold til online kurser.\n\n# Opgave\n1. Analysér de lektionsparametre, du får i **user message**  \n   (lektionstitel, modulnavn, kursustitel, niveau, målgruppe, varighed, sprog, lektionsnr., totalt antal lektioner, lektionsindholld).\n2. Udarbejd 3-4 spørgsmål der får deltageren til at reflektere over det lærte\n\n## Reflektionsspørgsmål \n- 3-4 spørgsmål der får deltageren til at reflektere over det lærte\n- Spørgsmål der kobler teori til egen praksis\n\n# Regler\n- START direkte med lektionsspecifikt indhold.   \n- Brug klar markdown (##, ###, -, *).  \n- Ingen ekstra forklaringer før eller efter output.\n- Spørgsmålene skal være forskellige fra Lektions Øvelserne"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.6,
+      "position": [
+        2816,
+        656
+      ],
+      "id": "d621bfe2-efed-4553-8bdf-f4e03a7e83a5",
+      "name": "Lesson Reflection Questions"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=#Input\n\n##Kursusinformation\n\nKursustitel: {{ $('Get course content').item.json.title }}\n\nKursusniveau: {{ $('Get course').item.json.course_level }}\n\nMålgruppe: {{ $('Get course').item.json.target_audience }}\n\nSprog: {{ $('Get course').item.json.course_language }}\n\nSektor: {{ $('Get course').item.json.sector }}\n\nKursusbeskrivelse: {{ $('Get course content').item.json.description }}\n\nKursusindhold: {{ $('Get course content').item.json.content }}\n\nKursusresearch: {{ $('Get course').item.json.research }}\n\n##Modulinformation\n\nModulnavn: {{ $('Get module content').item.json.title }}\n\nModulbeskrivelse: {{ $('Get module content').item.json.description }}\n\nModulcontent: {{ $('Get module content').item.json.content }}\n\nAntal moduler i kurset: {{ $('Get no of modules and lessons').item.json.no_of_modules }}\n\n##Lektioner\nLektionstitel: {{ $('Loop Over Items').item.json.title }}\n\nAntal lektioner i modulet: {{ $('Get no of modules and lessons').item.json.no_of_lessons }}\n\nLektionsnummer i kurset: {{ $('Get lessons_id').item.json.position }}\n\nLektionsindhold: {{ $('Lesson Content Creator').item.json.text }}\n\n",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=# Rolle\nDu er ekspert i at præsentere yderligere ressourcer til lektionsindhold til online kurser.\n\n# Opgave\n1. Analysér de lektionsparametre, du får i **user message**  \n   (lektionstitel, modulnavn, kursustitel, niveau, målgruppe, varighed, sprog, lektionsnr., totalt antal lektioner, lektionsindhold).\n2. Udvælg 3-5 links, artikler eller videoer til fordybelse, som er nævnt i **user message**\n\n## Yderligere ressourcer (Resources)\n- 3-5 links, artikler eller videoer til fordybelse (hvis de findes i **user message**)\n- Kort beskrivelse af hver ressource (1 linje)\nHvis der ikke nævnes links, artikler eller videoer til fordybelse i **user message** returnes teksten \"NA\"\n\n# Regler\n- START direkte med lektionsspecifikt indhold.   \n- Brug klar markdown (##, ###, -, *).  \n- Ingen ekstra forklaringer før eller efter output.\n- Presentér kun links og ressourcer som er nævnt i **user message**"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.6,
+      "position": [
+        3216,
+        656
+      ],
+      "id": "465791b8-9b2f-47bc-b9f3-e989759395ff",
+      "name": "Lesson Resources"
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Get module",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get course": {
+      "main": [
+        [
+          {
+            "node": "Get course content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get course content": {
+      "main": [
+        [
+          {
+            "node": "Get module content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Lesson Content Creator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model1": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "Get module": {
+      "main": [
+        [
+          {
+            "node": "Get course",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get module content": {
+      "main": [
+        [
+          {
+            "node": "Get no of modules and lessons",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get lessons_id": {
+      "main": [
+        [
+          {
+            "node": "Get lessons_title",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get lessons_title": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get no of modules and lessons": {
+      "main": [
+        [
+          {
+            "node": "Get lessons_id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lesson videotekst creator": {
+      "main": [
+        []
+      ]
+    },
+    "Update lessons translation": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        []
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Lesson Content Creator",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Lesson Exercises Creator",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Lesson Reflection Questions",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Lesson Resources",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lesson Exercises Creator": {
+      "main": [
+        [
+          {
+            "node": "Lesson Reflection Questions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lesson Content Creator": {
+      "main": [
+        [
+          {
+            "node": "Lesson Exercises Creator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lesson Reflection Questions": {
+      "main": [
+        [
+          {
+            "node": "Lesson Resources",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lesson Resources": {
+      "main": [
+        [
+          {
+            "node": "Update lessons translation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "module_id": "63f7ac7c-5f53-4c62-a8f8-d19f3850f39b"
+        }
+      },
+      {
+        "json": {
+          "module_id": "b1b3b44c-b189-4e67-8bb6-53a588fabda2"
+        }
+      },
+      {
+        "json": {
+          "module_id": "ae3ec442-1a66-4ee7-83b7-63168f8379e4"
+        }
+      },
+      {
+        "json": {
+          "module_id": "ae4b944f-93f1-49ad-9836-2d6d0b29bc28"
+        }
+      }
+    ]
+  },
+  "versionId": "da6b9126-b2de-4242-be13-dbb41a36823e",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-05-23T12:23:10.573Z",
+      "updatedAt": "2025-05-23T12:23:10.573Z",
+      "role": "workflow:owner",
+      "workflowId": "JFxTvX4GDNqmUX0R",
+      "projectId": "SFLNAzqJIfhKMhJx"
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-03-18T13:45:14.553Z",
+      "updatedAt": "2025-03-18T13:45:14.553Z",
+      "id": "6pOUCPP24FxgjbZJ",
+      "name": "Kursus"
+    }
+  ]
+}
