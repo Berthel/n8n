@@ -1,0 +1,490 @@
+{
+  "createdAt": "2025-08-14T15:51:49.807Z",
+  "updatedAt": "2025-08-20T05:26:36.936Z",
+  "id": "GLzXIPCNPvEF0Tt3",
+  "name": "pdf til tekst mixed",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {
+        "fileSelector": "/data/shared/*.pdf",
+        "options": {
+          "dataPropertyName": "pdf"
+        }
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        176,
+        32
+      ],
+      "id": "f0693228-c486-4bbe-869a-a1c8acd14f41",
+      "name": "Read/Write Files from Disk"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        32
+      ],
+      "id": "1676b40e-fd68-46b6-86b4-ac3be5d104fc",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "76b72965-8eba-4f8f-81c4-2b4f52e6e632",
+              "name": "text",
+              "value": "=={{ ($json.document.md_content) }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1296,
+        -96
+      ],
+      "id": "17b664ef-20b2-4ac7-aacb-10409ed701fa",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "=pdf_ocr",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        1296,
+        144
+      ],
+      "id": "8ac7055c-7b2d-47ea-8e55-85662902114b",
+      "name": "Extract from File (OCR)"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://stirlingpdf:8080/api/v1/misc/ocr-pdf",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "=fileInput",
+              "inputDataFieldName": "pdf"
+            },
+            {
+              "name": "languages",
+              "value": "eng"
+            },
+            {
+              "name": "ocrRenderType",
+              "value": "sandwich"
+            },
+            {
+              "name": "ocrType",
+              "value": "force-ocr"
+            },
+            {
+              "name": "deskew",
+              "value": "true"
+            },
+            {
+              "name": "clean",
+              "value": "true"
+            },
+            {
+              "name": "cleanFinal",
+              "value": "true"
+            },
+            {
+              "name": "removeImagesAfter",
+              "value": "true"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "pdf_ocr"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1072,
+        160
+      ],
+      "id": "de5ecd43-74f2-4cb1-ad70-c23229b584a5",
+      "name": "OCR1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f486fa5c-2db5-4055-bbf2-0c0fd50c198e",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1744,
+        32
+      ],
+      "id": "5f612dff-df90-437f-a4ee-3fb2b6c1e22a",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://docling:5001/v1/convert/file",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "files",
+              "inputDataFieldName": "=pdf"
+            },
+            {
+              "name": "image_export_mode",
+              "value": "placeholder"
+            },
+            {
+              "name": "table_mode",
+              "value": "accurate"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1072,
+        -96
+      ],
+      "id": "49cb9af4-fc02-4779-a951-4b99850646ae",
+      "name": "Docling Convert",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "76b72965-8eba-4f8f-81c4-2b4f52e6e632",
+              "name": "text",
+              "value": "=={{ ($json.text).replace(/^!\\[background image\\]\\([^\\)]+\\)\\s*/i, '') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1520,
+        144
+      ],
+      "id": "6c8c462f-1dcb-48aa-8136-0259f2b306e9",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "=pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        400,
+        32
+      ],
+      "id": "65401eb7-0382-4680-8308-d0b2a14e4a63",
+      "name": "Extract from File (OCR)1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "c462deb9-9285-4646-9d0d-a6aa46d9758e",
+              "leftValue": "={{ $json.text.length }}",
+              "rightValue": 10,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        624,
+        32
+      ],
+      "id": "3423d191-daae-4499-8cfd-1cbe828b8d6f",
+      "name": "Har vi tekst?1"
+    },
+    {
+      "parameters": {
+        "mode": "chooseBranch",
+        "useDataOfInput": 2
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        848,
+        144
+      ],
+      "id": "90ee3718-4b7e-4c1b-b63b-d2ae7bd27d78",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "mode": "chooseBranch",
+        "useDataOfInput": 2
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        848,
+        -96
+      ],
+      "id": "6b04cc74-6023-4111-b343-3e834d139512",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://docling:5001/v1/convert/file",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "image_export_mode",
+              "value": "placeholder"
+            },
+            {
+              "name": "table_mode",
+              "value": "accurate"
+            },
+            {
+              "name": "ocr_engine",
+              "value": "easyocr"
+            },
+            {
+              "name": "ocr_lang",
+              "value": "en"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "files",
+              "inputDataFieldName": "pdf"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1088,
+        336
+      ],
+      "id": "7c566a3b-18fb-4c24-af13-eec69539e361",
+      "name": "Docling OCR1"
+    }
+  ],
+  "connections": {
+    "Read/Write Files from Disk": {
+      "main": [
+        [
+          {
+            "node": "Extract from File (OCR)1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File (OCR)": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OCR1": {
+      "main": [
+        [
+          {
+            "node": "Extract from File (OCR)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Docling Convert": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File (OCR)1": {
+      "main": [
+        [
+          {
+            "node": "Har vi tekst?1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Har vi tekst?1": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "OCR1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Docling Convert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "c83f5d34-9206-4558-b7c8-fe505719f59f",
+  "triggerCount": 0,
+  "tags": []
+}
