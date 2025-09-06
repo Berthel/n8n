@@ -1,0 +1,213 @@
+{
+  "createdAt": "2025-02-06T12:45:30.178Z",
+  "updatedAt": "2025-02-06T16:01:18.000Z",
+  "id": "raAVcgXceJltzyvx",
+  "name": "Get Photos",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "d4de4650-e840-4356-a7c4-cb44e94884bd",
+      "name": "Workflow Input Trigger"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.1,
+      "position": [
+        200,
+        200
+      ],
+      "id": "0c6bfea6-6a54-4545-bd53-3a2b820aae60",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "ZjiR1Y4tdzymEK1L",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.query }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=Du er en AI Agent til hentning af Wikimedia-foto data i n8n. Dit job er at håndtere søgning i  Wikimedia Geolocation. \nEksempler på forespørgsler:\n1: 37.1213501,-7.6460578,300,20\n2: latitude:37.125389,longitude:-7.651425,radius:500,maxPhotos:10"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        220,
+        0
+      ],
+      "id": "f1642f2a-a077-4552-b481-4983f435c325",
+      "name": "Photos Agent"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Get photos by geolocation",
+        "url": "=https://commons.wikimedia.org/w/api.php?action=query&generator=geosearch&prop=imageinfo&iiprop=url|extmetadata&iiurlwidth=800&iiurlheight=800&ggscoord={latitude}|{longitude}&ggsradius={radius_in_meter}&ggslimit={limit}&ggsnamespace=6&format=json"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        240,
+        400
+      ],
+      "id": "19487a86-5ec7-4724-a11a-9d67a5c149bd",
+      "name": "Wikimedia Geolocation"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Get photo info by searching",
+        "url": "=https://commons.wikimedia.org/w/api.php?action=query&list=search&srsearch={search_string}}&srnamespace=6&format=json"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        420,
+        380
+      ],
+      "id": "315ae85f-120b-4fae-9d6d-7740268d6e60",
+      "name": "Wikimedia Search"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Get info about one specific photo by pageid (also known as wikimediapageid)",
+        "url": "https://commons.wikimedia.org/w/api.php?action=query&pageids={pageid}&prop=imageinfo&iiprop=url|extmetadata&iiurlwidth=800&iiurlheight=800&format=json"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        520,
+        260
+      ],
+      "id": "fa301d95-0b03-4472-98f3-bdf81b0dc710",
+      "name": "Wikimedia Get Photo"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"array\",\n  \"items\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"pageid\": {\n        \"type\": \"integer\",\n        \"description\": \"Wikimedia page ID for the image\"\n      },\n      \"title\": {\n        \"type\": \"string\",\n        \"description\": \"Full filename and title of the image\"\n      },\n      \"thumburl\": {\n        \"type\": \"string\",\n        \"format\": \"uri\",\n        \"description\": \"Direct URL to thumbnail version (800px width)\"\n      },\n      \"url\": {\n        \"type\": \"string\",\n        \"format\": \"uri\",\n        \"description\": \"Direct URL to full resolution image\"\n      },\n      \"Artist\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"value\": {\n            \"type\": \"string\",\n            \"description\": \"HTML-formatted artist attribution with link\"\n          },\n          \"source\": {\n            \"type\": \"string\",\n            \"description\": \"Data source for artist information\"\n          }\n        },\n        \"required\": [\"value\", \"source\"]\n      },\n      \"LicenseShortName\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"value\": {\n            \"type\": \"string\",\n            \"description\": \"Creative Commons license abbreviation\"\n          },\n          \"source\": {\n            \"type\": \"string\",\n            \"description\": \"Data source for license information\"\n          }\n        },\n        \"required\": [\"value\", \"source\"]\n      }\n    },\n    \"required\": [\n      \"pageid\",\n      \"title\",\n      \"thumburl\",\n      \"url\",\n      \"Artist\",\n      \"LicenseShortName\"\n    ]\n  }\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        740,
+        300
+      ],
+      "id": "84377f9a-2de5-48b2-9fff-323b839c426a",
+      "name": "Structured Output Parser"
+    }
+  ],
+  "connections": {
+    "Workflow Input Trigger": {
+      "main": [
+        [
+          {
+            "node": "Photos Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Photos Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wikimedia Geolocation": {
+      "ai_tool": [
+        [
+          {
+            "node": "Photos Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wikimedia Search": {
+      "ai_tool": [
+        []
+      ]
+    },
+    "Wikimedia Get Photo": {
+      "ai_tool": [
+        [
+          {
+            "node": "Photos Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Photos Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Workflow Input Trigger": [
+      {
+        "json": {
+          "query": "latitude:37.125389,longitude:-7.651425,radius:500,maxPhotos:10"
+        }
+      }
+    ]
+  },
+  "versionId": "6bded941-0f21-4202-a9b2-573b5eb36c6b",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-02-06T12:45:30.181Z",
+      "updatedAt": "2025-02-06T12:45:30.181Z",
+      "role": "workflow:owner",
+      "workflowId": "raAVcgXceJltzyvx",
+      "projectId": "rkqKISKa14HwF9Xd"
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-01-28T15:25:26.214Z",
+      "updatedAt": "2025-01-28T15:25:26.214Z",
+      "id": "BngebX50Ev8rBclu",
+      "name": "HN Content manager"
+    }
+  ]
+}
