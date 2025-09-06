@@ -1,0 +1,175 @@
+{
+  "createdAt": "2025-05-18T09:59:45.433Z",
+  "updatedAt": "2025-05-18T10:08:53.000Z",
+  "id": "yPB0GZoTEybObMlm",
+  "name": "My workflow",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "cd092869-5a17-4b27-9c28-46466eb13b42",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select id\nfrom sites\nwhere id = 'ara-pacis'",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        220,
+        0
+      ],
+      "id": "94e970bb-07d4-4c13-82ef-9265112a14a5",
+      "name": "Get site_id's",
+      "credentials": {
+        "postgres": {
+          "id": "EzZYFEVPXxVDpNLe",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select CONTENT\nfrom detail_section_translations\nwhere detail_section_id = '{{ $json.id }}-main'\nand language_code = 'en'",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        440,
+        0
+      ],
+      "id": "e8dfd045-cdff-4872-9553-92f6e08847f4",
+      "name": "Postgres",
+      "credentials": {
+        "postgres": {
+          "id": "EzZYFEVPXxVDpNLe",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.content }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "din opgave er at finde alle citations/quotes som ikke står i <blockquote> i den html formatterede tekst og formattere disse på en ensartet måde. derefter returnerer du hele den samlede tekst uden at ændre på andet en formatering af citations.\n\nHer er nogle eksempler på citation som ikke står i <blockquote>:\n\n\"<i>...the altar’s marbles reappeared, and Rome’s past began to awaken beneath the city streets.</i>\" – 16th-century antiquarian’s letter\n\n\n\"<i>The altar stands again, a witness to empire and resurrection.</i>\" – <b>Corriere della Sera</b>, 1938\n\n\n🌟 <b>Pull Quote:</b> \"A precious synthesis of over two centuries of official Roman art.\" — Italian commentator, Archival Records\n\nHer er et eksempel på hvordan du skal formatere citatet:\n🌟\\n<blockquote>\\n  <p>“A precious synthesis of over two centuries of official Roman art.”</p>\\n  <cite>— Italian commentator, Archival Records</cite>\\n</blockquote>"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.6,
+      "position": [
+        660,
+        0
+      ],
+      "id": "1bd254e3-80d2-4c23-872f-b13df1c42aac",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        660,
+        240
+      ],
+      "id": "e2d72b92-04ca-4268-90e0-06373441f4da",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "ZjiR1Y4tdzymEK1L",
+          "name": "OpenAi account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get site_id's",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get site_id's": {
+      "main": [
+        [
+          {
+            "node": "Postgres",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "3c3cd1e2-26b0-417c-8233-ebfac6ed785a",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-05-18T09:59:45.437Z",
+      "updatedAt": "2025-05-18T09:59:45.437Z",
+      "role": "workflow:owner",
+      "workflowId": "yPB0GZoTEybObMlm",
+      "projectId": "rkqKISKa14HwF9Xd"
+    }
+  ],
+  "tags": []
+}
