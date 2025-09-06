@@ -1,0 +1,119 @@
+{
+  "createdAt": "2025-02-28T09:55:01.535Z",
+  "updatedAt": "2025-02-28T10:06:49.000Z",
+  "id": "al3V9faDxUB7lO9z",
+  "name": "workflow execution times",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "c0f54dba-3507-4f7a-b845-0eb2d10dd575",
+      "name": "When clicking \"Test workflow\"",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        40
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "execution",
+        "limit": 20,
+        "filters": {},
+        "options": {},
+        "requestOptions": {}
+      },
+      "id": "1d51d4e7-2625-4e3f-a1de-676794361943",
+      "name": "n8n",
+      "type": "n8n-nodes-base.n8n",
+      "typeVersion": 1,
+      "position": [
+        -100,
+        40
+      ],
+      "credentials": {
+        "n8nApi": {
+          "id": "DwHFGCipPeGl2htT",
+          "name": "n8n account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "87ad3b9f-09a4-46b3-918c-f1e461a27bde",
+              "name": "duration",
+              "value": "={{ DateTime.fromISO($json.stoppedAt).diff(DateTime.fromISO($json.startedAt), [\"days\",\"hours\", \"minutes\", \"seconds\"]).toObject() }}",
+              "type": "object"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "875a2278-a3d6-4b3b-bd99-8c80efcdaeac",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        120,
+        40
+      ]
+    }
+  ],
+  "connections": {
+    "When clicking \"Test workflow\"": {
+      "main": [
+        [
+          {
+            "node": "n8n",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "84530cc5-a7ef-4ac5-be6d-37fb5d2150cf",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-02-28T09:55:01.538Z",
+      "updatedAt": "2025-02-28T09:55:01.538Z",
+      "role": "workflow:owner",
+      "workflowId": "al3V9faDxUB7lO9z",
+      "projectId": "rkqKISKa14HwF9Xd"
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-02-09T16:38:26.099Z",
+      "updatedAt": "2025-02-09T16:38:26.099Z",
+      "id": "YEStJInGeLpvHEQ8",
+      "name": "tool"
+    }
+  ]
+}
