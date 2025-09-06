@@ -1,0 +1,451 @@
+{
+  "createdAt": "2025-03-26T04:50:57.023Z",
+  "updatedAt": "2025-05-05T13:14:53.000Z",
+  "id": "p9lUV8KBmP6XAOvl",
+  "name": "Create Timeline Content",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Period ID: {{ $('Get Periods').item.json.period_id }}\n\nCity: {{ $('Get Periods').item.json.city_id }}\n\n\n# Main research\n{{ $json.research }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=You are a knowledgeable and engaging AI historian tasked with presenting a historical period to an audience of historically interested individuals aged 45 and above. Your audience values depth, accuracy, and well-structured storytelling.  \n\nUsing the research materials provided to you, create a clear and informative summary of the historical period. Focus on key events, social and political dynamics, influential figures, and cultural developments. Feel free to highlight lesser-known but intriguing details that add richness to the narrative.  \n\nYour tone should be respectful, mature, and captivating — suitable for an educated audience who appreciates nuance and context. Avoid oversimplification, but remain accessible. Where appropriate, draw connections to modern times or enduring legacies of the period.  \n\nFormat your response in a way that is good for mobile reading with text in smaller chunks.\n\nText lenght 600-800 words.\n"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        120,
+        -700
+      ],
+      "id": "7ad4514e-0bdc-4679-98ad-240b316a8ae5",
+      "name": "Editor1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "=anthropic/claude-3.7-sonnet",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        208,
+        -480
+      ],
+      "id": "af27c997-b88a-4806-b11e-dd35d5583c98",
+      "name": "OpenAI Chat Model3",
+      "credentials": {
+        "openAiApi": {
+          "id": "7oESUrXOypaiYfq2",
+          "name": "openrouter"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -980,
+        -700
+      ],
+      "id": "c01cf31d-8e27-4de1-a277-66b1de2f777f",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "975b81d3-969d-4ac1-82a7-faf8c37fb0e9",
+              "name": "city_id",
+              "value": "rome",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -760,
+        -700
+      ],
+      "id": "708ca844-7b4c-40b6-8d60-ce02aebb8c80",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "city_periods",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "city_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.city_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -540,
+        -700
+      ],
+      "id": "17918b00-2cfa-4d73-8bbe-fef651115f99",
+      "name": "Get Periods",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "periods",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{ $json.period_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        -700
+      ],
+      "id": "14edb15f-5f34-44b2-9e5f-3cb05af48b94",
+      "name": "Get Period",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "period_translations",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "period_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Limit').item.json.period_id }}"
+            },
+            {
+              "keyName": "language_code",
+              "condition": "eq",
+              "keyValue": "en"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "description",
+              "fieldValue": "={{ $json.text }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -980,
+        -1060
+      ],
+      "id": "a3dcfecd-3ffe-4929-bf03-f6527f5ded09",
+      "name": "Update description",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.text }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "På baggrund af periode beskrivelsen skal du angive det rigtige periodenavn på engelsk.\n\nEksempel: Medieval"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.6,
+      "position": [
+        496,
+        -700
+      ],
+      "id": "5ae761b3-1f4a-47b7-a57b-21bf3d5a0d39",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"periodname\": \"Medieval\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        584,
+        -480
+      ],
+      "id": "b0a3632c-f033-47c2-8c04-ce7745dbe389",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "tableId": "period_translations",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "period_id",
+              "fieldValue": "={{ $('Get Period').item.json.id }}"
+            },
+            {
+              "fieldId": "language_code",
+              "fieldValue": "en"
+            },
+            {
+              "fieldId": "name",
+              "fieldValue": "={{ $json.output.periodname }}"
+            },
+            {
+              "fieldId": "description",
+              "fieldValue": "={{ $('Editor1').item.json.text }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        872,
+        -700
+      ],
+      "id": "f498af8e-336d-4ac5-bda9-e848c1ecc352",
+      "name": "Insert",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8835d1c6-8956-4725-a5d5-3b9e8ef7bd93",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "sintra_ancient_roman",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "1e65d1dd-3858-4953-8d01-7c188cac9213",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "sintra_moorish",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "f0d9b42c-98f0-429a-8e31-a106af430406",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "sintra_medieval",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        -100,
+        -700
+      ],
+      "id": "e5798b5f-b93b-41d9-b23f-987d1e8c543a",
+      "name": "Filter",
+      "disabled": true
+    }
+  ],
+  "connections": {
+    "Editor1": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Editor1",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Get Periods",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Periods": {
+      "main": [
+        [
+          {
+            "node": "Get Period",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Period": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Insert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Editor1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "957fcbac-8613-4753-944e-71c9727a6a7e",
+  "triggerCount": 4,
+  "shared": [
+    {
+      "createdAt": "2025-03-26T04:50:57.029Z",
+      "updatedAt": "2025-03-26T04:50:57.029Z",
+      "role": "workflow:owner",
+      "workflowId": "p9lUV8KBmP6XAOvl",
+      "projectId": "rkqKISKa14HwF9Xd"
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-01-28T15:25:26.214Z",
+      "updatedAt": "2025-01-28T15:25:26.214Z",
+      "id": "BngebX50Ev8rBclu",
+      "name": "HN Content manager"
+    }
+  ]
+}
