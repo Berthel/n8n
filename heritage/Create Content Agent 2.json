@@ -1,0 +1,918 @@
+{
+  "createdAt": "2025-02-03T04:57:55.633Z",
+  "updatedAt": "2025-04-10T05:15:29.000Z",
+  "id": "rIufAg5TOOzfTfmI",
+  "name": "Create Content Agent 2",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "name": "user_documents",
+        "description": "Contains all the user's documents that you can check for context to answer user questions. Before beginning, scan and identify all relevant occurrences of the topic or subject matter to ensure a comprehensive overview of the best descriptions. Use this overview to prioritize and refine responses effectively.",
+        "topK": 20
+      },
+      "id": "3590ce6e-ae5d-4f42-927a-8f9f8a96c59a",
+      "name": "Retrieve Documents",
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1,
+      "position": [
+        420,
+        440
+      ]
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-small",
+        "options": {}
+      },
+      "id": "a84ec67e-c0b2-4f16-949c-85c3a7274ca8",
+      "name": "Embeddings OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1,
+      "position": [
+        220,
+        760
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "ZjiR1Y4tdzymEK1L",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {
+          "queryName": "match_documents"
+        }
+      },
+      "id": "be159508-d345-40ae-a229-99811d5fc2c6",
+      "name": "Supabase Vector Store",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1,
+      "position": [
+        260,
+        600
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolWikipedia",
+      "typeVersion": 1,
+      "position": [
+        140,
+        480
+      ],
+      "id": "020aca36-b4ed-4588-a80e-4655a21baa8d",
+      "name": "Wikipedia"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4-turbo",
+          "mode": "list",
+          "cachedResultName": "gpt-4-turbo"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        660,
+        600
+      ],
+      "id": "3da443d1-0218-42a2-a0c8-9ff1b1ed4859",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "ZjiR1Y4tdzymEK1L",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "=deepseek/deepseek-r1",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.1,
+      "position": [
+        1040,
+        600
+      ],
+      "id": "deb42bd3-9b9d-473e-8e79-90b6430ed4e5",
+      "name": "Deepseek-reasoner",
+      "credentials": {
+        "openAiApi": {
+          "id": "7oESUrXOypaiYfq2",
+          "name": "openrouter"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -200,
+        320
+      ],
+      "id": "3c770247-7160-4654-870b-e7205d208805",
+      "name": "o3-mini",
+      "credentials": {
+        "openAiApi": {
+          "id": "ZjiR1Y4tdzymEK1L",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"shortDescription\": {\n      \"type\": \"string\",\n      \"description\": \"A concise summary of the historical site (max 60 characters).\"\n    },\n    \"introduction\": {\n      \"type\": \"string\",\n      \"description\": \"An introduction section that begins with <h2>Introduction</h2> and contains 60-80 words in English, formatted in HTML with <p> tags.\"\n    },\n    \"mainStory\": {\n      \"type\": \"string\",\n      \"description\": \"The main story section that starts with <h2>Overview</h2> and includes 700-800 words of detailed historical and cultural content in English. The content should be formatted in HTML using paragraphs (<p>), bold (<b>), italic (<i>), and additional subsections for readability.\"\n    },\n    \"academicBackground\": {\n      \"type\": \"string\",\n      \"description\": \"An academic background section that begins with <h2>Background</h2> followed by <h4>Historical Timeline</h4>. It must include a <ul> list of key historical dates and events formatted as list items (<li>) with bolded periods, and contain 600-800 words in English, using HTML formatting.\"\n    }\n  },\n  \"required\": [\n    \"shortDescription\",\n    \"introduction\",\n    \"mainStory\",\n    \"academicBackground\"\n  ]\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        1240,
+        600
+      ],
+      "id": "8377cdae-5a35-44d2-9eb1-ec7fd554ce23",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "sendTo": "flemming.berthelsen@gmail.com",
+        "subject": "Content approval required",
+        "message": "=shortDescription:\n{{ $json.output.shortDescription }}\n\n\nintroduction:\n{{ $json.output.introduction }}\n\n\nmainStory:\n{{ $json.output.mainStory }}\n\n\nacademicBackground:\n{{ $json.output.academicBackground }}",
+        "responseType": "customForm",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Action",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Publish"
+                  },
+                  {
+                    "option": "Reject"
+                  },
+                  {
+                    "option": "Change"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Message",
+              "fieldType": "textarea"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1340,
+        80
+      ],
+      "id": "8063498c-6f33-4b65-9aac-1367afc53882",
+      "name": "Gmail",
+      "webhookId": "67524bda-99e9-47ec-acea-cebc5916fdb4",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "XI6wZVsQczyW63ra",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1520,
+        300
+      ],
+      "id": "2b4968ae-3a73-4781-9040-80711715afe3",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "7oESUrXOypaiYfq2",
+          "name": "openrouter"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.output }}\n\n# Additional Research\n{{ $('Collect input').item.json['Additional Research'] }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=# Role\nYou are a Content Creator for Heritage Navigator, an app that helps historically interested visitors discover and understand local historical sites. Your task is to create engaging, inspiring, and easy-to-understand content for a specific historical site, targeting adult cultural travelers and tourists (45-70 years) seeking authentic experiences.\n\n# Instructions\n- Don't hallucinate; base your content only on documented evidence.\n- If you don't have the necessary information, say so.\n\n# Rules\n- Always use local place names in their original language (e.g., \"København\" not \"Copenhagen\", \"Kronborg\" not \"Elsinore Castle\", \"São Jorge\" not \"St. George\").\n- Write the content in English.\n\n\n# Sections & Formatting\n- Format all sections in HTML.\n- Use <p> tags to separate paragraphs and <b>, <i> tags for styling.\n- Create your own subsections in each section to improve readability.\n\nYou must create the content in these 4 main sections:\n\n### shortDescription (max 60 characters)\n### introduction (60-80 words)\n  - Begin with the header: `<h2>Introduction</h2>`\n### mainStory (700-800 words)\n  - Begin with the header: `<h2>Overview</h2>`\n  - Include at least one memorable anecdote per 200 words if you got any from the research material\n### academicBackground (600-800 words)\n  - Begin with the header: `<h2>Background</h2>` followed by `<h4>Historical Timeline</h4>`\n  - Include a `<ul>` list with key historical dates and events formatted as `<li><b>period</b> period-short-description</li>` (see example below).\n\nExample for Historical Timeline:\n```\n<ul>\n    <li><b>8th-11th centuries</b> Initial Islamic settlement and fortification of the site</li>\n    <li><b>12th century</b> Construction of the main castle structure during the Almohad period</li>\n    <li><b>1242</b> Christian reconquest of Tavira and the castle by D. Paio Peres Correia</li>\n    <li><b>14th-15th centuries</b> Major renovations and strengthening of the fortifications</li>\n    <li><b>16th-17th centuries</b> Gradual transition from military to symbolic importance</li>\n    <li><b>20th century</b> Addition of current battlements and preservation work</li>\n</ul>\n```\n\n# Output Format\nYour final output must be a valid JSON object exactly following this structure:\n```\n{\n  \"shortDescription\": \"\",\n  \"introduction\": \"\",\n  \"mainStory\": \"\",\n  \"academicBackground\": \"\"\n}\n```\nDo not include any additional text or explanations. Only output the JSON object.\n"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        680,
+        80
+      ],
+      "id": "23a0242d-83c2-43ca-8025-d7b8c4261b4d",
+      "name": "Content Creator"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Query: {{ $json.query }}\n\nglobal_code: {{ $json.global_code }}\n\nAdditionalResearch: {{ $json['Additional Research'] }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=# Role\nYou are a **Content Research Manager** for Heritage Navigator—an app that helps culturally curious adult travelers (ages 45–70) discover and understand local historical sites. Your task is to gather and organize verifiable, detailed information about a specific historical site to support authentic content creation.\n\n# Instructions\n\n## 1. Source Hierarchy\n- **Primary Source (`user_documents`):**  \n  Extract detailed data from these documents. If key details are missing, ask follow-up questions.\n- **Secondary Source (monumentos_portugal):** \n  Always extract data from this tool since it is very good\n  Use monumentos_portugal for architectural details and official dating\n\n- **AdditionalResearch**\n  Always include this if available. This is additional research added by human.\n\n- **Third Source (Wikipedia):**  \n  Use only if the required information is unavailable in `user_documents` and `monumentos_portugal`.\n- **Handling Missing Information:**  \n  Explicitly mark absent details with `\"NO_DATA\"` (e.g., `\"NO_DATA: 18th-century renovations\"`).\n\n## 2. Data Categories & Organization\nOrganize the information into the following fields for subsequent JSON/HTML output:\n- **shortDescription:**  \n  - A brief descriptor that includes the original site name and 2–5 historical keywords. (Aim for ≤60 characters.)\n- **introduction:**  \n  - A concise overview highlighting the site's cultural significance and relevant time periods.\n- **mainStory:**  \n  - A narrative section with these subsections:\n    - Architectural evolution\n    - Notable events and figures\n    - Cultural/regional impact\n    - Local legends and memorable anecdotes \n- **academicBackground:**  \n  - A scholarly context that includes:\n    - Historical timeline (formatted as `<ul>` with `<b>` tags for periods)\n    - Archaeological findings\n    - Debates among historians\n\n## 3. Authenticity & Local Language\n- Use **current official local names** (e.g., \"Gdańsk\", not \"Danzig\") unless referring to a historical period with a different name.\n- Preserve original terms for artifacts and titles (e.g., \"Rådhus\", not \"City Hall\").\n\n## 4. Anti-Hallucination & Transparency\n- **No Fabrication:** Do not invent details. Always base your data on available sources.\n- **Source Attribution:** Reference information clearly with phrases like \"According to user_documents\" or \"According to Wikipedia.\"\n- **Highlight Discrepancies:** Clearly note any conflicts between sources.  \n  _Example_: \"Wikipedia cites 1625 for the fire; user_documents mention 1630.\"\n\n## 5. Output Preparation & Markers\nPrepare your raw data under these exact categories for the Content Creator:\n- **shortDescription:** [Original site name + key historical keywords]\n- **introduction:** [Core message, time periods, and cultural significance]\n- **mainStory:** [Subsections on Architecture, Events, and Local Anecdotes]\n- **academicBackground:** [Timeline, archaeological findings, academic debates]\n\nUse the following marker to indicate direct quotations:\n- **!QUOTE!** = Denotes quotes from historians or period documents.\n\n**Note:**  \nAs a research agent, your role is to compile and organize comprehensive, verifiable data—not to produce a final narrative of fixed length. Focus on accurate categorization and detailed sourcing to support later content creation.\n"
+        }
+      },
+      "id": "f0dec3c8-2060-4358-b8e9-0e9806214801",
+      "name": "Researcher",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        240,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "eb91541b-0154-471c-aff3-87d1959e7a36",
+              "name": "output.shortDescription",
+              "value": "={{ $json.output.shortDescription }}",
+              "type": "string"
+            },
+            {
+              "id": "e324dd71-776f-452c-b0a8-cb9231ae1799",
+              "name": "output.introduction",
+              "value": "={{ $json.output.introduction }}",
+              "type": "string"
+            },
+            {
+              "id": "87845a90-24e8-41c4-a9e7-39817d749d19",
+              "name": "output.mainStory",
+              "value": "={{ $json.output.mainStory }}",
+              "type": "string"
+            },
+            {
+              "id": "e1d52e83-645a-4fc5-ae8f-f375bc2382bd",
+              "name": "output.academicBackground",
+              "value": "={{ $json.output.academicBackground }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1100,
+        80
+      ],
+      "id": "1a302924-53a6-403d-b30c-56c2898e48a7",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "inputText": "=Classify this response: {{ $json.data.Action }}",
+        "categories": {
+          "categories": [
+            {
+              "category": "Publish",
+              "description": "If human response is Publish"
+            },
+            {
+              "category": "Reject",
+              "description": "If human response is Reject"
+            },
+            {
+              "category": "Change",
+              "description": "If human response is Change"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "typeVersion": 1,
+      "position": [
+        1540,
+        80
+      ],
+      "id": "dfc9acbc-cdd8-4129-b731-03d846db6c85",
+      "name": "Check Feedback"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=shortDescription:  {{ $('Edit Fields1').item.json.output.shortDescription }}\n\nintroduction: {{ $('Edit Fields1').item.json.output.introduction }}\n\nmainStory: {{ $('Edit Fields1').item.json.output.mainStory }}\n\nacademicBackground: {{ $('Edit Fields1').item.json.output.academicBackground }}\n\nhumanFeedback: {{ $json.data.Message }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=# Role\nYou are a Content Revision Specialist for Heritage Navigator. Your task is to refine AI-generated historical content based on human feedback while maintaining strict adherence to original creation guidelines.\n\n# Instructions\n1. Preserve the core factual integrity and structure of the original content an insure clarity for cultural travelers (45-70 years)\n\n\n# Critical Rules\n- Maintain all original language place names (e.g., \"København\", \"São Jorge\")\n- Keep identical JSON structure and HTML formatting\n- Preserve original section word counts (±10%)\n- Never add unsourced information (respond with \"[REDACTED]\" if forced to speculate)\n\n# Workflow\nYou will receive:\n{\n  \"shortDescription\": [Content Creator's output],\n  \"introduction\": [Content Creator's output],\n  \"mainStory\": [Content Creator's output],\n  \"academicBackground\": [Content Creator's output],\n  \"humanFeedback\": [requested changes]\n}\n\nProcess:\n1. Analyze feedback for guideline compliance\n2. Make necessary changes\n3. Preserve all HTML tags and structure\n4. Keep historical timeline formatting identical\n\n# Required Output\nReturn revised content in the EXACT same JSON format:\n```\n{\n  \"shortDescription\": \"\",\n  \"introduction\": \"\",\n  \"mainStory\": \"\",\n  \"academicBackground\": \"\"\n}\n```\nInclude ONLY the JSON object with revised HTML content. No explanations."
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        1940,
+        320
+      ],
+      "id": "33ac2c83-1b9a-42c7-98a5-a214097174a0",
+      "name": "Content Revision"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "IpVMGwXt5TmcAzUd",
+          "mode": "list",
+          "cachedResultName": "My project — Insert Description Agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "global_code": "={{ $('Webhook').first().json.body.global_code}}",
+            "shortDescription": "={{ $('Edit Fields1').first().json.output.shortDescription }}",
+            "overview": "={{ $('Edit Fields1').first().json.output.introduction }}",
+            "mainStory": "={{ $('Edit Fields1').first().json.output.mainStory }}",
+            "academicBackground": "={{ $('Edit Fields1').first().json.output.academicBackground }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "global_code",
+              "displayName": "global_code",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "shortDescription",
+              "displayName": "shortDescription",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "overview",
+              "displayName": "overview",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "mainStory",
+              "displayName": "mainStory",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "academicBackground",
+              "displayName": "academicBackground",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        2000,
+        -180
+      ],
+      "id": "d51305a2-682e-4382-8262-761275996948",
+      "name": "Publish"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2000,
+        100
+      ],
+      "id": "67f0dc9e-24bc-46e8-b0d9-99bd045df5e1",
+      "name": "Rejected"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "0b9a5d2f-3532-4f17-9330-fda9a17593e5",
+        "authentication": "basicAuth",
+        "options": {
+          "rawBody": true
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -800,
+        -80
+      ],
+      "id": "4e2ce91e-a58a-4c85-aa9e-7a030a5128bd",
+      "name": "Webhook",
+      "webhookId": "0b9a5d2f-3532-4f17-9330-fda9a17593e5",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "quvO0KQt5vjETJuR",
+          "name": "Content Creator auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "monumentos_portugal",
+        "description": "Query this tool with the name of the historical site and the city name to get response from http://www.monumentos.gov.pt/",
+        "workflowId": {
+          "__rl": true,
+          "value": "y3SEoNbyzFsiZXtw",
+          "mode": "list",
+          "cachedResultName": "My project — Content Monumentos Portugal"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        560,
+        300
+      ],
+      "id": "a690399c-2c53-44b0-a96e-933c96353272",
+      "name": "Monumentos Portugal"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8296aff9-e3f6-47ff-8497-f73d346c6214",
+              "name": "query",
+              "value": "={{ $json.query }}",
+              "type": "string"
+            },
+            {
+              "id": "80127f8e-c16e-453f-b924-7d32f7d94123",
+              "name": "global_code",
+              "value": "={{ $json.global_code }}",
+              "type": "string"
+            },
+            {
+              "id": "d258d2d1-ebbc-46ab-b5ed-2b8dc2882941",
+              "name": "Additional Research",
+              "value": "={{ $json.additional_research }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -40,
+        40
+      ],
+      "id": "0ac636e7-f29b-4239-8209-1e090c1a5509",
+      "name": "Collect input"
+    },
+    {
+      "parameters": {
+        "formTitle": "Create Content",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "query",
+              "placeholder": "Stedets navn"
+            },
+            {
+              "fieldLabel": "global_code"
+            },
+            {
+              "fieldLabel": "additional_research",
+              "fieldType": "textarea",
+              "placeholder": "F.eks. fra NotebookLM"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -800,
+        120
+      ],
+      "id": "85796314-4ebd-427d-8167-5cd8a780c564",
+      "name": "On form submission",
+      "webhookId": "8b14a0b4-9e33-4b92-8c40-7070661a12ea"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e0c5477f-b331-4fd1-8671-0e27832a8345",
+              "name": "query",
+              "value": "={{ $json.body.query }}",
+              "type": "string"
+            },
+            {
+              "id": "00caee80-e7bd-440c-8f23-5a4bc5773788",
+              "name": "global_code",
+              "value": "={{ $json.body.global_code }}",
+              "type": "string"
+            },
+            {
+              "id": "a5ffd520-07a0-4fdd-ba69-d87892a440a7",
+              "name": "additional_research",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -580,
+        -80
+      ],
+      "id": "9ddb71e7-fa3e-44ab-9060-8745181f9325",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash-001",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        80,
+        260
+      ],
+      "id": "fa3ca9a5-9021-48e0-8beb-7ae325a5cf7e",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "lw4yNIR7bkr06aVc",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Retrieve Documents": {
+      "ai_tool": [
+        [
+          {
+            "node": "Researcher",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Retrieve Documents",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wikipedia": {
+      "ai_tool": [
+        [
+          {
+            "node": "Researcher",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Retrieve Documents",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deepseek-reasoner": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Content Revision",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Content Creator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "o3-mini": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Content Creator",
+            "type": "ai_outputParser",
+            "index": 0
+          },
+          {
+            "node": "Content Revision",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail": {
+      "main": [
+        [
+          {
+            "node": "Check Feedback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Check Feedback",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Content Creator": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Researcher": {
+      "main": [
+        [
+          {
+            "node": "Content Creator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Feedback": {
+      "main": [
+        [
+          {
+            "node": "Publish",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Rejected",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Content Revision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Content Revision": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Monumentos Portugal": {
+      "ai_tool": [
+        [
+          {
+            "node": "Researcher",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Collect input": {
+      "main": [
+        [
+          {
+            "node": "Researcher",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Collect input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Collect input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Researcher",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "8712a441-7b75-449c-87fc-218d45d252b8",
+  "triggerCount": 3,
+  "shared": [
+    {
+      "createdAt": "2025-02-03T04:57:55.636Z",
+      "updatedAt": "2025-02-03T04:57:55.636Z",
+      "role": "workflow:owner",
+      "workflowId": "rIufAg5TOOzfTfmI",
+      "projectId": "rkqKISKa14HwF9Xd"
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-01-28T15:25:26.214Z",
+      "updatedAt": "2025-01-28T15:25:26.214Z",
+      "id": "BngebX50Ev8rBclu",
+      "name": "HN Content manager"
+    }
+  ]
+}
