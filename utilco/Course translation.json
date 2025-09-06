@@ -1,0 +1,2920 @@
+{
+  "createdAt": "2025-08-22T12:57:18.424Z",
+  "updatedAt": "2025-09-05T14:46:56.000Z",
+  "id": "92s5sogGiwikj7Ai",
+  "name": "Course translation",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "translate-course",
+        "authentication": "headerAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "2f561330-6f6a-42e8-97de-d89a6cf7a503",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -224,
+        112
+      ],
+      "webhookId": "af75f8fd-93a4-479d-87af-86dbe4497399",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "WwlGKLCrVwJHzSyW",
+          "name": "Academy webhook"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": "public",
+        "table": "courses",
+        "returnAll": true,
+        "where": {
+          "values": [
+            {
+              "column": "id",
+              "value": "={{ $json.body.course_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4681ce01-fdda-4b5a-9c78-f432d2b969b7",
+      "name": "Fetch Course Info",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        0,
+        112
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "Vw56OL1mZd8nlif7",
+          "name": "Postgres staging account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "google/gemini-2.5-flash-lite",
+          "mode": "list",
+          "cachedResultName": "google/gemini-2.5-flash-lite"
+        },
+        "options": {}
+      },
+      "id": "2f297f7c-3fc9-4730-b0ac-15520307cfd0",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1424,
+        544
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "wLbV0srlBMaP36mY",
+          "name": "Open Router"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"title\": \"Kursustitel\",\n\t\"description\": \"Kort beskrivelse af kurset\",\n\t\"content\": \"Hovedindholdet eller tekstligt indhold for kurset\",\n\t\"video_url\": \"URL til kursusvideo\",\n\t\"image_url\": \"URL til kursusbillede\",\n\t\"videoscript\": \"Transskription eller manuskript til videoen\",\n  \"learning_objectives\": \n[\n\"Forstå formålet med arbejdsmiljøledelse og ISO 45001's rolle i en moderne organisation\",\n\"Kunne redegøre for de grundlæggende krav og nøgleprincipper i ISO 45001 samt forskellene til tidligere standarder\",\n\"Identificere og vurdere branche-/sektorspecifikke risici og forstå tilpasningen af arbejdsmiljøindsatsen\",\n\"Kende best practices i implementering, herunder lederskab, medarbejderinvolvering og integration med forretningen\",\n\"Anvende modenhedsmodeller og forstå centrale drivere/barrierer for implementering og vedligeholdelse\",\n\"Forstå og kunne forklare opbygning af KPI’er, auditprocesser og løbende performance-evaluering\",\n\"Reflektere over egen organisations arbejdsmiljøindsats og planlægge konkrete forbedringstiltag\"\n],\n\t\"thumbnail_url\": \"URL til miniatyrbillede/thumbnail\",\n\t\"image_text\": \"Alternativ tekst (alt) for billedet\",\n\t\"image_prompt\": \"Prompt brugt til at generere billedet (hvis relevant)\",\n  \"translated_module_titles\":\n  [\n  {\n    \"module_id\": \"fbf23506-f5b2-4f4e-9f8d-75c34dbcd1ab\",\n    \"title\": \"Introduction to occupational health and safety management and ISO 45001\"\n  },\n  {\n    \"module_id\": \"c64b72ec-95fd-4882-b012-19cee59df2f0\",\n    \"title\": \"ISO 45001 structure and key requirements\"\n  },\n  {\n    \"module_id\": \"052ce1b0-f9d2-45c9-94bf-8757c264d9ab\",\n    \"title\": \"Industry risks and adapting the occupational health and safety management system\"\n  },\n  {\n    \"module_id\": \"c9fbf673-e567-4645-a673-b7dd88a10b8e\",\n    \"title\": \"Best practices, maturity and organizational embedding\"\n  },\n  {\n    \"module_id\": \"32ef9168-6186-438e-9781-402a88f118b9\",\n    \"title\": \"Performance indicators, audits and continuous improvement\"\n  }\n]\n\n}\n",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1536,
+        336
+      ],
+      "id": "d0196844-6533-4d87-81f2-76a7010f10d1",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        896,
+        112
+      ],
+      "id": "a16e1705-613e-424e-a7a3-f43b64cb4020",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c20d4fbd-d108-4182-a8f5-01160aceb6de",
+              "name": "data",
+              "value": "={{ $json.data[0] }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1120,
+        112
+      ],
+      "id": "4e186d59-636d-4758-9d2d-7a13e8f40a68",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": "public",
+        "table": "course_translations",
+        "returnAll": true,
+        "where": {
+          "values": [
+            {
+              "column": "course_id",
+              "value": "={{ $('Webhook Trigger').item.json.body.course_id }}"
+            },
+            {
+              "column": "language_code",
+              "value": "={{ $('Webhook Trigger').item.json.body.source_language }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7bda54f7-0a17-44d8-83fc-426c9bb00137",
+      "name": "Fetch Course Translation",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        672,
+        112
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "Vw56OL1mZd8nlif7",
+          "name": "Postgres staging account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "schema": "public",
+        "table": "course_translations",
+        "columns": {
+          "0": "c",
+          "1": "o",
+          "2": "u",
+          "3": "r",
+          "4": "s",
+          "5": "e",
+          "6": "_",
+          "7": "i",
+          "8": "d",
+          "9": ",",
+          "10": "l",
+          "11": "a",
+          "12": "n",
+          "13": "g",
+          "14": "u",
+          "15": "a",
+          "16": "g",
+          "17": "e",
+          "18": "_",
+          "19": "c",
+          "20": "o",
+          "21": "d",
+          "22": "e",
+          "23": ",",
+          "24": "t",
+          "25": "i",
+          "26": "t",
+          "27": "l",
+          "28": "e",
+          "29": ",",
+          "30": "d",
+          "31": "e",
+          "32": "s",
+          "33": "c",
+          "34": "r",
+          "35": "i",
+          "36": "p",
+          "37": "t",
+          "38": "i",
+          "39": "o",
+          "40": "n",
+          "41": ",",
+          "42": "c",
+          "43": "o",
+          "44": "n",
+          "45": "t",
+          "46": "e",
+          "47": "n",
+          "48": "t",
+          "49": ",",
+          "50": "v",
+          "51": "i",
+          "52": "d",
+          "53": "e",
+          "54": "o",
+          "55": "s",
+          "56": "c",
+          "57": "r",
+          "58": "i",
+          "59": "p",
+          "60": "t",
+          "61": ",",
+          "62": "l",
+          "63": "e",
+          "64": "a",
+          "65": "r",
+          "66": "n",
+          "67": "i",
+          "68": "n",
+          "69": "g",
+          "70": "_",
+          "71": "o",
+          "72": "b",
+          "73": "j",
+          "74": "e",
+          "75": "c",
+          "76": "t",
+          "77": "i",
+          "78": "v",
+          "79": "e",
+          "80": "s",
+          "81": ",",
+          "82": "i",
+          "83": "m",
+          "84": "a",
+          "85": "g",
+          "86": "e",
+          "87": "_",
+          "88": "t",
+          "89": "e",
+          "90": "x",
+          "91": "t",
+          "92": ",",
+          "93": "v",
+          "94": "i",
+          "95": "d",
+          "96": "e",
+          "97": "o",
+          "98": "_",
+          "99": "u",
+          "100": "r",
+          "101": "l",
+          "102": ",",
+          "103": "i",
+          "104": "m",
+          "105": "a",
+          "106": "g",
+          "107": "e",
+          "108": "_",
+          "109": "u",
+          "110": "r",
+          "111": "l",
+          "112": ",",
+          "113": "t",
+          "114": "h",
+          "115": "u",
+          "116": "m",
+          "117": "b",
+          "118": "n",
+          "119": "a",
+          "120": "i",
+          "121": "l",
+          "122": "_",
+          "123": "u",
+          "124": "r",
+          "125": "l",
+          "126": ",",
+          "127": "i",
+          "128": "m",
+          "129": "a",
+          "130": "g",
+          "131": "e",
+          "132": "_",
+          "133": "p",
+          "134": "r",
+          "135": "o",
+          "136": "m",
+          "137": "p",
+          "138": "t",
+          "139": ",",
+          "140": "s",
+          "141": "t",
+          "142": "a",
+          "143": "t",
+          "144": "u",
+          "145": "s",
+          "mappingMode": "defineBelow",
+          "value": {
+            "course_id": "={{ $('Webhook Trigger').first().json.body.course_id }}",
+            "language_code": "={{ $('Webhook Trigger').first().json.body.target_language }}",
+            "title": "={{ $json.output.title }}",
+            "description": "={{ $json.output.description }}",
+            "content": "={{ $json.output.content }}",
+            "image_url": "={{ $json.output.image_url }}",
+            "videoscript": "={{ $json.output.videoscript }}",
+            "learning_objectives": "={{ $json.output.learning_objectives }}",
+            "thumbnail_url": "={{ $json.output.thumbnail_url }}",
+            "image_text": "={{ $json.output.image_text }}",
+            "image_prompt": "={{ $json.output.image_prompt }}",
+            "status": "draft"
+          },
+          "matchingColumns": [
+            "course_id",
+            "language_code"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "course_id",
+              "displayName": "course_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "language_code",
+              "displayName": "language_code",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "video_url",
+              "displayName": "video_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "image_url",
+              "displayName": "image_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "videoscript",
+              "displayName": "videoscript",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "learning_objectives",
+              "displayName": "learning_objectives",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "array",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "thumbnail_url",
+              "displayName": "thumbnail_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "image_text",
+              "displayName": "image_text",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "image_prompt",
+              "displayName": "image_prompt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "1349a301-984b-47a7-864a-c943a692e6a7",
+      "name": "Upsert Course Translation",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1792,
+        112
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "Vw56OL1mZd8nlif7",
+          "name": "Postgres staging account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select t.module_id, t.title\nfrom module_translations t join modules m\non t.module_id = m.id\nwhere m.course_id = '{{ $('Webhook Trigger').item.json.body.course_id }}'\nand t.language_code = '{{ $('Webhook Trigger').item.json.body.source_language }}'",
+        "options": {}
+      },
+      "id": "92f90148-da7c-4eb1-b260-66527507886f",
+      "name": "Fetch Module Names",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        224,
+        112
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "Vw56OL1mZd8nlif7",
+          "name": "Postgres staging account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        448,
+        112
+      ],
+      "id": "0a786a18-71cd-4d4b-bb9c-175614d0a097",
+      "name": "ModuleOrgNames"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output.translated_module_titles",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        2240,
+        112
+      ],
+      "id": "879882c0-a2a8-4d12-a9bf-38ddab084074",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "content": "## Course",
+        "height": 80
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -128,
+        0
+      ],
+      "id": "694f5aa9-4153-416a-8c41-93df217eeb3d",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Module",
+        "height": 80
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        800,
+        992
+      ],
+      "id": "740fc737-4f9d-412c-9606-9bff129e0d15",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select t.lesson_id, t.title\nfrom lesson_translations t join lessons l\non t.lesson_id = l.id\nwhere l.module_id =  '{{ $json.module_id }}'\nand t.language_code = '{{ $('Webhook Trigger').first().json.body.source_language }}'",
+        "options": {}
+      },
+      "id": "e74d2f81-9c35-4be7-b2e2-e58428cc57f9",
+      "name": "Fetch Lesson Names",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        256,
+        752
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "Vw56OL1mZd8nlif7",
+          "name": "Postgres staging account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        480,
+        752
+      ],
+      "id": "3d27bcca-6554-4943-87f4-824af6924943",
+      "name": "LessonOrgNames"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": "public",
+        "table": {
+          "__rl": true,
+          "value": "module_translations",
+          "mode": "list",
+          "cachedResultName": "module_translations"
+        },
+        "returnAll": true,
+        "where": {
+          "values": [
+            {
+              "column": "module_id",
+              "value": "={{ $('Edit Fields2').first().json.module_id }}"
+            },
+            {
+              "column": "language_code",
+              "value": "={{ $('Webhook Trigger').first().json.body.source_language }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "19b321b2-9f78-41a7-b713-e86eedb021ae",
+      "name": "Fetch Module Translation",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        768,
+        1136
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "Vw56OL1mZd8nlif7",
+          "name": "Postgres staging account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -208,
+        656
+      ],
+      "id": "40b1b660-52ff-42c6-996c-e4d02937dca1",
+      "name": "Loop Over Items",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cf6c5a77-2163-4ab8-9f48-0445c5828509",
+              "name": "module_id",
+              "value": "={{ $json.module_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        32,
+        752
+      ],
+      "id": "d962a97b-96f9-417b-ac8b-1b82931f7352",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        992,
+        1136
+      ],
+      "id": "3820ba37-7530-4aa0-998b-ad655b179295",
+      "name": "Aggregate1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c20d4fbd-d108-4182-a8f5-01160aceb6de",
+              "name": "data",
+              "value": "={{ $json.data[0] }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1216,
+        1136
+      ],
+      "id": "4a04f288-d8de-420e-9a51-043832777c85",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a professional course translator. Translate the provided course content from {{ $('Webhook Trigger').item.json.body.source_language }} to {{ $('Webhook Trigger').item.json.body.target_language }} following the guidelines below.\n\n# Course Context\n- **Course Structure:** **Course** -> Modules -> Lessons. We are now working in the top Course level.\n- **Course Title:** {{ $json.data.title }}\n- **Source Language:** {{ $('Webhook Trigger').item.json.body.source_language }}\n- **Target Language:** {{ $('Webhook Trigger').item.json.body.target_language }}\n\n# Instructions\n1. Ensure a professional and educational tone throughout.\n2. Keep technical terms in English when appropriate.\n3. Preserve the mark down ormatting and structure, especially for arrays, such as 'learning_objectives'.\n4. Translate all module titles using the provided mappings. Apply these exact translations uniformly wherever the module title appears (e.g., content, videoscripts, descriptions).\n\n# Tasks\n**Task 1:**\nTranslate the following module titles using these translations everywhere throughout the course content. Preserve the module_id's unchanged:\n{{ JSON.stringify($('ModuleOrgNames').item.json.data, null, 2) }}\n\n**Task 2:**\nTranslate the course content provided below:\n{{ JSON.stringify($json.data, null, 2) }}\n\n**Task 3:**\nRemove all code block (```) markers from the textual content. Present the translated text as plain input, not within code blocks, to ensure compatibility with parsing tools.\n\n",
+        "hasOutputParser": true,
+        "batching": {}
+      },
+      "id": "01689db5-99e3-4879-a988-c97c37243f9d",
+      "name": "Translate Course",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        1344,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a professional course translator. Translate the provided course module content from {{ $('Webhook Trigger').first().json.body.source_language }} to {{ $('Webhook Trigger').first().json.body.target_language }} following the guidelines below.\n\n# Course Context\n- **Course Structure:** Course -> **Modules** -> Lessons. We are now working in one module.\n- **Course Title:** {{ $json.data.title }}\n- **Source Language:** {{ $('Webhook Trigger').first().json.body.source_language }}\n- **Target Language:** {{ $('Webhook Trigger').first().json.body.target_language }}\n- **Course Description:**\n{{ $('Fetch Course Translation').first().json.description }}\n\n- **Modules in this course:**\n{{ JSON.stringify($('ModuleOrgNames').first().json.data, null, 2) }}\n\n- **This Module id:** {{ $json.data.module_id }}\n- **This Module title:** {{ $json.data.title }}\n\n# Instructions\n1. Translate this module only: {{ $json.data.title }}\n2. Ensure a professional and educational tone throughout.\n3. Keep technical terms in English when appropriate.\n4. Preserve the mark down formatting and structure.\n5. Translate all lesson titles using the provided mappings. Apply these exact translations uniformly wherever the lesson title appears (e.g., content, videoscripts, descriptions).\n\n# Tasks\n**Task 1:**\nTranslate the following lesson titles using these translations everywhere throughout the course module content. Be very careful to preserve the lesson_id's unchanged:\n{{ JSON.stringify($('LessonOrgNames').first().json.data, null, 2) }}\n\n**Task 2:**\nTranslate the module content provided below:\n{{ JSON.stringify($json.data, null, 2) }}\n\n**Task 3:**\nRemove all code block (```) markers from the textual content. Present the translated text as plain input, not within code blocks, to ensure compatibility with parsing tools.\n\n",
+        "hasOutputParser": true,
+        "batching": {}
+      },
+      "id": "d2757ed8-f6e0-4b96-9041-c70a4d20b873",
+      "name": "Translate Module",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        1440,
+        1136
+      ]
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"module_id\": \"ID for modulet\",\n\t\"language_code\": \"Sprogkode for modulet, f.eks. 'en'\",\n\t\"title\": \"Modulets titel\",\n\t\"content\": \"Hovedindhold eller tekstligt indhold for modulet\",\n\t\"video_url\": \"URL til modulvideo\",\n\t\"image_url\": \"URL til modulbillede\",\n\t\"videoscript\": \"Transskription eller manuskript til modulvideoen\",\n\t\"description\": \"Kort beskrivelse af modulet\",\n\t\"case_text\": \"Tekst til case/øvelse knyttet til modulet\",\n\t\"image_text\": \"Alternativ tekst (alt) for billedet\"\n,\n\"lessons\": \n[\n{\n\"lesson_id\": \n\"3a58988d-206f-420c-866d-fca18e401d0a\",\n\"title\": \n\"Arbejdsmiljøets betydning og statistik (globalt/Skandinavien)\"\n},\n{\n\"lesson_id\": \n\"e0e5023e-18a6-488b-91e2-523d7f63b262\",\n\"title\": \n\"Formål og fordele ved arbejdsmiljøledelsessystemer\"\n},\n{\n\"lesson_id\": \n\"d1e6e15f-b978-4675-b34b-4924beb3df38\",\n\"title\": \n\"ISO 45001 i oversigt: Historik, PDCA og HLS-struktur\"\n},\n{\n\"lesson_id\": \n\"96e132e6-0362-4b4d-bf90-f5dd965b71de\",\n\"title\": \n\"Hovedforskelle til OHSAS 18001 og kobling til lovgivning\"\n}\n]\n}",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1520,
+        1360
+      ],
+      "id": "b8f9cf96-6644-4863-8679-87b1fbf6865b",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2d31d867-b0c8-4f37-9618-c51643b21eb0",
+              "name": "output.translated_module_titles",
+              "value": "={{ $('Translate Course').item.json.output.translated_module_titles }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2016,
+        112
+      ],
+      "id": "193664ca-46a6-4ebe-9215-d30f91057f9f",
+      "name": "Module Titles"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3a055f7d-94ec-4546-8dd2-6e33188fdeee",
+              "name": "output.lessons",
+              "value": "={{ $('Translate Module').item.json.output.lessons }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2016,
+        1136
+      ],
+      "id": "537bff98-59cd-48a3-967d-5589d99db5db",
+      "name": "Lesson Titles"
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "lesson_translations",
+          "mode": "list",
+          "cachedResultName": "lesson_translations"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "lesson_id": "={{ $json.lesson_id }}",
+            "language_code": "={{ $('Webhook Trigger').first().json.body.target_language }}",
+            "title": "={{ $json.title }}"
+          },
+          "matchingColumns": [
+            "lesson_id",
+            "language_code"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "lesson_id",
+              "displayName": "lesson_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "language_code",
+              "displayName": "language_code",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "video_url",
+              "displayName": "video_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "image_url",
+              "displayName": "image_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "videoscript",
+              "displayName": "videoscript",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "gamma_url",
+              "displayName": "gamma_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "exercises",
+              "displayName": "exercises",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "reflection_questions",
+              "displayName": "reflection_questions",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "resources",
+              "displayName": "resources",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "image_text",
+              "displayName": "image_text",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "image_prompt",
+              "displayName": "image_prompt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "cd5a72fe-cfbc-4b0c-9b36-f0bea2db8899",
+      "name": "Upsert Lesson Titles",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2512,
+        1136
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "Vw56OL1mZd8nlif7",
+          "name": "Postgres staging account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "module_translations",
+          "mode": "list",
+          "cachedResultName": "module_translations"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "language_code": "={{ $('Webhook Trigger').first().json.body.target_language }}",
+            "module_id": "={{ $json.module_id }}",
+            "title": "={{ $json.title }}"
+          },
+          "matchingColumns": [
+            "module_id",
+            "language_code"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "module_id",
+              "displayName": "module_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "language_code",
+              "displayName": "language_code",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "video_url",
+              "displayName": "video_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "image_url",
+              "displayName": "image_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "videoscript",
+              "displayName": "videoscript",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "case_text",
+              "displayName": "case_text",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "case_video_url",
+              "displayName": "case_video_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "thumbnail_url",
+              "displayName": "thumbnail_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "image_text",
+              "displayName": "image_text",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "image_prompt",
+              "displayName": "image_prompt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "3da57af7-e1f7-4c82-8952-658821cb83fa",
+      "name": "Upsert Module Titles",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2464,
+        112
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "Vw56OL1mZd8nlif7",
+          "name": "Postgres staging account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "schema": "public",
+        "table": {
+          "__rl": true,
+          "value": "module_translations",
+          "mode": "list",
+          "cachedResultName": "module_translations"
+        },
+        "columns": {
+          "0": "c",
+          "1": "o",
+          "2": "u",
+          "3": "r",
+          "4": "s",
+          "5": "e",
+          "6": "_",
+          "7": "i",
+          "8": "d",
+          "9": ",",
+          "10": "l",
+          "11": "a",
+          "12": "n",
+          "13": "g",
+          "14": "u",
+          "15": "a",
+          "16": "g",
+          "17": "e",
+          "18": "_",
+          "19": "c",
+          "20": "o",
+          "21": "d",
+          "22": "e",
+          "23": ",",
+          "24": "t",
+          "25": "i",
+          "26": "t",
+          "27": "l",
+          "28": "e",
+          "29": ",",
+          "30": "d",
+          "31": "e",
+          "32": "s",
+          "33": "c",
+          "34": "r",
+          "35": "i",
+          "36": "p",
+          "37": "t",
+          "38": "i",
+          "39": "o",
+          "40": "n",
+          "41": ",",
+          "42": "c",
+          "43": "o",
+          "44": "n",
+          "45": "t",
+          "46": "e",
+          "47": "n",
+          "48": "t",
+          "49": ",",
+          "50": "v",
+          "51": "i",
+          "52": "d",
+          "53": "e",
+          "54": "o",
+          "55": "s",
+          "56": "c",
+          "57": "r",
+          "58": "i",
+          "59": "p",
+          "60": "t",
+          "61": ",",
+          "62": "l",
+          "63": "e",
+          "64": "a",
+          "65": "r",
+          "66": "n",
+          "67": "i",
+          "68": "n",
+          "69": "g",
+          "70": "_",
+          "71": "o",
+          "72": "b",
+          "73": "j",
+          "74": "e",
+          "75": "c",
+          "76": "t",
+          "77": "i",
+          "78": "v",
+          "79": "e",
+          "80": "s",
+          "81": ",",
+          "82": "i",
+          "83": "m",
+          "84": "a",
+          "85": "g",
+          "86": "e",
+          "87": "_",
+          "88": "t",
+          "89": "e",
+          "90": "x",
+          "91": "t",
+          "92": ",",
+          "93": "v",
+          "94": "i",
+          "95": "d",
+          "96": "e",
+          "97": "o",
+          "98": "_",
+          "99": "u",
+          "100": "r",
+          "101": "l",
+          "102": ",",
+          "103": "i",
+          "104": "m",
+          "105": "a",
+          "106": "g",
+          "107": "e",
+          "108": "_",
+          "109": "u",
+          "110": "r",
+          "111": "l",
+          "112": ",",
+          "113": "t",
+          "114": "h",
+          "115": "u",
+          "116": "m",
+          "117": "b",
+          "118": "n",
+          "119": "a",
+          "120": "i",
+          "121": "l",
+          "122": "_",
+          "123": "u",
+          "124": "r",
+          "125": "l",
+          "126": ",",
+          "127": "i",
+          "128": "m",
+          "129": "a",
+          "130": "g",
+          "131": "e",
+          "132": "_",
+          "133": "p",
+          "134": "r",
+          "135": "o",
+          "136": "m",
+          "137": "p",
+          "138": "t",
+          "139": ",",
+          "140": "s",
+          "141": "t",
+          "142": "a",
+          "143": "t",
+          "144": "u",
+          "145": "s",
+          "mappingMode": "defineBelow",
+          "value": {
+            "module_id": "={{ $('Edit Fields3').item.json.data.module_id }}",
+            "language_code": "={{ $('Webhook Trigger').first().json.body.target_language }}",
+            "content": "={{ $json.output.content }}",
+            "image_url": "={{ $('Edit Fields3').item.json.data.image_url }}",
+            "videoscript": "={{ $json.output.videoscript }}",
+            "description": "={{ $json.output.description }}",
+            "case_text": "={{ $json.output.case_text }}",
+            "status": "draft",
+            "thumbnail_url": "={{ $('Edit Fields3').item.json.data.thumbnail_url }}",
+            "image_text": "={{ $json.output.image_text }}",
+            "image_prompt": "={{ $('Edit Fields3').item.json.data.image_prompt }}"
+          },
+          "matchingColumns": [
+            "module_id",
+            "language_code"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "module_id",
+              "displayName": "module_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "language_code",
+              "displayName": "language_code",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "video_url",
+              "displayName": "video_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "image_url",
+              "displayName": "image_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "videoscript",
+              "displayName": "videoscript",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "case_text",
+              "displayName": "case_text",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "case_video_url",
+              "displayName": "case_video_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "thumbnail_url",
+              "displayName": "thumbnail_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "image_text",
+              "displayName": "image_text",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "image_prompt",
+              "displayName": "image_prompt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "0dc79c7f-1f41-4c42-8643-d1b82d2082c6",
+      "name": "Update Module Translation",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1792,
+        1136
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "Vw56OL1mZd8nlif7",
+          "name": "Postgres staging account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Module Quiz",
+        "height": 80
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        112,
+        592
+      ],
+      "id": "2d7017c2-591b-4cc8-bff2-92bbab166b28",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output.lessons",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        2240,
+        1136
+      ],
+      "id": "97ddb88b-6f5b-46ec-8085-a914c1dd04f6",
+      "name": "Split Lesson Titles"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT\n  q.module_id,\n  t.module_question_id,\n  o.id AS module_question_option_id,\n  (to_jsonb(q)  - 'id' - 'module_id')                          AS module_question,\n  (to_jsonb(t)  - 'id' - 'module_question_id')                 AS module_question_translation,\n  (to_jsonb(o)  - 'id' - 'module_question_id')                 AS module_question_option,\n  (to_jsonb(ot) - 'id' - 'module_question_option_id')          AS module_question_option_translation\nFROM module_questions q\nLEFT JOIN module_question_translations t\n  ON t.module_question_id = q.id AND t.language_code = '{{ $('Webhook Trigger').first().json.body.source_language }}'\nLEFT JOIN module_question_options o\n  ON o.module_question_id = q.id\nLEFT JOIN module_question_option_translations ot\n  ON ot.module_question_option_id = o.id AND ot.language_code = '{{ $('Webhook Trigger').first().json.body.source_language }}'\nWHERE q.module_id = '{{ $('Edit Fields2').item.json.module_id }}'\n  AND (t.module_question_id IS NOT NULL OR ot.module_question_option_id IS NOT NULL)\nORDER BY q.position, o.position;",
+        "options": {}
+      },
+      "id": "7eeda426-c2e1-4b29-91c5-e3fb402322fe",
+      "name": "Fetch Module Questions1",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        704,
+        752
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "Vw56OL1mZd8nlif7",
+          "name": "Postgres staging account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Input: items = array fra Postgres-noden\nconst byKey = new Map();\n\nfor (const item of items) {\n  const r = item.json;\n  const qid  = r.module_question_id;\n  const lang = r.module_question_translation?.language_code ?? 'unknown';\n  const key  = `${qid}::${lang}`;\n\n  if (!byKey.has(key)) {\n    byKey.set(key, {\n      module_id: r.module_id,\n      module_question_id: qid,\n      language_code: lang,\n      question_position: r.module_question?.position ?? null,\n      question_text: r.module_question_translation?.question_text ?? null,\n      options: [],\n    });\n  }\n\n  // Udelad options uden oversættelse, hvis du vil:\n  const option = {\n    module_question_option_id: r.module_question_option_id,\n    option_position: r.module_question_option?.position ?? null,\n    is_correct: r.module_question_option?.is_correct ?? null,\n    option_text: r.module_question_option_translation?.option_text ?? null,\n    option_language_code: r.module_question_option_translation?.language_code ?? lang,\n  };\n\n  // Tilføj kun hvis der faktisk er tekst (valgfrit filter)\n  if (option.option_text != null) {\n    byKey.get(key).options.push(option);\n  }\n}\n\n// Sortér options efter position (valgfrit)\nconst out = Array.from(byKey.values()).map(q => {\n  q.options.sort((a, b) => (a.option_position ?? 0) - (b.option_position ?? 0));\n  return { json: q };\n});\n\nreturn out;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        928,
+        752
+      ],
+      "id": "7d861510-ec74-4fa2-a495-6ab7831e6077",
+      "name": "QuizOrg"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1152,
+        752
+      ],
+      "id": "43b5bd84-d6e6-4c7b-aa48-551fc75c10b1",
+      "name": "AggQuizOrg"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a professional course translator. Translate the provided course module quiz and quiz options content from {{ $('Webhook Trigger').first().json.body.source_language }} to {{ $('Webhook Trigger').first().json.body.target_language }} following the guidelines below.\n\n# Course Context\n- **Course Structure:** Course -> **Modules** -> Lessons. We are now working in quiz and quiz options in one module.\n- **Course Title:** {{ $('Translate Course').first().json.output.title }}\n- **Source Language:** {{ $('Webhook Trigger').first().json.body.source_language }}\n- **Target Language:** {{ $('Webhook Trigger').first().json.body.target_language }}\n- **Course Description:**\n{{ $('Fetch Course Translation').first().json.description }}\n\n- **Modules in this course:**\n{{ JSON.stringify($('ModuleOrgNames').first().json.data, null, 2) }}\n\n- **This Module id:** {{ $('Edit Fields2').first().json.module_id }}\n- **This Module title:** {{ $('Translate Module').item.json.output.title }}\n- **This Module content:** {{ $('Translate Module').item.json.output.content }}\n\n\n# Instructions\n1. Translate question_text and option_text in the Quiz-json object: {{ JSON.stringify($('AggQuizOrg').item.json.data, null, 2) }}\n2. Ensure a professional and educational tone throughout.\n3. Keep technical terms in English when appropriate.\n4. Keep all other fields unchanged (eg. module_id, question_position etc)\n\n\n\n\n",
+        "hasOutputParser": true,
+        "batching": {}
+      },
+      "id": "73ffbd5f-9a2f-42cc-b345-7d5c91c7d10d",
+      "name": "Translate Module1",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        736,
+        1632
+      ]
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"module_questions\": [\n    {\n      \"module_id\": \"fbf23506-f5b2-4f4e-9f8d-75c34dbcd1ab\",\n      \"module_question_id\": \"3766e09f-20e7-4031-a450-9eb20f38f88b\",\n      \"question_text\": \"Hvilket af følgende udsagn beskriver bedst det primære formål med at implementere et arbejdsmiljøledelsessystem som ISO 45001?\",\n      \"options\": [\n        {\n          \"module_question_option_id\": \"fab284b2-9fad-4557-8758-3ee4455adaef\",\n          \"option_text\": \"At forebygge arbejdsulykker og sygdomme gennem systematik og kontinuerlig forbedring.\"\n        },\n        {\n          \"module_question_option_id\": \"3b68037c-d7e5-4c0a-9e79-e22e0b351647\",\n          \"option_text\": \"At reducere virksomhedens energi- og ressourceforbrug.\"\n        },\n        {\n          \"module_question_option_id\": \"7eb88bb9-e7a5-4ae0-b47a-fbd1825322c1\",\n          \"option_text\": \"At sikre, at alle medarbejdere er ansat på fuldtid.\"\n        },\n        {\n          \"module_question_option_id\": \"047ef140-7f5c-4c91-b59f-206f3ca45c2b\",\n          \"option_text\": \"At gøre virksomheden mindre afhængig af medarbejdernes input.\"\n        }\n      ]\n    },\n    {\n      \"module_id\": \"fbf23506-f5b2-4f4e-9f8d-75c34dbcd1ab\",\n      \"module_question_id\": \"a2d6fb0a-211d-4414-81fb-fd7bee2bc5d1\",\n      \"question_text\": \"Hvilket element er en NYT krav i ISO 45001 sammenlignet med OHSAS 18001 og har særlig betydning for ledere i den skandinaviske kontekst?\",\n      \"options\": [\n        {\n          \"module_question_option_id\": \"b890785d-a9bb-4d02-8e8c-6eaf1c68826a\",\n          \"option_text\": \"Udarbejdelse af en arbejdsmiljøpolitik\"\n        },\n        {\n          \"module_question_option_id\": \"ea05cca2-75c0-4d36-b169-4e1372090cf6\",\n          \"option_text\": \"Obligatorisk brug af eksterne auditører\"\n        },\n        {\n          \"module_question_option_id\": \"f6135176-9189-4bf5-a02e-4b36723fa315\",\n          \"option_text\": \"Registrering af alle nærved-hændelser\"\n        },\n        {\n          \"module_question_option_id\": \"7ddfbbb3-d8de-4ac5-9584-ab24381e1814\",\n          \"option_text\": \"Styrket medarbejderinddragelse og konsultationsprocesser på alle niveauer\"\n        }\n      ]\n    }\n  ]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        864,
+        1856
+      ],
+      "id": "20749514-a41f-4563-b688-91e278e68ddf",
+      "name": "Structured Output Parser2"
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "module_question_translations",
+          "mode": "list",
+          "cachedResultName": "module_question_translations"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "module_question_id": "={{ $json.module_question_id }}",
+            "language_code": "={{ $('Webhook Trigger').first().json.body.target_language }}",
+            "question_text": "={{ $json.question_text }}"
+          },
+          "matchingColumns": [
+            "module_question_id",
+            "language_code"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "module_question_id",
+              "displayName": "module_question_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "language_code",
+              "displayName": "language_code",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "question_text",
+              "displayName": "question_text",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "1d8a5a42-3a82-4750-935c-2462e75a69a8",
+      "name": "Upsert quiz",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1392,
+        1632
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "Vw56OL1mZd8nlif7",
+          "name": "Postgres staging account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "module_question_option_translations",
+          "mode": "list",
+          "cachedResultName": "module_question_option_translations"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "module_question_option_id": "={{ $json.module_question_option_id }}",
+            "option_text": "={{ $json.option_text }}",
+            "language_code": "={{ $('Webhook Trigger').first().json.body.target_language }}"
+          },
+          "matchingColumns": [
+            "module_question_option_id",
+            "language_code"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "module_question_option_id",
+              "displayName": "module_question_option_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "language_code",
+              "displayName": "language_code",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "option_text",
+              "displayName": "option_text",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "5c92f5a2-85f5-418a-b7a6-fe1f84235743",
+      "name": "Upsert quiz options",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1904,
+        1632
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "Vw56OL1mZd8nlif7",
+          "name": "Postgres staging account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        2192,
+        1632
+      ],
+      "id": "aa5d45aa-f7d9-4db9-9d17-4b27059199a6",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a professional course translator. Translate the provided course module **lesson content** from {{ $('Webhook Trigger').first().json.body.source_language }} to {{ $('Webhook Trigger').first().json.body.target_language }} following the guidelines below.\n\n# Course Context\n- **Course Structure: Course -> Modules -> **Lessons**. We are now working in one lesson.\n- **Course Title:** {{ $('Translate Course').first().json.output.title }}\n- **Source Language:** {{ $('Webhook Trigger').first().json.body.source_language }}\n- **Target Language:** {{ $('Webhook Trigger').first().json.body.target_language }}\n- **Course Description:**\n{{ $('Fetch Course Translation').first().json.description }}\n\n\n- **This Lesson title:** {{ $json.data.translated_title }}\n- **This Lesson id:** {{ $json.data.id }}\n\n# Instructions\n1. Translate this lesson only: {{ $json.data.translated_title }}\n2. Use this translation of the title name because it is already used in other places: {{ $json.data.translated_title }}\n3. Don't change id, code, url fields\n4. Ensure a professional and educational tone throughout.\n5. Keep technical terms in English when appropriate.\n6. Preserve the mark down formatting and structure.\n\n**Task 1:**\nTranslate the lesson content provided below and keep the json elements:\n{{ JSON.stringify($json.data, null, 2) }}\n\n**Task 2:**\nRemove all code block (```) markers from the textual content. Present the translated text as plain input, not within code blocks, to ensure compatibility with parsing tools.\nDon't use null as values, but use an empty string like this: \"videoscript\": null → \"videoscript\": \"\"",
+        "hasOutputParser": true,
+        "batching": {}
+      },
+      "id": "6a9aecbf-7730-41bd-93ef-91f6efa59668",
+      "name": "Translate Lesson",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        3520,
+        1648
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT\n  t.*,\n  te.title AS translated_title\nFROM lesson_translations t\nJOIN lessons l\n  ON t.lesson_id = l.id\nLEFT JOIN lesson_translations te\n  ON te.lesson_id = t.lesson_id\n AND te.language_code = '{{ $('Webhook Trigger').first().json.body.target_language }}'\nWHERE l.module_id = '{{ $('Edit Fields2').first().json.module_id }}'\n  AND t.language_code = '{{ $('Webhook Trigger').first().json.body.source_language }}';",
+        "options": {}
+      },
+      "id": "e5b741cf-1d4f-4152-aacc-f44bac726fb7",
+      "name": "Fetch Lesson Org Content",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2432,
+        1632
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "Vw56OL1mZd8nlif7",
+          "name": "Postgres staging account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"lesson_id\": \"3a58988d-206f-420c-866d-fca18e401d0a\",\n\t\"title\": \"The Significance of Occupational Health and Safety and Statistics\",\n\t\"content\": \"This lesson introduces the core purpose and significant benefits of establishing and maintaining an Occupational Health and Safety (OH&S) Management System, particularly in alignment with the ISO 45001 standard. We will explore...\",\n\t\"videoscript\": \"Welcome to the first lesson of our Introduction to ISO 45001 ...\",\n\t\"exercises\": \"List three key benefits of an OH&S management system\",\n\t\"reflection_questions\": \"In your current work environment, what are the most significant health and safety risks you perceive?\",\n\t\"resources\": \"ISO 45001:2018 - Occupational health and safety management systems – Requirements with guidance for use\",\n\t\"image_text\": \"Two people standing in the office\"\n}",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        4288,
+        1904
+      ],
+      "id": "e8908426-2cbe-4eea-8934-6e61ec5daf6e",
+      "name": "Structured Output Parser3"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "schema": "public",
+        "table": {
+          "__rl": true,
+          "value": "lesson_translations",
+          "mode": "list",
+          "cachedResultName": "lesson_translations"
+        },
+        "columns": {
+          "0": "c",
+          "1": "o",
+          "2": "u",
+          "3": "r",
+          "4": "s",
+          "5": "e",
+          "6": "_",
+          "7": "i",
+          "8": "d",
+          "9": ",",
+          "10": "l",
+          "11": "a",
+          "12": "n",
+          "13": "g",
+          "14": "u",
+          "15": "a",
+          "16": "g",
+          "17": "e",
+          "18": "_",
+          "19": "c",
+          "20": "o",
+          "21": "d",
+          "22": "e",
+          "23": ",",
+          "24": "t",
+          "25": "i",
+          "26": "t",
+          "27": "l",
+          "28": "e",
+          "29": ",",
+          "30": "d",
+          "31": "e",
+          "32": "s",
+          "33": "c",
+          "34": "r",
+          "35": "i",
+          "36": "p",
+          "37": "t",
+          "38": "i",
+          "39": "o",
+          "40": "n",
+          "41": ",",
+          "42": "c",
+          "43": "o",
+          "44": "n",
+          "45": "t",
+          "46": "e",
+          "47": "n",
+          "48": "t",
+          "49": ",",
+          "50": "v",
+          "51": "i",
+          "52": "d",
+          "53": "e",
+          "54": "o",
+          "55": "s",
+          "56": "c",
+          "57": "r",
+          "58": "i",
+          "59": "p",
+          "60": "t",
+          "61": ",",
+          "62": "l",
+          "63": "e",
+          "64": "a",
+          "65": "r",
+          "66": "n",
+          "67": "i",
+          "68": "n",
+          "69": "g",
+          "70": "_",
+          "71": "o",
+          "72": "b",
+          "73": "j",
+          "74": "e",
+          "75": "c",
+          "76": "t",
+          "77": "i",
+          "78": "v",
+          "79": "e",
+          "80": "s",
+          "81": ",",
+          "82": "i",
+          "83": "m",
+          "84": "a",
+          "85": "g",
+          "86": "e",
+          "87": "_",
+          "88": "t",
+          "89": "e",
+          "90": "x",
+          "91": "t",
+          "92": ",",
+          "93": "v",
+          "94": "i",
+          "95": "d",
+          "96": "e",
+          "97": "o",
+          "98": "_",
+          "99": "u",
+          "100": "r",
+          "101": "l",
+          "102": ",",
+          "103": "i",
+          "104": "m",
+          "105": "a",
+          "106": "g",
+          "107": "e",
+          "108": "_",
+          "109": "u",
+          "110": "r",
+          "111": "l",
+          "112": ",",
+          "113": "t",
+          "114": "h",
+          "115": "u",
+          "116": "m",
+          "117": "b",
+          "118": "n",
+          "119": "a",
+          "120": "i",
+          "121": "l",
+          "122": "_",
+          "123": "u",
+          "124": "r",
+          "125": "l",
+          "126": ",",
+          "127": "i",
+          "128": "m",
+          "129": "a",
+          "130": "g",
+          "131": "e",
+          "132": "_",
+          "133": "p",
+          "134": "r",
+          "135": "o",
+          "136": "m",
+          "137": "p",
+          "138": "t",
+          "139": ",",
+          "140": "s",
+          "141": "t",
+          "142": "a",
+          "143": "t",
+          "144": "u",
+          "145": "s",
+          "mappingMode": "defineBelow",
+          "value": {
+            "language_code": "={{ $('Webhook Trigger').first().json.body.target_language }}",
+            "content": "={{ $json.output.content }}",
+            "image_url": "={{ $('Split Out1').item.json.data.image_url }}",
+            "videoscript": "={{ $json.output.videoscript }}",
+            "status": "draft",
+            "image_text": "={{ $json.output.image_text }}",
+            "image_prompt": "={{ $('Split Out1').item.json.data.image_prompt }}",
+            "lesson_id": "={{ $('Split Out1').item.json.data.lesson_id }}",
+            "exercises": "={{ $json.output.exercises }}",
+            "reflection_questions": "={{ $json.output.reflection_questions }}",
+            "resources": "={{ $json.output.resources }}"
+          },
+          "matchingColumns": [
+            "lesson_id",
+            "language_code"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "lesson_id",
+              "displayName": "lesson_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "language_code",
+              "displayName": "language_code",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "video_url",
+              "displayName": "video_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "image_url",
+              "displayName": "image_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "videoscript",
+              "displayName": "videoscript",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "gamma_url",
+              "displayName": "gamma_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "exercises",
+              "displayName": "exercises",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "reflection_questions",
+              "displayName": "reflection_questions",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "resources",
+              "displayName": "resources",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "image_text",
+              "displayName": "image_text",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "image_prompt",
+              "displayName": "image_prompt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "db30548f-564a-4a0f-9e02-50ec08e78a9c",
+      "name": "Update Lesson Translation",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        3904,
+        1648
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "Vw56OL1mZd8nlif7",
+          "name": "Postgres staging account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Hent alle items fra den tidligere node \"Translate Module1\"\nconst sourceItems = $(\"Translate Module1\").all(); // <- ændringen\n\n// Brug en Map til at sikre unikke options baseret på module_question_option_id\nconst uniqueOptions = new Map();\n\nfor (const item of sourceItems) {\n  const questions = item.json?.output?.module_questions ?? [];\n\n  for (const question of questions) {\n    const options = question.options ?? [];\n    for (const option of options) {\n      // Brug module_question_option_id som unik nøgle\n      if (!uniqueOptions.has(option.module_question_option_id)) {\n        uniqueOptions.set(option.module_question_option_id, {\n          module_question_option_id: option.module_question_option_id,\n          option_text: option.option_text,\n          module_question_id: question.module_question_id,\n        });\n      }\n    }\n  }\n}\n\n// Konverter Map til array format som n8n forventer\nconst allOptions = Array.from(uniqueOptions.values()).map(opt => ({ json: opt }));\nreturn allOptions;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1648,
+        1632
+      ],
+      "id": "81d23653-9713-4359-8f73-73e87988fc92",
+      "name": "Code Quiz options"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Brug en Map til at sikre unikke questions baseret på module_question_id\nconst uniqueQuestions = new Map();\n\nfor (const item of $input.all()) {\n  const questions = item.json.output.module_questions;\n  \n  for (const question of questions) {\n    // Brug module_question_id som unik nøgle\n    if (!uniqueQuestions.has(question.module_question_id)) {\n      uniqueQuestions.set(question.module_question_id, {\n        module_question_id: question.module_question_id,\n        module_id: question.module_id,\n        question_text: question.question_text,\n        language_code: 'en' // eller hent fra webhook hvis nødvendigt\n      });\n    }\n  }\n}\n\n// Konverter Map til array format som n8n forventer\nconst allQuestions = Array.from(uniqueQuestions.values()).map(q => ({\n  json: q\n}));\n\nreturn allQuestions;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1152,
+        1632
+      ],
+      "id": "57e213a4-41e8-484e-ba86-653cd2f09165",
+      "name": "Code Quiz"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "openai/gpt-oss-120b",
+          "mode": "list",
+          "cachedResultName": "openai/gpt-oss-120b"
+        },
+        "options": {}
+      },
+      "id": "92ac4965-6de7-4e1f-92d9-ee6295ff1a78",
+      "name": "gpt-4.0-mini",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        3248,
+        880
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "wLbV0srlBMaP36mY",
+          "name": "Open Router"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Saml alle rækker (items) til én item med feltet \"data\"\nconst rows = (await $input.all()).map(i => i.json);\nreturn [{ json: { data: rows } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2640,
+        1632
+      ],
+      "id": "4cc8ba90-8de8-4862-b8fe-6bcee543275a",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {
+          "destinationFieldName": "data"
+        }
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        2864,
+        1632
+      ],
+      "id": "bd453ec3-0a03-4322-b38e-0a00d8774448",
+      "name": "Split Out1"
+    },
+    {
+      "parameters": {
+        "options": {
+          "reset": false
+        }
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        3152,
+        1632
+      ],
+      "id": "4a8ec2b8-06b1-4e20-84de-f20752d7192f",
+      "name": "Loop Over Items1"
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Fetch Course Info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Course Info": {
+      "main": [
+        [
+          {
+            "node": "Fetch Module Names",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Translate Module",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Translate Module1",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Translate Lesson",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Translate Course",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Translate Course",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Translate Course",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Course Translation": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert Course Translation": {
+      "main": [
+        [
+          {
+            "node": "Module Titles",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Module Names": {
+      "main": [
+        [
+          {
+            "node": "ModuleOrgNames",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ModuleOrgNames": {
+      "main": [
+        [
+          {
+            "node": "Fetch Course Translation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Upsert Module Titles",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Lesson Names": {
+      "main": [
+        [
+          {
+            "node": "LessonOrgNames",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LessonOrgNames": {
+      "main": [
+        [
+          {
+            "node": "Fetch Module Questions1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Fetch Lesson Names",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Module Translation": {
+      "main": [
+        [
+          {
+            "node": "Aggregate1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Translate Course": {
+      "main": [
+        [
+          {
+            "node": "Upsert Course Translation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Translate Module",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Translate Module",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Translate Module": {
+      "main": [
+        [
+          {
+            "node": "Update Module Translation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Module Titles": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lesson Titles": {
+      "main": [
+        [
+          {
+            "node": "Split Lesson Titles",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert Module Titles": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Module Translation": {
+      "main": [
+        [
+          {
+            "node": "Lesson Titles",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Lesson Titles": {
+      "main": [
+        [
+          {
+            "node": "Upsert Lesson Titles",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Module Questions1": {
+      "main": [
+        [
+          {
+            "node": "QuizOrg",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "QuizOrg": {
+      "main": [
+        [
+          {
+            "node": "AggQuizOrg",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AggQuizOrg": {
+      "main": [
+        [
+          {
+            "node": "Fetch Module Translation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert Lesson Titles": {
+      "main": [
+        [
+          {
+            "node": "Translate Module1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser2": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Translate Module1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Translate Module1": {
+      "main": [
+        [
+          {
+            "node": "Code Quiz",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert quiz": {
+      "main": [
+        [
+          {
+            "node": "Code Quiz options",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert quiz options": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Fetch Lesson Org Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Lesson Org Content": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser3": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Translate Lesson",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Translate Lesson": {
+      "main": [
+        [
+          {
+            "node": "Update Lesson Translation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Lesson Translation": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code Quiz options": {
+      "main": [
+        [
+          {
+            "node": "Upsert quiz options",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code Quiz": {
+      "main": [
+        [
+          {
+            "node": "Upsert quiz",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gpt-4.0-mini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Structured Output Parser1",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Structured Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Structured Output Parser3",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Translate Lesson",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Webhook Trigger": [
+      {
+        "json": {
+          "headers": {
+            "host": "utilco.app.n8n.cloud",
+            "user-agent": "axios/1.11.0",
+            "content-length": "98",
+            "accept": "application/json, text/plain, */*",
+            "accept-encoding": "gzip, br",
+            "cdn-loop": "cloudflare; loops=1; subreqs=1",
+            "cf-connecting-ip": "2001:8a0:58dc:d500:2155:606d:6a71:778d",
+            "cf-ew-via": "15",
+            "cf-ipcountry": "PT",
+            "cf-ray": "973291a524858e38-LIS",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "cf-worker": "n8n.cloud",
+            "content-type": "application/json",
+            "x-forwarded-for": "2001:8a0:58dc:d500:2155:606d:6a71:778d, 172.68.103.95",
+            "x-forwarded-host": "utilco.app.n8n.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "traefik-prod-users-gwc-10-6888ffdd77-9vgr4",
+            "x-is-trusted": "yes",
+            "x-real-ip": "2001:8a0:58dc:d500:2155:606d:6a71:778d"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "course_id": "fe7e5cbf-1c42-4054-a871-e203ac5377db",
+            "source_language": "da",
+            "target_language": "en"
+          },
+          "webhookUrl": "https://utilco.app.n8n.cloud/webhook/translate-course",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "versionId": "42c91bf8-1822-4652-a660-caf315f5aaa3",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "createdAt": "2025-08-22T12:57:18.430Z",
+      "updatedAt": "2025-08-22T12:57:18.430Z",
+      "role": "workflow:owner",
+      "workflowId": "92s5sogGiwikj7Ai",
+      "projectId": "SFLNAzqJIfhKMhJx"
+    }
+  ],
+  "tags": []
+}
