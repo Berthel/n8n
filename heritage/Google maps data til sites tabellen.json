@@ -1,0 +1,383 @@
+{
+  "createdAt": "2025-04-26T15:32:41.035Z",
+  "updatedAt": "2025-05-22T10:56:03.000Z",
+  "id": "PRROtJ4Avz5xvnHJ",
+  "name": "Google maps data til sites tabellen",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -540,
+        120
+      ],
+      "id": "87aea14e-f10b-4815-9980-a0ee2bc72caa",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "sites",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "latitude",
+              "condition": "eq",
+              "keyValue": "0"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        120
+      ],
+      "id": "17342a3a-a3d5-4908-b675-935b3e7253b3",
+      "name": "Supabase",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://places.googleapis.com/v1/places:searchText",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Goog-FieldMask",
+              "value": "places.id,places.displayName,places.types,places.formattedAddress,places.location,places.rating,places.websiteUri,places.priceLevel,places.primaryType,places.plusCode,places.business_status,places.googleMapsLinks"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "= { \"textQuery\": \"{{ $json.id }}, {{ $json.city_id }}\" }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -100,
+        120
+      ],
+      "id": "077a9be1-d1d1-4431-8b3e-a3b6342592f1",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "RBY53ewF7tAnXKlY",
+          "name": "Google API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "sites",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $('Supabase').item.json.id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "latitude",
+              "fieldValue": "={{ $json.places[0].location.latitude }}"
+            },
+            {
+              "fieldId": "longitude",
+              "fieldValue": "={{ $json.places[0].location.longitude }}"
+            },
+            {
+              "fieldId": "address",
+              "fieldValue": "={{ $json.places[0].formattedAddress }}"
+            },
+            {
+              "fieldId": "google_maps_url",
+              "fieldValue": "={{ $json.places[0].googleMapsLinks.directionsUri }}"
+            },
+            {
+              "fieldId": "website_url",
+              "fieldValue": "={{ $json.places[0].websiteUri }}"
+            },
+            {
+              "fieldId": "place_id",
+              "fieldValue": "={{ $json.places[0].id }}"
+            },
+            {
+              "fieldId": "global_code",
+              "fieldValue": "={{ $json.places[0].plusCode.globalCode }}"
+            },
+            {
+              "fieldId": "cid",
+              "fieldValue": "={{ $json.places[0].googleMapsLinks.placeUri.match(/[?&]cid=(\\d+)/)[1] }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        120,
+        120
+      ],
+      "id": "a6cdf6c7-b8b3-406b-b598-f1431d66b780",
+      "name": "Update Sites",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "tableId": "site_translations",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "site_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Supabase').item.json.id }}"
+            },
+            {
+              "keyName": "city_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Supabase').item.json.city_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        340,
+        195
+      ],
+      "id": "c715e9d6-b87a-47c6-a369-b89b6da02971",
+      "name": "Delete site_translations",
+      "alwaysOutputData": false,
+      "executeOnce": false,
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://rrkivosxnrfvdawawexd.supabase.co/rest/v1/site_translations?on_conflict=language_code,site_id,city_id\n",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Prefer",
+              "value": "resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify([$json]) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -540,
+        455
+      ],
+      "id": "31a64e9c-65fc-46bc-a22e-9d3f41616eaa",
+      "name": "Upsert",
+      "executeOnce": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "znNIyfNCzQN57VEr",
+          "name": "supabase service role api"
+        },
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "site_translations",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "site_id",
+              "fieldValue": "={{ $('Update Sites').item.json.id }}"
+            },
+            {
+              "fieldId": "city_id",
+              "fieldValue": "={{ $('Update Sites').item.json.city_id }}"
+            },
+            {
+              "fieldId": "name",
+              "fieldValue": "={{ $('HTTP Request').item.json.places[0].displayName.text }}"
+            },
+            {
+              "fieldId": "description",
+              "fieldValue": "tbd"
+            },
+            {
+              "fieldId": "language_code",
+              "fieldValue": "en"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        860,
+        120
+      ],
+      "id": "cbb76d8c-a5bb-4e74-8103-d70fd85de016",
+      "name": "Insert site_translations",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        560,
+        120
+      ],
+      "id": "37443329-e8e3-406e-8460-1c98545e739a",
+      "name": "Merge"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Update Sites",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Sites": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Delete site_translations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete site_translations": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Insert site_translations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When clicking ‘Test workflow’": [
+      {
+        "json": {}
+      }
+    ]
+  },
+  "versionId": "d15ed0be-5c08-4361-b7e7-fdfb3ef4560a",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-04-26T15:32:41.040Z",
+      "updatedAt": "2025-04-26T15:32:41.040Z",
+      "role": "workflow:owner",
+      "workflowId": "PRROtJ4Avz5xvnHJ",
+      "projectId": "rkqKISKa14HwF9Xd"
+    }
+  ],
+  "tags": []
+}
