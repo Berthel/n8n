@@ -1,0 +1,1131 @@
+{
+  "createdAt": "2025-09-06T09:48:24.736Z",
+  "updatedAt": "2025-09-06T09:53:56.000Z",
+  "id": "Ta60gCRWdIYRSOkK",
+  "name": "n8n workflow backup",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "6bc6de88-6887-4a40-83a2-c9c38cba6cf7",
+      "name": "Loop Over Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "position": [
+        -880,
+        688
+      ],
+      "executeOnce": false,
+      "typeVersion": 3
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "edit",
+        "owner": {
+          "__rl": true,
+          "mode": "",
+          "value": "={{ $(\"Configuration\").item.json.repo.owner }}"
+        },
+        "repository": {
+          "__rl": true,
+          "mode": "",
+          "value": "={{ $(\"Configuration\").item.json.repo.name }}"
+        },
+        "filePath": "={{ $json.context.newFile.path }}",
+        "fileContent": "={{ JSON.stringify($json.n8nWorkflowData.base64Decode().parseJson(), null, 2) }}",
+        "commitMessage": "=update: {{ $json.context.newFile.name }}"
+      },
+      "id": "26359cb9-d0cb-4939-a938-9219740ac9a7",
+      "name": "Update file content and commit",
+      "type": "n8n-nodes-base.github",
+      "position": [
+        1072,
+        1648
+      ],
+      "webhookId": "f2d754dd-b68d-41e8-a662-7e91c1c3aa95",
+      "typeVersion": 1,
+      "credentials": {
+        "githubApi": {
+          "id": "Tr9Dx74op54WsoyZ",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours"
+            }
+          ]
+        }
+      },
+      "id": "c6541eab-83d7-409d-8121-84e4bcb950e9",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        -3424,
+        640
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "filters": {},
+        "requestOptions": {}
+      },
+      "id": "746fe274-8cfa-4dee-a67e-25e94cc3fe33",
+      "name": "Get all workflows",
+      "type": "n8n-nodes-base.n8n",
+      "position": [
+        -1840,
+        624
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "n8nApi": {
+          "id": "TeAnf2J776R9n40t",
+          "name": "n8n account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Encode workflow data to base64 to prevent data pollution\nconst items = $input.all();\n\nfor (const item of items) {\n  const originalWorkflow = item.json;\n\n  item.json = {\n    id: originalWorkflow.id,\n    name: originalWorkflow.name,\n    n8nWorkflowData: Buffer.from(JSON.stringify(originalWorkflow)).toString('base64')\n  };\n}\n\nreturn items;"
+      },
+      "id": "4d71a0df-7d46-43da-a42d-a6af77f74b25",
+      "name": "Encode N8N workflows",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        -1616,
+        624
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "jsCode": "// Helper function to ensure stable JSON serialization for reliable comparison.\nfunction sortKeysDeep(obj) {\n  if (obj === null || typeof obj !== 'object') return obj;\n  if (Array.isArray(obj)) return obj.map(sortKeysDeep);\n  const out = {};\n  Object.keys(obj).sort().forEach(k => { out[k] = sortKeysDeep(obj[k]); });\n  return out;\n}\n\nconst items = $input.all();\nconst WORKFLOWS_DIR = $node[\"Configuration\"].json.repo.path;\n\nfor (const item of items) {\n  const src = item.json || {};\n  const flags = {\n    fileExists: false,\n    nameChanged: false,\n    shouldCommit: false\n  };\n  // Initialize the context container\n  item.json.context = {\n    oldFile: { path: '', name: '' },\n    newFile: { path: '', name: '' },\n    operation: ''\n  };\n  const context = item.json.context;\n\n  // 1. Determine if the file exists on GitHub.\n  const hasGithub = typeof src.githubWorkflowData === 'string' && src.githubWorkflowData.length > 0;\n  flags.fileExists = hasGithub;\n\n  // 2. Extract the current workflow name from the N8N data.\n  const currentName = src.name || '';\n  context.newFile.name = currentName;\n\n  // 3. Detect renames and set file paths.\n  if (typeof src.filePath === 'string' && src.filePath.length > 0) {\n    const parts = src.filePath.split('/');\n    const filename = parts.pop() || '';\n    const githubName = filename.endsWith('.json') ? filename.slice(0, -5) : filename;\n    \n    flags.nameChanged = githubName !== currentName;\n    context.oldFile.path = src.filePath;\n    context.oldFile.name = githubName;\n    \n    const dirPath = parts.join('/');\n    context.newFile.path = `${dirPath}/${currentName}.json`;\n\n  } else {\n    flags.nameChanged = false;\n    context.newFile.path = `${WORKFLOWS_DIR}/${currentName}.json`.replace(/\\/+/g, '/');\n  }\n\n  // 4. Perform a stable comparison to see if a commit is needed.\n  try {\n    if (flags.fileExists) {\n      const n8nJsonStr = Buffer.from(src.n8nWorkflowData, 'base64').toString('utf8');\n      const githubJsonStr = Buffer.from(src.githubWorkflowData, 'base64').toString('utf8');\n      const n8nObj = JSON.parse(n8nJsonStr);\n      const githubObj = JSON.parse(githubJsonStr);\n      const stableN8nStr = JSON.stringify(sortKeysDeep(n8nObj));\n      const stableGithubStr = JSON.stringify(sortKeysDeep(githubObj));\n      flags.shouldCommit = stableN8nStr !== stableGithubStr;\n    } else {\n      flags.shouldCommit = true; // New file, always commit.\n    }\n  } catch (e) {\n    flags.shouldCommit = true;   // If parsing or comparison fails, better to commit.\n  }\n\n  // 5. Determine the final operation type.\n  if (flags.nameChanged) {\n    context.operation = 'rename';\n  } else if (!flags.fileExists) {\n    context.operation = 'create';\n  } else if (flags.shouldCommit) {\n    context.operation = 'update';\n  } else {\n    context.operation = 'skip';\n  }\n}\n\nreturn items;"
+      },
+      "id": "89fdf1d1-f6c6-41a2-8cb2-8347617e378a",
+      "name": "Decide changes",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        -624,
+        704
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "delete",
+        "owner": {
+          "__rl": true,
+          "mode": "",
+          "value": "={{ $(\"Configuration\").item.json.repo.owner }}"
+        },
+        "repository": {
+          "__rl": true,
+          "mode": "",
+          "value": "={{ $(\"Configuration\").item.json.repo.name }}"
+        },
+        "filePath": "={{ $json.context.oldFile.path }}",
+        "commitMessage": "=rename: {{ $json.context.oldFile.name }} -> {{ $json.context.newFile.name }} (step 1/2: remove old)"
+      },
+      "id": "a225194e-c3c1-41a3-8c77-0a8fd1932e1e",
+      "name": "Delete old file",
+      "type": "n8n-nodes-base.github",
+      "position": [
+        1232,
+        1184
+      ],
+      "webhookId": "1bd59af3-c8ee-4664-9cfd-df3ab4b6793d",
+      "typeVersion": 1,
+      "credentials": {
+        "githubApi": {
+          "id": "Tr9Dx74op54WsoyZ",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "owner": {
+          "__rl": true,
+          "mode": "",
+          "value": "={{ $(\"Configuration\").item.json.repo.owner }}"
+        },
+        "repository": {
+          "__rl": true,
+          "mode": "",
+          "value": "={{ $(\"Configuration\").item.json.repo.name }}"
+        },
+        "filePath": "={{ $json.context.newFile.path }}",
+        "fileContent": "={{ JSON.stringify($json.n8nWorkflowData.base64Decode().parseJson(), null, 2) }}",
+        "commitMessage": "=rename: {{ $json.context.oldFile.name }} -> {{ $json.context.newFile.name }} (step 2/2: create new)"
+      },
+      "id": "3ced98ef-4aee-45bc-9cd8-00338d7ee991",
+      "name": "Create new file (rename)",
+      "type": "n8n-nodes-base.github",
+      "position": [
+        1632,
+        1184
+      ],
+      "webhookId": "1b7a1463-d11a-4c0c-a596-a4b09e003d5a",
+      "typeVersion": 1,
+      "credentials": {
+        "githubApi": {
+          "id": "Tr9Dx74op54WsoyZ",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "id",
+        "joinMode": "enrichInput1",
+        "options": {
+          "clashHandling": {
+            "values": {
+              "resolveClash": "preferInput1"
+            }
+          }
+        }
+      },
+      "id": "3cfc19e8-6b9e-4cbf-95de-78a02259b5bf",
+      "name": "Merge after create (rename)",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        1872,
+        1168
+      ],
+      "typeVersion": 3.2,
+      "notes": "Keeps the original context intact across the GitHub step. Prevents losing flags and fields."
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "id",
+        "joinMode": "enrichInput1",
+        "options": {
+          "clashHandling": {
+            "values": {
+              "resolveClash": "preferInput1"
+            }
+          }
+        }
+      },
+      "id": "dc099988-89ae-4f83-8d9f-c6d0e7fa6ea8",
+      "name": "Merge after update",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        1360,
+        1632
+      ],
+      "typeVersion": 3.2,
+      "notes": "Keeps the original context intact across the GitHub step. Prevents losing flags and fields."
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "list",
+        "owner": {
+          "__rl": true,
+          "mode": "name",
+          "value": "={{ $(\"Configuration\").item.json.repo.owner }}"
+        },
+        "repository": {
+          "__rl": true,
+          "mode": "name",
+          "value": "={{ $(\"Configuration\").item.json.repo.name }}"
+        },
+        "filePath": "={{ $(\"Configuration\").item.json.repo.path }}"
+      },
+      "id": "99962cf1-8492-4495-a18c-13109b7a3098",
+      "name": "List files",
+      "type": "n8n-nodes-base.github",
+      "position": [
+        -2064,
+        816
+      ],
+      "webhookId": "2e1f9567-52d4-4047-980c-6b4a57d4bd40",
+      "typeVersion": 1.1,
+      "credentials": {
+        "githubApi": {
+          "id": "Tr9Dx74op54WsoyZ",
+          "name": "GitHub account"
+        }
+      },
+      "onError": "continueErrorOutput",
+      "notes": "An edge case handling. Do not stop the whole workflow if there's no such folder."
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "id",
+        "joinMode": "enrichInput1",
+        "options": {
+          "clashHandling": {
+            "values": {
+              "resolveClash": "preferInput1"
+            }
+          }
+        }
+      },
+      "id": "2c462a6e-4802-4f53-a29b-661c70b836bb",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        -1392,
+        704
+      ],
+      "typeVersion": 3.2
+    },
+    {
+      "parameters": {
+        "content": "## Rename a file (two-step)\n1. Delete the old filename\n1. Create a new filename",
+        "height": 448,
+        "width": 880,
+        "color": 7
+      },
+      "id": "3afd9f4c-788c-43e3-94c9-21dfe3cf3591",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1168,
+        944
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Collect data\n- N8N workflows list\n- GitHub files list ",
+        "height": 448,
+        "width": 880,
+        "color": 7
+      },
+      "id": "5ac1f45e-ce48-4154-a9d1-133df1318920",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2128,
+        528
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Set parameters\n### GitHub\n- Repo owner\n- Repo name\n- Repo folder to store workflow backups\n### Reports\n- Telegram Chat ID to send notifications to\n- Do you need a report each time or only if something changed",
+        "height": 448,
+        "width": 326,
+        "color": 4
+      },
+      "id": "28ca24a6-2e8a-45a1-923a-81aa21e2ecc3",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -3184,
+        368
+      ],
+      "typeVersion": 1,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Tune the schedule\nYou could change the check interval here.\n\nDefault: every hour",
+        "height": 448,
+        "width": 326,
+        "color": 4
+      },
+      "id": "63ec87e1-6baa-43a9-a010-3ce5a74564d5",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -3536,
+        368
+      ],
+      "typeVersion": 1,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "let items = $input.all();\n\nfor (let item of items) {\n    try {\n        const contentBase64 = item.json.content;\n        const path = item.json.path;\n        const sha = item.json.sha;\n\n        // Decode and parse GitHub file content to extract name\n        const content = Buffer.from(contentBase64, 'base64').toString('utf8');\n        const workflow = JSON.parse(content);\n\n        // Keep only the fields we need from GitHub side, store as base64\n        item.json = {\n            id: workflow.id,\n            name: workflow.name,\n            filePath: path,\n            githubWorkflowData: contentBase64, // Store as base64 to match N8N side\n            sha: sha\n        };\n\n    } catch (error) {\n        // Non-JSON or invalid workflow file\n        console.log(`Error parsing file ${item.json.path}: ${error.message}`);\n        item.json = {\n            id: null,\n            name: null,\n            filePath: item.json.path,\n            error: error.message\n        };\n    }\n}\n\nreturn items;"
+      },
+      "id": "96b11c85-184c-4fd8-afad-4b411fab8de4",
+      "name": "Extract workflow parameters",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        -1616,
+        816
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "get",
+        "owner": {
+          "__rl": true,
+          "mode": "name",
+          "value": "={{ $(\"Configuration\").item.json.repo.owner }}"
+        },
+        "repository": {
+          "__rl": true,
+          "mode": "name",
+          "value": "={{ $(\"Configuration\").item.json.repo.name }}"
+        },
+        "filePath": "={{ $json.path }}",
+        "asBinaryProperty": false,
+        "additionalParameters": {}
+      },
+      "id": "c56d63e8-951c-43e8-a0cf-fb5e2e4df6d2",
+      "name": "Get files",
+      "type": "n8n-nodes-base.github",
+      "position": [
+        -1840,
+        816
+      ],
+      "webhookId": "93c8a2dd-ddad-4837-a062-25473eee1208",
+      "typeVersion": 1.1,
+      "credentials": {
+        "githubApi": {
+          "id": "Tr9Dx74op54WsoyZ",
+          "name": "GitHub account"
+        }
+      },
+      "onError": "continueErrorOutput",
+      "notes": "An edge case handling. Do not stop the whole workflow if there's no such folder."
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "owner": {
+          "__rl": true,
+          "mode": "",
+          "value": "={{ $(\"Configuration\").item.json.repo.owner }}"
+        },
+        "repository": {
+          "__rl": true,
+          "mode": "",
+          "value": "={{ $(\"Configuration\").item.json.repo.name }}"
+        },
+        "filePath": "={{ $json.context.newFile.path }}",
+        "fileContent": "={{ JSON.stringify($json.n8nWorkflowData.base64Decode().parseJson(), null, 2) }}",
+        "commitMessage": "=create: {{ $json.context.newFile.name }}"
+      },
+      "id": "266b69e7-74cd-469f-a5ea-4bdd25bfc8ad",
+      "name": "Create new file",
+      "type": "n8n-nodes-base.github",
+      "position": [
+        784,
+        2192
+      ],
+      "webhookId": "66429ae4-4b7d-4fb5-8438-26cdf6c4faa8",
+      "typeVersion": 1,
+      "credentials": {
+        "githubApi": {
+          "id": "Tr9Dx74op54WsoyZ",
+          "name": "GitHub account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "id",
+        "joinMode": "enrichInput1",
+        "options": {
+          "clashHandling": {
+            "values": {
+              "resolveClash": "preferInput1"
+            }
+          }
+        }
+      },
+      "id": "1074307e-0bdb-4240-ac05-07d61ac0a91e",
+      "name": "Merge after create",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        1072,
+        2176
+      ],
+      "typeVersion": 3.2,
+      "notes": "Keeps the original context intact across the GitHub step. Prevents losing flags and fields."
+    },
+    {
+      "parameters": {
+        "content": "## Update an existing file",
+        "height": 448,
+        "width": 880,
+        "color": 7
+      },
+      "id": "66a3d1e2-8d0a-4dd9-88fd-71c9aee3e8cb",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        816,
+        1488
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Create a new file",
+        "height": 448,
+        "width": 880,
+        "color": 7
+      },
+      "id": "d760ebc4-19f3-4221-ab4e-f38b69a7c364",
+      "name": "Sticky Note6",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        528,
+        2032
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {},
+      "id": "9d8a1aa6-b19a-42d1-bf92-836abc86c785",
+      "name": "No Operation, do nothing",
+      "type": "n8n-nodes-base.noOp",
+      "position": [
+        544,
+        2752
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Nothing to do",
+        "height": 448,
+        "width": 880,
+        "color": 7
+      },
+      "id": "59b8aaf0-43fd-4e8b-b37b-b4643d83f7da",
+      "name": "Sticky Note7",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        128,
+        2576
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "errorMessage": "=Invalid operation: \"{{ $json.context.operation }}\". You should look at the code in the \"Decide changes\" node."
+      },
+      "id": "f530a34b-ef36-44f7-8f02-de295c4589a1",
+      "name": "Stop and Error",
+      "type": "n8n-nodes-base.stopAndError",
+      "position": [
+        -176,
+        3152
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Controller",
+        "height": 448,
+        "width": 880,
+        "color": 7
+      },
+      "id": "1926ee87-818b-455e-9df5-a71aff197c17",
+      "name": "Sticky Note8",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1024,
+        528
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "version": 2,
+                  "leftValue": "",
+                  "caseSensitive": false,
+                  "typeValidation": "strict"
+                },
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "id": "5af9aafc-3ee1-4855-89b2-b0ceb83b3169",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "leftValue": "={{ $json.context.operation }}",
+                    "rightValue": "rename"
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "=rename"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "version": 2,
+                  "leftValue": "",
+                  "caseSensitive": false,
+                  "typeValidation": "strict"
+                },
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "id": "849881fc-2d0e-4154-b6c2-10ff6c2b5480",
+                    "operator": {
+                      "name": "filter.operator.equals",
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "leftValue": "={{ $json.context.operation }}",
+                    "rightValue": "update"
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "update"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "version": 2,
+                  "leftValue": "",
+                  "caseSensitive": false,
+                  "typeValidation": "strict"
+                },
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "id": "85f4cce5-476e-4970-82b4-0b04cc67870f",
+                    "operator": {
+                      "name": "filter.operator.equals",
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "leftValue": "={{ $json.context.operation }}",
+                    "rightValue": "create"
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "create"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "version": 2,
+                  "leftValue": "",
+                  "caseSensitive": false,
+                  "typeValidation": "strict"
+                },
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "id": "51919025-e488-4557-9cd9-23f4be9bbf06",
+                    "operator": {
+                      "name": "filter.operator.equals",
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "leftValue": "={{ $json.context.operation }}",
+                    "rightValue": "skip"
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "skip"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "ignoreCase": true,
+          "renameFallbackOutput": "error"
+        }
+      },
+      "id": "f6ad5d52-8e17-4b91-a5be-952dcf03ea8f",
+      "name": "Router",
+      "type": "n8n-nodes-base.switch",
+      "position": [
+        -384,
+        656
+      ],
+      "typeVersion": 3.2
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "id",
+        "joinMode": "enrichInput1",
+        "options": {
+          "clashHandling": {
+            "values": {
+              "resolveClash": "preferInput1"
+            }
+          }
+        }
+      },
+      "id": "fd8a496f-841c-474b-a6a5-cf929a5804ea",
+      "name": "Merge after delete (rename)",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        1456,
+        1024
+      ],
+      "typeVersion": 3.2,
+      "notes": "Keeps the original context intact across the GitHub step. Prevents losing flags and fields."
+    },
+    {
+      "parameters": {
+        "values": {
+          "number": [
+            {
+              "name": "report.tg.chatID",
+              "value": null
+            }
+          ],
+          "string": [
+            {
+              "name": "repo.owner",
+              "value": "berthel"
+            },
+            {
+              "name": "repo.name",
+              "value": "n8n"
+            },
+            {
+              "name": "repo.path",
+              "value": "utilco/"
+            }
+          ],
+          "boolean": [
+            {
+              "name": "report.verbose"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "47aac2ef-9a1e-421b-839f-2e7fcb167744",
+      "name": "Configuration",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -3088,
+        640
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Advanced n8n Workflow Sync with GitHub\n\nThis workflow automatically backs up your n8n workflows to a GitHub repository. It intelligently detects changes, handles workflow renames, and commits only when actual modifications occur, providing a clean version history.\n\n### ✨ Key Features:\n- **Intelligent Sync**: Reliable backup of n8n workflows to GitHub.\n- **Rename Support**: Automatically handles workflow renames.\n- **Efficient Commits**: Only commits real changes, keeping your repo clean.\n- **Clear History**: Informative commit messages (create, update, rename).\n\n### 🚀 Quick Setup:\n1.  **Credentials**: Set up GitHub, n8n API, and optional Telegram credentials in n8n.\n2.  **Configuration Node**: Open the `Configuration` node (green) and update:\n    - `repo.owner`: Your GitHub username\n    - `repo.name`: Your GitHub repository name\n    - `repo.path`: Folder for backups (e.g., `workflows/`)\n    - `report.tg.chatID` (Optional): Telegram chat ID, or `0` to disable.\n3.  **Connect Credentials**: Link your created credentials to the respective GitHub, n8n, and Telegram nodes.\n4.  **Schedule Trigger**: Adjust the backup frequency in the `Schedule Trigger` node.\n5.  **Activate**: Save and activate the workflow.\n\n### ⚙️ How It Works (Simple Steps)\n\n1.  **Get n8n Workflows**: The workflow starts by fetching all your current workflows from n8n.\n2.  **Get GitHub Files**: At the same time, it lists all existing workflow files from your GitHub repository.\n3.  **Compare & Decide**: It then compares each n8n workflow with its GitHub counterpart. It checks if anything changed, if it was renamed, or if it's new.\n4.  **Take Action**:\n    *   If a workflow is **new**, it's created on GitHub.\n    *   If a workflow is **updated**, the file content is changed on GitHub.\n    *   If a workflow was **renamed**, the old file is deleted, and a new one is created.\n    *   If **nothing changed**, the workflow is skipped.\n5.  **Send Report**: Finally, it can send a summary report to Telegram about what happened.\n\n### 💡 What's Next?\nFuture updates will include automatic archiving of inactive workflows and performance optimizations. Follow my profile for new workflow publications!",
+        "height": 960,
+        "width": 672
+      },
+      "id": "d0dee09d-2833-41b6-aef0-889ec9807781",
+      "name": "Sticky Note10",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -3536,
+        848
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "errorMessage": "Incomplete GitHub configuration. Please check \"Configuration\" node."
+      },
+      "id": "8b08b08b-100f-47e2-a92e-074bb0e5062c",
+      "name": "Stop on empty config",
+      "type": "n8n-nodes-base.stopAndError",
+      "position": [
+        -2432,
+        800
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "0b285299-edd5-41a0-85e8-3d94246e1cff",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              },
+              "leftValue": "={{ $json.repo.owner }}",
+              "rightValue": ""
+            },
+            {
+              "id": "c9f894e0-cf42-45e1-87bd-13c2bd024b48",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              },
+              "leftValue": "={{ $json.repo.name }}",
+              "rightValue": ""
+            },
+            {
+              "id": "f1591996-df67-4caf-8171-a049993268d2",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              },
+              "leftValue": "={{ $json.repo.path }}",
+              "rightValue": ""
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7f34147e-3bf0-49c7-a80e-f3068679d73b",
+      "name": "Assert GitHub config",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        -2672,
+        640
+      ],
+      "typeVersion": 2.2,
+      "notes": "Pre-provisioning safe fuse"
+    }
+  ],
+  "connections": {
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Router": {
+      "main": [
+        [
+          {
+            "node": "Delete old file",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge after delete (rename)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update file content and commit",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge after update",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create new file",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge after create",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop and Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get files": {
+      "main": [
+        [
+          {
+            "node": "Extract workflow parameters",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List files": {
+      "main": [
+        [
+          {
+            "node": "Get files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Configuration": {
+      "main": [
+        [
+          {
+            "node": "Assert GitHub config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Decide changes": {
+      "main": [
+        [
+          {
+            "node": "Router",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create new file": {
+      "main": [
+        [
+          {
+            "node": "Merge after create",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Delete old file": {
+      "main": [
+        [
+          {
+            "node": "Merge after delete (rename)",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Decide changes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get all workflows": {
+      "main": [
+        [
+          {
+            "node": "Encode N8N workflows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge after create": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge after update": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Assert GitHub config": {
+      "main": [
+        [
+          {
+            "node": "Get all workflows",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "List files",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop on empty config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Encode N8N workflows": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create new file (rename)": {
+      "main": [
+        [
+          {
+            "node": "Merge after create (rename)",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "No Operation, do nothing": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract workflow parameters": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge after create (rename)": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge after delete (rename)": {
+      "main": [
+        [
+          {
+            "node": "Merge after create (rename)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create new file (rename)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update file content and commit": {
+      "main": [
+        [
+          {
+            "node": "Merge after update",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "6c267bcf-ef55-4e43-9e38-3f80134708df",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-09-06T09:48:24.742Z",
+      "updatedAt": "2025-09-06T09:48:24.742Z",
+      "role": "workflow:owner",
+      "workflowId": "Ta60gCRWdIYRSOkK",
+      "projectId": "SFLNAzqJIfhKMhJx"
+    }
+  ],
+  "tags": []
+}
