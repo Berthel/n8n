@@ -1,9 +1,9 @@
 {
   "createdAt": "2025-09-05T14:47:42.120Z",
-  "updatedAt": "2025-09-05T15:07:01.000Z",
+  "updatedAt": "2025-09-06T19:56:34.000Z",
   "id": "2VbmlgICB1scexQk",
   "name": "pdf2markdown",
-  "active": true,
+  "active": false,
   "isArchived": false,
   "nodes": [
     {
@@ -14,11 +14,12 @@
       "name": "Wait",
       "type": "n8n-nodes-base.wait",
       "position": [
-        -720,
-        -160
+        -672,
+        -96
       ],
       "webhookId": "a0518843-31f8-44f9-bd8e-1189e16de0f1",
-      "typeVersion": 1.1
+      "typeVersion": 1.1,
+      "disabled": true
     },
     {
       "parameters": {
@@ -52,8 +53,8 @@
       "name": "Upload_doc",
       "type": "n8n-nodes-base.httpRequest",
       "position": [
-        -912,
-        -160
+        -896,
+        -96
       ],
       "typeVersion": 4.2,
       "credentials": {
@@ -61,7 +62,8 @@
           "id": "furvVw3yB0ddQLfT",
           "name": "Llamaindex Bearer"
         }
-      }
+      },
+      "disabled": true
     },
     {
       "parameters": {
@@ -92,10 +94,11 @@
       "name": "If",
       "type": "n8n-nodes-base.if",
       "position": [
-        -304,
+        -224,
         -160
       ],
-      "typeVersion": 2.2
+      "typeVersion": 2.2,
+      "disabled": true
     },
     {
       "parameters": {
@@ -116,10 +119,11 @@
       "type": "n8n-nodes-base.formTrigger",
       "position": [
         -1120,
-        -160
+        -96
       ],
       "webhookId": "5d1027e0-2885-4436-840f-a0e95cde60a2",
-      "typeVersion": 2.2
+      "typeVersion": 2.2,
+      "disabled": true
     },
     {
       "parameters": {
@@ -129,11 +133,12 @@
       "name": "Wait2",
       "type": "n8n-nodes-base.wait",
       "position": [
-        -32,
-        -16
+        0,
+        16
       ],
       "webhookId": "8da5da31-1ebd-4c82-8c6a-476d5d277cdd",
-      "typeVersion": 1.1
+      "typeVersion": 1.1,
+      "disabled": true
     },
     {
       "parameters": {
@@ -155,8 +160,8 @@
       "name": "Status Verification",
       "type": "n8n-nodes-base.httpRequest",
       "position": [
-        -528,
-        -160
+        -448,
+        -96
       ],
       "typeVersion": 4.2,
       "credentials": {
@@ -164,7 +169,8 @@
           "id": "furvVw3yB0ddQLfT",
           "name": "Llamaindex Bearer"
         }
-      }
+      },
+      "disabled": true
     },
     {
       "parameters": {
@@ -186,7 +192,7 @@
       "name": "Content extraction",
       "type": "n8n-nodes-base.httpRequest",
       "position": [
-        -32,
+        0,
         -208
       ],
       "typeVersion": 4.2,
@@ -195,7 +201,8 @@
           "id": "furvVw3yB0ddQLfT",
           "name": "Llamaindex Bearer"
         }
-      }
+      },
+      "disabled": true
     },
     {
       "parameters": {
@@ -206,11 +213,300 @@
       "type": "n8n-nodes-base.convertToFile",
       "typeVersion": 1.1,
       "position": [
-        176,
+        224,
         -208
       ],
       "id": "f4f899a1-8a19-44ea-9c99-7e821ba0207c",
-      "name": "Convert to File"
+      "name": "Convert to File",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Wait1').item.json.request_check_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "30ee483a-eee2-41a5-87c9-da478a2fc5c0",
+      "name": "Get Markdown",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        432,
+        576
+      ],
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CDnA62zdXmFpBWGu",
+          "name": "datalab"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://www.datalab.to/api/v1/marker",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "max_pages",
+              "value": "120"
+            },
+            {
+              "name": "use_llm",
+              "value": "true"
+            },
+            {
+              "name": "output_format",
+              "value": "markdown"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "19d49fdf-0327-4481-bf68-fa47a9957023",
+      "name": "Send to Datalab API",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -224,
+        576
+      ],
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CDnA62zdXmFpBWGu",
+          "name": "datalab"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 2,
+        "unit": "minutes"
+      },
+      "id": "d909779c-7898-4e65-b9da-e9e3e6c2a3dc",
+      "name": "Wait1",
+      "type": "n8n-nodes-base.wait",
+      "position": [
+        0,
+        576
+      ],
+      "webhookId": "7b49cf9b-9859-4361-a8b8-2407d114d418",
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "operation": "toText",
+        "sourceProperty": "markdown",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        880,
+        464
+      ],
+      "id": "9ace8066-b639-4426-802d-19071f1ba981",
+      "name": "Convert to File1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "1c85917b-c2a8-4718-96d2-aa45bc85b853",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "complete",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        656,
+        512
+      ],
+      "id": "5a966a14-cf50-4068-b6fa-4a74656ce913",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "amount": 60
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        864,
+        928
+      ],
+      "id": "2fc5283d-ef85-44c1-9cdc-e53f38e0d624",
+      "name": "Wait3",
+      "webhookId": "cfc0aa35-c1f3-428b-97e1-b3daa041e375"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1120,
+        656
+      ],
+      "id": "2347815a-e0a3-4893-879f-605ea0f5ac10",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "returnAll": true,
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "value": "1a47gI905tdk_BZH0PFQS7eD1B6_sJAkc",
+            "mode": "list",
+            "cachedResultName": "pdf convert",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1a47gI905tdk_BZH0PFQS7eD1B6_sJAkc"
+          }
+        },
+        "options": {
+          "fields": [
+            "*"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -896,
+        656
+      ],
+      "id": "96dafc02-60e2-406f-bdde-0e92f49e31e2",
+      "name": "Get pdf convert",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "iqKibuWvWktI99Br",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -672,
+        656
+      ],
+      "id": "065af68f-77e2-4951-bb56-e44a253ac999",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "id": "7bc98dd2-fbac-452d-bfe5-6c9e4b9c2abb",
+      "name": "Download File",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -448,
+        576
+      ],
+      "executeOnce": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "iqKibuWvWktI99Br",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "createFromText",
+        "content": "={{ $('If1').item.json.markdown }}",
+        "name": "={{ $('Get pdf convert').item.json.originalFilename.replace(/\\.pdf$/i, '.txt') }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1qsc4AGYL_CRyqS9z6_CdiTr_SJneHzvl",
+          "mode": "list",
+          "cachedResultName": "txt",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1qsc4AGYL_CRyqS9z6_CdiTr_SJneHzvl"
+        },
+        "options": {}
+      },
+      "id": "37e3c369-db5e-4422-acf0-efb7eca11821",
+      "name": "upload txt fil",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1104,
+        656
+      ],
+      "executeOnce": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "iqKibuWvWktI99Br",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "dc2fe6c1-6f19-4623-9a90-21c00e0284bc",
+              "name": "request_check_url",
+              "value": "{{ $json.request_check_url }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        576
+      ],
+      "id": "e3525b7d-77c6-46d4-a502-e7b28ba36a0d",
+      "name": "Edit Fields"
     }
   ],
   "connections": {
@@ -297,13 +593,149 @@
           }
         ]
       ]
+    },
+    "Send to Datalab API": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Markdown": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Convert to File1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait3": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get pdf convert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get pdf convert": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Download File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download File": {
+      "main": [
+        [
+          {
+            "node": "Send to Datalab API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File1": {
+      "main": [
+        [
+          {
+            "node": "upload txt fil",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "upload txt fil": {
+      "main": [
+        []
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Get Markdown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
     "executionOrder": "v1"
   },
   "staticData": null,
-  "meta": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
   "pinData": {
     "On form submission": [
       {
@@ -321,7 +753,7 @@
       }
     ]
   },
-  "versionId": "0f59b4b1-c6c0-4c78-b81c-35a420bee401",
+  "versionId": "2657638e-0e2d-4dfd-bd6c-42ccb8977f22",
   "triggerCount": 1,
   "shared": [
     {
