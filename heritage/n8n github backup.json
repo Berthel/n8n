@@ -1,9 +1,9 @@
 {
   "createdAt": "2025-09-06T09:36:22.336Z",
-  "updatedAt": "2025-09-06T09:41:06.000Z",
+  "updatedAt": "2025-09-06T09:46:04.000Z",
   "id": "ZPne8T6KivBuF4hm",
   "name": "n8n github backup",
-  "active": false,
+  "active": true,
   "isArchived": false,
   "nodes": [
     {
@@ -59,7 +59,7 @@
         "rule": {
           "interval": [
             {
-              "field": "hours"
+              "triggerAtHour": 1
             }
           ]
         }
@@ -355,95 +355,6 @@
     },
     {
       "parameters": {
-        "content": "## Execution report\nYou could send this report to Telegram. See parameters in `Configuration` node for details.\nIf you don't need this -- delete this part.",
-        "height": 272,
-        "width": 1174,
-        "color": 7
-      },
-      "id": "c63ae96d-b77a-49de-9cd3-befcd9b62e62",
-      "name": "Sticky Note4",
-      "type": "n8n-nodes-base.stickyNote",
-      "position": [
-        0,
-        0
-      ],
-      "typeVersion": 1,
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "jsCode": "// Aggregate arrays and flags for summary (no rendering)\n\nfunction normalizeName(item) {\n  return String(\n    item.json?.name || 'unknown'\n  );\n}\n\nconst items = $input.all();\n\nconst buckets = { create: [], update: [], rename: [], skip: [] };\n\nfor (const it of items) {\n  const name = normalizeName(it);\n  const op = it.json?.context.operation;\n  const oldName = it.json?.context.oldFile.name || name;\n  const newName = it.json?.context.newFile.name || name;\n\n  if (op === 'rename') buckets.rename.push(`${oldName} -> ${newName}`);\n  else if (op === 'create') buckets.create.push(name);\n  else if (op === 'update') buckets.update.push(name);\n  else buckets.skip.push(name);\n}\n\nconst isAnythingChanged = buckets.create.length > 0 || buckets.update.length > 0 || buckets.rename.length > 0;\n\nreturn [{ json: {\n  isAnythingChanged,\n  created: buckets.create,\n  updated: buckets.update,\n  renamed: buckets.rename,\n  skipped: buckets.skip\n} }];"
-      },
-      "id": "5529e700-1927-4e57-a1cf-307e303e1143",
-      "name": "Build summary arrays",
-      "type": "n8n-nodes-base.code",
-      "position": [
-        304,
-        112
-      ],
-      "typeVersion": 2
-    },
-    {
-      "parameters": {
-        "jsCode": "// Helper function to escape text for Telegram's MarkdownV2 parser\nconst escapeMarkdownV2 = (str) => {\n  // For the full list of characters, see https://core.telegram.org/bots/api#markdownv2-style\n  return String(str).replace(/([_\\[\\]()~`>#+=|{}.!*-])/g, '\\\\$1');\n};\n\nconst all = $input.all();\nconst data = (all[0] && all[0].json) || {};\n\nconst config = $('Configuration').first().json;\nconst repoOwner = config.repo.owner;\nconst repoName = config.repo.name;\nconst repoPath = config.repo.path;\n\n// Construct repository URL using /blob/-/ for a branch-agnostic link\nconst repoUrl = `https://github.com/${repoOwner}/${repoName}/blob/-/${repoPath}`;\n\n// The link's *text* must be escaped, but the URL must not be.\nconst repoLinkText = escapeMarkdownV2(`${repoOwner}/${repoName}/${repoPath}`);\nconst repoLink = `[${repoLinkText}](${repoUrl})`;\n\nconst getList = key => (Array.isArray(data[key]) ? data[key] : []);\nconst sortAsc = (a, b) => String(a).localeCompare(String(b));\n\nconst sections = [\n  { key: 'created', title: 'Created' },\n  { key: 'updated', title: 'Updated' },\n  { key: 'renamed', title: 'Renamed' },\n  { key: 'skipped', title: 'Skipped (no changes)' },\n];\n\nconst summaryParts = [\n  `created ${getList('created').length}`,\n  `updated ${getList('updated').length}`,\n  `renamed ${getList('renamed').length}`,\n  `skipped ${getList('skipped').length}`\n];\n\n// Construct the final message with the new header format\nconst messageLines = [\n  '*Backup N8N workflows to GitHub*', // Main title\n  '', // Blank line for spacing\n  `Repo: ${repoLink}`,\n  `Totals: ${escapeMarkdownV2(summaryParts.join(', '))}`\n];\n\n// Append detailed lists as before\nfor (const { key, title } of sections) {\n  const list = [...getList(key)].sort(sortAsc);\n  if (list.length) {\n    messageLines.push('', `*${escapeMarkdownV2(title)}:*`);\n    for (const item of list) {\n      let line;\n      if (key === 'renamed') {\n        const [oldName, newName] = item.split(' -> ');\n        line = `\\`${oldName}.json\\` ${escapeMarkdownV2('->')} \\`${newName}.json\\``;\n      } else {\n        line = `\\`${item}.json\\``;\n      }\n      messageLines.push(line);\n    }\n  }\n}\n\nconst message = messageLines.join('\\n');\nreturn [{ json: { message } }];"
-      },
-      "id": "8a5d7eff-20a5-40cc-b90f-b1f7c7d39b4f",
-      "name": "Render summary",
-      "type": "n8n-nodes-base.code",
-      "position": [
-        752,
-        112
-      ],
-      "notesInFlow": false,
-      "typeVersion": 2,
-      "notes": "## Connecting to a messenger\n\nUse {{$json.message}} as message text. 'isAnythingChanged' controls whether to send."
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "version": 2,
-            "leftValue": "",
-            "caseSensitive": true,
-            "typeValidation": "strict"
-          },
-          "combinator": "or",
-          "conditions": [
-            {
-              "id": "8148a3ce-16fe-4074-9f57-c49072be8a8f",
-              "operator": {
-                "type": "boolean",
-                "operation": "true",
-                "singleValue": true
-              },
-              "leftValue": "={{ $node[\"Configuration\"].json.report.verbose }}",
-              "rightValue": ""
-            },
-            {
-              "id": "ee4ef204-341f-444a-a26a-299aa0cde573",
-              "operator": {
-                "type": "boolean",
-                "operation": "true",
-                "singleValue": true
-              },
-              "leftValue": "={{ $json.isAnythingChanged }}",
-              "rightValue": ""
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "401db71f-aaf2-4fb9-8258-efb6dfba2f11",
-      "name": "Anything changed?",
-      "type": "n8n-nodes-base.if",
-      "position": [
-        528,
-        112
-      ],
-      "typeVersion": 2.2
-    },
-    {
-      "parameters": {
         "jsCode": "let items = $input.all();\n\nfor (let item of items) {\n    try {\n        const contentBase64 = item.json.content;\n        const path = item.json.path;\n        const sha = item.json.sha;\n\n        // Decode and parse GitHub file content to extract name\n        const content = Buffer.from(contentBase64, 'base64').toString('utf8');\n        const workflow = JSON.parse(content);\n\n        // Keep only the fields we need from GitHub side, store as base64\n        item.json = {\n            id: workflow.id,\n            name: workflow.name,\n            filePath: path,\n            githubWorkflowData: contentBase64, // Store as base64 to match N8N side\n            sha: sha\n        };\n\n    } catch (error) {\n        // Non-JSON or invalid workflow file\n        console.log(`Error parsing file ${item.json.path}: ${error.message}`);\n        item.json = {\n            id: null,\n            name: null,\n            filePath: item.json.path,\n            error: error.message\n        };\n    }\n}\n\nreturn items;"
       },
       "id": "e6c1d738-456e-4282-a697-2141a7e1db24",
@@ -490,68 +401,6 @@
       },
       "onError": "continueErrorOutput",
       "notes": "An edge case handling. Do not stop the whole workflow if there's no such folder."
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "version": 2,
-            "leftValue": "",
-            "caseSensitive": true,
-            "typeValidation": "strict"
-          },
-          "combinator": "and",
-          "conditions": [
-            {
-              "id": "03191658-7c7b-4f85-a07b-35d9749d91f3",
-              "operator": {
-                "type": "number",
-                "operation": "exists",
-                "singleValue": true
-              },
-              "leftValue": "={{ $(\"Configuration\").item.json.report.tg.chatID }}",
-              "rightValue": 0
-            },
-            {
-              "id": "3277a7ef-0895-4fbf-beb2-432f54cc8efc",
-              "operator": {
-                "type": "number",
-                "operation": "notEquals"
-              },
-              "leftValue": "={{ $(\"Configuration\").item.json.report.tg.chatID }}",
-              "rightValue": 0
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "aca0e3ed-3fe7-4e2d-a228-bd85f62f4cf4",
-      "name": "Is Telegram configured?",
-      "type": "n8n-nodes-base.if",
-      "position": [
-        80,
-        112
-      ],
-      "typeVersion": 2.2
-    },
-    {
-      "parameters": {
-        "chatId": "={{ $node[\"Configuration\"].json.report.tg.chatID }}",
-        "text": "={{ $json.message }}",
-        "additionalFields": {
-          "appendAttribution": false,
-          "parse_mode": "MarkdownV2"
-        }
-      },
-      "id": "5c5c777d-2a96-40bc-b870-690f370ddcc1",
-      "name": "Send a message",
-      "type": "n8n-nodes-base.telegram",
-      "position": [
-        976,
-        112
-      ],
-      "webhookId": "ea0e343d-7ffa-4dd7-a3aa-0e7e45ad5753",
-      "typeVersion": 1.2
     },
     {
       "parameters": {
@@ -1074,17 +923,6 @@
         ]
       ]
     },
-    "Render summary": {
-      "main": [
-        [
-          {
-            "node": "Send a message",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Create new file": {
       "main": [
         [
@@ -1109,13 +947,7 @@
     },
     "Loop Over Items": {
       "main": [
-        [
-          {
-            "node": "Is Telegram configured?",
-            "type": "main",
-            "index": 0
-          }
-        ],
+        [],
         [
           {
             "node": "Decide changes",
@@ -1130,17 +962,6 @@
         [
           {
             "node": "Configuration",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Anything changed?": {
-      "main": [
-        [
-          {
-            "node": "Render summary",
             "type": "main",
             "index": 0
           }
@@ -1203,33 +1024,11 @@
         ]
       ]
     },
-    "Build summary arrays": {
-      "main": [
-        [
-          {
-            "node": "Anything changed?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Encode N8N workflows": {
       "main": [
         [
           {
             "node": "Merge",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Is Telegram configured?": {
-      "main": [
-        [
-          {
-            "node": "Build summary arrays",
             "type": "main",
             "index": 0
           }
@@ -1311,11 +1110,17 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "staticData": null,
-  "meta": null,
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
   "pinData": {},
-  "versionId": "8c4dd01a-b3a2-4d15-b2df-1d5b31a8e8b0",
-  "triggerCount": 0,
+  "versionId": "9999ba2d-1d50-452d-8cd3-e29e5f2494a1",
+  "triggerCount": 1,
   "shared": [
     {
       "createdAt": "2025-09-06T09:36:22.339Z",
