@@ -1,9 +1,9 @@
 {
   "createdAt": "2025-09-06T09:48:24.736Z",
-  "updatedAt": "2025-09-06T09:53:56.000Z",
+  "updatedAt": "2025-09-06T09:55:08.000Z",
   "id": "Ta60gCRWdIYRSOkK",
   "name": "n8n workflow backup",
-  "active": false,
+  "active": true,
   "isArchived": false,
   "nodes": [
     {
@@ -59,7 +59,7 @@
         "rule": {
           "interval": [
             {
-              "field": "hours"
+              "triggerAtHour": 2
             }
           ]
         }
@@ -1111,13 +1111,17 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "staticData": null,
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
   "meta": {
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "6c267bcf-ef55-4e43-9e38-3f80134708df",
-  "triggerCount": 0,
+  "versionId": "67a6301e-bc2a-4933-a2c5-72b151b416fc",
+  "triggerCount": 1,
   "shared": [
     {
       "createdAt": "2025-09-06T09:48:24.742Z",
