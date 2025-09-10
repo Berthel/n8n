@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-08-27T04:20:38.898Z",
-  "updatedAt": "2025-09-02T16:32:29.000Z",
+  "updatedAt": "2025-09-09T08:33:20.000Z",
   "id": "mlXlnlrQ4Tvp42XA",
   "name": "Course translation 2",
   "active": true,
@@ -2712,12 +2712,56 @@
           "name": "Open Router"
         }
       }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "32e9c747-4577-4201-84ee-420abaf52640",
+              "name": "=executionID",
+              "value": "={{$execution.id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -48,
+        -112
+      ],
+      "id": "4ed94a08-6023-490a-b448-9164ebbf83d1",
+      "name": "ExecutionID"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"executionId\": \"{{ $json.executionID }}\" }",
+        "options": {}
+      },
+      "id": "502e4a2c-abdb-4c63-a18e-f4db46f43c10",
+      "name": "Return Execution ID",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        240,
+        -144
+      ],
+      "notesInFlow": false
     }
   ],
   "connections": {
     "Webhook Trigger": {
       "main": [
         [
+          {
+            "node": "ExecutionID",
+            "type": "main",
+            "index": 0
+          },
           {
             "node": "If",
             "type": "main",
@@ -3435,6 +3479,17 @@
           }
         ]
       ]
+    },
+    "ExecutionID": {
+      "main": [
+        [
+          {
+            "node": "Return Execution ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -3457,22 +3512,22 @@
             "accept": "*/*",
             "accept-encoding": "gzip, br",
             "accept-language": "*",
-            "cdn-loop": "netlify, deno; s=netlify; d=7P95HnRMpPpyuoCb2GxWQOKZjNNaMenGI-LA3oLLazQ%3D, cloudflare; loops=1; subreqs=1",
-            "cf-connecting-ip": "3.123.38.109",
+            "cdn-loop": "netlify, deno; s=netlify; d=snEDmSdRYg5ZlTKvD4GT6QUGNfk1xTs-tYznLPXJcbA%3D, cloudflare; loops=1; subreqs=1",
+            "cf-connecting-ip": "35.159.67.149",
             "cf-ew-via": "15",
             "cf-ipcountry": "DE",
-            "cf-ray": "97547910a473d345-FRA",
+            "cf-ray": "978e285ee61a994b-FRA",
             "cf-visitor": "{\"scheme\":\"https\"}",
             "cf-worker": "n8n.cloud",
             "content-type": "application/json",
             "sec-fetch-mode": "cors",
-            "x-forwarded-for": "3.123.38.109, 172.71.172.41",
+            "x-forwarded-for": "35.159.67.149, 162.158.87.56",
             "x-forwarded-host": "utilco.app.n8n.cloud",
             "x-forwarded-port": "443",
             "x-forwarded-proto": "https",
-            "x-forwarded-server": "traefik-prod-users-gwc-10-6888ffdd77-9vgr4",
+            "x-forwarded-server": "traefik-prod-users-gwc-10-6888ffdd77-zl6sm",
             "x-is-trusted": "yes",
-            "x-real-ip": "3.123.38.109",
+            "x-real-ip": "35.159.67.149",
             "x-webhook-secret": "vczUfUpZhtQkJXFoP6hN"
           },
           "params": {},
@@ -3480,53 +3535,15 @@
           "body": {
             "course_id": "74f636ab-2998-46f3-aff9-3165f9d1de3b",
             "source_language": "da",
-            "target_language": "en"
+            "target_language": "sv"
           },
-          "webhookUrl": "https://utilco.app.n8n.cloud/webhook/8dd9f140-9678-44fe-bf75-40a583aa0ca4",
+          "webhookUrl": "https://utilco.app.n8n.cloud/webhook/1e414dae-8b81-4e8a-ab30-2e4b95942127",
           "executionMode": "production"
-        }
-      }
-    ],
-    "Merge1": [
-      {
-        "json": {
-          "data": [
-            {
-              "position": 1,
-              "title": "Hvad er Asset Management?"
-            },
-            {
-              "position": 2,
-              "title": "ISO 55000-serien og internationale principper"
-            },
-            {
-              "position": 3,
-              "title": "IAM's 10-box model"
-            }
-          ]
-        }
-      },
-      {
-        "json": {
-          "data": [
-            {
-              "position": 1,
-              "lesson_id": "5798d70f-5bf5-4ca9-9f09-fe249dfeff9c"
-            },
-            {
-              "position": 2,
-              "lesson_id": "726dda5b-f334-48d0-b0ea-d1a49afcf675"
-            },
-            {
-              "position": 3,
-              "lesson_id": "37b687ef-30e7-4c3d-b09e-0ab1d7b3cf99"
-            }
-          ]
         }
       }
     ]
   },
-  "versionId": "f11ce0e0-4d7e-48f4-a744-cc74bfa0ea33",
+  "versionId": "aa926ea5-0529-4c48-bb16-a40ce71734ea",
   "triggerCount": 1,
   "shared": [
     {
