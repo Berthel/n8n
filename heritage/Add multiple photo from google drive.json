@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-02-08T15:07:43.373Z",
-  "updatedAt": "2025-05-22T11:09:43.000Z",
+  "updatedAt": "2025-09-12T12:44:57.000Z",
   "id": "3ATDUYVe1bGFc4De",
   "name": "Add multiple photo from google drive",
   "active": false,
@@ -23,8 +23,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1640,
-        135
+        1648,
+        144
       ],
       "id": "4938587c-3f94-41de-97ab-c7dd90b46dbc",
       "name": "Nyt filnavn"
@@ -80,8 +80,8 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        2520,
-        60
+        2528,
+        64
       ],
       "id": "807f24ed-eed9-4f2e-8de2-8088977bdc8c",
       "name": "Insert Images",
@@ -115,8 +115,8 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        2740,
-        60
+        2752,
+        64
       ],
       "id": "673c75f8-6fab-4f49-b176-da9782ff694a",
       "name": "Insert site_images",
@@ -144,7 +144,7 @@
       "typeVersion": 1,
       "position": [
         1200,
-        135
+        144
       ],
       "id": "4382867b-f8af-48bd-a85f-75c25bca7bd5",
       "name": "Get city",
@@ -171,7 +171,7 @@
       "typeVersion": 3,
       "position": [
         2080,
-        60
+        64
       ],
       "executeOnce": false,
       "credentials": {
@@ -200,8 +200,8 @@
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
-        1420,
-        135
+        1424,
+        144
       ],
       "id": "50762132-d714-4fe1-b923-77d2691a342f",
       "name": "Get Photos inbox",
@@ -219,7 +219,7 @@
             {
               "id": "2b245026-031d-463c-89a2-d3bc3daf727b",
               "name": "globalCode",
-              "value": "monte-pio-artistico-tavirense",
+              "value": "forte-do-rato-forte-de-santo-antonio-de-tavira",
               "type": "string"
             },
             {
@@ -241,8 +241,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        980,
-        135
+        992,
+        144
       ],
       "id": "d90c66b8-9703-477e-b081-d5a93da233ca",
       "name": "Stamdata"
@@ -261,7 +261,7 @@
       "typeVersion": 3,
       "position": [
         2960,
-        135
+        144
       ],
       "id": "9b9f1226-e902-4012-af47-f37389cf9212",
       "name": "Google Drive",
@@ -277,8 +277,8 @@
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        760,
-        135
+        768,
+        144
       ],
       "id": "1930e63e-7ade-4027-b9bb-09364f9e7d84",
       "name": "When clicking ‘Test workflow’"
@@ -290,8 +290,8 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        1860,
-        135
+        1872,
+        144
       ],
       "id": "489f45a0-22fe-4191-8ccf-d4b06186c3d8",
       "name": "Loop Over Items"
@@ -319,8 +319,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        2300,
-        60
+        2304,
+        64
       ],
       "id": "690f0c50-2614-4a3d-bb96-1d7cf17cbbdd",
       "name": "Upload billede",
@@ -470,7 +470,7 @@
       }
     ]
   },
-  "versionId": "a125e403-0a60-4b81-90a1-9c8d9241fcd1",
+  "versionId": "6be8d2c6-e07e-407f-8417-d433a1e8bb45",
   "triggerCount": 0,
   "shared": [
     {
