@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-06-09T04:39:10.303Z",
-  "updatedAt": "2025-06-19T14:12:58.000Z",
+  "updatedAt": "2025-10-06T09:01:29.000Z",
   "id": "TM4BtRHM82JhtiIH",
   "name": "Case creator",
   "active": false,
@@ -9,13 +9,13 @@
     {
       "parameters": {
         "inputSource": "jsonExample",
-        "jsonExample": "{\n  \"courses_id\": \"a string\"\n}"
+        "jsonExample": "{\n  \"courses_id\": \"a string\",\n  \"course_type\": \"course type\"\n}"
       },
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
       "position": [
-        660,
-        625
+        672,
+        624
       ],
       "id": "34701a3d-92fa-4e09-afed-0da135db4712",
       "name": "When Executed by Another Workflow"
@@ -36,8 +36,8 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        880,
-        625
+        896,
+        624
       ],
       "id": "e0015003-b35e-42fe-a4bb-423d18cd67a4",
       "name": "Get course",
@@ -68,8 +68,8 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        1100,
-        625
+        1120,
+        624
       ],
       "id": "d5c87253-8bb2-4f44-ae6c-3c0eb0ef7215",
       "name": "Get course content",
@@ -83,12 +83,12 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=\n{{ $json.outline }}\n\n",
+        "text": "=\n{{ $('Course content').item.json.outline }}\n\n",
         "hasOutputParser": true,
         "messages": {
           "messageValues": [
             {
-              "message": "# System Prompt til n8n LLM-modul – \"Case-generator til onlinekursus\"\n\n## Rolle\nDu er ekspert i at udvikle engagerende og læringsunderstøttende case-beskrivelser til online kurser. Din opgave er at skabe en gennemgående serie af cases, der understøtter læringsmålene for hvert modul og tilsammen danner en tydelig \"rød tråd\".\n\n## Instruktion\n\n### 1 – Forstå inputtet\n* User prompten består af ét eller flere moduler\n* Hvert modul har mindst felterne: **module_id**, **Kort beskrivelse**, **Detaljeret indhold**, (evt. **Lektioner**) og **Læringsmål**\n* Modulerne står i den rækkefølge, de indgår i kurset\n\n### 2 – Designprincipper for cases\n1. **Koherens**: Alle cases foregår i det samme fiktive scenarie (fx et el-, vand- eller energiselskab). Lad scenariet udvikle sig kronologisk fra modul 1 til sidste modul\n2. **Progression**: Kompleksiteten skal stige i takt med modulerne. Senere cases må antage, at læreren allerede har arbejdet med tidligere cases\n3. **Relevans**: Hver case skal tydeligt træne mindst ét af modulets læringsmål\n4. **Variation**: Brug forskellige case-typer (beslutningsdilemma, beregning, diskussion, rollespil) men hold fast i det fælles scenarie\n5. **Realistisk scope**: En case-beskrivelse skal være ca. 400 ord totalt\n\n### 3 – Casestruktur\nFor hver case skal du udvikle følgende elementer:\n\n**Baggrund**\nSæt scenen: organisation, sektor, nøgleudfordringer (4-6 linjer)\n\n**Problemstilling**\nBeskriv det centrale dilemma eller den udfordring, deltagerne skal løse (3-4 linjer)\n\n**Interessenter**\n* Primære interessenter (bulletliste, max 5)\n* Hver interessent: kort beskrivelse af deres mål/agenda (1 linje)\n\n**Læringsmål**\nForklar (2-3 linjer) hvordan casen understøtter modulets konkrete læringsmål\n\n**Diskussions- & analysespørgsmål**\n* 3-5 åbne spørgsmål, der guider deltagerne i at anvende modulstoffet på casen\n* Start hvert spørgsmål med et handlingsverbum (\"Analysér…\", \"Diskutér…\", \"Vurdér…\")\n\n### 4 – Sprog og stil\n* Svar altid på det samme sprog som user prompten (typisk dansk)\n* Brug aktivt, klart sprog og konkrete formuleringer\n* Start hver case med casens titel – ikke med velkomsttekst\n* Hold totallængden under 400 ord (ekskl. markdown-overskrifter)\n\n\n\n"
+              "message": "={{ $('Get prompt').item.json.content }}"
             }
           ]
         },
@@ -97,8 +97,8 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.7,
       "position": [
-        1540,
-        620
+        1792,
+        624
       ],
       "id": "8ee60287-096c-40ae-a388-520a6530213b",
       "name": "Case planner"
@@ -110,8 +110,8 @@
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.2,
       "position": [
-        1700,
-        840
+        1936,
+        848
       ],
       "id": "6d70dbe9-17dc-4a00-8c58-54688993241c",
       "name": "Structured Output Parser"
@@ -129,8 +129,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        1360,
-        860
+        672,
+        960
       ],
       "id": "527aef70-13dd-4222-9cd1-21f3179daec3",
       "name": "OpenAI Chat Model",
@@ -150,8 +150,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1320,
-        625
+        1344,
+        624
       ],
       "id": "ee212670-420e-44a9-9846-3ccbaab452b0",
       "name": "Course content",
@@ -193,8 +193,8 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        2120,
-        620
+        2368,
+        624
       ],
       "id": "17bc8c66-e859-456d-a626-45bf0df6ecc5",
       "name": "Update module translation1",
@@ -214,11 +214,56 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        1900,
-        620
+        2144,
+        624
       ],
       "id": "0edce96c-4926-46a4-bf67-4a8aa558a0f0",
       "name": "Split Out1"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select v.prompt_id, v.content, v.llm\nfrom prompts p join prompt_versions v on\np.id = v.prompt_id\nand p.active_version_id = v.id join course_types t on\np.course_type_id = t.id\nwhere t.name = '{{ $('When Executed by Another Workflow').item.json.course_type }}'\nand p.course_section_id = 'b4933441-41b1-45d1-be84-c8765266642b'",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1568,
+        624
+      ],
+      "id": "3c7f64de-1ba0-42aa-b8e0-a1b2f4b4e0d1",
+      "name": "Get prompt",
+      "credentials": {
+        "postgres": {
+          "id": "RUVxlMmZvsZC2IGe",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "={{ $('Get prompt').item.json.llm }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1808,
+        848
+      ],
+      "id": "eaa2d183-14a0-49ef-b982-256c59fa4b22",
+      "name": "Open Router",
+      "credentials": {
+        "openAiApi": {
+          "id": "wLbV0srlBMaP36mY",
+          "name": "Open Router"
+        }
+      }
     }
   ],
   "connections": {
@@ -279,20 +324,14 @@
     },
     "OpenAI Chat Model": {
       "ai_languageModel": [
-        [
-          {
-            "node": "Case planner",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "Course content": {
       "main": [
         [
           {
-            "node": "Case planner",
+            "node": "Get prompt",
             "type": "main",
             "index": 0
           }
@@ -309,6 +348,28 @@
           }
         ]
       ]
+    },
+    "Get prompt": {
+      "main": [
+        [
+          {
+            "node": "Case planner",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Open Router": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Case planner",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -319,7 +380,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "ba4e46ef-1486-48dc-8b10-e144eab8178e",
+  "versionId": "56c80393-c7bc-4a5d-a878-2c78b8ea5855",
   "triggerCount": 0,
   "shared": [
     {
