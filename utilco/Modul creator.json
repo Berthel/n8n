@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-05-16T13:32:22.255Z",
-  "updatedAt": "2025-08-01T07:39:34.000Z",
+  "updatedAt": "2025-10-06T08:55:07.000Z",
   "id": "qWxRPLsazbaV2TpV",
   "name": "Modul creator",
   "active": false,
@@ -9,7 +9,7 @@
     {
       "parameters": {
         "inputSource": "jsonExample",
-        "jsonExample": "{\n  \"courses_id\": \"a string\"\n}"
+        "jsonExample": "{\n  \"courses_id\": \"a string\",\n  \"course_type\": \"course type\"\n}"
       },
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
@@ -36,7 +36,7 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        880,
+        896,
         -128
       ],
       "id": "dca6ad3a-3350-41e0-a85f-998c4a727c46",
@@ -65,7 +65,7 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        1328,
+        1344,
         -128
       ],
       "id": "e54a72b2-1090-490b-9232-b31fdca22d26",
@@ -94,7 +94,7 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        1552,
+        1568,
         -128
       ],
       "id": "c892ef1c-2ecd-4a7d-87e6-0d3b608338ac",
@@ -126,7 +126,7 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        1104,
+        1120,
         -128
       ],
       "id": "1cfb9a80-8717-4ee8-a3de-5fc30311cc71",
@@ -147,7 +147,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1984,
+        2016,
         -256
       ],
       "id": "03038e27-75da-4499-b3bf-ae714d779481",
@@ -182,7 +182,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        2432,
+        2464,
         -256
       ],
       "id": "0bffbd40-e3b4-40be-95f6-5504b279defd",
@@ -205,7 +205,7 @@
       "type": "n8n-nodes-base.aggregate",
       "typeVersion": 1,
       "position": [
-        2208,
+        2240,
         -256
       ],
       "id": "b0afb8a3-1996-482c-8ab9-c03d08a3e18a",
@@ -218,7 +218,7 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        1760,
+        1792,
         -128
       ],
       "id": "4c94c9c9-05b3-4019-82d1-788625f3a073",
@@ -227,11 +227,11 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=#Input\n\n##Kursusinformation\n\nKursustitel: {{ $('Get course content').item.json.title }}\n\nKursusniveau: {{ $('Get course').item.json.course_level }}\n\nMålgruppe: {{ $('Get course').item.json.target_audience }}\n\nSprog: {{ $('Get course').item.json.course_language }}\n\nSektor: {{ $('Get course').item.json.sector }}\n\nKursusbeskrivelse: {{ $('Get course content').item.json.description }}\n\nKursusindhold: {{ $('Get course content').item.json.content }}\n\n##Modulinformation\n\nModulnavn: {{ $('Get title & description').item.json.title }}\n\nModulbeskrivelse: {{ $('Get title & description').item.json.description }}\n\n##Lektioner\nLektionstitler: {{ $json.title }}\n\nLektionsindhold: {{ $json.content }}\n\n",
+        "text": "=#Input\n\n##Kursusinformation\n\nKursustitel: {{ $('Get course content').item.json.title }}\n\nKursusniveau: {{ $('Get course').item.json.course_level }}\n\nMålgruppe: {{ $('Get course').item.json.target_audience }}\n\nSprog: {{ $('Get course').item.json.course_language }}\n\nSektor: {{ $('Get course').item.json.sector }}\n\nKursusbeskrivelse: {{ $('Get course content').item.json.description }}\n\nKursusindhold: {{ $('Get course content').item.json.content }}\n\n##Modulinformation\n\nModulnavn: {{ $('Get title & description').item.json.title }}\n\nModulbeskrivelse: {{ $('Get title & description').item.json.description }}\n\n##Lektioner\nLektionstitler: {{ $('Lessons collect').item.json.title }}\n\nLektionsindhold: {{ $('Lessons collect').item.json.content }}\n\n",
         "messages": {
           "messageValues": [
             {
-              "message": "# Rolle\n\nDu er ekspert i at strukturere, planlægge og producere indhold til online kursus­moduler.\n\n# Instruktion\n\nBaseret på de parametre du får i **user message** (fx modulnavn, kursustitel, niveau, målgruppe, varighed, sprog, lektionstitler) skal du:\n\n1. Analysere modul­parametrene.\n2. Udarbejde en sammenhængende modul­beskrivelse, der **kun** omfatter:\n\n   * **Introduktion til modulet** – motiverende indledning på 2-4 linjer.\n   * **Kort introduktion til hver lektion start med en overskrift over følgende liste** – punktliste med lektionsnavn efterfulgt af en ny linje med en kort beskrivelse på 1-2 linjer af lektionen, der forklarer formål og indhold.\n   * **Læringsmål for modulet start med en overskrift over følgende liste** – punktliste med klare, målbare mål (begynd hvert punkt med et handlingsverbum).\n\n# Hierarkisk kontekstbevidsthed\nDu modtager kursusbeskrivelsen som kontekst. Derfor skal du:\n\n## SKAL-regler:\n- ANTAG at læseren kender kursets overordnede formål\n- GÅ DIREKTE til modulspecifikt indhold\n- UDDYB kun det der er unikt for dette modul\n- REFERENCE kurset kort (fx \"Som del af [kurstitel]...\") uden at gentage\n\n## SKAL IKKE-regler:\n- Gentag IKKE kursusbeskrivelsen eller overordnede læringsmål\n- Brug IKKE samme introduktionsfraser som kursusniveauet\n- Kopier IKKE lektionsbeskrivelser ordret (lav korte resumeer)\n\n\n# Output\n\n* Returnér **kun selve modul­beskrivelsen** (Markdown).\n* Ingen JSON-felter eller ekstra forklarende tekst før/efter beskrivelsen.\n* Lektioner og Læringsmålene skal stå som en punktopstilling.\n"
+              "message": "={{ $('Get prompt').item.json.content }}"
             }
           ]
         }
@@ -239,7 +239,7 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.6,
       "position": [
-        2640,
+        2912,
         -256
       ],
       "id": "7df7524e-f133-41dd-8975-4448b47728e4",
@@ -258,8 +258,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
       "typeVersion": 1.3,
       "position": [
-        2736,
-        -48
+        672,
+        96
       ],
       "id": "0ca2f8ea-6fdd-4719-9f83-ee9e17c573f9",
       "name": "Anthropic Chat Model1",
@@ -277,7 +277,7 @@
         "messages": {
           "messageValues": [
             {
-              "message": "=# Du er en professionel speak-forfatter.\n\n## Input  \n- content: (Markdown-tekst med **modulbeskrivelse** og **lektioner**)  \n- learning_objectives: (JSON-array med læringsmål for modulet)\n\n## Opgave  \nSkriv en velkomst-videospeak opdelt i **4 scener**.  \nFor hver scene skal du levere:\n\n1. **Scene-titel**  \n2. **Speak-tekst** (2-4 korte, mundrette sætninger i et indbydende, motiverende tonefald)  \n3. **Understøttende nøglepunkter** – 2-4 bullets med korte tekster eller stikord, som kan vises på skærmen.\n\n## Oversigt over modulopbygning \n### Scene 1: Start med MODULETS unikke værdi, ikke generel kursusintro\n- Undgå \"Velkommen til [kurstitel]\" - sig i stedet \"Velkommen til modul X om [specifikt emne]\"\n- Fokuser på hvad DETTE modul tilføjer\n\n### Scene 2: Modulets lektionsnavne + meget kort intro til hver lektion (max én sætning)\n### Scene 3: Introducer læringsmål for modulet\n### Scene 4: En motiverende afslutning, der giver kursisterne lyst til at gå i gang med modulet.\n  \n\n## Sprogkrav – skriv enkelt og konkret  \n- Brug almindeligt, mundret sprog. Ingen buzzwords eller floskler.  \n- Undgå overpustede vendinger som: “rejse”, “stakeholders”, “maksimere potentiale”, “fremme synergier”, “game-changer”, “transformativ”, “next level” osv.  \n- Vælg konkrete ord frem for abstrakte:  \n  - brug “forløb” i stedet for “rejse”  \n  - brug “værdifuldt” i stedet for “value-add”  \n  - brug “plan” i stedet for “strategi” (medmindre det virkelig ER en strategi)  \n- Sætningslængde: maks. 20 ord. Aktivt udsagnsord først.  \n- Ingen engelske termer hvis et godt ord findes på det anvendte sprog (fx dansk).  \n- Tonen skal være venlig, direkte og professionel – ikke hype.\n\n## Format  \nSvar kun med Markdown som nedenfor:\n\n```markdown\n### Scene 1 – <titel>\n\n**Speak** <tekst>\n\n**Vis på skærmen**\n\n* punkt 1\n* punkt 2\n  [...]\n\n### Scene 2 – …\n\n...\n"
+              "message": "={{ $('Get prompt1').item.json.content }}"
             }
           ]
         }
@@ -285,7 +285,7 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.6,
       "position": [
-        3024,
+        3488,
         -256
       ],
       "id": "d31eceeb-9430-49ff-a323-22ad428cdabd",
@@ -326,7 +326,7 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        3392,
+        3840,
         -256
       ],
       "id": "a1df4500-e158-4daa-a25a-e2892134856d",
@@ -425,12 +425,102 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.2,
       "position": [
-        3616,
+        4064,
         -128
       ],
       "id": "e5308bc6-5672-4395-9d4e-d1a04ca71d1d",
       "name": "Genererer modulbillede",
       "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select v.prompt_id, v.content, v.llm\nfrom prompts p join prompt_versions v on\np.id = v.prompt_id\nand p.active_version_id = v.id join course_types t on\np.course_type_id = t.id\nwhere t.name = '{{ $('When Executed by Another Workflow').item.json.course_type }}'\nand p.course_section_id = 'd6aa870b-57c3-4a1f-9242-a785624a171e'",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2688,
+        -256
+      ],
+      "id": "22ef0cc1-abfb-4abf-8610-4895f85d7708",
+      "name": "Get prompt",
+      "credentials": {
+        "postgres": {
+          "id": "RUVxlMmZvsZC2IGe",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "={{ $('Get prompt').item.json.llm }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2992,
+        -32
+      ],
+      "id": "0589e9e5-fd65-496a-9b5c-0a3b83838e9b",
+      "name": "Open Router",
+      "credentials": {
+        "openAiApi": {
+          "id": "wLbV0srlBMaP36mY",
+          "name": "Open Router"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select v.prompt_id, v.content, v.llm\nfrom prompts p join prompt_versions v on\np.id = v.prompt_id\nand p.active_version_id = v.id join course_types t on\np.course_type_id = t.id\nwhere t.name = '{{ $('When Executed by Another Workflow').item.json.course_type }}'\nand p.course_section_id = 'f7045731-88ab-41c0-9965-540fc605f556'",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        3264,
+        -256
+      ],
+      "id": "afb8c16d-132f-4eef-9184-7517b292f30a",
+      "name": "Get prompt1",
+      "credentials": {
+        "postgres": {
+          "id": "RUVxlMmZvsZC2IGe",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "={{ $('Get prompt1').item.json.llm }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        3568,
+        -32
+      ],
+      "id": "6703bc9e-203a-4bf4-a5cb-a404f1875078",
+      "name": "Open Router1",
+      "credentials": {
+        "openAiApi": {
+          "id": "wLbV0srlBMaP36mY",
+          "name": "Open Router"
+        }
+      }
     }
   ],
   "connections": {
@@ -527,7 +617,7 @@
       "main": [
         [
           {
-            "node": "Modultekst Creator",
+            "node": "Get prompt",
             "type": "main",
             "index": 0
           }
@@ -538,7 +628,7 @@
       "main": [
         [
           {
-            "node": "Video script creator",
+            "node": "Get prompt1",
             "type": "main",
             "index": 0
           }
@@ -547,18 +637,7 @@
     },
     "Anthropic Chat Model1": {
       "ai_languageModel": [
-        [
-          {
-            "node": "Video script creator",
-            "type": "ai_languageModel",
-            "index": 0
-          },
-          {
-            "node": "Modultekst Creator",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "Video script creator": {
@@ -593,6 +672,50 @@
           }
         ]
       ]
+    },
+    "Get prompt": {
+      "main": [
+        [
+          {
+            "node": "Modultekst Creator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Open Router": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Modultekst Creator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get prompt1": {
+      "main": [
+        [
+          {
+            "node": "Video script creator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Open Router1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Video script creator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -602,8 +725,17 @@
   "meta": {
     "templateCredsSetupCompleted": true
   },
-  "pinData": {},
-  "versionId": "028e4a85-a7c5-4d44-9782-08257131e72e",
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "courses_id": "504067cf-2274-40dc-bd94-1b1aa8dfea0e",
+          "course_type": "Default"
+        }
+      }
+    ]
+  },
+  "versionId": "7fb17bee-3c06-43e6-abe7-5e4f15907f98",
   "triggerCount": 0,
   "shared": [
     {
