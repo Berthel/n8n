@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-05-25T12:07:51.575Z",
-  "updatedAt": "2025-08-01T07:26:21.000Z",
+  "updatedAt": "2025-10-06T09:02:47.000Z",
   "id": "cgya94OU6IhFm58p",
   "name": "Module questions creator",
   "active": false,
@@ -9,7 +9,7 @@
     {
       "parameters": {
         "inputSource": "jsonExample",
-        "jsonExample": "{\n  \"module_id\": \"a string\"\n}"
+        "jsonExample": "{\n  \"module_id\": \"a string\",\n  \"course_type\": \"course type\"\n}"
       },
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
@@ -36,7 +36,7 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        672,
+        640,
         432
       ],
       "id": "d77053c2-f747-4e91-840d-969e94fcf2fe",
@@ -68,7 +68,7 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        880,
+        864,
         432
       ],
       "id": "0ef04d70-2f59-42e5-b38f-9b26cb055f33",
@@ -96,7 +96,7 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        448,
+        416,
         432
       ],
       "id": "ce886a83-4320-4eb0-a96d-ac5a9d06f5d5",
@@ -124,7 +124,7 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        1104,
+        1088,
         432
       ],
       "id": "7cd82601-8f65-44ca-b8ee-deab8b6647db",
@@ -145,7 +145,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1328,
+        1312,
         432
       ],
       "id": "c64b7256-c84b-47e4-b4aa-a1be44f2604b",
@@ -201,7 +201,7 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=#Input\n\n##Kursusinformation\n\nKursustitel: {{ $('Get course content').first().json.title }}\n\nKursusniveau: {{ $('Get course').first().json.course_level }}\n\nMålgruppe: {{ $('Get course').first().json.target_audience }}\n\nSprog: {{ $('Get course').first().json.course_language }}\n\nSektor: {{ $('Get course').first().json.sector }}\n\nKursusbeskrivelse: {{ $('Get course content').first().json.description }}\n\nKursusindhold: {{ $('Get course content').first().json.content }}\n\n\n##Modulinformation\n\nModulnavn: {{ $('Get module content').first().json.title }}\n\nModulbeskrivelse: {{ $('Get module content').first().json.description }}\n\nModulcontent: {{ $('Get module content').first().json.content }}\n\nAntal moduler i kurset: {{ $('Get no of modules and lessons').first().json.no_of_modules }}\n\n##Lektioner\nLektionsdata: {{ JSON.stringify($json.data, null, 2) }}\n\nAntal lektioner i modulet: {{ $('Get no of modules and lessons').first().json.no_of_lessons }}\n\nAntal spørgsmål: {{ $('Get course').item.json.no_of_quiz_questions }}",
+        "text": "=#Input\n\n##Kursusinformation\n\nKursustitel: {{ $('Get course content').first().json.title }}\n\nKursusniveau: {{ $('Get course').first().json.course_level }}\n\nMålgruppe: {{ $('Get course').first().json.target_audience }}\n\nSprog: {{ $('Get course').first().json.course_language }}\n\nSektor: {{ $('Get course').first().json.sector }}\n\nKursusbeskrivelse: {{ $('Get course content').first().json.description }}\n\nKursusindhold: {{ $('Get course content').first().json.content }}\n\n\n##Modulinformation\n\nModulnavn: {{ $('Get module content').first().json.title }}\n\nModulbeskrivelse: {{ $('Get module content').first().json.description }}\n\nModulcontent: {{ $('Get module content').first().json.content }}\n\nAntal moduler i kurset: {{ $('Get no of modules and lessons').first().json.no_of_modules }}\n\n##Lektioner\nLektionsdata: {{ JSON.stringify($('Aggregate').item.json.data, null, 2) }}\n\nAntal lektioner i modulet: {{ $('Get no of modules and lessons').first().json.no_of_lessons }}\n\nAntal spørgsmål: {{ $('Get course').item.json.no_of_quiz_questions }}",
         "hasOutputParser": true,
         "messages": {
           "messageValues": [
@@ -214,7 +214,7 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.6,
       "position": [
-        2208,
+        2432,
         432
       ],
       "id": "cc5067a4-c98b-4fce-80d7-d1226f7e4d68",
@@ -227,8 +227,8 @@
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.2,
       "position": [
-        2400,
-        624
+        2576,
+        656
       ],
       "id": "5c3d07cb-4130-4032-939e-2992c9cbaef7",
       "name": "Structured Output Parser"
@@ -246,8 +246,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        2240,
-        640
+        192,
+        768
       ],
       "id": "23bf502c-99cf-4899-b137-1bf1bc5b9c4f",
       "name": "OpenAI Chat Model",
@@ -277,7 +277,7 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        2800,
+        3008,
         432
       ],
       "id": "cb3f91f1-f50e-4d0c-a446-07b0b3b3a825",
@@ -312,7 +312,7 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        3024,
+        3232,
         432
       ],
       "id": "0728ac29-2d91-4b93-a1ce-9cf2b283e381",
@@ -341,7 +341,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        3248,
+        3456,
         432
       ],
       "id": "f2018e68-b02e-4eaf-af83-b5481b2a6025",
@@ -355,7 +355,7 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        3456,
+        3680,
         432
       ],
       "id": "2714459a-add1-44c4-b0af-610a471831a3",
@@ -384,7 +384,7 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        3680,
+        3904,
         432
       ],
       "id": "26329cc1-f011-498e-9d8a-116abcd56fc8",
@@ -419,7 +419,7 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        3904,
+        4128,
         432
       ],
       "id": "c0f98849-5fc2-4bfd-a0ad-588e17abb383",
@@ -453,7 +453,7 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        2576,
+        2784,
         432
       ],
       "id": "b5556459-7af2-41d6-a48f-150e13ac6f8e",
@@ -468,7 +468,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1552,
+        1536,
         432
       ],
       "id": "b97bcb18-02e6-468c-acfe-cc82dea43954",
@@ -477,6 +477,51 @@
         "postgres": {
           "id": "RUVxlMmZvsZC2IGe",
           "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select v.prompt_id, v.content, v.llm\nfrom prompts p join prompt_versions v on\np.id = v.prompt_id\nand p.active_version_id = v.id join course_types t on\np.course_type_id = t.id\nwhere t.name = '{{ $('When Executed by Another Workflow').item.json.course_type }}'\nand p.course_section_id = 'd9a263d1-78f2-4aa8-a466-6d44d25a9319'",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2208,
+        432
+      ],
+      "id": "c95c9552-38ea-4468-a6ee-cbe7bdde17ec",
+      "name": "Get prompt",
+      "credentials": {
+        "postgres": {
+          "id": "RUVxlMmZvsZC2IGe",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "={{ $('Get prompt').item.json.llm }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2448,
+        656
+      ],
+      "id": "2b726bb3-8625-4273-bf33-f1548fddf24f",
+      "name": "Open Router",
+      "credentials": {
+        "openAiApi": {
+          "id": "wLbV0srlBMaP36mY",
+          "name": "Open Router"
         }
       }
     }
@@ -583,13 +628,7 @@
     },
     "OpenAI Chat Model": {
       "ai_languageModel": [
-        [
-          {
-            "node": "Module question creator",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "Module questions": {
@@ -656,7 +695,7 @@
       "main": [
         [
           {
-            "node": "Module question creator",
+            "node": "Get prompt",
             "type": "main",
             "index": 0
           }
@@ -684,6 +723,28 @@
           }
         ]
       ]
+    },
+    "Get prompt": {
+      "main": [
+        [
+          {
+            "node": "Module question creator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Open Router": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Module question creator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -693,16 +754,8 @@
   "meta": {
     "templateCredsSetupCompleted": true
   },
-  "pinData": {
-    "When Executed by Another Workflow": [
-      {
-        "json": {
-          "module_id": "32ef9168-6186-438e-9781-402a88f118b9"
-        }
-      }
-    ]
-  },
-  "versionId": "da64efa4-6a76-4434-bdeb-34e408595767",
+  "pinData": {},
+  "versionId": "34291f18-f738-4727-88ba-11e7e477619e",
   "triggerCount": 0,
   "shared": [
     {
