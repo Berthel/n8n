@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-05-26T09:15:58.847Z",
-  "updatedAt": "2025-08-01T07:10:32.000Z",
+  "updatedAt": "2025-10-06T09:16:17.000Z",
   "id": "cIyAT2GKM5Ng1Wwa",
   "name": "Kursuscockpit",
   "active": false,
@@ -16,13 +16,24 @@
         "workflowInputs": {
           "mappingMode": "defineBelow",
           "value": {
-            "course_id": "={{ $('Course id').first().json.course_id }}"
+            "course_id": "={{ $('Course id').first().json.course_id }}",
+            "course_type": "={{ $('Course type').item.json.course_type }}"
           },
           "matchingColumns": [],
           "schema": [
             {
               "id": "course_id",
               "displayName": "course_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "course_type",
+              "displayName": "course_type",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -39,7 +50,7 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.2,
       "position": [
-        896,
+        1104,
         256
       ],
       "id": "681d0b70-4333-4da9-9e39-60dead0056cd",
@@ -55,7 +66,8 @@
         "workflowInputs": {
           "mappingMode": "defineBelow",
           "value": {
-            "courses_id": "={{ $('Course id').first().json.course_id }}"
+            "courses_id": "={{ $('Course id').first().json.course_id }}",
+            "course_type": "={{ $('Course type').item.json.course_type }}"
           },
           "matchingColumns": [
             "courses_id"
@@ -64,6 +76,16 @@
             {
               "id": "courses_id",
               "displayName": "courses_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "course_type",
+              "displayName": "course_type",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -80,7 +102,7 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.2,
       "position": [
-        1120,
+        1328,
         256
       ],
       "id": "63806f42-4a1d-4203-9a5b-c89fa82777b0",
@@ -120,7 +142,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        448,
+        656,
         256
       ],
       "id": "2569b1a8-6d50-43e3-aa54-b473d3b4d981",
@@ -137,7 +159,8 @@
         "workflowInputs": {
           "mappingMode": "defineBelow",
           "value": {
-            "module_id": "={{ $('Module creator').item.json.module_id }}"
+            "module_id": "={{ $('Module creator').item.json.module_id }}",
+            "course_type": "={{ $('Course type').item.json.course_type }}"
           },
           "matchingColumns": [
             "module_id"
@@ -146,6 +169,16 @@
             {
               "id": "module_id",
               "displayName": "module_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "course_type",
+              "displayName": "course_type",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -162,7 +195,7 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.2,
       "position": [
-        1344,
+        1552,
         256
       ],
       "id": "b02579fc-e2d0-4625-ba29-2c075ce2b173",
@@ -173,7 +206,7 @@
       "type": "n8n-nodes-base.limit",
       "typeVersion": 1,
       "position": [
-        1568,
+        1776,
         256
       ],
       "id": "02937a44-6c78-4234-97df-46125ad9b514",
@@ -190,7 +223,8 @@
         "workflowInputs": {
           "mappingMode": "defineBelow",
           "value": {
-            "module_id": "={{ $json.id }}"
+            "module_id": "={{ $json.id }}",
+            "course_type": "={{ $('Course type').item.json.course_type }}"
           },
           "matchingColumns": [
             "module_id"
@@ -199,6 +233,16 @@
             {
               "id": "module_id",
               "displayName": "module_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "course_type",
+              "displayName": "course_type",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -215,7 +259,7 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.2,
       "position": [
-        2672,
+        2880,
         256
       ],
       "id": "a6c60a3f-0338-402f-9614-87b3bb4e0646",
@@ -230,7 +274,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2224,
+        2432,
         256
       ],
       "id": "ea7a87af-e4dd-4306-857e-ffea631753df",
@@ -267,7 +311,8 @@
         "workflowInputs": {
           "mappingMode": "defineBelow",
           "value": {
-            "courses_id": "={{ $('Course id').first().json.course_id }}"
+            "courses_id": "={{ $('Course id').first().json.course_id }}",
+            "course_type": "={{ $('Course type').item.json.course_type }}"
           },
           "matchingColumns": [
             "courses_id"
@@ -276,6 +321,16 @@
             {
               "id": "courses_id",
               "displayName": "courses_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "course_type",
+              "displayName": "course_type",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -292,7 +347,7 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.2,
       "position": [
-        1792,
+        2000,
         256
       ],
       "id": "2498f7a5-a77c-490a-86e4-8d7927022b91",
@@ -307,7 +362,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        224,
+        432,
         256
       ],
       "id": "b0136059-5041-40df-84da-7c5aae7fe683",
@@ -328,7 +383,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2672,
+        2880,
         64
       ],
       "id": "5a166a53-ebbe-444f-822f-2b9d9686703f",
@@ -376,7 +431,7 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.2,
       "position": [
-        672,
+        880,
         256
       ],
       "id": "d5476ce4-c43f-4561-87b7-57f58e768d09",
@@ -390,7 +445,7 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        2448,
+        2656,
         256
       ],
       "id": "d12c1866-ae53-4e96-b015-118fd7179531",
@@ -401,7 +456,7 @@
       "type": "n8n-nodes-base.limit",
       "typeVersion": 1,
       "position": [
-        2896,
+        3104,
         336
       ],
       "id": "2596facc-a6e0-4853-8db2-f34d63cce721",
@@ -412,11 +467,47 @@
       "type": "n8n-nodes-base.limit",
       "typeVersion": 1,
       "position": [
-        2000,
+        2208,
         256
       ],
       "id": "adba7b7e-3c57-4003-8d3d-8dfe0d875816",
       "name": "Limit2"
+    },
+    {
+      "parameters": {
+        "content": "## Angiv course_type\n- Default\n"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        48,
+        480
+      ],
+      "id": "46319d74-794f-4183-ab3b-9b7fa41fdcfc",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "966ba950-b515-4972-9393-3c9b00a48654",
+              "name": "course_type",
+              "value": "Default",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        256
+      ],
+      "id": "388dcf52-f39b-4a2c-b7f4-b76bab396bb6",
+      "name": "Course type"
     }
   ],
   "connections": {
@@ -446,7 +537,7 @@
       "main": [
         [
           {
-            "node": "Get course_id",
+            "node": "Course type",
             "type": "main",
             "index": 0
           }
@@ -585,6 +676,17 @@
           }
         ]
       ]
+    },
+    "Course type": {
+      "main": [
+        [
+          {
+            "node": "Get course_id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -599,7 +701,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "67750ea7-df9e-4977-98ee-af8bc96517d7",
+  "versionId": "a366256d-d468-48cb-8f70-b5ebdd67719e",
   "triggerCount": 1,
   "shared": [
     {
