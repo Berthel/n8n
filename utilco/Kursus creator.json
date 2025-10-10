@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-05-06T13:41:14.352Z",
-  "updatedAt": "2025-10-06T08:50:03.000Z",
+  "updatedAt": "2025-10-09T13:10:14.000Z",
   "id": "ZOTTc7BFoxlnLyvP",
   "name": "Kursus creator",
   "active": false,
@@ -297,7 +297,8 @@
           "id": "bvMVIJLed9p3sKxS",
           "name": "Supabase account"
         }
-      }
+      },
+      "disabled": true
     },
     {
       "parameters": {
@@ -318,7 +319,8 @@
         496
       ],
       "id": "3caeb64d-2a22-4919-9165-e842c71e3fba",
-      "name": "Video script creator"
+      "name": "Video script creator",
+      "disabled": true
     },
     {
       "parameters": {
@@ -848,7 +850,8 @@
           "id": "RUVxlMmZvsZC2IGe",
           "name": "Postgres account"
         }
-      }
+      },
+      "disabled": true
     },
     {
       "parameters": {
@@ -1283,7 +1286,7 @@
       }
     ]
   },
-  "versionId": "10c514d1-cf11-4861-ade5-81f9ec46a0e2",
+  "versionId": "42ac8b21-ba5e-4c6c-bd60-ccfdc35ec631",
   "triggerCount": 0,
   "shared": [
     {
