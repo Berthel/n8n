@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-05-26T09:15:58.847Z",
-  "updatedAt": "2025-10-06T09:16:17.000Z",
+  "updatedAt": "2025-10-09T15:27:24.000Z",
   "id": "cIyAT2GKM5Ng1Wwa",
   "name": "Kursuscockpit",
   "active": false,
@@ -508,18 +508,25 @@
       ],
       "id": "388dcf52-f39b-4a2c-b7f4-b76bab396bb6",
       "name": "Course type"
+    },
+    {
+      "parameters": {
+        "content": "## Disconnected under prompt opdateringer"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        64
+      ],
+      "id": "51d6ed4e-f711-4776-b990-121364db7550",
+      "name": "Sticky Note1"
     }
   ],
   "connections": {
     "Course creation": {
       "main": [
-        [
-          {
-            "node": "Module creator",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "Module creator": {
@@ -701,7 +708,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "a366256d-d468-48cb-8f70-b5ebdd67719e",
+  "versionId": "aacbb9c8-64a3-4319-9f9f-1ffecf17c915",
   "triggerCount": 1,
   "shared": [
     {
