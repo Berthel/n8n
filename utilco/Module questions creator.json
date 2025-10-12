@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-05-25T12:07:51.575Z",
-  "updatedAt": "2025-10-06T09:02:47.000Z",
+  "updatedAt": "2025-10-11T14:51:05.000Z",
   "id": "cgya94OU6IhFm58p",
   "name": "Module questions creator",
   "active": false,
@@ -483,7 +483,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "select v.prompt_id, v.content, v.llm\nfrom prompts p join prompt_versions v on\np.id = v.prompt_id\nand p.active_version_id = v.id join course_types t on\np.course_type_id = t.id\nwhere t.name = '{{ $('When Executed by Another Workflow').item.json.course_type }}'\nand p.course_section_id = 'd9a263d1-78f2-4aa8-a466-6d44d25a9319'",
+        "query": "select v.prompt_id, v.content, v.llm\nfrom prompts p \njoin prompt_versions v on \n  p.id = v.prompt_id\n  and p.active_version_id = v.id\njoin prompt_course_relations pcr on \n  p.id = pcr.prompt_id\njoin course_types t on \n  pcr.course_type_id = t.id\nwhere t.name = '{{ $('When Executed by Another Workflow').item.json.course_type }}'\nand pcr.course_section_id = 'd9a263d1-78f2-4aa8-a466-6d44d25a9319'",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -755,7 +755,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "34291f18-f738-4727-88ba-11e7e477619e",
+  "versionId": "b22cd93c-4921-4bc1-80d6-a27c087d3b45",
   "triggerCount": 0,
   "shared": [
     {
