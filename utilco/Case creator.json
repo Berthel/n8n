@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-06-09T04:39:10.303Z",
-  "updatedAt": "2025-10-06T09:01:29.000Z",
+  "updatedAt": "2025-10-11T14:51:49.000Z",
   "id": "TM4BtRHM82JhtiIH",
   "name": "Case creator",
   "active": false,
@@ -223,7 +223,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "select v.prompt_id, v.content, v.llm\nfrom prompts p join prompt_versions v on\np.id = v.prompt_id\nand p.active_version_id = v.id join course_types t on\np.course_type_id = t.id\nwhere t.name = '{{ $('When Executed by Another Workflow').item.json.course_type }}'\nand p.course_section_id = 'b4933441-41b1-45d1-be84-c8765266642b'",
+        "query": "select v.prompt_id, v.content, v.llm\nfrom prompts p \njoin prompt_versions v on \n  p.id = v.prompt_id\n  and p.active_version_id = v.id\njoin prompt_course_relations pcr on \n  p.id = pcr.prompt_id\njoin course_types t on \n  pcr.course_type_id = t.id\nwhere t.name = '{{ $('When Executed by Another Workflow').item.json.course_type }}'\nand pcr.course_section_id = 'b4933441-41b1-45d1-be84-c8765266642b'",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -380,7 +380,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "56c80393-c7bc-4a5d-a878-2c78b8ea5855",
+  "versionId": "bf9b6724-7e65-43d1-8acc-d4ed35e376c4",
   "triggerCount": 0,
   "shared": [
     {
