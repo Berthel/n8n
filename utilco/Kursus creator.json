@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-05-06T13:41:14.352Z",
-  "updatedAt": "2025-10-09T13:10:14.000Z",
+  "updatedAt": "2025-10-11T14:50:27.000Z",
   "id": "ZOTTc7BFoxlnLyvP",
   "name": "Kursus creator",
   "active": false,
@@ -813,7 +813,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "select v.prompt_id, v.content, v.llm\nfrom prompts p join prompt_versions v on\np.id = v.prompt_id\nand p.active_version_id = v.id join course_types t on\np.course_type_id = t.id\nwhere t.name = '{{ $('When Executed by Another Workflow').item.json.course_type }}'\nand p.course_section_id = '6efb107a-3568-4994-96d8-017308211c27'",
+        "query": "select v.prompt_id, v.content, v.llm\nfrom prompts p \njoin prompt_versions v on \n  p.id = v.prompt_id\n  and p.active_version_id = v.id\njoin prompt_course_relations pcr on \n  p.id = pcr.prompt_id\njoin course_types t on \n  pcr.course_type_id = t.id\nwhere t.name = '{{ $('When Executed by Another Workflow').item.json.course_type }}'\nand pcr.course_section_id = '6efb107a-3568-4994-96d8-017308211c27'",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -834,7 +834,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "select v.prompt_id, v.content, v.llm\nfrom prompts p join prompt_versions v on\np.id = v.prompt_id\nand p.active_version_id = v.id join course_types t on\np.course_type_id = t.id\nwhere t.name = '{{ $('When Executed by Another Workflow').item.json.course_type }}'\nand p.course_section_id = 'e01e21ab-d8d7-4a16-93a6-0455da74d995'",
+        "query": "select v.prompt_id, v.content, v.llm\nfrom prompts p \njoin prompt_versions v on \n  p.id = v.prompt_id\n  and p.active_version_id = v.id\njoin prompt_course_relations pcr on \n  p.id = pcr.prompt_id\njoin course_types t on \n  pcr.course_type_id = t.id\nwhere t.name = '{{ $('When Executed by Another Workflow').item.json.course_type }}'\nand pcr.course_section_id = 'e01e21ab-d8d7-4a16-93a6-0455da74d995'",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -1286,7 +1286,7 @@
       }
     ]
   },
-  "versionId": "42ac8b21-ba5e-4c6c-bd60-ccfdc35ec631",
+  "versionId": "71d1ccd9-87ca-4bd6-a4ce-910415197397",
   "triggerCount": 0,
   "shared": [
     {
