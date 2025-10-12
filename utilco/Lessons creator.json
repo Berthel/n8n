@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-05-23T12:23:10.568Z",
-  "updatedAt": "2025-10-06T09:00:28.000Z",
+  "updatedAt": "2025-10-11T14:53:04.000Z",
   "id": "JFxTvX4GDNqmUX0R",
   "name": "Lessons creator",
   "active": false,
@@ -481,7 +481,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "select v.prompt_id, v.content, v.llm\nfrom prompts p join prompt_versions v on\np.id = v.prompt_id\nand p.active_version_id = v.id join course_types t on\np.course_type_id = t.id\nwhere t.name = '{{ $('When Executed by Another Workflow').item.json.course_type }}'\nand p.course_section_id = '530d49da-32d4-4331-91d9-e4eafaa0e954'",
+        "query": "select v.prompt_id, v.content, v.llm\nfrom prompts p \njoin prompt_versions v on \n  p.id = v.prompt_id\n  and p.active_version_id = v.id\njoin prompt_course_relations pcr on \n  p.id = pcr.prompt_id\njoin course_types t on \n  pcr.course_type_id = t.id\nwhere t.name = '{{ $('When Executed by Another Workflow').item.json.course_type }}'\nand pcr.course_section_id = '530d49da-32d4-4331-91d9-e4eafaa0e954'",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -526,7 +526,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "select v.prompt_id, v.content, v.llm\nfrom prompts p join prompt_versions v on\np.id = v.prompt_id\nand p.active_version_id = v.id join course_types t on\np.course_type_id = t.id\nwhere t.name = '{{ $('When Executed by Another Workflow').item.json.course_type }}'\nand p.course_section_id = '85fd53ab-4f6c-41ad-9439-c48d1b332d36'",
+        "query": "select v.prompt_id, v.content, v.llm\nfrom prompts p \njoin prompt_versions v on \n  p.id = v.prompt_id\n  and p.active_version_id = v.id\njoin prompt_course_relations pcr on \n  p.id = pcr.prompt_id\njoin course_types t on \n  pcr.course_type_id = t.id\nwhere t.name = '{{ $('When Executed by Another Workflow').item.json.course_type }}'\nand pcr.course_section_id = '85fd53ab-4f6c-41ad-9439-c48d1b332d36'",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -571,7 +571,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "select v.prompt_id, v.content, v.llm\nfrom prompts p join prompt_versions v on\np.id = v.prompt_id\nand p.active_version_id = v.id join course_types t on\np.course_type_id = t.id\nwhere t.name = '{{ $('When Executed by Another Workflow').item.json.course_type }}'\nand p.course_section_id = 'd331760c-779a-4d83-afef-7d4b8889fe59'",
+        "query": "select v.prompt_id, v.content, v.llm\nfrom prompts p \njoin prompt_versions v on \n  p.id = v.prompt_id\n  and p.active_version_id = v.id\njoin prompt_course_relations pcr on \n  p.id = pcr.prompt_id\njoin course_types t on \n  pcr.course_type_id = t.id\nwhere t.name = '{{ $('When Executed by Another Workflow').item.json.course_type }}'\nand pcr.course_section_id = 'd331760c-779a-4d83-afef-7d4b8889fe59'",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -616,7 +616,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "select v.prompt_id, v.content, v.llm\nfrom prompts p join prompt_versions v on\np.id = v.prompt_id\nand p.active_version_id = v.id join course_types t on\np.course_type_id = t.id\nwhere t.name = '{{ $('When Executed by Another Workflow').item.json.course_type }}'\nand p.course_section_id = 'c79be916-7f6c-44b3-aa08-18554ffa694d'",
+        "query": "select v.prompt_id, v.content, v.llm\nfrom prompts p \njoin prompt_versions v on \n  p.id = v.prompt_id\n  and p.active_version_id = v.id\njoin prompt_course_relations pcr on \n  p.id = pcr.prompt_id\njoin course_types t on \n  pcr.course_type_id = t.id\nwhere t.name = '{{ $('When Executed by Another Workflow').item.json.course_type }}'\nand pcr.course_section_id = 'c79be916-7f6c-44b3-aa08-18554ffa694d'",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -964,7 +964,7 @@
       }
     ]
   },
-  "versionId": "be0a5698-f7e3-4183-93ec-e5d82de92ecc",
+  "versionId": "51f36495-b188-4ccf-a5db-1dc8d4de25cf",
   "triggerCount": 0,
   "shared": [
     {
