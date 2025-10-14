@@ -1,0 +1,236 @@
+{
+  "createdAt": "2025-10-13T05:22:06.277Z",
+  "updatedAt": "2025-10-13T06:13:18.000Z",
+  "id": "AQA4B8m0jyhTe5Vh",
+  "name": "Deep Research",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "82e41fa7-bb92-4ace-9285-b761954db0f9",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.prompt }}",
+        "options": {
+          "systemMessage": "Din opgave er at udføre Deep Research opgaver. Benyt Perplexity tool når det er relevant for at nedbryde opgaven i mindre dele"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        624,
+        0
+      ],
+      "id": "a851ebe8-fc32-41f2-bff9-987683325c31",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "01be7857-005c-4f3e-8643-1a50e9bf455c",
+              "name": "prompt",
+              "value": "Deep research – Eksterne tendenser for VEKS (PESTLE, kun analyse) Kontekst og mål Udarbejd en dybdegående research-rapport om eksterne tendenser med relevans for VEKS – Vestegnens Kraftvarmeselskab I/S (dansk transmissionsselskab for fjernvarme). Rapporten skal udelukkende bestå af analyser af tendenser opdelt i PESTLE (Political, Economic, Social, Technological, Legal, Environmental). Ingen anbefalinger, prioriteringer eller “so what”—kun evidensbaseret analyse. Scope Primær geografi: Danmark og EU (inkl. nordisk kontekst, når relevant). Tidshorisonter: Kort (0–2 år), Mellem (3–5 år), Lang (6–10+ år). Fokus: Energi- og varmeforsyning, affald-til-energi, biomasse/alternativer, transmissionsnet, sektorkobling (el-varme), forsyningssikkerhed, regulering, finansiering/ESG, arbejdsmarked og leverandørkæder, digital/cyber. Udelad interne forhold, strategi, og anbefalinger. Kildekrav Brug de mest relevante og seneste kilder (EU/DK-myndigheder, regulative dokumenter, brancheorganisationer, statistikbanke, anerkendte analyser, fagfællebedømte kilder, troværdige medier). Angiv kilde, udgiver, dato (måned/år) og permalink for hver tendens. Marker usikkerhed (lav/mellem/høj) og noter metodiske forbehold ved modstridende kilder. Outputformat Indledende overblik (1 side maksimum): tabel med 5–10 nøgle-tendenser per PESTLE med titel og tids­horisont. Derefter én sektion pr. PESTLE. For hver tendens leveres præcis denne struktur: Titel på tendens 1) Analysen – hvad er tendensen? Hvad sker der, hvad driver den (drivkræfter), og hvordan knytter den sig til fjernvarme/transmission/Affald-til-energi/VEKS’ eksterne omgivelser. Underbyg med datapunkter og citater (i kort form) fra kilder. 2) Konsekvens Hvilke eksterne implikationer kan tendensen få (markedsforhold, omkostningsniveauer, forsyningssikkerhed, adgang til brændsler/teknologi, compliance-byrde, finansieringsvilkår, omdømmemiljø). Ingen anbefalinger—kun sandsynlige konsekvenser/scenarier. 3) Timing Hvornår forventes tendensen at materialisere sig (0–2 / 3–5 / 6–10+ år), eller foregår den allerede nu? Angiv konkrete datoer/årstal hvis muligt (fx ikrafttrædelse af regulering). Kilder (liste) Lever hvert PESTLE-afsnit som en liste af tendenser (typisk 5–12 pr. kategori). Skriv kort, præcist og evidensbaseret. Dybdekrav pr. PESTLE (vejledende emner – medtag kun, hvor kilderne er robuste) P – Political/Policy: EU- og DK-energi-/klimapolitik, forsyningssikkerhed, varmeplaner/kommunale planer, statslige støtteordninger, geopolitiske forhold der påvirker brændsler, internationale aftaler. E – Economic: Energipriser (el/gas/biomasse/affaldsgebyrer), CO₂-priser/kvotesystemer, inflation/renter/finansieringsomkostninger, capex/opex-trends, leverandørkæder og flaskehalse. S – Social: Forbruger- og borgeropfattelser (prisfølsomhed, accept af teknologier), arbejdsmarked/kompetencemangel, demografi/byudvikling. T – Technological: Varmeproduktionsteknologier (fx store varmepumper, geotermi, spildvarme, P2X-koblinger), digitalisering/optimering, fleksibilitet/lagring, måling/overvågning, cybersikkerhed. L – Legal: EU- og dansk regulering (tildeling/tariffer, statsstøtte, udbudsregler, miljøkrav, affaldsdirektiver, bæredygtigheds-/standardkrav, EU-taksonomi/rapportering). E – Environmental: Klimamål, emissionskrav, biodiversitet/naturhensyn, ressource-/affaldsstrømme, vandforbrug, lokal miljøpåvirkning. Skabelon for én tendens (brug denne nøjagtige struktur) Tendens-titel: [kort og præcis] 1) Analysen – hvad er tendensen? [Objektiv beskrivelse + drivere + nøgletal/indikatorer] 2) Konsekvens: [Eksterne implikationer for VEKS’ omverden/rammevilkår] 3) Timing: [Allerede i gang? eller forventet fra år X; angiv 0–2 / 3–5 / 6–10+ år] Kilder: [forfatter/organisation, titel, måned/år, link] Kvalitetssikring før aflevering Ingen anbefalinger, beslutningsforslag eller prioriteringer. Alle væsentlige påstande er kildeunderstøttede og daterede. Tidsangivelser er absolutte (måned/år) hvor muligt, ellers tydeligt spænd. Sammenflet modstridende kilder ved at angive usikkerhed og forklar mulige grunde til afvigelser. Brug neutral, nøgtern tone. Maks. ~300 ord pr. tendens. Format og levering Lever som struktureret Markdown med indholdsfortegnelse. Brug tabeller til overblikket i starten (PESTLE × tendenser × timing). Dansk sprog.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "9f54afd9-5c31-4461-88a6-9dd53d0361d5",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "toText",
+        "sourceProperty": "output",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        976,
+        0
+      ],
+      "id": "53da8bb2-50ec-49d4-8156-2dba405b7d60",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5",
+          "mode": "list",
+          "cachedResultName": "gpt-5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        496,
+        224
+      ],
+      "id": "21081763-b0bf-4d74-97a0-65f79a7c0a35",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "Gvr9qL4I7djxEhHC",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "sonar",
+        "messages": {
+          "message": [
+            {
+              "content": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('message0_Text', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.perplexityTool",
+      "typeVersion": 1,
+      "position": [
+        784,
+        208
+      ],
+      "id": "5723bd61-79a0-4de3-b0b7-584300cb12bc",
+      "name": "Message a model in Perplexity",
+      "credentials": {
+        "perplexityApi": {
+          "id": "Hx6Ym4zL8EyuILTI",
+          "name": "Perplexity Flemming"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "google/gemini-2.5-pro",
+          "mode": "list",
+          "cachedResultName": "google/gemini-2.5-pro"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        640,
+        352
+      ],
+      "id": "f4c65238-52ba-4476-b56d-dafba9d71330",
+      "name": "OpenRouter",
+      "credentials": {
+        "openAiApi": {
+          "id": "wLbV0srlBMaP36mY",
+          "name": "Open Router"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "Message a model in Perplexity": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "2be316ee-8523-4d5b-8d66-ee664177df7e",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-10-13T05:22:06.283Z",
+      "updatedAt": "2025-10-13T05:22:06.283Z",
+      "role": "workflow:owner",
+      "workflowId": "AQA4B8m0jyhTe5Vh",
+      "projectId": "SFLNAzqJIfhKMhJx"
+    }
+  ],
+  "tags": []
+}
