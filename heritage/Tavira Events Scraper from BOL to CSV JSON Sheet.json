@@ -1,0 +1,787 @@
+{
+  "createdAt": "2025-10-17T14:32:21.685Z",
+  "updatedAt": "2025-10-17T18:37:46.000Z",
+  "id": "mm4gh5QUQapbg9as",
+  "name": "Tavira Events Scraper from BOL to CSV JSON Sheet",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 2
+            }
+          ]
+        }
+      },
+      "id": "3d40e918-a00d-4f5b-aeeb-c936250c66fb",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        1296,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "listPageUrl",
+              "value": "https://www.bol.pt/Comprar/Pesquisa?q=&dist=8&e=4eDC",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "userAgent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+              "type": "string"
+            },
+            {
+              "id": "id-3",
+              "name": "delayMs",
+              "value": 1000,
+              "type": "number"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "5d253ecc-cd7d-48fb-b9de-2bfa8e1c44b5",
+      "name": "Workflow Configuration",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1744,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Workflow Configuration').first().json.listPageUrl }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "={{ $('Workflow Configuration').first().json.userAgent }}"
+            },
+            {
+              "name": "Accept-Language",
+              "value": "pt-PT,pt;q=0.9"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a7bba523-abe9-4c5c-96fd-54bdbb3e92d3",
+      "name": "Fetch Event List Page",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1968,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "eventLinks",
+              "cssSelector": "a[href*=\"/Comprar/Bilhetes/\"]",
+              "returnValue": "attribute",
+              "attribute": "href",
+              "returnArray": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "203f6f2c-a703-4bc0-bd0f-8c45c053af25",
+      "name": "Extract Event Links",
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        2192,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get all event URLs from the previous node\nconst items = $input.all();\n\n// Create output array with one item per URL\nconst output = [];\n\nfor (const item of items) {\n  if (item.json.url) {\n    output.push({\n      json: {\n        eventUrl: item.json.url\n      }\n    });\n  }\n}\n\nreturn output;"
+      },
+      "id": "3f5d251a-1a86-4f36-886c-f4b1507d0332",
+      "name": "Loop Over Events",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2640,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.eventUrl }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "={{ $('Workflow Configuration').first().json.userAgent }}"
+            },
+            {
+              "name": "Accept-Language",
+              "value": "pt-PT,pt;q=0.9"
+            }
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {
+              "batchInterval": "={{ $('Workflow Configuration').first().json.delayMs }}"
+            }
+          }
+        }
+      },
+      "id": "08cf345b-0a14-45ad-b5ad-4682fe568416",
+      "name": "Fetch Event Page",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3088,
+        -208
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Expect: input item has { data: \"<html...>\", eventUrl?: \"https://www.bol.pt/Comprar/Bilhetes/...\" }\nconst raw = $input.item.json?.data;\nconst eventUrl = $input.item.json?.eventUrl || '';\n\nif (!raw || typeof raw !== 'string') {\n  return {\n    event_name: '',\n    date_time_local: '',\n    date_time_iso: '',\n    status: 'error',\n    sold_out_bool: null,\n    description: 'No HTML data available',\n    event_url: eventUrl,\n    image_url: '',\n  };\n}\n\nconst html = raw;\n\n// --- helpers ---\nconst monthMap = { jan:1, fev:2, mar:3, abr:4, mai:5, jun:6, jul:7, ago:8, set:9, out:10, nov:11, dez:12 };\n\nfunction decodeEntities(s='') {\n  return s\n    .replace(/&nbsp;/g,' ')\n    .replace(/&amp;/g,'&')\n    .replace(/&lt;/g,'<')\n    .replace(/&gt;/g,'>')\n    .replace(/&quot;/g,'\"');\n}\n\nfunction tryParseJSON(str) {\n  try { return JSON.parse(str); } catch { return null; }\n}\n\n// Absolutér en URL i forhold til eventUrl/domæne\nfunction absolutizeUrl(u='', baseOrigin='') {\n  if (!u) return '';\n  const url = decodeEntities(u.trim());\n  if (/^data:/i.test(url)) return '';                  // ignorér data-URIs\n  if (/^https?:\\/\\//i.test(url)) return url;\n  if (/^\\/\\//.test(url)) return 'https:' + url;\n  const base = baseOrigin || (eventUrl.match(/^https?:\\/\\/[^/]+/i)?.[0]) || 'https://www.bol.pt';\n  if (url.startsWith('/')) return base + url;\n  // relative path uden leading slash – forsøg at bruge eventUrl’s path som dir\n  try {\n    const baseUrl = new URL(eventUrl || base);\n    const dir = baseUrl.href.replace(/[^/]*$/, ''); // fjern filnavn\n    return new URL(url, dir).href;\n  } catch {\n    return base + (base.endsWith('/') ? '' : '/') + url;\n  }\n}\n\n// Find \"content\" i en meta-/link-tag string\nfunction getAttr(tag='', attr='content') {\n  return tag.match(new RegExp(attr + '=[\"\\']([^\"\\']+)[\"\\']','i'))?.[1] || '';\n}\n\n// Find alle JSON-LD events på siden\nconst ldMatches = [...html.matchAll(/<script[^>]+type=[\"']application\\/ld\\+json[\"'][^>]*>([\\s\\S]*?)<\\/script>/gi)]\n  .map(m => tryParseJSON(m[1]))\n  .filter(o => o && (o['@type'] === 'Event' || (Array.isArray(o['@graph']) && o['@graph'].some(g => g['@type']==='Event'))));\n\n// Vælg bedste JSON-LD event:\n// 1) url matcher eventUrl, ellers 2) første objekt af type Event.\nfunction pickEventFromLD() {\n  for (const obj of ldMatches) {\n    if (obj['@type'] === 'Event') {\n      if (eventUrl && obj.url && obj.url.includes(eventUrl)) return obj;\n    }\n    if (Array.isArray(obj['@graph'])) {\n      for (const g of obj['@graph']) {\n        if (g['@type'] === 'Event' && eventUrl && g.url && g.url.includes(eventUrl)) return g;\n      }\n    }\n  }\n  for (const obj of ldMatches) {\n    if (obj['@type'] === 'Event') return obj;\n    if (Array.isArray(obj['@graph'])) {\n      const e = obj['@graph'].find(g => g['@type']==='Event');\n      if (e) return e;\n    }\n  }\n  return null;\n}\n\nconst ldEvent = pickEventFromLD();\n\n// --------- IMAGE URL (NY) ---------\nfunction imageFromLd(img) {\n  if (!img) return '';\n  if (typeof img === 'string') return img;\n  if (Array.isArray(img)) {\n    for (const it of img) {\n      const u = imageFromLd(it);\n      if (u) return u;\n    }\n    return '';\n  }\n  if (typeof img === 'object') {\n    // JSON-LD ImageObject varianter\n    return img.url || img.contentUrl || img.thumbnailUrl || '';\n  }\n  return '';\n}\n\n// Meta-scrape for billede (og:image, twitter:image, itemprop=image, link rel=image_src)\nfunction imageFromMeta(doc) {\n  const metas = [...doc.matchAll(/<meta[^>]+(?:property|name|itemprop)=[\"']([^\"']+)[\"'][^>]*>/gi)];\n  const wanted = [\n    'og:image:secure_url','og:image','twitter:image:src','twitter:image','image',\n  ];\n  for (const m of metas) {\n    const key = (m[1] || '').toLowerCase();\n    if (wanted.includes(key)) {\n      const content = getAttr(m[0], 'content');\n      if (content) return content;\n    }\n  }\n  const linkImage = doc.match(/<link[^>]+rel=[\"']image_src[\"'][^>]*>/i)?.[0];\n  if (linkImage) {\n    const href = getAttr(linkImage, 'href');\n    if (href) return href;\n  }\n  return '';\n}\n\n// Vælg “bedste” kandidat fra et img-tag’s srcset (største bredde)\nfunction pickFromSrcset(tag='') {\n  const srcset = tag.match(/srcset=[\"']([^\"']+)[\"']/i)?.[1];\n  if (!srcset) return '';\n  const parts = srcset.split(',').map(s => s.trim()).filter(Boolean);\n  let best = '';\n  let bestW = -1;\n  for (const part of parts) {\n    const m = part.match(/(\\S+)\\s+(\\d+)(w|x)/i);\n    if (m) {\n      const url = m[1];\n      const val = parseInt(m[2],10);\n      const weight = m[3].toLowerCase() === 'w' ? val : (val * 1000); // prioriter \"w\"\n      if (weight > bestW) { bestW = weight; best = url; }\n    } else {\n      // Kun URL – tag sidste som ofte er størst\n      best = part.split(/\\s+/)[0];\n    }\n  }\n  return best;\n}\n\nfunction isLikelyPoster(url='') {\n  const u = url.toLowerCase();\n  if (!/\\.(jpg|jpeg|png|webp|gif)(\\?|#|$)/i.test(u)) return false;\n  // filtrér tydelige ikoner/sprites/logos\n  if (/(icon|favicon|apple|sprite|logo|sparkling|mcafee|norton|trust|ads|facebook|twitter|instagram)/i.test(u)) return false;\n  return true;\n}\n\nfunction imageFromImgTags(doc) {\n  const imgs = [...doc.matchAll(/<img[^>]+>/gi)].map(m => m[0]);\n  // prøv srcset først (ofte giver største plakat)\n  for (const tag of imgs) {\n    const candidate = pickFromSrcset(tag) || getAttr(tag,'src');\n    if (candidate && isLikelyPoster(candidate)) return candidate;\n  }\n  return '';\n}\n\nfunction pickImageUrl() {\n  // 1) JSON-LD\n  let u = imageFromLd(ldEvent?.image);\n  if (u) return u;\n\n  // 2) META\n  u = imageFromMeta(html);\n  if (u) return u;\n\n  // 3) IMG tags\n  u = imageFromImgTags(html);\n  if (u) return u;\n\n  return '';\n}\n\nconst baseOrigin = (eventUrl.match(/^https?:\\/\\/[^/]+/i)?.[0]) || 'https://www.bol.pt';\nconst rawImageUrl = pickImageUrl();\nconst imageUrl = rawImageUrl ? absolutizeUrl(rawImageUrl, baseOrigin) : '';\n\n// --- title / name ---\nlet eventName = '';\nif (ldEvent?.name) {\n  eventName = String(ldEvent.name).trim();\n} else {\n  const t = html.match(/<title[^>]*>([\\s\\S]*?)<\\/title>/i)?.[1] || '';\n  let cleaned = t.replace(/\\s+/g,' ').trim();\n  cleaned = cleaned.replace(/^BOL\\s*-\\s*/i,'').replace(/^Bilhetes\\s*/i,'');\n  const idx = cleaned.indexOf(' - ');\n  eventName = (idx !== -1 ? cleaned.slice(0, idx) : cleaned).trim();\n}\n\n// --- description (detail-side har \"Sinopse\"; ellers tom) ---\nlet description = '';\n{\n  const sinopse = html.match(/Sinopse[\\s\\S]*?<\\/h[2-6]>([\\s\\S]*?)(?=<h[2-6]|Preços|Localização|Morada|Duração|Abertura|Promotor|Sess[aã]o|$)/i);\n  if (sinopse) {\n    description = decodeEntities(\n      sinopse[1].replace(/<[^>]+>/g,' ').replace(/\\s{2,}/g,' ').trim()\n    );\n  }\n}\n\n// --- status (HTML er mere troværdigt end JSON-LD availability på BOL) ---\nconst hasLabelEsgotado = /label-esgotado/i.test(html);\nconst hasComprarButton = /class=['\"][^\"']*\\b(botao\\s+comprar|comprar)\\b[^\"']*['\"]/i.test(html) || /\\bComprar\\b/i.test(html);\nconst hasBotaoEscondido = /botao-escondido/i.test(html);\nlet status = 'unknown';\nlet soldOutBool = null;\n\nif (hasLabelEsgotado || hasBotaoEscondido || (/\\bEsgotado\\b/i.test(html) && !hasComprarButton)) {\n  status = 'sold out';\n  soldOutBool = true;\n} else if (hasComprarButton && !/\\bEsgotado\\b/i.test(html)) {\n  status = 'on sale';\n  soldOutBool = false;\n}\n\n// --- date/time ---\nlet date_time_iso = '';\nlet date_time_local = '';\n\nfunction pad2(n){ return String(n).padStart(2,'0'); }\n\nif (ldEvent?.startDate) {\n  // JSON-LD giver allerede ISO8601\n  const d = new Date(ldEvent.startDate);\n  if (!isNaN(d)) {\n    date_time_iso = d.toISOString();\n    date_time_local = `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;\n  }\n}\n\nif (!date_time_iso) {\n  // Fald tilbage: find \"18 out 2025 21:30\" eller \"18 out 2025, 21:30\"\n  const m = html.match(/(\\d{1,2})\\s+([A-Za-zÀ-ÿ]{3,})\\s+(\\d{4}),?\\s+(\\d{1,2}):(\\d{2})/i);\n  if (m) {\n    const day = parseInt(m[1],10);\n    const mon = (m[2] || '').toLowerCase().slice(0,3);\n    const year = parseInt(m[3],10);\n    const hour = parseInt(m[4],10);\n    const minute = parseInt(m[5],10);\n    const month = monthMap[mon];\n    if (month) {\n      const d = new Date(year, month-1, day, hour, minute);\n      if (!isNaN(d)) {\n        date_time_iso = d.toISOString();\n        date_time_local = `${year}-${pad2(month)}-${pad2(day)} ${pad2(hour)}:${pad2(minute)}`;\n      }\n    }\n  }\n}\n\n// Output (single item – denne node er Function Item)\nreturn {\n  event_name: eventName || '',\n  date_time_local: date_time_local || '',\n  date_time_iso: date_time_iso || '',\n  status,\n  sold_out_bool: soldOutBool,\n  description: description || '',\n  event_url: eventUrl || (ldEvent?.url || ''),\n  image_url: imageUrl || '',\n};\n"
+      },
+      "id": "3e137f19-e776-4b6c-983f-85a177fec935",
+      "name": "Extract Event Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3312,
+        -208
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "event_navn",
+              "value": "={{ $json.event_name }}",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "dato_tid_local",
+              "value": "={{ $json.date_time_local }}",
+              "type": "string"
+            },
+            {
+              "id": "id-3",
+              "name": "dato_tid_iso",
+              "value": "={{ $json.date_time_iso }}",
+              "type": "string"
+            },
+            {
+              "id": "id-4",
+              "name": "status",
+              "value": "={{ $json.status }}",
+              "type": "string"
+            },
+            {
+              "id": "id-5",
+              "name": "udsolgt_bool",
+              "value": "={{ $json.status !== 'on sale' }}",
+              "type": "boolean"
+            },
+            {
+              "id": "id-6",
+              "name": "beskrivelse",
+              "value": "={{ $json.description }}",
+              "type": "string"
+            },
+            {
+              "id": "id-7",
+              "name": "event_url",
+              "value": "={{ $json.event_url }}",
+              "type": "string"
+            },
+            {
+              "id": "a3e36808-88c4-4b86-adc4-4bd3c7d19135",
+              "name": "image_url",
+              "value": "={{ $json.image_url }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3e8dbfa3-c9b4-4fdc-87b2-30959c13fb3e",
+      "name": "Format Final Output",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3536,
+        -208
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the extracted links from the previous node\nconst items = $input.all();\n\n// Base URL for making relative URLs absolute\nconst baseUrl = 'https://www.bol.pt';\n\n// Set to store unique URLs\nconst uniqueUrls = new Set();\n\n// Process each item\nfor (const item of items) {\n  // Get the eventLinks array from the item\n  const eventLinks = item.json.eventLinks || [];\n  \n  // Process each link in the array\n  for (const link of eventLinks) {\n    let url = link;\n    \n    if (url) {\n      // Make absolute URL if relative\n      if (url.startsWith('/')) {\n        url = baseUrl + url;\n      } else if (!url.startsWith('http')) {\n        url = baseUrl + '/' + url;\n      }\n      \n      // Remove query strings and fragments\n      url = url.split('?')[0].split('#')[0];\n      \n      // Add to set (automatically deduplicates)\n      uniqueUrls.add(url);\n    }\n  }\n}\n\n// Convert set to array and return as items\nconst outputItems = Array.from(uniqueUrls).map(url => ({\n  json: { url }\n}));\n\nreturn outputItems;"
+      },
+      "id": "87310b9f-094f-4373-9013-7985aa1a2a04",
+      "name": "Byg et n8n‑workflow, der scraper Tavira‑events fra BOL og gemmer som CSV/JSON/Sheet. Start: https://",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2416,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        2864,
+        16
+      ],
+      "id": "22dbc099-f170-43b2-9319-de2eced3c666",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "operation": "deleteRows",
+        "dataTableId": {
+          "__rl": true,
+          "value": "NIu1MrxsdkJUk2o9",
+          "mode": "list",
+          "cachedResultName": "Tavira Events",
+          "cachedResultUrl": "/projects/Oe16LxplPC150asV/datatables/NIu1MrxsdkJUk2o9"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "createdAt",
+              "condition": "lt",
+              "keyValue": "={{ $now }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1520,
+        16
+      ],
+      "id": "068c3cbe-fac0-406b-885e-4168f6a84a39",
+      "name": "Delete row(s)",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8ca18be0-947a-42e4-bd71-222f86d0448e",
+              "leftValue": "={{ $json.beskrivelse }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "2e490934-ba68-4ac2-9923-6d70efbd22c4",
+              "leftValue": "={{ $json.udsolgt_bool }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3760,
+        -208
+      ],
+      "id": "cc1352a3-37b6-4bcc-b522-163f35231ddd",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "sortFieldsUi": {
+          "sortField": [
+            {
+              "fieldName": "dato"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "66cee607-d8fe-4b52-9eb1-ede53e7f4d36",
+      "name": "Sort by Date",
+      "type": "n8n-nodes-base.sort",
+      "typeVersion": 1,
+      "position": [
+        3760,
+        -16
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get all events from previous node\nconst items = $input.all();\n\n// Sort items by date (dato_tid_iso)\nconst sortedItems = items.sort((a, b) => {\n  const dateA = new Date(a.json.dato_tid_iso || 0);\n  const dateB = new Date(b.json.dato_tid_iso || 0);\n  return dateA - dateB;\n});\n\n// Build HTML email\nlet html = `\n<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    body {\n      font-family: Arial, sans-serif;\n      margin: 20px;\n      background-color: #f5f5f5;\n    }\n    .container {\n      max-width: 1200px;\n      margin: 0 auto;\n      background-color: white;\n      padding: 20px;\n      border-radius: 8px;\n      box-shadow: 0 2px 4px rgba(0,0,0,0.1);\n    }\n    h1 {\n      color: #333;\n      border-bottom: 3px solid #4CAF50;\n      padding-bottom: 10px;\n    }\n    table {\n      width: 100%;\n      border-collapse: collapse;\n      margin-top: 20px;\n    }\n    th {\n      background-color: #4CAF50;\n      color: white;\n      padding: 12px;\n      text-align: left;\n      font-weight: bold;\n    }\n    td {\n      padding: 12px;\n      border-bottom: 1px solid #ddd;\n      vertical-align: middle;\n    }\n    tr:hover {\n      background-color: #f5f5f5;\n    }\n    .status-on-sale {\n      color: #4CAF50;\n      font-weight: bold;\n    }\n    .status-sold-out {\n      color: #f44336;\n      font-weight: bold;\n    }\n    .status-unknown {\n      color: #ff9800;\n      font-weight: bold;\n    }\n    a {\n      color: #2196F3;\n      text-decoration: none;\n    }\n    a:hover {\n      text-decoration: underline;\n    }\n    .description {\n      max-width: 400px;\n      overflow: hidden;\n      text-overflow: ellipsis;\n    }\n    .thumb {\n      border-radius: 6px;\n      object-fit: cover;\n      box-shadow: 0 1px 3px rgba(0,0,0,0.2);\n    }\n  </style>\n</head>\n<body>\n  <div class=\"container\">\n    <h1>Tavira Events - ${new Date().toLocaleDateString('pt-PT')}</h1>\n    <p>Total events: ${sortedItems.length}</p>\n    <table>\n      <thead>\n        <tr>\n          <th>Image</th>\n          <th>Event Name</th>\n          <th>Date & Time</th>\n          <th>Status</th>\n          <th>Description</th>\n          <th>Link</th>\n        </tr>\n      </thead>\n      <tbody>\n`;\n\n// Add each event as a table row\nfor (const item of sortedItems) {\n  const eventName = item.json.event_navn || 'N/A';\n  const dateTime = item.json.dato || 'N/A';\n  const status = item.json.status || 'unknown';\n  const description = item.json.beskrivelse || 'No description available';\n  const eventUrl = item.json.event_url || '#';\n  const imageUrl = item.json.image_url || ''; // new field\n\n  // Determine status class\n  let statusClass = 'status-unknown';\n  if (status === 'on sale') statusClass = 'status-on-sale';\n  if (status === 'sold out') statusClass = 'status-sold-out';\n\n  // Optional thumbnail or placeholder\n  const imageCell = imageUrl\n    ? `<img src=\"${imageUrl}\" alt=\"Event image\" class=\"thumb\" />`\n    : `<div style=\"width:100px;height:60px;background:#eee;border-radius:6px;text-align:center;line-height:60px;color:#999;font-size:12px;\">No image</div>`;\n\n  html += `\n        <tr>\n          <td>${imageCell}</td>\n          <td><strong>${eventName}</strong></td>\n          <td>${dateTime}</td>\n          <td class=\"${statusClass}\">${status.toUpperCase()}</td>\n          <td class=\"description\">${description}</td>\n          <td><a href=\"${eventUrl}\" target=\"_blank\">View Event</a></td>\n        </tr>\n  `;\n}\n\nhtml += `\n      </tbody>\n    </table>\n  </div>\n</body>\n</html>\n`;\n\n// Return single item with HTML content\nreturn [\n  {\n    json: {\n      html: html,\n      subject: `Tavira Events Update - ${new Date().toLocaleDateString('pt-PT')}`,\n      eventCount: sortedItems.length\n    }\n  }\n];\n"
+      },
+      "id": "b2b794c9-0a9f-4a33-ba7f-23ff0ead0723",
+      "name": "Format Email Content",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3984,
+        -16
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "flemming.berthelsen@gmail.com;ap.berthelsen@gmail.com",
+        "subject": "=Tavira Events - {{ $now.format('dd/MM/yyyy') }}",
+        "message": "={{ $json.html }}",
+        "options": {}
+      },
+      "id": "21e72358-3eb9-4ff6-bfb7-fc0cff7010bc",
+      "name": "Send Gmail",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        4208,
+        -16
+      ],
+      "webhookId": "6e1434e2-2728-4d56-b639-cee37fe17e9b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "igSexdPYjqFezoJH",
+          "name": "Gmail account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "NIu1MrxsdkJUk2o9",
+          "mode": "list",
+          "cachedResultName": "Tavira Events",
+          "cachedResultUrl": "/projects/Oe16LxplPC150asV/datatables/NIu1MrxsdkJUk2o9"
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        3312,
+        -16
+      ],
+      "id": "97d55005-d355-4acd-a929-33445a7fd7d1",
+      "name": "Get row(s)"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        3536,
+        -16
+      ],
+      "id": "849771bf-c2fc-416b-92c4-96c54bc66732",
+      "name": "Remove Duplicates"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "NIu1MrxsdkJUk2o9",
+          "mode": "id"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "event_navn": "={{ $json.event_navn }}",
+            "status": "={{ $json.status }}",
+            "udsolgt": "={{ $json.udsolgt_bool }}",
+            "beskrivelse": "={{ $json.beskrivelse }}",
+            "event_url": "={{ $json.event_url }}",
+            "dato": "={{ $json.dato_tid_local }}",
+            "image_url": "={{ $json.image_url }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "event_navn",
+              "displayName": "event_navn",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "udsolgt",
+              "displayName": "udsolgt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "beskrivelse",
+              "displayName": "beskrivelse",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "event_url",
+              "displayName": "event_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "dato",
+              "displayName": "dato",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "image_url",
+              "displayName": "image_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        3984,
+        -208
+      ],
+      "id": "c4c7421b-d1bd-4140-9bbe-5a8bc56487f1",
+      "name": "Insert row"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        3088,
+        -16
+      ],
+      "id": "2e2f998e-962f-43bd-9f67-f3ca1043012d",
+      "name": "Limit"
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Delete row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Workflow Configuration": {
+      "main": [
+        [
+          {
+            "node": "Fetch Event List Page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Event List Page": {
+      "main": [
+        [
+          {
+            "node": "Extract Event Links",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Event Links": {
+      "main": [
+        [
+          {
+            "node": "Byg et n8n‑workflow, der scraper Tavira‑events fra BOL og gemmer som CSV/JSON/Sheet. Start: https://",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Events": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Event Page": {
+      "main": [
+        [
+          {
+            "node": "Extract Event Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Event Data": {
+      "main": [
+        [
+          {
+            "node": "Format Final Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Final Output": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Byg et n8n‑workflow, der scraper Tavira‑events fra BOL og gemmer som CSV/JSON/Sheet. Start: https://": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Events",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fetch Event Page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete row(s)": {
+      "main": [
+        [
+          {
+            "node": "Workflow Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Insert row",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sort by Date": {
+      "main": [
+        [
+          {
+            "node": "Format Email Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Email Content": {
+      "main": [
+        [
+          {
+            "node": "Send Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s)": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates": {
+      "main": [
+        [
+          {
+            "node": "Sort by Date",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert row": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Get row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "14433224-7e4d-4709-8a50-6cca8333fc12",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "createdAt": "2025-10-17T14:32:21.688Z",
+      "updatedAt": "2025-10-17T14:32:21.688Z",
+      "role": "workflow:owner",
+      "workflowId": "mm4gh5QUQapbg9as",
+      "projectId": "Oe16LxplPC150asV"
+    }
+  ],
+  "tags": []
+}
