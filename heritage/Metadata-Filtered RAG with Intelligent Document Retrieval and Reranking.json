@@ -1,0 +1,320 @@
+{
+  "createdAt": "2025-10-22T14:23:42.399Z",
+  "updatedAt": "2025-10-22T15:22:34.000Z",
+  "id": "lD7QxIRoTPXGNS3L",
+  "name": "Metadata-Filtered RAG with Intelligent Document Retrieval and Reranking",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "70216e8b-0db0-4347-a1ef-044dad9cbc75",
+      "name": "Chat Trigger",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -488,
+        104
+      ],
+      "webhookId": "82422524-9bbd-4587-8c81-c8a4df46f054"
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.chatInput }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "language",
+              "description": "The language of the query (e.g., Danish, English)"
+            },
+            {
+              "name": "time_range",
+              "description": "Time range mentioned in the query (e.g., last week, 2023, Q1)"
+            },
+            {
+              "name": "department",
+              "description": "Department or team mentioned in the query"
+            },
+            {
+              "name": "topic",
+              "description": "Main topic or subject of the query"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "bf663058-1ec5-4fd2-bab8-addea6dd4c57",
+      "name": "Extract Query Metadata",
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        -184,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "32fa8820-791a-488d-bb75-1b5ac85c4765",
+          "mode": "id"
+        },
+        "useReranker": true,
+        "options": {
+          "searchFilterJson": "={{ $json }}"
+        }
+      },
+      "id": "99a87d2e-5ff6-45fe-9419-94118fd48e3d",
+      "name": "Qdrant Retriever",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1.3,
+      "position": [
+        -192,
+        400
+      ],
+      "credentials": {
+        "qdrantApi": {
+          "id": "O9P2jm3YrDRzEOWf",
+          "name": "QdrantApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "topN": 12
+      },
+      "id": "f4924d5a-8c5e-4efd-a42a-b628e41b4f36",
+      "name": "Cohere Reranker",
+      "type": "@n8n/n8n-nodes-langchain.rerankerCohere",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        400
+      ],
+      "credentials": {
+        "cohereApi": {
+          "id": "xxYqDmIsjv9vqLj9",
+          "name": "CohereApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "09326261-e135-4738-aa86-007fe6818f00",
+      "name": "Question and Answer Chain",
+      "type": "@n8n/n8n-nodes-langchain.chainRetrievalQa",
+      "typeVersion": 1.6,
+      "position": [
+        -552,
+        888
+      ]
+    },
+    {
+      "parameters": {
+        "message": "={{ $json.output }}",
+        "options": {}
+      },
+      "id": "555939e4-5734-487f-95a4-15fb583b0eec",
+      "name": "Respond to Chat",
+      "type": "@n8n/n8n-nodes-langchain.chat",
+      "typeVersion": 1,
+      "position": [
+        -120,
+        888
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "id": "7740a231-cb71-41ec-ad4b-dda8786cc550",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -112,
+        224
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "ZjiR1Y4tdzymEK1L",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "a6f621b4-be6b-4036-9849-b5877c0862bc",
+      "name": "OpenAI Embeddings",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -480,
+        1528
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "ZjiR1Y4tdzymEK1L",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "topK": 80
+      },
+      "id": "bfa2ad50-f433-4335-87f3-911569c7efab",
+      "name": "Vector Store Retriever",
+      "type": "@n8n/n8n-nodes-langchain.retrieverVectorStore",
+      "typeVersion": 1,
+      "position": [
+        -560,
+        1112
+      ]
+    },
+    {
+      "parameters": {
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "32fa8820-791a-488d-bb75-1b5ac85c4765",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1.3,
+      "position": [
+        -560,
+        1320
+      ],
+      "id": "c9a86f47-fa10-4c54-9e83-9a8d9b8f7cb2",
+      "name": "Qdrant Vector Store",
+      "credentials": {
+        "qdrantApi": {
+          "id": "O9P2jm3YrDRzEOWf",
+          "name": "QdrantApi account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Chat Trigger": {
+      "main": [
+        [
+          {
+            "node": "Extract Query Metadata",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Extract Query Metadata",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Question and Answer Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Embeddings": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Qdrant Retriever",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "Qdrant Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cohere Reranker": {
+      "ai_reranker": [
+        [
+          {
+            "node": "Qdrant Retriever",
+            "type": "ai_reranker",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Question and Answer Chain": {
+      "main": [
+        [
+          {
+            "node": "Respond to Chat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vector Store Retriever": {
+      "ai_retriever": [
+        [
+          {
+            "node": "Question and Answer Chain",
+            "type": "ai_retriever",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qdrant Vector Store": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Vector Store Retriever",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "3fb6b7af-961e-4f43-98e9-9b9612c40fbd",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-10-22T14:23:42.401Z",
+      "updatedAt": "2025-10-22T14:23:42.401Z",
+      "role": "workflow:owner",
+      "workflowId": "lD7QxIRoTPXGNS3L",
+      "projectId": "Oe16LxplPC150asV"
+    }
+  ],
+  "tags": []
+}
