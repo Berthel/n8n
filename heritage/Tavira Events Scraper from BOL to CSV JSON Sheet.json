@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-10-17T14:32:21.685Z",
-  "updatedAt": "2025-10-20T06:02:25.000Z",
+  "updatedAt": "2025-10-22T04:57:40.000Z",
   "id": "mm4gh5QUQapbg9as",
   "name": "Tavira Events Scraper from BOL to CSV JSON Sheet",
   "active": true,
@@ -155,9 +155,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        3088,
+        3296,
         -208
-      ]
+      ],
+      "onError": "continueErrorOutput"
     },
     {
       "parameters": {
@@ -169,7 +170,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3312,
+        3520,
         -208
       ]
     },
@@ -234,7 +235,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        3536,
+        3744,
         -208
       ]
     },
@@ -258,7 +259,7 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        2864,
+        3072,
         16
       ],
       "id": "22dbc099-f170-43b2-9319-de2eced3c666",
@@ -333,7 +334,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        3760,
+        3968,
         -208
       ],
       "id": "cc1352a3-37b6-4bcc-b522-163f35231ddd",
@@ -355,7 +356,7 @@
       "type": "n8n-nodes-base.sort",
       "typeVersion": 1,
       "position": [
-        3760,
+        3968,
         -16
       ]
     },
@@ -368,7 +369,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3984,
+        4192,
         -16
       ]
     },
@@ -386,7 +387,7 @@
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.1,
       "position": [
-        4208,
+        4416,
         -16
       ],
       "webhookId": "6e1434e2-2728-4d56-b639-cee37fe17e9b",
@@ -412,7 +413,7 @@
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1,
       "position": [
-        3312,
+        3520,
         -16
       ],
       "id": "97d55005-d355-4acd-a929-33445a7fd7d1",
@@ -425,7 +426,7 @@
       "type": "n8n-nodes-base.removeDuplicates",
       "typeVersion": 2,
       "position": [
-        3536,
+        3744,
         -16
       ],
       "id": "849771bf-c2fc-416b-92c4-96c54bc66732",
@@ -530,7 +531,7 @@
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1,
       "position": [
-        3984,
+        4192,
         -208
       ],
       "id": "c4c7421b-d1bd-4140-9bbe-5a8bc56487f1",
@@ -541,11 +542,44 @@
       "type": "n8n-nodes-base.limit",
       "typeVersion": 1,
       "position": [
-        3088,
+        3296,
         272
       ],
       "id": "2e2f998e-962f-43bd-9f67-f3ca1043012d",
       "name": "Limit"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "411e8a69-80d3-43d7-8cfb-6bdd7c5321f0",
+              "leftValue": "={{ $json.eventUrl }}",
+              "rightValue": "https://www.bol.pt/Comprar/Bilhetes/Lista",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        2848,
+        16
+      ],
+      "id": "7016e119-3f4e-4dc6-813d-ceaf43090854",
+      "name": "Filter"
     }
   ],
   "connections": {
@@ -597,7 +631,7 @@
       "main": [
         [
           {
-            "node": "Loop Over Items",
+            "node": "Filter",
             "type": "main",
             "index": 0
           }
@@ -760,6 +794,17 @@
           }
         ]
       ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -773,8 +818,26 @@
   "meta": {
     "templateCredsSetupCompleted": true
   },
-  "pinData": {},
-  "versionId": "d0a02aea-b23d-40a2-9837-e000422ac861",
+  "pinData": {
+    "Schedule Trigger": [
+      {
+        "json": {
+          "timestamp": "2025-10-22T02:00:09.009+01:00",
+          "Readable date": "October 22nd 2025, 2:00:09 am",
+          "Readable time": "2:00:09 am",
+          "Day of week": "Wednesday",
+          "Year": "2025",
+          "Month": "October",
+          "Day of month": "22",
+          "Hour": "02",
+          "Minute": "00",
+          "Second": "09",
+          "Timezone": "Europe/Lisbon (UTC+01:00)"
+        }
+      }
+    ]
+  },
+  "versionId": "72f54dd2-ddab-482d-a3ad-3bded13a0c8a",
   "triggerCount": 1,
   "shared": [
     {
