@@ -1,0 +1,405 @@
+{
+  "updatedAt": "2025-10-27T12:24:48.000Z",
+  "createdAt": "2025-10-27T08:21:22.768Z",
+  "id": "LbAz0CQyiijjHi69",
+  "name": "Pinecone assistant demo",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "id": "b35fb5cb-beee-4802-a20e-dfae02c30bb7",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        656,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "googleDriveFolderId",
+              "value": "12U_typ9QZfgkVw8PKsOAFj19OB0Z40IO",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "pineconeIndex",
+              "value": "n8n-test",
+              "type": "string"
+            },
+            {
+              "id": "id-3",
+              "name": "pineconeNamespace",
+              "value": "Balsa",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "87180cdb-06dd-485b-a33e-d2d2fd9de8ff",
+      "name": "Workflow Configuration",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        880,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "searchMethod": "query",
+        "returnAll": true,
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $('Workflow Configuration').first().json.googleDriveFolderId }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "7e9c42c0-0f7c-4303-bce2-0004162bbe76",
+      "name": "Get Files from Google Drive",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1104,
+        176
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "nFMu4nKStO92ozZK",
+          "name": "Google Drive account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.id }}"
+        },
+        "options": {
+          "fileName": "={{ $json.name }}"
+        }
+      },
+      "id": "e9bcb0c5-25ad-4a15-bdd2-7e78e71ee958",
+      "name": "Download File",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1328,
+        176
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "nFMu4nKStO92ozZK",
+          "name": "Google Drive account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1536,
+        176
+      ],
+      "id": "e33e4673-320e-460b-8501-67eb7604c3e4",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "content": "## Upload file"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1664,
+        -16
+      ],
+      "id": "184c5f94-1bfc-4b65-bdef-82727cb178fc",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://prod-1-data.ke.pinecone.io/assistant/files/n8n-assistant-test?metadata={\"google_id\": \"{{ $('Download File').item.json.id }}\"}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1776,
+        224
+      ],
+      "id": "10b79c1e-fda3-4dd6-870b-1a2f147c8297",
+      "name": "Upload file",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ukEikyvUDlWzXqRj",
+          "name": "Pinecone Assistant"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://prod-1-data.ke.pinecone.io/assistant/files/n8n-assistant-test",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        912,
+        432
+      ],
+      "id": "f5405488-77c3-447e-b0a7-b0e110cacc10",
+      "name": "Get file list",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ukEikyvUDlWzXqRj",
+          "name": "Pinecone Assistant"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "=https://prod-1-data.ke.pinecone.io/assistant/files/n8n-assistant-test/{{ $json.files[0].id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1584,
+        432
+      ],
+      "id": "a122e9c8-d5ea-4022-9609-c7bd10470cbe",
+      "name": "Delete file",
+      "alwaysOutputData": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ukEikyvUDlWzXqRj",
+          "name": "Pinecone Assistant"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://prod-1-data.ke.pinecone.io/assistant/files/n8n-assistant-test",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "filter",
+              "value": "={\"google_id\":\"{{ $json.files[0].metadata.google_id }}\"}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1120,
+        432
+      ],
+      "id": "eceb094e-280f-4743-8344-9315c7917c7d",
+      "name": "Filter på google_id",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ukEikyvUDlWzXqRj",
+          "name": "Pinecone Assistant"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://prod-1-data.ke.pinecone.io/assistant/files/n8n-assistant-test/{{ $json.files[0].id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "include_url",
+              "value": "true"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1328,
+        432
+      ],
+      "id": "091d484c-95ad-4861-9af6-ac9927d2c943",
+      "name": "Get file status",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ukEikyvUDlWzXqRj",
+          "name": "Pinecone Assistant"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get file list",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Workflow Configuration": {
+      "main": [
+        [
+          {
+            "node": "Get Files from Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Files from Google Drive": {
+      "main": [
+        [
+          {
+            "node": "Download File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download File": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get file list": {
+      "main": [
+        [
+          {
+            "node": "Filter på google_id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter på google_id": {
+      "main": [
+        [
+          {
+            "node": "Get file status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Schedule Trigger": [
+      {
+        "json": {
+          "timestamp": "2025-10-27T05:51:55.059+00:00",
+          "Readable date": "October 27th 2025, 5:51:55 am",
+          "Readable time": "5:51:55 am",
+          "Day of week": "Monday",
+          "Year": "2025",
+          "Month": "October",
+          "Day of month": "27",
+          "Hour": "05",
+          "Minute": "51",
+          "Second": "55",
+          "Timezone": "Europe/Lisbon (UTC+00:00)"
+        }
+      }
+    ]
+  },
+  "versionId": "88d82a96-0b1f-4f82-add4-a860e9dc2b8b",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2025-10-27T08:21:22.773Z",
+      "createdAt": "2025-10-27T08:21:22.773Z",
+      "role": "workflow:owner",
+      "workflowId": "LbAz0CQyiijjHi69",
+      "projectId": "GfhaYhFYRk0TRXAf"
+    }
+  ],
+  "tags": []
+}
