@@ -1,0 +1,365 @@
+{
+  "updatedAt": "2025-10-27T06:04:36.000Z",
+  "createdAt": "2025-10-26T19:48:43.446Z",
+  "id": "m66Sgt3jkab4ZCpU",
+  "name": "Pinecone simpel demo",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "id": "902e1e35-42d1-4a68-8044-559c5ff2a304",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        656,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "googleDriveFolderId",
+              "value": "12U_typ9QZfgkVw8PKsOAFj19OB0Z40IO",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "pineconeIndex",
+              "value": "n8n-test",
+              "type": "string"
+            },
+            {
+              "id": "id-3",
+              "name": "pineconeNamespace",
+              "value": "Balsa",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "269f06c4-8586-4398-a4a1-a827576d00b1",
+      "name": "Workflow Configuration",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        880,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "searchMethod": "query",
+        "returnAll": true,
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $('Workflow Configuration').first().json.googleDriveFolderId }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "75b9c9f2-dfd6-42de-9676-bc195c3b2ce3",
+      "name": "Get Files from Google Drive",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1104,
+        176
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "nFMu4nKStO92ozZK",
+          "name": "Google Drive account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.id }}"
+        },
+        "options": {
+          "fileName": "={{ $json.name }}"
+        }
+      },
+      "id": "1fbb4025-b874-47ba-b2ef-595611817075",
+      "name": "Download File",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1328,
+        176
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "nFMu4nKStO92ozZK",
+          "name": "Google Drive account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "id": "7fd34a21-9a7e-4c8b-8065-e3fed2b2d851",
+      "name": "Extract Text from File",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        1680,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "html": "={{ $json.text }}",
+        "options": {}
+      },
+      "id": "d63c649c-0870-47fe-adec-c5f4b68c8122",
+      "name": "Convert to Markdown",
+      "type": "n8n-nodes-base.markdown",
+      "typeVersion": 1,
+      "position": [
+        1648,
+        464
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "n8n-test",
+          "mode": "list",
+          "cachedResultName": "n8n-test"
+        },
+        "options": {
+          "pineconeNamespace": "={{ $('Workflow Configuration').item.json.pineconeNamespace }}"
+        }
+      },
+      "id": "5d1a8a21-9abf-4cef-8be6-581c63146fed",
+      "name": "Pinecone Vector Store",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        2032,
+        176
+      ],
+      "credentials": {
+        "pineconeApi": {
+          "id": "NfPxMT99LwXChgW8",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "textSplittingMode": "custom",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "FileID",
+                "value": "={{ $('Download File').item.json.id }}"
+              }
+            ]
+          }
+        }
+      },
+      "id": "192a0d07-1c39-4909-9f0e-79e2e30e7f1f",
+      "name": "Document Loader",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        2128,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "d5160867-6959-45f5-9687-1531b9abb7f7",
+      "name": "Recursive Text Splitter",
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        2208,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "options": {
+          "dimensions": 512
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1936,
+        432
+      ],
+      "id": "f047a70b-43c7-46cc-8d7d-24108fe76cca",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "ZjiR1Y4tdzymEK1L",
+          "name": "OpenAi account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Workflow Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Workflow Configuration": {
+      "main": [
+        [
+          {
+            "node": "Get Files from Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Files from Google Drive": {
+      "main": [
+        [
+          {
+            "node": "Download File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download File": {
+      "main": [
+        [
+          {
+            "node": "Extract Text from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Text from File": {
+      "main": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to Markdown": {
+      "main": [
+        []
+      ]
+    },
+    "Document Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Document Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Schedule Trigger": [
+      {
+        "json": {
+          "timestamp": "2025-10-27T05:51:55.059+00:00",
+          "Readable date": "October 27th 2025, 5:51:55 am",
+          "Readable time": "5:51:55 am",
+          "Day of week": "Monday",
+          "Year": "2025",
+          "Month": "October",
+          "Day of month": "27",
+          "Hour": "05",
+          "Minute": "51",
+          "Second": "55",
+          "Timezone": "Europe/Lisbon (UTC+00:00)"
+        }
+      }
+    ]
+  },
+  "versionId": "12e20c8e-1713-4b19-8262-d13b6200fd45",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2025-10-26T19:48:43.450Z",
+      "createdAt": "2025-10-26T19:48:43.450Z",
+      "role": "workflow:owner",
+      "workflowId": "m66Sgt3jkab4ZCpU",
+      "projectId": "GfhaYhFYRk0TRXAf"
+    }
+  ],
+  "tags": []
+}
