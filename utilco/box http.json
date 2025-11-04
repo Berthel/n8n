@@ -1,0 +1,137 @@
+{
+  "updatedAt": "2025-11-03T19:49:04.000Z",
+  "createdAt": "2025-11-03T16:54:46.435Z",
+  "id": "9Lfln0qt4pR3Hdbc",
+  "name": "box http",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "53aec3b1-ce9e-440f-b45b-4de74c2ab4cc",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.box.com/oauth2/token",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "grant_type",
+              "value": "client_credentials"
+            },
+            {
+              "name": "client_id",
+              "value": "pbvsjagbbrf4jouakswvraq33e2q8rbd"
+            },
+            {
+              "name": "client_secret",
+              "value": "YKx2xvO53zMM3NSt7pSn4g31P0U9pchh"
+            },
+            {
+              "name": "box_subject_type",
+              "value": "enterprise"
+            },
+            {
+              "name": "box_subject_id",
+              "value": "1361694127"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        288,
+        -128
+      ],
+      "id": "9b3572d1-0a99-43b4-8674-942d873fa668",
+      "name": "get token"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.box.com/2.0/ai/ask",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "authorization",
+              "value": "Bearer VnS96dcSSDCh53htDHqV0nkr0NS1MNte"
+            },
+            {
+              "name": "Cookie",
+              "value": "box_visitor_id=690906753239b7.76669722; site_preference=desktop; csrf-token=HF9YjGlgP5X02vvQo4TBAnrTZAW_dlcKh0I0hbkUJ49"
+            },
+            {
+              "name": "cookie",
+              "value": "box_visitor_id=690906753239b7.76669722;site_preference=desktop;csrf-token=HF9YjGlgP5X02vvQo4TBAnrTZAW_dlcKh0I0hbkUJ49;"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"mode\": \"single_item_qa\",\n  \"items\": [\n    {\n      \"id\": \"2030630171937\",\n      \"type\": \"file\"\n    }\n  ],\n  \"prompt\": \"Hvad er de vigtigste informationer i dokumentet\"\n}",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        624,
+        0
+      ],
+      "id": "4b4e822c-e2e9-4a2c-97ba-3c6c98df015e",
+      "name": "HTTP Request1"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "get token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get token": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "88deeaa4-b0e4-467d-8165-0ac1d2334be1",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2025-11-03T16:54:46.438Z",
+      "createdAt": "2025-11-03T16:54:46.438Z",
+      "role": "workflow:owner",
+      "workflowId": "9Lfln0qt4pR3Hdbc",
+      "projectId": "SFLNAzqJIfhKMhJx"
+    }
+  ],
+  "tags": []
+}
