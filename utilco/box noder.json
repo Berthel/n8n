@@ -1,0 +1,139 @@
+{
+  "updatedAt": "2025-11-03T16:54:34.000Z",
+  "createdAt": "2025-11-03T05:38:07.636Z",
+  "id": "S6UVSUM0PC57jlZS",
+  "name": "box noder",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "9be99b49-c463-4bee-9a85-8cf48981ba03",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "query": "Banedanmark",
+        "limit": 2,
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.box",
+      "typeVersion": 1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "0b7c2549-1a6d-47f1-8a01-73502e7a69f3",
+      "name": "Search a file",
+      "credentials": {
+        "boxOAuth2Api": {
+          "id": "9bjTMBUyJv8olYHW",
+          "name": "Box Flemming"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "fileId": "={{ $json.id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.box",
+      "typeVersion": 1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "912f7527-2cb9-4390-9056-49511ea3dda6",
+      "name": "Get a file",
+      "credentials": {
+        "boxOAuth2Api": {
+          "id": "9bjTMBUyJv8olYHW",
+          "name": "Box Flemming"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": "={{ $json.id }}"
+      },
+      "type": "n8n-nodes-base.box",
+      "typeVersion": 1,
+      "position": [
+        624,
+        0
+      ],
+      "id": "bf528646-ca39-4a41-b71b-6abede554423",
+      "name": "Download a file",
+      "credentials": {
+        "boxOAuth2Api": {
+          "id": "9bjTMBUyJv8olYHW",
+          "name": "Box Flemming"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Search a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search a file": {
+      "main": [
+        [
+          {
+            "node": "Get a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a file": {
+      "main": [
+        [
+          {
+            "node": "Download a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "f6dc8d98-cf68-4a5c-b707-9acc700ca3ab",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2025-11-03T05:38:07.640Z",
+      "createdAt": "2025-11-03T05:38:07.640Z",
+      "role": "workflow:owner",
+      "workflowId": "S6UVSUM0PC57jlZS",
+      "projectId": "SFLNAzqJIfhKMhJx"
+    }
+  ],
+  "tags": []
+}
