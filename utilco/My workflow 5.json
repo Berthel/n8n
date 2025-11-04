@@ -1,0 +1,93 @@
+{
+  "updatedAt": "2025-11-03T16:54:24.000Z",
+  "createdAt": "2025-11-03T12:01:44.371Z",
+  "id": "Jt6FgOhKB5DTtB0i",
+  "name": "My workflow 5",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "59bb332d-a825-4c85-adac-3b20f094577c",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://post",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "authorization",
+              "value": "Bearer UaY9idEzMroFLfZAs5EViMJdKdiA7uk3"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "{\n         \"mode\": \"single_item_qa\",\n         \"prompt\": \"Hvad handler dette dokument om?\",\n         \"items\": [\n            {\n            \"type\": \"file\",\n            \"id\": \"2030626866900\"\n            }\n         ],\n          \"include_citations\": true,\n          \"ai_agent\": {\n            \"type\": \"ai_agent_ask\",\n            \"long_text\": {\n              \"model\": \"azure__openai__gpt_4o_mini\",\n              \"prompt_template\": \"It is `{current_date}`, and I have $8000 and want to spend a week in the Azores. What should I see?\",\n            },\n            \"basic_text\": {\n              \"model\": \"azure__openai__gpt_4o_mini\",\n           }\n         }\n      }"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          },
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "d51d364a-3e0c-42bb-9d1e-813ef4f63fb3",
+      "name": "HTTP Request"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "e6a7261f-ef56-468f-a49c-818057bade47",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2025-11-03T12:01:44.376Z",
+      "createdAt": "2025-11-03T12:01:44.376Z",
+      "role": "workflow:owner",
+      "workflowId": "Jt6FgOhKB5DTtB0i",
+      "projectId": "SFLNAzqJIfhKMhJx"
+    }
+  ],
+  "tags": []
+}
