@@ -1,0 +1,28 @@
+{
+  "updatedAt": "2025-11-03T05:35:18.000Z",
+  "createdAt": "2025-11-03T05:33:29.303Z",
+  "id": "hQlehogzTyMUvHo9",
+  "name": "box test",
+  "active": false,
+  "isArchived": true,
+  "nodes": [],
+  "connections": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "22dd8fcf-1c6b-42b2-a08b-7653c7584e4f",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2025-11-03T05:33:29.313Z",
+      "createdAt": "2025-11-03T05:33:29.313Z",
+      "role": "workflow:owner",
+      "workflowId": "hQlehogzTyMUvHo9",
+      "projectId": "SFLNAzqJIfhKMhJx"
+    }
+  ],
+  "tags": []
+}
