@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2025-11-03T19:49:04.000Z",
+  "updatedAt": "2025-11-04T08:45:03.000Z",
   "createdAt": "2025-11-03T16:54:46.435Z",
   "id": "9Lfln0qt4pR3Hdbc",
   "name": "box http",
@@ -11,8 +11,8 @@
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        0,
-        0
+        32,
+        -128
       ],
       "id": "53aec3b1-ce9e-440f-b45b-4de74c2ab4cc",
       "name": "When clicking ‘Execute workflow’"
@@ -31,11 +31,11 @@
             },
             {
               "name": "client_id",
-              "value": "pbvsjagbbrf4jouakswvraq33e2q8rbd"
+              "value": "ozrpingnidf7d7lv7lkapy1466xypubo"
             },
             {
               "name": "client_secret",
-              "value": "YKx2xvO53zMM3NSt7pSn4g31P0U9pchh"
+              "value": "ULnWruJxNGGzNrmwVcn7CpD8ArDyPlhS"
             },
             {
               "name": "box_subject_type",
@@ -52,7 +52,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        288,
+        256,
         -128
       ],
       "id": "9b3572d1-0a99-43b4-8674-942d873fa668",
@@ -67,21 +67,13 @@
           "parameters": [
             {
               "name": "authorization",
-              "value": "Bearer VnS96dcSSDCh53htDHqV0nkr0NS1MNte"
-            },
-            {
-              "name": "Cookie",
-              "value": "box_visitor_id=690906753239b7.76669722; site_preference=desktop; csrf-token=HF9YjGlgP5X02vvQo4TBAnrTZAW_dlcKh0I0hbkUJ49"
-            },
-            {
-              "name": "cookie",
-              "value": "box_visitor_id=690906753239b7.76669722;site_preference=desktop;csrf-token=HF9YjGlgP5X02vvQo4TBAnrTZAW_dlcKh0I0hbkUJ49;"
+              "value": "=Bearer {{ $json.access_token }}"
             }
           ]
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "{\n  \"mode\": \"single_item_qa\",\n  \"items\": [\n    {\n      \"id\": \"2030630171937\",\n      \"type\": \"file\"\n    }\n  ],\n  \"prompt\": \"Hvad er de vigtigste informationer i dokumentet\"\n}",
+        "jsonBody": "{\n  \"mode\": \"single_item_qa\",\n  \"items\": [\n    {\n      \"id\": \"2030630171937\",\n      \"type\": \"file\"\n    }\n  ],\n  \"prompt\": \"Hvad er de vigtigste informationer i dokumentet\",\n  \"include_citations\": true\n}",
         "options": {
           "redirect": {
             "redirect": {}
@@ -91,11 +83,83 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        624,
-        0
+        528,
+        -176
       ],
       "id": "4b4e822c-e2e9-4a2c-97ba-3c6c98df015e",
-      "name": "HTTP Request1"
+      "name": "fil test - ask"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.box.com/2.0/ai/text_gen",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "authorization",
+              "value": "=Bearer  {{ $json.access_token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"items\": [\n    {\n      \"id\": \"2030630171937\",\n      \"type\": \"file\"\n    }\n  ],\n  \"prompt\": \"Create a short blog post based on this input. You can add emoticons, but not too many. \"\n}",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          },
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        528,
+        208
+      ],
+      "id": "abd49066-8767-4070-85dd-e4aae938ab95",
+      "name": "fil test - text generation??"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.box.com/2.0/ai/ask",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "=authorization",
+              "value": "=Bearer {{ $json.access_token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"mode\": \"single_item_qa\",\n  \"prompt\": \"Hvem er denne kunde?\",\n  \"items\": [\n    {\n      \"type\": \"hubs\",\n      \"id\": \"653219609\"\n    }\n  ],\n  \"include_citations\": true,\n  \"ai_agent\": {\n    \"type\": \"ai_agent_ask\",\n    \"basic_text\": {\n      \"model\": \"azure__openai__gpt_4o_mini\"\n    }\n  }\n}",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          },
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        528,
+        16
+      ],
+      "id": "8f85226b-fbcf-4a16-a862-9384bbac4410",
+      "name": "hub - mangler invitation"
     }
   ],
   "connections": {
@@ -112,6 +176,17 @@
     },
     "get token": {
       "main": [
+        [
+          {
+            "node": "hub - mangler invitation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "fil test - ask": {
+      "main": [
         []
       ]
     }
@@ -121,8 +196,14 @@
   },
   "staticData": null,
   "meta": null,
-  "pinData": {},
-  "versionId": "88deeaa4-b0e4-467d-8165-0ac1d2334be1",
+  "pinData": {
+    "When clicking ‘Execute workflow’": [
+      {
+        "json": {}
+      }
+    ]
+  },
+  "versionId": "c8a9458d-5a8d-4af5-8187-7a5b4c2658db",
   "triggerCount": 0,
   "shared": [
     {
