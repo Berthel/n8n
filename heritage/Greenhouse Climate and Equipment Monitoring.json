@@ -1,0 +1,512 @@
+{
+  "updatedAt": "2025-11-05T17:45:00.000Z",
+  "createdAt": "2025-11-05T09:04:26.681Z",
+  "id": "95MgHziyIubTUkQ8",
+  "name": "Greenhouse Climate and Equipment Monitoring",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 15
+            }
+          ]
+        }
+      },
+      "id": "7c638052-2fdb-423f-b218-377b0469d165",
+      "name": "Every 15 Minutes",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1088,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "goveeApiUrl",
+              "value": "https://openapi.api.govee.com/router/api/v1/device/state",
+              "type": "string"
+            },
+            {
+              "id": "id-3",
+              "name": "merossApiUrl",
+              "value": "https://drivhus-two.vercel.app/api/meross/control",
+              "type": "string"
+            },
+            {
+              "id": "id-5",
+              "name": "merossControlUrl",
+              "value": "https://drivhus-two.vercel.app/api/meross/control",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "1533fd12-e7f0-48e1-8816-9e5561f21a39",
+      "name": "Workflow Configuration",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -864,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Workflow Configuration').first().json.goveeApiUrl }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"requestId\": \"sensor-request-123\",\n  \"payload\": {\n    \"device\": \"24:52:EE:2D:C5:46:77:71\",\n    \"sku\": \"H5179\",\n    \"capabilities\": [\n      {\n        \"type\": \"devices.capabilities.property\",\n        \"instance\": \"sensorTemperature\"\n      },\n      {\n        \"type\": \"devices.capabilities.property\",\n        \"instance\": \"sensorHumidity\"\n      }\n    ]\n  }\n}",
+        "options": {}
+      },
+      "id": "9ddd798d-5819-4bd2-8201-05280587302c",
+      "name": "Get Greenhouse Temperature and Humidity",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -640,
+        304
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "O7Gj8lwvWewv9eTH",
+          "name": "Govee"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Workflow Configuration').first().json.merossApiUrl }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "0d0336ce-2367-4c52-a4fa-a3a94f90d59a",
+      "name": "Get Light and Heat Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -416,
+        304
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "mo1QMdrN5FL1Cp8C",
+          "name": "Meross"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7fb44ea6-5864-4d38-92f5-ece20b2ae777",
+              "name": "heating_on",
+              "value": "={{ $json.heat.on }}",
+              "type": "boolean"
+            },
+            {
+              "id": "c23c6be9-1504-4b6e-9d9d-1789c04e8c48",
+              "name": "light_on",
+              "value": "={{ $json.light.on }}",
+              "type": "boolean"
+            },
+            {
+              "id": "3389423f-22ce-4004-be6a-21d8163c344c",
+              "name": "temperature_celcius",
+              "value": "={{ ( $('Get Greenhouse Temperature and Humidity').item.json.payload.capabilities[3].state.value - 32 ) / 1.8 }}",
+              "type": "number"
+            },
+            {
+              "id": "3e23952d-9b93-4c52-8ea5-dd2eae7442a2",
+              "name": "humidity_percent",
+              "value": "={{ $('Get Greenhouse Temperature and Humidity').item.json.payload.capabilities[4].state.value }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -192,
+        304
+      ],
+      "id": "2a54d02a-2384-4b75-a3fb-6b36660e826c",
+      "name": "Actual values"
+    },
+    {
+      "parameters": {
+        "tableId": "drivhus_log",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "temperature_celsius",
+              "fieldValue": "={{ $json.temperature_celcius }}"
+            },
+            {
+              "fieldId": "humidity_percent",
+              "fieldValue": "={{ $json.humidity_percent }}"
+            },
+            {
+              "fieldId": "heating_on",
+              "fieldValue": "={{ $json.heating_on }}"
+            },
+            {
+              "fieldId": "light_on",
+              "fieldValue": "={{ $json.light_on }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        16,
+        0
+      ],
+      "id": "3fd6c3a0-c906-4c9f-bd96-a95c2076be25",
+      "name": "Create a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "id-1",
+              "leftValue": "={{ $('Actual values').item.json.temperature_celcius }}",
+              "rightValue": 18,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            },
+            {
+              "id": "7d965bdb-83de-4436-b342-8ade341d78a6",
+              "leftValue": "={{ $('Get Light and Heat Status').item.json.heat.on }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "5e3d8f7d-6a83-4f15-bfe9-02e7ad16c41a",
+      "name": "Check Temperature Below 18°C",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        256,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "id-1",
+              "leftValue": "={{ $('Actual values').item.json.temperature_celcius }}",
+              "rightValue": 22,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            },
+            {
+              "id": "01e59ac4-a73f-4e01-9a4b-99c9b358d2dd",
+              "leftValue": "={{ $('Get Light and Heat Status').item.json.heat.on }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "747c23fd-787e-4366-8190-a5e91cd7b7e6",
+      "name": "Check Temperature Above 22°C",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        256,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://drivhus-two.vercel.app/api/meross/control",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"heat\": true\n}",
+        "options": {}
+      },
+      "id": "e09ab8b3-3397-4608-996b-3285eb4d48e6",
+      "name": "Turn Heat On",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        480,
+        208
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "mo1QMdrN5FL1Cp8C",
+          "name": "Meross"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://drivhus-two.vercel.app/api/meross/control",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"heat\": false\n}",
+        "options": {}
+      },
+      "id": "18e8e082-8a34-43d8-8eb2-36e15672fb31",
+      "name": "Turn Heat Off",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        480,
+        400
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "mo1QMdrN5FL1Cp8C",
+          "name": "Meross"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "id-1",
+              "leftValue": "={{ $now.setZone('Europe/Lisbon').hour }}",
+              "rightValue": 20,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            },
+            {
+              "id": "id-2",
+              "leftValue": "={{ $now.setZone('Europe/Lisbon').hour }}",
+              "rightValue": 8,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "id": "8d9c37a3-6710-4f76-ad58-7b3608046043",
+      "name": "Check Night Time (20:00-08:00)",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        32,
+        304
+      ]
+    }
+  ],
+  "connections": {
+    "Every 15 Minutes": {
+      "main": [
+        [
+          {
+            "node": "Workflow Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Workflow Configuration": {
+      "main": [
+        [
+          {
+            "node": "Get Greenhouse Temperature and Humidity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Greenhouse Temperature and Humidity": {
+      "main": [
+        [
+          {
+            "node": "Get Light and Heat Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Light and Heat Status": {
+      "main": [
+        [
+          {
+            "node": "Actual values",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Actual values": {
+      "main": [
+        [
+          {
+            "node": "Check Night Time (20:00-08:00)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Temperature Below 18°C": {
+      "main": [
+        [
+          {
+            "node": "Turn Heat On",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Temperature Above 22°C": {
+      "main": [
+        [
+          {
+            "node": "Turn Heat Off",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Night Time (20:00-08:00)": {
+      "main": [
+        [
+          {
+            "node": "Check Temperature Below 18°C",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Check Temperature Above 22°C",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:Every 15 Minutes": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "98fa0671-17ba-4583-8a16-ddb901fc96f6",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-11-05T09:46:18.404Z",
+      "createdAt": "2025-11-05T09:46:18.404Z",
+      "role": "workflow:owner",
+      "workflowId": "95MgHziyIubTUkQ8",
+      "projectId": "Oe16LxplPC150asV"
+    }
+  ],
+  "tags": []
+}
