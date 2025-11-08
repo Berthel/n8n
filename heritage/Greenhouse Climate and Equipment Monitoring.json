@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2025-11-05T17:45:00.000Z",
+  "updatedAt": "2025-11-07T11:25:20.000Z",
   "createdAt": "2025-11-05T09:04:26.681Z",
   "id": "95MgHziyIubTUkQ8",
   "name": "Greenhouse Climate and Equipment Monitoring",
@@ -23,7 +23,7 @@
       "typeVersion": 1.2,
       "position": [
         -1088,
-        304
+        96
       ]
     },
     {
@@ -59,7 +59,7 @@
       "typeVersion": 3.4,
       "position": [
         -864,
-        304
+        96
       ]
     },
     {
@@ -92,7 +92,7 @@
       "typeVersion": 4.3,
       "position": [
         -640,
-        304
+        96
       ],
       "credentials": {
         "httpHeaderAuth": {
@@ -114,7 +114,7 @@
       "typeVersion": 4.3,
       "position": [
         -416,
-        304
+        96
       ],
       "credentials": {
         "httpHeaderAuth": {
@@ -159,7 +159,7 @@
       "typeVersion": 3.4,
       "position": [
         -192,
-        304
+        96
       ],
       "id": "2a54d02a-2384-4b75-a3fb-6b36660e826c",
       "name": "Actual values"
@@ -191,7 +191,7 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        16,
+        32,
         0
       ],
       "id": "3fd6c3a0-c906-4c9f-bd96-a95c2076be25",
@@ -202,49 +202,6 @@
           "name": "Supabase account"
         }
       }
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 2
-          },
-          "conditions": [
-            {
-              "id": "id-1",
-              "leftValue": "={{ $('Actual values').item.json.temperature_celcius }}",
-              "rightValue": 18,
-              "operator": {
-                "type": "number",
-                "operation": "lt"
-              }
-            },
-            {
-              "id": "7d965bdb-83de-4436-b342-8ade341d78a6",
-              "leftValue": "={{ $('Get Light and Heat Status').item.json.heat.on }}",
-              "rightValue": "",
-              "operator": {
-                "type": "boolean",
-                "operation": "false",
-                "singleValue": true
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "id": "5e3d8f7d-6a83-4f15-bfe9-02e7ad16c41a",
-      "name": "Check Temperature Below 18°C",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.2,
-      "position": [
-        256,
-        208
-      ]
     },
     {
       "parameters": {
@@ -286,7 +243,7 @@
       "typeVersion": 2.2,
       "position": [
         256,
-        400
+        192
       ]
     },
     {
@@ -306,7 +263,7 @@
       "typeVersion": 4.3,
       "position": [
         480,
-        208
+        0
       ],
       "credentials": {
         "httpHeaderAuth": {
@@ -332,7 +289,7 @@
       "typeVersion": 4.3,
       "position": [
         480,
-        400
+        192
       ],
       "credentials": {
         "httpHeaderAuth": {
@@ -381,8 +338,111 @@
       "typeVersion": 2.2,
       "position": [
         32,
-        304
+        192
       ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "id-1",
+              "leftValue": "={{ $('Actual values').item.json.temperature_celcius }}",
+              "rightValue": 19,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            },
+            {
+              "id": "7d965bdb-83de-4436-b342-8ade341d78a6",
+              "leftValue": "={{ $('Get Light and Heat Status').item.json.heat.on }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "5e3d8f7d-6a83-4f15-bfe9-02e7ad16c41a",
+      "name": "Check Temperature Below 19°C",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        256,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "7d965bdb-83de-4436-b342-8ade341d78a6",
+              "leftValue": "={{ $('Get Light and Heat Status').item.json.heat.on }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "14903574-4fbc-4858-b51a-bf0e184d64d5",
+      "name": "Check Heat is on",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        256,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://drivhus-two.vercel.app/api/meross/control",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"heat\": false\n}",
+        "options": {}
+      },
+      "id": "46679a4f-af8f-4468-a3da-9695af6959fe",
+      "name": "Turn Heat Off1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        480,
+        384
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "mo1QMdrN5FL1Cp8C",
+          "name": "Meross"
+        }
+      }
     }
   ],
   "connections": {
@@ -446,17 +506,6 @@
         ]
       ]
     },
-    "Check Temperature Below 18°C": {
-      "main": [
-        [
-          {
-            "node": "Turn Heat On",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Check Temperature Above 22°C": {
       "main": [
         [
@@ -472,12 +521,41 @@
       "main": [
         [
           {
-            "node": "Check Temperature Below 18°C",
+            "node": "Check Temperature Below 19°C",
             "type": "main",
             "index": 0
           },
           {
             "node": "Check Temperature Above 22°C",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Check Heat is on",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Temperature Below 19°C": {
+      "main": [
+        [
+          {
+            "node": "Turn Heat On",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Heat is on": {
+      "main": [
+        [
+          {
+            "node": "Turn Heat Off1",
             "type": "main",
             "index": 0
           }
@@ -497,7 +575,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "98fa0671-17ba-4583-8a16-ddb901fc96f6",
+  "versionId": "94b6bee6-a296-46eb-9b8e-0fcbc68a04ac",
   "triggerCount": 1,
   "shared": [
     {
