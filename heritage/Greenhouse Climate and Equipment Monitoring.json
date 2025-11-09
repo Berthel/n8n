@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2025-11-07T11:25:20.000Z",
+  "updatedAt": "2025-11-08T15:53:29.000Z",
   "createdAt": "2025-11-05T09:04:26.681Z",
   "id": "95MgHziyIubTUkQ8",
   "name": "Greenhouse Climate and Equipment Monitoring",
@@ -121,7 +121,8 @@
           "id": "mo1QMdrN5FL1Cp8C",
           "name": "Meross"
         }
-      }
+      },
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -494,12 +495,12 @@
       "main": [
         [
           {
-            "node": "Check Night Time (20:00-08:00)",
+            "node": "Create a row",
             "type": "main",
             "index": 0
           },
           {
-            "node": "Create a row",
+            "node": "Check Night Time (20:00-08:00)",
             "type": "main",
             "index": 0
           }
@@ -575,7 +576,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "94b6bee6-a296-46eb-9b8e-0fcbc68a04ac",
+  "versionId": "b7f5b961-6cd6-40f6-9ecc-6fb86e5f1317",
   "triggerCount": 1,
   "shared": [
     {
