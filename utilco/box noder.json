@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2025-11-03T16:54:34.000Z",
+  "updatedAt": "2025-11-11T19:20:26.000Z",
   "createdAt": "2025-11-03T05:38:07.636Z",
   "id": "S6UVSUM0PC57jlZS",
   "name": "box noder",
@@ -34,8 +34,8 @@
       "name": "Search a file",
       "credentials": {
         "boxOAuth2Api": {
-          "id": "9bjTMBUyJv8olYHW",
-          "name": "Box Flemming"
+          "id": "yIAh3gThcR2qpEHQ",
+          "name": "Box Christian"
         }
       }
     },
@@ -95,13 +95,7 @@
     },
     "Search a file": {
       "main": [
-        [
-          {
-            "node": "Get a file",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "Get a file": {
@@ -124,7 +118,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "f6dc8d98-cf68-4a5c-b707-9acc700ca3ab",
+  "versionId": "a673d140-c6c8-4c1e-9260-ebf1761f6edc",
   "triggerCount": 0,
   "shared": [
     {
