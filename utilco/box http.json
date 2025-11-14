@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2025-11-04T08:45:03.000Z",
+  "updatedAt": "2025-11-13T11:19:58.000Z",
   "createdAt": "2025-11-03T16:54:46.435Z",
   "id": "9Lfln0qt4pR3Hdbc",
   "name": "box http",
@@ -160,6 +160,47 @@
       ],
       "id": "8f85226b-fbcf-4a16-a862-9384bbac4410",
       "name": "hub - mangler invitation"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.box.com/oauth2/token",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "grant_type",
+              "value": "client_credentials"
+            },
+            {
+              "name": "client_id",
+              "value": "ozrpingnidf7d7lv7lkapy1466xypubo"
+            },
+            {
+              "name": "client_secret",
+              "value": "ULnWruJxNGGzNrmwVcn7CpD8ArDyPlhS"
+            },
+            {
+              "name": "box_subject_type",
+              "value": "enterprise"
+            },
+            {
+              "name": "box_subject_id",
+              "value": "1361694127"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        208,
+        144
+      ],
+      "id": "251669a8-523a-48d4-9bda-62b2b72e85f8",
+      "name": "get token1"
     }
   ],
   "connections": {
@@ -167,7 +208,7 @@
       "main": [
         [
           {
-            "node": "get token",
+            "node": "get token1",
             "type": "main",
             "index": 0
           }
@@ -203,7 +244,7 @@
       }
     ]
   },
-  "versionId": "c8a9458d-5a8d-4af5-8187-7a5b4c2658db",
+  "versionId": "d8f80559-f1a7-4d72-8cb3-9ab20138ff37",
   "triggerCount": 0,
   "shared": [
     {
