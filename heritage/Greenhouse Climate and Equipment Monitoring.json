@@ -1,9 +1,9 @@
 {
-  "updatedAt": "2025-11-08T15:53:29.000Z",
+  "updatedAt": "2025-11-14T15:31:58.000Z",
   "createdAt": "2025-11-05T09:04:26.681Z",
   "id": "95MgHziyIubTUkQ8",
   "name": "Greenhouse Climate and Equipment Monitoring",
-  "active": true,
+  "active": false,
   "isArchived": false,
   "nodes": [
     {
