@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2025-11-14T16:31:03.000Z",
+  "updatedAt": "2025-11-15T13:14:46.000Z",
   "createdAt": "2025-11-14T14:20:41.009Z",
   "id": "3CTmzMZYXkeInqsw",
   "name": "Ny Drivhus kontrol",
@@ -39,50 +39,62 @@
             {
               "id": "1ae66dc6-0f66-4133-8111-a5625933f7c0",
               "name": "varme_on_kl",
-              "value": 15,
+              "value": "={{ $json.varme_on_kl }}",
               "type": "number"
             },
             {
               "id": "28cfa3b9-9bf2-4cd6-b08b-04c2f84ae075",
               "name": "varme_off_kl",
-              "value": 8,
+              "value": "={{ $json.varme_off_kl }}",
               "type": "number"
             },
             {
               "id": "8c92d133-f3e1-4973-9942-3c14b64e69c1",
               "name": "varme_on_temp",
-              "value": 19,
+              "value": "={{ $json.varme_on_temp }}",
               "type": "number"
             },
             {
               "id": "f1b950d2-907c-48ed-85cc-87e3887bb603",
               "name": "varme_off_temp",
-              "value": 22,
+              "value": "={{ $json.varme_off_temp }}",
               "type": "number"
             },
             {
               "id": "60c67cfe-e1e5-4b6e-b84d-fc3d665d118d",
               "name": "lys_on_aften",
-              "value": 15,
+              "value": "={{ $json.lys_on_aften }}",
               "type": "number"
             },
             {
               "id": "a0a012ce-56f9-4478-8d6d-5c099fb66008",
               "name": "lys_off_aften",
-              "value": 22,
+              "value": "={{ $json.lys_off_aften }}",
               "type": "number"
             },
             {
               "id": "16fcdfa7-4cc0-4b36-bae2-72bdb922b833",
               "name": "lys_on_morgen",
-              "value": 6,
+              "value": "={{ $json.lys_on_morgen }}",
               "type": "number"
             },
             {
               "id": "0a9a20a8-9d2c-4cab-97be-270413df1365",
               "name": "lys_off_morgen",
-              "value": 9,
+              "value": "={{ $json.lys_off_morgen }}",
               "type": "number"
+            },
+            {
+              "id": "12b435c0-f0cd-40aa-871b-27155fde218b",
+              "name": "varme_auto",
+              "value": "={{ $json.varme_auto }}",
+              "type": "boolean"
+            },
+            {
+              "id": "42b4a825-90f0-4494-8587-8870ba1390a5",
+              "name": "lys_auto",
+              "value": "={{ $json.lys_auto }}",
+              "type": "boolean"
             }
           ]
         },
@@ -94,7 +106,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -864,
+        -656,
         256
       ]
     },
@@ -127,7 +139,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        -640,
+        -432,
         256
       ],
       "credentials": {
@@ -195,7 +207,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -192,
+        16,
         256
       ],
       "id": "cfafdac6-dd8d-4e9a-b1ce-8aeca8f5f556",
@@ -221,6 +233,10 @@
             {
               "fieldId": "light_on",
               "fieldValue": "={{ $json.light_on }}"
+            },
+            {
+              "fieldId": "energy_total",
+              "fieldValue": "={{ $('HTTP Request').item.json.data.devices_status.b08184e91518['switch:0'].aenergy.total }}"
             }
           ]
         }
@@ -228,7 +244,7 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        32,
+        240,
         64
       ],
       "id": "3f705eb4-f021-47ff-8cad-95feac8b545b",
@@ -277,7 +293,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        704,
+        1136,
         64
       ]
     },
@@ -318,7 +334,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        704,
+        1136,
         256
       ]
     },
@@ -352,7 +368,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        256,
+        688,
         448
       ]
     },
@@ -393,7 +409,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        480,
+        912,
         448
       ]
     },
@@ -418,7 +434,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        -416,
+        -208,
         256
       ],
       "id": "efc8a14f-fd6d-4443-bc1e-73adf08f41e1",
@@ -466,7 +482,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        32,
+        464,
         256
       ]
     },
@@ -509,7 +525,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        256,
+        688,
         64
       ]
     },
@@ -552,7 +568,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        256,
+        688,
         256
       ]
     },
@@ -595,7 +611,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        32,
+        464,
         928
       ]
     },
@@ -638,7 +654,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        256,
+        688,
         1024
       ]
     },
@@ -679,7 +695,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        480,
+        912,
         640
       ]
     },
@@ -720,7 +736,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        704,
+        1136,
         832
       ]
     },
@@ -761,7 +777,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        704,
+        1136,
         1024
       ]
     },
@@ -795,7 +811,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        480,
+        912,
         256
       ]
     },
@@ -829,7 +845,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        480,
+        912,
         64
       ]
     },
@@ -863,7 +879,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        256,
+        688,
         640
       ]
     },
@@ -897,7 +913,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        480,
+        912,
         832
       ]
     },
@@ -931,9 +947,105 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        480,
+        912,
         1024
       ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "52d2ced3-0512-4e66-ba4d-19892a2db36e",
+              "leftValue": "={{ $('Workflow Configuration').item.json.lys_auto }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        240,
+        928
+      ],
+      "id": "29420f42-dbbe-43f1-a57f-728510c7beb8",
+      "name": "lys_auto"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "52d2ced3-0512-4e66-ba4d-19892a2db36e",
+              "leftValue": "={{ $('Workflow Configuration').item.json.varme_auto }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        240,
+        256
+      ],
+      "id": "4b126e74-4472-454c-af99-6b479422df73",
+      "name": "varme_auto"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "drivhus_config",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "1"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -880,
+        256
+      ],
+      "id": "1932480e-a57e-4bd6-8ce7-6e59e4a6cf97",
+      "name": "Get a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Yc1VOr8K1yXCO1Q",
+          "name": "Supabase account"
+        }
+      }
     }
   ],
   "connections": {
@@ -941,7 +1053,7 @@
       "main": [
         [
           {
-            "node": "Workflow Configuration",
+            "node": "Get a row",
             "type": "main",
             "index": 0
           }
@@ -979,17 +1091,17 @@
       "main": [
         [
           {
-            "node": "Varme nat tid",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Lys aften tid",
-            "type": "main",
-            "index": 0
-          },
-          {
             "node": "Create a row",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "lys_auto",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "varme_auto",
             "type": "main",
             "index": 0
           }
@@ -1157,6 +1269,39 @@
           }
         ]
       ]
+    },
+    "lys_auto": {
+      "main": [
+        [
+          {
+            "node": "Lys aften tid",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "varme_auto": {
+      "main": [
+        [
+          {
+            "node": "Varme nat tid",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a row": {
+      "main": [
+        [
+          {
+            "node": "Workflow Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -1174,22 +1319,22 @@
     "Every 15 Minutes": [
       {
         "json": {
-          "timestamp": "2025-11-14T16:15:58.004+00:00",
-          "Readable date": "November 14th 2025, 4:15:58 pm",
-          "Readable time": "4:15:58 pm",
-          "Day of week": "Friday",
+          "timestamp": "2025-11-15T13:00:05.002+00:00",
+          "Readable date": "November 15th 2025, 1:00:05 pm",
+          "Readable time": "1:00:05 pm",
+          "Day of week": "Saturday",
           "Year": "2025",
           "Month": "November",
-          "Day of month": "14",
-          "Hour": "16",
-          "Minute": "15",
-          "Second": "58",
+          "Day of month": "15",
+          "Hour": "13",
+          "Minute": "00",
+          "Second": "05",
           "Timezone": "Europe/Lisbon (UTC+00:00)"
         }
       }
     ]
   },
-  "versionId": "ee2646b8-b49e-42b2-8b08-0015166873ea",
+  "versionId": "0e4c8b46-578c-437f-a677-ca3ab2c9746a",
   "triggerCount": 1,
   "shared": [
     {
