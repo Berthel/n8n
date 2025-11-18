@@ -1,0 +1,151 @@
+{
+  "updatedAt": "2025-11-17T11:09:21.000Z",
+  "createdAt": "2025-11-17T11:06:51.296Z",
+  "id": "7OSKdMBuGT9SCzEa",
+  "name": "Convert to markdown copy",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "437a24e5-e4a2-4c6a-8b2e-9f6b9f0a57cf",
+        "authentication": "headerAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -2192,
+        512
+      ],
+      "id": "8012e1f7-1a6e-4989-9e9c-1975a8bbf70d",
+      "name": "Webhook",
+      "webhookId": "437a24e5-e4a2-4c6a-8b2e-9f6b9f0a57cf",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "WwlGKLCrVwJHzSyW",
+          "name": "Academy webhook"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "fileId": "={{ $json.body.fileId }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.box",
+      "typeVersion": 1,
+      "position": [
+        -1968,
+        512
+      ],
+      "id": "cc1fdbee-558e-49d6-8ed9-1877853e36ed",
+      "name": "Get a file",
+      "credentials": {
+        "boxOAuth2Api": {
+          "id": "yIAh3gThcR2qpEHQ",
+          "name": "Box Christian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.name }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -1104,
+        496
+      ],
+      "id": "bfaee5ab-7a3e-4820-8d3e-4d5e38d85e66",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "connections": {
+    "Get a file": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "utilco.app.n8n.cloud",
+            "user-agent": "node",
+            "content-length": "26",
+            "accept": "application/json",
+            "accept-encoding": "gzip, br",
+            "accept-language": "*",
+            "cdn-loop": "netlify, cloudflare; loops=1; subreqs=1",
+            "cf-connecting-ip": "3.68.105.17",
+            "cf-ew-via": "15",
+            "cf-ipcountry": "DE",
+            "cf-ray": "99feb0c371ce1db3-FRA",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "cf-worker": "n8n.cloud",
+            "content-type": "application/json",
+            "sec-fetch-mode": "cors",
+            "x-forwarded-for": "3.68.105.17, 172.70.246.139",
+            "x-forwarded-host": "utilco.app.n8n.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "traefik-prod-users-gwc-10-6888ffdd77-g92dm",
+            "x-is-trusted": "yes",
+            "x-real-ip": "3.68.105.17",
+            "x-webhook-secret": "vczUfUpZhtQkJXFoP6hN"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "fileId": "2046317146970"
+          },
+          "webhookUrl": "https://utilco.app.n8n.cloud/webhook/d404182c-14d3-4937-a4f9-b23bf6c2eb1a",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "versionId": "666aaca6-3502-4538-a88a-7752686ebd87",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-11-17T11:06:51.300Z",
+      "createdAt": "2025-11-17T11:06:51.300Z",
+      "role": "workflow:owner",
+      "workflowId": "7OSKdMBuGT9SCzEa",
+      "projectId": "SFLNAzqJIfhKMhJx"
+    }
+  ],
+  "tags": []
+}
