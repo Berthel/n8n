@@ -1,0 +1,555 @@
+{
+  "updatedAt": "2025-11-18T09:48:45.000Z",
+  "createdAt": "2025-11-18T09:42:41.641Z",
+  "id": "BSyE75zlYMcbt36D",
+  "name": "Automated PESTLE Analysis Generator with Web Research",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "pestle-analysis",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "090321ee-06a3-4325-9af5-37c4a7a969ff",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "010a8073-0727-4ef0-954b-c2d7c67df5bb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "org_type",
+              "value": "={{ $json.org_type }}",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "org_name",
+              "value": "={{ $json.org_name }}",
+              "type": "string"
+            },
+            {
+              "id": "id-3",
+              "name": "org_short_description",
+              "value": "={{ $json.org_short_description }}",
+              "type": "string"
+            },
+            {
+              "id": "id-4",
+              "name": "org_industry",
+              "value": "={{ $json.org_industry }}",
+              "type": "string"
+            },
+            {
+              "id": "id-5",
+              "name": "org_geography_main",
+              "value": "={{ $json.org_geography_main }}",
+              "type": "string"
+            },
+            {
+              "id": "id-6",
+              "name": "org_geography_other",
+              "value": "={{ $json.org_geography_other }}",
+              "type": "string"
+            },
+            {
+              "id": "id-7",
+              "name": "org_customers_type",
+              "value": "={{ $json.org_customers_type }}",
+              "type": "string"
+            },
+            {
+              "id": "id-8",
+              "name": "org_size_employees",
+              "value": "={{ $json.org_size_employees }}",
+              "type": "string"
+            },
+            {
+              "id": "id-9",
+              "name": "org_business_model",
+              "value": "={{ $json.org_business_model }}",
+              "type": "string"
+            },
+            {
+              "id": "id-10",
+              "name": "analysis_purpose",
+              "value": "={{ $json.analysis_purpose }}",
+              "type": "string"
+            },
+            {
+              "id": "id-11",
+              "name": "analysis_time_horizon",
+              "value": "={{ $json.analysis_time_horizon }}",
+              "type": "string"
+            },
+            {
+              "id": "id-12",
+              "name": "analysis_focus",
+              "value": "={{ $json.analysis_focus }}",
+              "type": "string"
+            },
+            {
+              "id": "id-13",
+              "name": "analysis_depth",
+              "value": "={{ $json.analysis_depth }}",
+              "type": "string"
+            },
+            {
+              "id": "id-14",
+              "name": "scope_countries",
+              "value": "={{ $json.scope_countries }}",
+              "type": "string"
+            },
+            {
+              "id": "id-15",
+              "name": "scope_segments",
+              "value": "={{ $json.scope_segments }}",
+              "type": "string"
+            },
+            {
+              "id": "id-16",
+              "name": "analysis_special_topics",
+              "value": "={{ $json.analysis_special_topics }}",
+              "type": "string"
+            },
+            {
+              "id": "id-17",
+              "name": "analysis_user_notes",
+              "value": "={{ $json.analysis_user_notes }}",
+              "type": "string"
+            },
+            {
+              "id": "id-18",
+              "name": "analysis_language",
+              "value": "={{ $json.analysis_language }}",
+              "type": "string"
+            },
+            {
+              "id": "id-19",
+              "name": "analysis_tone",
+              "value": "={{ $json.analysis_tone }}",
+              "type": "string"
+            },
+            {
+              "id": "id-20",
+              "name": "analysis_max_words",
+              "value": "={{ $json.analysis_max_words }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "4e215db7-a05f-40b7-9dff-097083fba653",
+      "name": "Workflow Configuration",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "id",
+          "value": "gpt-4o"
+        },
+        "options": {}
+      },
+      "id": "80332438-4a8f-4dcf-9e6d-e502f8377596",
+      "name": "OpenAI GPT-4 Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        224
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "wLbV0srlBMaP36mY",
+          "name": "Open Router"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "message"
+      },
+      "id": "a972a5ef-a81d-469c-8a47-35e29ace99d8",
+      "name": "Node 1 - Background Research",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [
+        448,
+        0
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "wLbV0srlBMaP36mY",
+          "name": "Open Router"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "message"
+      },
+      "id": "a4e8a703-db72-4cba-92af-4d82c1b17f13",
+      "name": "Node 2 - Political Analysis",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [
+        800,
+        0
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "wLbV0srlBMaP36mY",
+          "name": "Open Router"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "message"
+      },
+      "id": "dd00cf98-ad58-45e6-8fe2-2f1997315bcf",
+      "name": "Node 3 - Economic Analysis",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [
+        1152,
+        0
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "wLbV0srlBMaP36mY",
+          "name": "Open Router"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "message"
+      },
+      "id": "d4b7ba4b-e617-4a9c-80b1-d2dbc0c50581",
+      "name": "Node 4 - Social Analysis",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [
+        1504,
+        0
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "wLbV0srlBMaP36mY",
+          "name": "Open Router"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "message"
+      },
+      "id": "0507eb67-f20a-44a3-b1dd-014cc5896c39",
+      "name": "Node 5 - Technological Analysis",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [
+        1856,
+        0
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "wLbV0srlBMaP36mY",
+          "name": "Open Router"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "message"
+      },
+      "id": "7028f9b7-81f7-4441-a7fc-a8e7388a5a6c",
+      "name": "Node 6 - Legal Analysis",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [
+        2208,
+        0
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "wLbV0srlBMaP36mY",
+          "name": "Open Router"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "message"
+      },
+      "id": "4233e5f3-d0c8-439a-9b56-f04a0aad0da6",
+      "name": "Node 7 - Environmental Analysis",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [
+        2560,
+        0
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "wLbV0srlBMaP36mY",
+          "name": "Open Router"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "background_markdown",
+              "value": "={{ $('Node 1 - Background Research').item.json.message }}",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "p_markdown",
+              "value": "={{ $('Node 2 - Political Analysis').item.json.message }}",
+              "type": "string"
+            },
+            {
+              "id": "id-3",
+              "name": "econ_markdown",
+              "value": "={{ $('Node 3 - Economic Analysis').item.json.message }}",
+              "type": "string"
+            },
+            {
+              "id": "id-4",
+              "name": "social_markdown",
+              "value": "={{ $('Node 4 - Social Analysis').item.json.message }}",
+              "type": "string"
+            },
+            {
+              "id": "id-5",
+              "name": "tech_markdown",
+              "value": "={{ $('Node 5 - Technological Analysis').item.json.message }}",
+              "type": "string"
+            },
+            {
+              "id": "id-6",
+              "name": "legal_markdown",
+              "value": "={{ $('Node 6 - Legal Analysis').item.json.message }}",
+              "type": "string"
+            },
+            {
+              "id": "id-7",
+              "name": "env_markdown",
+              "value": "={{ $('Node 7 - Environmental Analysis').item.json.message }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "90f44bb0-516b-40ea-ae7e-f072316a7215",
+      "name": "Aggregate All Analyses",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2912,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "message"
+      },
+      "id": "919036c3-75f0-4c09-9541-8ca24300be5b",
+      "name": "Node 8 - Editor and Final Report",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [
+        3136,
+        0
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "wLbV0srlBMaP36mY",
+          "name": "Open Router"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "84183b6b-8798-4e32-85e2-b14a455e77da",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        3488,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Workflow Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Workflow Configuration": {
+      "main": [
+        [
+          {
+            "node": "Node 1 - Background Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Node 1 - Background Research": {
+      "main": [
+        [
+          {
+            "node": "Node 2 - Political Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Node 2 - Political Analysis": {
+      "main": [
+        [
+          {
+            "node": "Node 3 - Economic Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Node 3 - Economic Analysis": {
+      "main": [
+        [
+          {
+            "node": "Node 4 - Social Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Node 4 - Social Analysis": {
+      "main": [
+        [
+          {
+            "node": "Node 5 - Technological Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Node 5 - Technological Analysis": {
+      "main": [
+        [
+          {
+            "node": "Node 6 - Legal Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Node 6 - Legal Analysis": {
+      "main": [
+        [
+          {
+            "node": "Node 7 - Environmental Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Node 7 - Environmental Analysis": {
+      "main": [
+        [
+          {
+            "node": "Aggregate All Analyses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate All Analyses": {
+      "main": [
+        [
+          {
+            "node": "Node 8 - Editor and Final Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Node 8 - Editor and Final Report": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "d4640118-9cc7-4e31-b5e5-aafdcd110646",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2025-11-18T09:42:41.646Z",
+      "createdAt": "2025-11-18T09:42:41.646Z",
+      "role": "workflow:owner",
+      "workflowId": "BSyE75zlYMcbt36D",
+      "projectId": "SFLNAzqJIfhKMhJx"
+    }
+  ],
+  "tags": []
+}
