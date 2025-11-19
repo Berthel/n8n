@@ -1,9 +1,9 @@
 {
+  "updatedAt": "2025-11-18T04:53:46.000Z",
   "createdAt": "2025-10-17T14:32:21.685Z",
-  "updatedAt": "2025-10-22T04:57:40.000Z",
   "id": "mm4gh5QUQapbg9as",
   "name": "Tavira Events Scraper from BOL to CSV JSON Sheet",
-  "active": true,
+  "active": false,
   "isArchived": false,
   "nodes": [
     {
@@ -841,8 +841,8 @@
   "triggerCount": 1,
   "shared": [
     {
-      "createdAt": "2025-10-17T14:32:21.688Z",
       "updatedAt": "2025-10-17T14:32:21.688Z",
+      "createdAt": "2025-10-17T14:32:21.688Z",
       "role": "workflow:owner",
       "workflowId": "mm4gh5QUQapbg9as",
       "projectId": "Oe16LxplPC150asV"
