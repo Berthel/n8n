@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2025-11-17T12:18:29.000Z",
+  "updatedAt": "2025-11-18T06:15:12.000Z",
   "createdAt": "2025-11-17T06:01:30.706Z",
   "id": "Gmw423TMGpJGS3AT",
   "name": "Convert to markdown",
@@ -54,12 +54,12 @@
     {
       "parameters": {
         "operation": "download",
-        "fileId": "={{ $json.id }}"
+        "fileId": "={{ $('Get a file').item.json.id }}"
       },
       "type": "n8n-nodes-base.box",
       "typeVersion": 1,
       "position": [
-        -1536,
+        -704,
         512
       ],
       "id": "690ec2f3-7a71-43e1-ba09-a90400a1e86f",
@@ -82,7 +82,7 @@
       "name": "Get Markdown",
       "type": "n8n-nodes-base.httpRequest",
       "position": [
-        -640,
+        192,
         432
       ],
       "typeVersion": 4.2,
@@ -128,7 +128,7 @@
       "name": "Send to Datalab API",
       "type": "n8n-nodes-base.httpRequest",
       "position": [
-        -1312,
+        -480,
         512
       ],
       "typeVersion": 4.2,
@@ -148,7 +148,7 @@
       "name": "Wait1",
       "type": "n8n-nodes-base.wait",
       "position": [
-        -1088,
+        -256,
         512
       ],
       "webhookId": "7b49cf9b-9859-4361-a8b8-2407d114d418",
@@ -182,7 +182,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -416,
+        416,
         432
       ],
       "id": "60addf60-1b77-4098-8b4e-e0ac8521b975",
@@ -195,7 +195,7 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        -192,
+        848,
         608
       ],
       "id": "d607c81a-c7c2-45d4-b3e4-8b4f5836115b",
@@ -219,7 +219,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -864,
+        -32,
         512
       ],
       "id": "11620343-6fa7-422e-92fd-dd33fd2f1801",
@@ -234,8 +234,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        -192,
-        384
+        1248,
+        176
       ],
       "id": "d219fa9d-5b3c-4f78-89d4-63c5490ce058",
       "name": "Respond to Webhook"
@@ -294,6 +294,166 @@
       ],
       "id": "6c6f27e6-85d1-4fd3-bf35-a466ce126c37",
       "name": "Limit"
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "box_markdown_cache",
+          "mode": "list",
+          "cachedResultName": "box_markdown_cache"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "markdown": "={{ $('Get Markdown').item.json.markdown }}",
+            "file_id": "={{ $('Get a file').item.json.id }}",
+            "sha1": "={{ $('Get a file').item.json.file_version.sha1 }}"
+          },
+          "matchingColumns": [
+            "file_id"
+          ],
+          "schema": [
+            {
+              "id": "file_id",
+              "displayName": "file_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "sha1",
+              "displayName": "sha1",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "markdown",
+              "displayName": "markdown",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        704,
+        320
+      ],
+      "id": "298c545d-7632-4d92-b1cd-11041454aecc",
+      "name": "Insert or update rows in a table",
+      "credentials": {
+        "postgres": {
+          "id": "RUVxlMmZvsZC2IGe",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select coalesce(\n  (\n    select sha1\n    from box_markdown_cache\n    where file_id = '{{ $json.id }}'\n    order by created_at desc\n    limit 1\n  ),\n  'NA'\n) as sha1;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1552,
+        512
+      ],
+      "id": "8f9728b0-3e98-4255-a6e0-3ae4a0f9acc2",
+      "name": "het sha1",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "RUVxlMmZvsZC2IGe",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c46d317e-1321-4e86-af41-e10591498557",
+              "leftValue": "={{ $json.sha1 }}",
+              "rightValue": "={{ $('Limit').item.json.file_version.sha1 }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1344,
+        512
+      ],
+      "id": "45a4d4ca-6afe-4be6-8ee2-539484f17df0",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select markdown\nfrom box_markdown_cache\nwhere file_id = '{{ $('Get a file').item.json.id }}'",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        912,
+        176
+      ],
+      "id": "93c2a22d-8858-4161-b02e-f6b51e3161f8",
+      "name": "get markdown",
+      "credentials": {
+        "postgres": {
+          "id": "RUVxlMmZvsZC2IGe",
+          "name": "Postgres account"
+        }
+      }
     }
   ],
   "connections": {
@@ -361,7 +521,7 @@
       "main": [
         [
           {
-            "node": "Respond to Webhook",
+            "node": "Insert or update rows in a table",
             "type": "main",
             "index": 0
           }
@@ -423,7 +583,58 @@
       "main": [
         [
           {
+            "node": "het sha1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert or update rows in a table": {
+      "main": [
+        [
+          {
+            "node": "get markdown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "het sha1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "get markdown",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
             "node": "Download a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get markdown": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
             "type": "main",
             "index": 0
           }
@@ -435,7 +646,9 @@
     "executionOrder": "v1"
   },
   "staticData": null,
-  "meta": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
   "pinData": {
     "Webhook": [
       {
@@ -447,28 +660,28 @@
             "accept": "application/json",
             "accept-encoding": "gzip, br",
             "accept-language": "*",
-            "cdn-loop": "cloudflare; loops=1; subreqs=1",
-            "cf-connecting-ip": "2001:8a0:58dc:d500:cc3:b1c3:62f0:c2f8",
+            "cdn-loop": "netlify, cloudflare; loops=1; subreqs=1",
+            "cf-connecting-ip": "63.177.231.88",
             "cf-ew-via": "15",
-            "cf-ipcountry": "PT",
-            "cf-ray": "99fee64a60d3e6de-LIS",
+            "cf-ipcountry": "DE",
+            "cf-ray": "9a054d610394d266-FRA",
             "cf-visitor": "{\"scheme\":\"https\"}",
             "cf-worker": "n8n.cloud",
             "content-type": "application/json",
             "sec-fetch-mode": "cors",
-            "x-forwarded-for": "2001:8a0:58dc:d500:cc3:b1c3:62f0:c2f8, 172.68.102.19",
+            "x-forwarded-for": "63.177.231.88, 172.71.164.40",
             "x-forwarded-host": "utilco.app.n8n.cloud",
             "x-forwarded-port": "443",
             "x-forwarded-proto": "https",
-            "x-forwarded-server": "traefik-prod-users-gwc-10-6888ffdd77-g92dm",
+            "x-forwarded-server": "traefik-prod-users-gwc-10-6888ffdd77-9vgr4",
             "x-is-trusted": "yes",
-            "x-real-ip": "2001:8a0:58dc:d500:cc3:b1c3:62f0:c2f8",
+            "x-real-ip": "63.177.231.88",
             "x-webhook-secret": "vczUfUpZhtQkJXFoP6hN"
           },
           "params": {},
           "query": {},
           "body": {
-            "fileId": "2046317146970"
+            "fileId": "2046427916771"
           },
           "webhookUrl": "https://utilco.app.n8n.cloud/webhook/d404182c-14d3-4937-a4f9-b23bf6c2eb1a",
           "executionMode": "production"
@@ -476,7 +689,7 @@
       }
     ]
   },
-  "versionId": "164c8cd2-f9f2-4788-bd51-da7333c88bb4",
+  "versionId": "2f8d7ff8-6df1-4324-879f-92c9f8cf48f9",
   "triggerCount": 1,
   "shared": [
     {
