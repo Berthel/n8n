@@ -1,10 +1,10 @@
 {
-  "updatedAt": "2025-11-17T11:09:21.000Z",
+  "updatedAt": "2025-11-18T05:39:03.000Z",
   "createdAt": "2025-11-17T11:06:51.296Z",
   "id": "7OSKdMBuGT9SCzEa",
   "name": "Convert to markdown copy",
   "active": false,
-  "isArchived": false,
+  "isArchived": true,
   "nodes": [
     {
       "parameters": {
@@ -136,7 +136,7 @@
       }
     ]
   },
-  "versionId": "666aaca6-3502-4538-a88a-7752686ebd87",
+  "versionId": "0ae5b9ce-564f-4a59-96e1-b96dba8440d3",
   "triggerCount": 1,
   "shared": [
     {
