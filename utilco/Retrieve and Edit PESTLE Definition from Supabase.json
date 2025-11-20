@@ -1,0 +1,911 @@
+{
+  "updatedAt": "2025-11-19T14:36:04.000Z",
+  "createdAt": "2025-11-19T05:52:27.548Z",
+  "id": "0uJMyz4K8D3V327F",
+  "name": "Retrieve and Edit PESTLE Definition from Supabase",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "pestle-definition-webhook",
+        "authentication": "headerAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "45cec98d-31b7-4ed3-ad35-2ba2b5eb50a4",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -656,
+        -64
+      ],
+      "webhookId": "bc8ce04b-4bcc-4866-9959-5950b0fb6c84",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "WwlGKLCrVwJHzSyW",
+          "name": "Academy webhook"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "pestle_definitions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{ $('Webhook Trigger').item.json.body.pestle_definition_id }}"
+            }
+          ]
+        }
+      },
+      "id": "4ea269ff-91dc-473d-83a4-0be947438016",
+      "name": "Get PESTLE Definition",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -208,
+        -64
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "bvMVIJLed9p3sKxS",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "\n  {\n    \"id\": \"ecc37ed0-db7a-45a5-ab8e-06f0fd82d7b4\",\n    \"name\": \"Utilco PESTLE test\",\n    \"org_type\": \"Virksomhed\",\n    \"org_name\": \"Utilco ApS\",\n    \"org_short_description\": \"Virksomhedsbeskrivelse: Utilco ApS\\nUtilco ApS er en specialiseret rådgivningsvirksomhed, der opererer i krydsfeltet mellem teknik, ledelse og bæredygtighed. Virksomheden har fokus på forsyningssektoren (el, vand, varme og gas) samt anlægsintensive virksomheder. Deres kernemission er at hjælpe disse aktører med at sikre en effektiv, sikker og bæredygtig infrastruktur gennem målrettet rådgivning.\\n\\nVirksomhedens forretningsgrundlag hviler på tre primære søjler, som er relevante at inddrage i en PESTLE-analyse:\\n\\nAsset Management (ISO 55001): Rådgivning om optimal styring, drift og vedligehold af fysiske anlægsaktiver gennem hele deres livscyklus. Dette sikrer, at forsyningsselskaber kan maksimere værdien af deres investeringer.\\n\\nESG & Compliance: Hjælp til at navigere i kompleks lovgivning og stigende krav til bæredygtighedsrapportering (f.eks. EU's CSRD-direktiv). Utilco oversætter regulatoriske krav til konkrete handlingsplaner.\\n\\nStrategiudvikling: Datadrevet beslutningsstøtte, der hjælper ledelser med at prioritere investeringer til fremtidssikring og grøn omstilling.\",\n    \"org_industry\": \"Konsulent, forsyning, anlægsvirksomheder\",\n    \"org_geography_main\": \"Danmark\",\n    \"org_geography_other\": \"Norden\",\n    \"org_customers_type\": \"B2B\",\n    \"org_size_employees\": \"0-10\",\n    \"org_business_model\": \"Konsulentydelser, Online kurser, Analyser\",\n    \"analysis_purpose\": \"Strategisk planlægning\",\n    \"analysis_time_horizon\": \"3 år\",\n    \"analysis_focus\": \"Balanceret\",\n    \"analysis_depth\": \"Normal\",\n    \"scope_countries\": \"Danmark\",\n    \"scope_segments\": \"Forsyningsselskaber i Danmark\",\n    \"analysis_special_topics\": \"Dataregulering, grøn omstilling, AI, Cybersikkerhed\",\n    \"analysis_user_notes\": null,\n    \"analysis_language\": \"da-DK\",\n    \"analysis_tone\": \"Rådgivende\",\n    \"analysis_max_words\": \"2000\",\n    \"created_at\": \"2025-11-19T06:07:03.776588+00:00\",\n    \"updated_at\": \"2025-11-19T06:07:03.776588+00:00\",\n    \"created_by\": \"f6a7bb45-2f57-49df-86a9-c1531b18c314\",\n    \"updated_by\": \"f6a7bb45-2f57-49df-86a9-c1531b18c314\"\n  }\n\n",
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "0a7647ce-86ff-4b29-957d-93c1ccfcda01",
+      "name": "PESTLE definition",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        16,
+        -64
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=ROLLE\nDu er en analytiker, der laver baggrundsresearch til en PESTLE-analyse.\nDu har adgang til internetsøgning.\n\nINPUT\nDu får følgende input fra en formular (brugersvar):\n\n- Type: {{ $json[\"org_type\"] }}\n- Navn: {{ $json[\"org_name\"] }}\n- Kort beskrivelse: {{ $json[\"org_short_description\"] }}\n- Branche/sektor: {{ $json[\"org_industry\"] }}\n- Primære geografiske markeder: {{ $json[\"org_geography_main\"] }}\n- Øvrige markeder: {{ $json[\"org_geography_other\"] }}\n- Kundetype(r): {{ $json[\"org_customers_type\"] }}\n- Virksomheds-/organisationsmodel: {{ $json[\"org_business_model\"] }}\n- Formål med analysen: {{ $json[\"analysis_purpose\"] }}\n- Tidshorisont: {{ $json[\"analysis_time_horizon\"] }}\n- Fokus (risiko/mulighed/balanceret): {{ $json[\"analysis_focus\"] }}\n- Særlige temaer: {{ $json[\"analysis_special_topics\"] }}\n- Brugernoter: {{ $json[\"analysis_user_notes\"] }}\n- Sprog: {{ $json[\"analysis_language\"] }}\n\nOPGAVE\n1. Brug internetsøgning til at finde relevant, opdateret information om:\n   - organisationen/projektet (hjemmeside, profiler, presse, rapporter)\n   - branchen og markedet i de angivne lande/regioner\n2. Lav en kort, faktabaseret baggrundsbeskrivelse, som kan bruges af andre LLM-noder til at lave en dyb PESTLE-analyse.\n\nLEVERING\nSkriv i sproget: {{ $json[\"analysis_language\"] }}.\nSkriv i Markdown med denne struktur:\n\n### Kort profil\n- Hvad er det? (type, hovedaktivitet, målgruppe)\n- Nøgleprodukter/tjenester eller hovedopgaver\n- Primære markeder og segmenter\n\n### Branche- og markedskontekst\n- Kort overblik over branchen/sektoren\n- Centrale trends de sidste 3–5 år\n- Position for {{ $json[\"org_name\"] }} i denne kontekst (fx niche, markedsleder, ny spiller)\n\n### Strategisk situation (som kontekst for PESTLE)\n- Hvad tyder offentlige kilder på ift. strategi, vækst, udfordringer?\n- Er der oplagte temaer, der er vigtige for P/E/S/T/L/E (fx regulering, teknologi, demografi)?\n\n### Kilder\n- Punktliste med de vigtigste kilder og links (max 8)\n- Skriv kort, hvad hver kilde bidrog med.\n\nHvis internetsøgning ikke giver brugbare resultater om casen, så skriv det tydeligt i starten og basér dig primært på brugerens input.\nUndgå spekulation: hvis noget er usikkert, så markér det som en antagelse.",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "={{ $('Systemprompt').item.json.Systemprompt }}"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        240,
+        -64
+      ],
+      "id": "6a64443e-aee9-47f9-a77a-e608cb1df15c",
+      "name": "Baggrundsinformation"
+    },
+    {
+      "parameters": {
+        "model": "google/gemini-3-pro-preview",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        320,
+        160
+      ],
+      "id": "5230b6f2-910d-48f3-8004-88cd90595aab",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "0zn5wOZxvTwrpo6y",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "780802ba-3b3c-4c86-b7f9-098e85baeb3d",
+              "name": "Systemprompt",
+              "value": "Du skal skal: \n- fokusere på 3–7 vigtigste forhold (altid de nyeste, så du aldrig fokuserer på forhold som ikke længere gælder)\n- koble hvert forhold direkte til casen \t\n- markere risiko/mulighed \t\n- Foreslå indikatorer at holde øje med \t\n- give kilder.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -432,
+        -64
+      ],
+      "id": "4498b2ea-cc69-4049-8ce8-220f17e508d6",
+      "name": "Systemprompt"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=ROLLE\nDu er politisk/strategisk analytiker på makroniveau.\nDu laver \"P\" (Political) delen af en PESTLE-analyse.\n\nINPUT\n1) Baggrundsnote om casen:\n{{ $json.text }}\n\n2) Formularfelter (kort opsummeret):\n- Type: {{ $('Get PESTLE Definition').item.json.org_type }}\n- Navn: {{ $('Get PESTLE Definition').item.json.org_name }}\n- Branche/sektor: {{ $('Get PESTLE Definition').item.json.org_industry }}\n- Geografi (primært): {{ $('Get PESTLE Definition').item.json.org_geography_main }}\n- Øvrige markeder: {{ $('Get PESTLE Definition').item.json.org_geography_other }}\n- Tidshorisont: {{ $('Get PESTLE Definition').item.json.analysis_time_horizon }}\n- Fokus: {{ $('Get PESTLE Definition').item.json.analysis_focus }}\n- Særlige temaer: {{ $('Get PESTLE Definition').item.json.analysis_special_topics }}\n- Sprog: {{ $('Get PESTLE Definition').item.json.analysis_language }}\n\nOPGAVE\nBrug internetsøgning og baggrundsnoten til at identificere de vigtigste politiske forhold, der påvirker casen over den angivne tidshorisont.\n\nMed politiske forhold menes bl.a.:\n- national og regional politik\n- regeringsstabilitet, politiske konflikter\n- industripolitik, handelspolitik, skattepolitik\n- støtteordninger/tilskud, offentlige investeringer\n- internationale relationer (EU, handel, sanktioner osv.)\n\nLEVERING\nSkriv i sproget: {{ $('Get PESTLE Definition').item.json.analysis_language }}.\nSkriv i Markdown med følgende struktur:\n\n### P: Politiske forhold – overblik\nKort afsnit (3–5 sætninger) der opsummerer de vigtigste politiske drivere for casen.\n\n### Centrale politiske drivere (3–7 punkter)\nFor hver driver:\n\n- **Titel på driveren** (kort og skarpt)\n- **Beskrivelse:** hvad går den ud på?\n- **Geografisk scope:** hvilke lande/regioner er relevante?\n- **Tidshorisont:** kort / mellem / lang sigt\n- **Påvirkning på {{ $('Get PESTLE Definition').item.json.org_name }}:** konkret og case-specifik\n- **Karakter:** primært *risiko*, *mulighed* eller *både og*\n- **Indikatorer at overvåge:** konkrete ting man kan følge (valg, lovforslag, budgetter osv.)\n\n### Kilder\n- Punktliste med centrale kilder (artikler, rapporter, officielle sider)\n- Max 8 kilder, med link og 1 linjes forklaring.\n\nUndgå generelle floskler. Vær konkret og konsekvensorienteret for den konkrete case.",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "={{ $('Systemprompt').item.json.Systemprompt }}"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        592,
+        -64
+      ],
+      "id": "ef00ff1f-b10b-46e6-93d7-647c572665d2",
+      "name": "P: Political"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=ROLLE\nDu er økonomisk makroanalytiker.\nDu laver \"E\" (Economic) delen af en PESTLE-analyse.\n\nINPUT\n1) Baggrundsnote om casen:\n{{ $('Baggrundsinformation').item.json.text }}\n\n2) Formularfelter (kort opsummeret):\n- Type: {{ $('Get PESTLE Definition').item.json.org_type }}\n- Navn: {{ $('Get PESTLE Definition').item.json.org_name }}\n- Branche/sektor: {{ $('Get PESTLE Definition').item.json.org_industry }}\n- Geografi (primært): {{ $('Get PESTLE Definition').item.json.org_geography_main }}\n- Øvrige markeder: {{ $('Get PESTLE Definition').item.json.org_geography_other }}\n- Tidshorisont: {{ $('Get PESTLE Definition').item.json.analysis_time_horizon }}\n- Fokus: {{ $('Get PESTLE Definition').item.json.analysis_focus }}\n- Særlige temaer: {{ $('Get PESTLE Definition').item.json.analysis_special_topics }}\n- Sprog: {{ $('Get PESTLE Definition').item.json.analysis_language }}\n\nOPGAVE\nBrug internetsøgning til at identificere de vigtigste økonomiske forhold, der påvirker casen, fx:\n- vækst, inflation, renter, arbejdsløshed\n- valutakurs, lønniveau, produktivitetsudvikling\n- købekraft, investeringsniveau, kapitaladgang\n- konjunkturer i relevante brancher/markeder\n\nLEVERING\nSkriv i sproget: {{ $('Get PESTLE Definition').item.json.analysis_language }}.\nSkriv i Markdown:\n\n### E: Økonomiske forhold – overblik\nKort opsummering (3–5 sætninger) af de makroøkonomiske vilkår, der er mest relevante for casen.\n\n### Centrale økonomiske drivere (3–7 punkter)\nFor hver driver:\n\n- **Titel**\n- **Beskrivelse:** hvad sker der økonomisk?\n- **Data/tal:** nævn 1–2 relevante nøgletal (med omtrentligt niveau og år)\n- **Påvirkning på {{ $('Get PESTLE Definition').item.json.org_name }}:** konkret og case-specifik\n- **Karakter:** primært *risiko*, *mulighed* eller *både og*\n- **Mulige scenarier:** kort beskrivelse af 1 gunstigt og 1 ugunstigt scenarie\n\n### Kilder\n- Punktliste med centrale kilder (statistikbanke, IMF, OECD, nationale kilder osv.)\n- Max 8 kilder, med link og 1 linjes forklaring.\n\nVær konkret og undgå generelle udsagn som “økonomien er usikker” uden data.",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "={{ $('Systemprompt').item.json.Systemprompt }}"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        944,
+        -64
+      ],
+      "id": "8cf6d31f-9bab-40b9-a319-1dd690a5c1bf",
+      "name": "E: Economic"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=ROLLE\nDu er analytiker i sociologi/forbrugeradfærd/samfundstendenser.\nDu laver \"S\" (Social) delen af en PESTLE-analyse.\n\nINPUT\n1) Baggrundsnote om casen:\n{{ $('Baggrundsinformation').item.json.text }}\n\n2) Formularfelter (kort opsummeret):\n- Type: {{ $('Get PESTLE Definition').item.json.org_type }}\n- Navn: {{ $('Get PESTLE Definition').item.json.org_name }}\n- Branche/sektor: {{ $('Get PESTLE Definition').item.json.org_industry }}\n- Geografi (primært): {{ $('Get PESTLE Definition').item.json.org_geography_main }}\n- Øvrige markeder: {{ $('Get PESTLE Definition').item.json.org_geography_other }}\n- Tidshorisont: {{ $('Get PESTLE Definition').item.json.analysis_time_horizon }}\n- Fokus: {{ $('Get PESTLE Definition').item.json.analysis_focus }}\n- Særlige temaer: {{ $('Get PESTLE Definition').item.json.analysis_special_topics }}\n- Sprog: {{ $('Get PESTLE Definition').item.json.analysis_language }}\n\nOPGAVE\nBrug internetsøgning til at identificere de vigtigste sociale og kulturelle forhold, fx:\n- demografi (alder, urbanisering, migration)\n- værdier, holdninger, livsstil\n- forbruger- og borgeradfærd\n- uddannelsesniveau og kompetencer\n- sociale uligheder, tillid til institutioner\n\nLEVERING\nSkriv i sproget: {{ $('Get PESTLE Definition').item.json.analysis_language }}.\nSkriv i Markdown:\n\n### S: Sociokulturelle forhold – overblik\nKort opsummering (3–5 sætninger) af de vigtigste sociale og kulturelle trends for casen.\n\n### Centrale sociale drivere (3–7 punkter)\nFor hver driver:\n\n- **Titel**\n- **Beskrivelse:** hvad er trenden?\n- **Berørte grupper/segmenter:** hvem gælder det især for?\n- **Påvirkning på {{ $('Get PESTLE Definition').item.json.org_name }}:** specifik og praktisk\n- **Karakter:** primært *risiko*, *mulighed* eller *både og*\n- **Hvad bør man holde øje med?:** konkrete indikatorer (undersøgelser, adfærdsdata osv.)\n\n### Kilder\n- Punktliste med relevante rapporter, surveys, analyser\n- Max 8 kilder med link og kort forklaring.\n\nUndgå floskler som “kunden bliver mere digital” uden forklaring og konsekvens.",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "={{ $('Systemprompt').item.json.Systemprompt }}"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        1296,
+        -64
+      ],
+      "id": "4883e711-5b3a-42fd-a159-1004c9731b2f",
+      "name": "S: Social"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=ROLLE\nDu er teknologisk/innovations-analytiker.\nDu laver \"T\" (Technological) delen af en PESTLE-analyse.\n\nINPUT\n1) Baggrundsnote om casen:\n{{ $('Baggrundsinformation').item.json.text }}\n\n2) Formularfelter (kort opsummeret):\n- Type: {{ $('Get PESTLE Definition').item.json.org_type }}\n- Navn: {{ $('Get PESTLE Definition').item.json.org_name }}\n- Branche/sektor: {{ $('Get PESTLE Definition').item.json.org_industry }}\n- Geografi (primært): {{ $('Get PESTLE Definition').item.json.org_geography_main }}\n- Øvrige markeder: {{ $('Get PESTLE Definition').item.json.org_geography_other }}\n- Tidshorisont: {{ $('Get PESTLE Definition').item.json.analysis_time_horizon }}\n- Fokus: {{ $('Get PESTLE Definition').item.json.analysis_focus }}\n- Særlige temaer: {{ $('Get PESTLE Definition').item.json.analysis_special_topics }}\n- Sprog: {{ $('Get PESTLE Definition').item.json.analysis_language }}\n\nOPGAVE\nBrug internetsøgning til at kortægge de vigtigste teknologiske trends og udviklinger, der påvirker casen, fx:\n- nye teknologier i branchen (AI, IoT, automation, biotech, energi osv.)\n- digital infrastruktur og modenhed\n- teknologiadoption hos kunder/borgere\n- cybersikkerhed og datahåndtering\n\nLEVERING\nSkriv i sproget: {{ $('Get PESTLE Definition').item.json.analysis_language }}.\nSkriv i Markdown:\n\n### T: Teknologiske forhold – overblik\nKort opsummering (3–5 sætninger) af de vigtigste teknologiske tendenser.\n\n### Centrale teknologiske drivere (3–7 punkter)\nFor hver driver:\n\n- **Titel**\n- **Beskrivelse:** hvad er teknologien/tendensen?\n- **Modenhed:** fx “fremspirende”, “moden”, “standard”\n- **Relevans for {{ $('Get PESTLE Definition').item.json.org_name }}:** konkrete anvendelser eller trusler\n- **Karakter:** primært *risiko*, *mulighed* eller *både og*\n- **Barrierer:** hvad kan gøre det svært at udnytte teknologien (kompetencer, investering, regulering osv.)\n\n### Kilder\n- Punktliste med teknologirapporter, artikler, analyser\n- Max 8 kilder med link og kort note.\n\nUndgå hype. Vær nøgtern og koble alt direkte til casen.",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "={{ $('Systemprompt').item.json.Systemprompt }}"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        1648,
+        -64
+      ],
+      "id": "ccc1c051-e07a-4c4c-998f-43784ab8e869",
+      "name": "T: Technological"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=ROLLE\nDu er juridisk/regulatorisk analytiker (makroniveau, ikke advokat for casen).\nDu laver \"L\" (Legal) delen af en PESTLE-analyse.\n\nINPUT\n1) Baggrundsnote om casen:\n{{ $('Baggrundsinformation').item.json.text }}\n\n2) Formularfelter (kort opsummeret):\n- Type: {{ $('Get PESTLE Definition').item.json.org_type }}\n- Navn: {{ $('Get PESTLE Definition').item.json.org_name }}\n- Branche/sektor: {{ $('Get PESTLE Definition').item.json.org_industry }}\n- Geografi (primært): {{ $('Get PESTLE Definition').item.json.org_geography_main }}\n- Øvrige markeder: {{ $('Get PESTLE Definition').item.json.org_geography_other }}\n- Tidshorisont: {{ $('Get PESTLE Definition').item.json.analysis_time_horizon }}\n- Fokus: {{ $('Get PESTLE Definition').item.json.analysis_focus }}\n- Særlige temaer: {{ $('Get PESTLE Definition').item.json.analysis_special_topics }}\n- Sprog: {{ $('Get PESTLE Definition').item.json.analysis_language }}\n\nOPGAVE\nBrug internetsøgning til at identificere de vigtigste juridiske/regulatoriske forhold, fx:\n- eksisterende love og regulering, der er særligt relevante\n- kommende eller foreslåede reguleringer\n- standarder, certificeringer, tilsynskrav\n- sektor-specifik regulering (fx finans, sundhed, energi, offentlig forvaltning)\n\nLEVERING\nSkriv i sproget: {{ $('Get PESTLE Definition').item.json.analysis_language }}.\nSkriv i Markdown:\n\n### L: Juridiske og regulatoriske forhold – overblik\nKort opsummering (3–5 sætninger) af det vigtigste regulatoriske landskab.\n\n### Centrale juridiske/regulatoriske drivere (3–7 punkter)\nFor hver driver:\n\n- **Titel** (inkl. lov/forordning/initiativ, hvis relevant)\n- **Status:** gældende / vedtaget men ikke trådt i kraft / forslag / tidlig idé\n- **Indhold:** kort og praktisk forklaring\n- **Påvirkning på {{ $('Get PESTLE Definition').item.json.org_name }}:** konkrete konsekvenser (krav, omkostninger, muligheder)\n- **Karakter:** primært *risiko*, *mulighed* eller *både og*\n- **Tidslinje:** vigtigste datoer, hvis kendt\n\n### Kilder\n- Officielle kilder (myndigheder, EU, tilsyn) prioriteres.\n- Max 8 kilder med link og kort note.\n\nTilføj en kort disclaimer om, at dette ikke er juridisk rådgivning, men en strategisk overbliksvurdering baseret på offentlige kilder.",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "={{ $('Systemprompt').item.json.Systemprompt }}"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        2000,
+        -64
+      ],
+      "id": "3a0fef7e-7ddf-48bf-90f1-33865e0aca0e",
+      "name": "L: Legal"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=ROLLE\nDu er analytiker med fokus på klima, miljø og bæredygtighed.\nDu laver \"E\" (Environmental) delen af en PESTLE-analyse.\n\nINPUT\n1) Baggrundsnote om casen:\n{{ $('Baggrundsinformation').item.json.text }}\n\n2) Formularfelter (kort opsummeret):\n- Type: {{ $('Get PESTLE Definition').item.json.org_type }}\n- Navn: {{ $('Get PESTLE Definition').item.json.org_name }}\n- Branche/sektor: {{ $('Get PESTLE Definition').item.json.org_industry }}\n- Geografi (primært): {{ $('Get PESTLE Definition').item.json.org_geography_main }}\n- Øvrige markeder: {{ $('Get PESTLE Definition').item.json.org_geography_other }}\n- Tidshorisont: {{ $('Get PESTLE Definition').item.json.analysis_time_horizon }}\n- Fokus: {{ $('Get PESTLE Definition').item.json.analysis_focus }}\n- Særlige temaer: {{ $('Get PESTLE Definition').item.json.analysis_special_topics }}\n- Sprog: {{ $('Get PESTLE Definition').item.json.analysis_language }}\n\nOPGAVE\nBrug internetsøgning til at identificere de vigtigste miljø- og klimarelaterede forhold, fx:\n- klimaændringer og fysiske risici (ekstremvejr, vand, temperatur mv.)\n- overgangsrisici (CO₂-priser, energiomstilling, krav om rapportering)\n- ressourceknaphed (råvarer, vand, energi)\n- miljøkrav, certificeringer, bæredygtighedsstandarder\n- kunders/borgers forventninger til bæredygtighed\n\nLEVERING\nSkriv i sproget: {{ $('Get PESTLE Definition').item.json.analysis_language }}.\nSkriv i Markdown:\n\n### E: Miljø- og klimaforhold – overblik\nKort opsummering (3–5 sætninger) af de vigtigste miljø- og klimadrivere for casen.\n\n### Centrale miljø- og klimadrivere (3–7 punkter)\nFor hver driver:\n\n- **Titel**\n- **Beskrivelse:** hvad er udfordringen/muligheden?\n- **Type:** fysisk risiko, overgangsrisiko, mulighed, andet\n- **Påvirkning på {{ $('Get PESTLE Definition').item.json.org_name }}:** konkret (fx omkostninger, forsyningssikkerhed, omdømme, nye produkter)\n- **Karakter:** primært *risiko*, *mulighed* eller *både og*\n- **Mulige tilpasninger:** kort om, hvad organisationer typisk kan gøre\n\n### Kilder\n- Punktliste med rapporter, officielle analyser, relevante nyheder\n- Max 8 kilder med link og kort note.\n\nUndgå vag “grøn” retorik. Vær specifik om mekanismerne og effekten for casen.",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "={{ $('Systemprompt').item.json.Systemprompt }}"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        2352,
+        -64
+      ],
+      "id": "3416a3f8-eadc-474e-a64b-a0535f8771ed",
+      "name": "E: Environmental"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=ROLLE\nDu er redaktør og strategikonsulent.\nDu får udkast til en PESTLE-analyse fra flere specialiserede \"forfattere\" (LLM-noder).\nDin opgave er at samle, rense og skærpe det hele til én samlet, læsbar PESTLE-analyse i Markdown.\n\nINPUT\n1) Baggrundsnote om casen:\n{{ $('Baggrundsinformation').item.json.text }}\n\n\n2) P: Politiske forhold:\n{{ $('P: Political').item.json.text }}\n\n3) E: Økonomiske forhold:\n{{ $('E: Economic').item.json.text }}\n\n4) S: Sociokulturelle forhold:\n{{ $('S: Social').item.json.text }}\n\n5) T: Teknologiske forhold:\n{{ $('T: Technological').item.json.text }}\n\n6) L: Juridiske forhold:\n{{ $('L: Legal').item.json.text }}\n\n7) E: Miljø- og klimaforhold:\n{{ $json.text }}\n\n8) Formularfelter (kort opsummeret):\n- Type: {{ $('Get PESTLE Definition').item.json.org_type }}\n- Navn: {{ $('Get PESTLE Definition').item.json.org_name }}\n- Branche/sektor: {{ $('Get PESTLE Definition').item.json.org_industry }}\n- Geografi (primært): {{ $('Get PESTLE Definition').item.json.org_geography_main }}\n- Øvrige markeder: {{ $('Get PESTLE Definition').item.json.org_geography_other }}\n- Tidshorisont: {{ $('Get PESTLE Definition').item.json.analysis_time_horizon }}\n- Fokus: {{ $('Get PESTLE Definition').item.json.analysis_focus }}\n- Særlige temaer: {{ $('Get PESTLE Definition').item.json.analysis_special_topics }}\n- Sprog: {{ $('Get PESTLE Definition').item.json.analysis_language }}\n\nOPGAVE\n1. Fjern gentagelser og modsigelser i de indkomne tekster.\n2. Vælg og omformulér så analysen bliver:\n   - kortere, hvis muligt (fokus på det væsentlige)\n   - klar, saglig og konsekvensorienteret\n3. Sørg for at alle P/E/S/T/L/E-dimensioner er dækket og tydeligt adskilt.\n4. Træk tydelige konklusioner og anbefalinger frem, der matcher analysens formål.\n\nLEVERING\nSkriv i sproget: {{ $('Get PESTLE Definition').item.json.analysis_language }}.\nSkriv udelukkende i Markdown med denne struktur:\n\n# PESTLE-analyse for  {{ $('Get PESTLE Definition').item.json.org_name }}\n\n## 1. Executive summary\n- 3–7 punktnedslag med de vigtigste konklusioner på tværs af P/E/S/T/L/E.\n- Tydelig markering af de 3 mest kritiske risici.\n- Tydelig markering af de 3 mest lovende muligheder.\n\n## 2. Kontekst\n- Kort opsummering af casen (type, branche, geografi, formål med analysen)\n- Tidshorisont og evt. særligt fokus\n\n## 3. P: Politiske forhold\n- Kort overblik (3–5 sætninger)\n- Bulletpoints med de vigtigste drivere, konsekvenser og usikkerheder\n\n## 4. E: Økonomiske forhold\n(samme logik: kort overblik + strukturerede bullets)\n\n## 5. S: Sociokulturelle forhold\n\n## 6. T: Teknologiske forhold\n\n## 7. L: Juridiske og regulatoriske forhold\n\n## 8. E: Miljø- og klimaforhold\n\n## 9. Samlet vurdering og anbefalinger\n- Kort vurdering af det samlede risikobillede\n- Kort vurdering af de største strategiske muligheder\n- 3–7 konkrete anbefalinger til næste skridt (fx hvor man bør dykke dybere, mulige strategiske spor, behov for yderligere analyser)\n\nRETNINGSLINJER\n- Brug et nøgternt, professionelt sprog – ingen marketing-fraser.\n- Vær eksplicit om usikkerheder: skriv, hvis noget hviler på svage eller få kilder.\n- Hvis tidligere noder har modstridende udsagn, så forklar kort, hvordan du tolker det.\n- Ingen rå JSON i output – kun færdig, læsbar Markdown-tekst.",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "={{ $('Systemprompt').item.json.Systemprompt }}"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        2704,
+        -64
+      ],
+      "id": "88552fc8-747f-4bb7-b198-71e66ca00115",
+      "name": "Editor/redaktør"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "pestle_definitions",
+          "mode": "list",
+          "cachedResultName": "pestle_definitions"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Get PESTLE Definition').item.json.id }}",
+            "pestle_analyse": "={{ $json.text }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "org_type",
+              "displayName": "org_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "org_name",
+              "displayName": "org_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "org_short_description",
+              "displayName": "org_short_description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "org_industry",
+              "displayName": "org_industry",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "org_geography_main",
+              "displayName": "org_geography_main",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "org_geography_other",
+              "displayName": "org_geography_other",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "org_customers_type",
+              "displayName": "org_customers_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "org_size_employees",
+              "displayName": "org_size_employees",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "org_business_model",
+              "displayName": "org_business_model",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "analysis_purpose",
+              "displayName": "analysis_purpose",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "analysis_time_horizon",
+              "displayName": "analysis_time_horizon",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "analysis_focus",
+              "displayName": "analysis_focus",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "analysis_depth",
+              "displayName": "analysis_depth",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "scope_countries",
+              "displayName": "scope_countries",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "scope_segments",
+              "displayName": "scope_segments",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "analysis_special_topics",
+              "displayName": "analysis_special_topics",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "analysis_user_notes",
+              "displayName": "analysis_user_notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "analysis_language",
+              "displayName": "analysis_language",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "analysis_tone",
+              "displayName": "analysis_tone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "analysis_max_words",
+              "displayName": "analysis_max_words",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "created_by",
+              "displayName": "created_by",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "updated_by",
+              "displayName": "updated_by",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "pestle_analyse",
+              "displayName": "pestle_analyse",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        3056,
+        -64
+      ],
+      "id": "0cf47f4e-286c-465e-b426-a27897bb952c",
+      "name": "Update rows in a table",
+      "credentials": {
+        "postgres": {
+          "id": "RUVxlMmZvsZC2IGe",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "executionId",
+              "value": "={{ $execution.id }}",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "status",
+              "value": "processing",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d0ef2a71-f019-4930-8d1b-8aec0dca7e31",
+      "name": "Early Response Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -400,
+        -384
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {}
+      },
+      "id": "68e4b5cc-764b-4509-9fd4-79fa59ef4525",
+      "name": "Early Respond with ExecutionId",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -112,
+        -416
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Systemprompt",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Early Response Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get PESTLE Definition": {
+      "main": [
+        [
+          {
+            "node": "PESTLE definition",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PESTLE definition": {
+      "main": [
+        [
+          {
+            "node": "Baggrundsinformation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Baggrundsinformation",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "P: Political",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "E: Economic",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "S: Social",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "T: Technological",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "L: Legal",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "E: Environmental",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Editor/redaktør",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Systemprompt": {
+      "main": [
+        [
+          {
+            "node": "Get PESTLE Definition",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Baggrundsinformation": {
+      "main": [
+        [
+          {
+            "node": "P: Political",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "P: Political": {
+      "main": [
+        [
+          {
+            "node": "E: Economic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "E: Economic": {
+      "main": [
+        [
+          {
+            "node": "S: Social",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "S: Social": {
+      "main": [
+        [
+          {
+            "node": "T: Technological",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T: Technological": {
+      "main": [
+        [
+          {
+            "node": "L: Legal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "L: Legal": {
+      "main": [
+        [
+          {
+            "node": "E: Environmental",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "E: Environmental": {
+      "main": [
+        [
+          {
+            "node": "Editor/redaktør",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Editor/redaktør": {
+      "main": [
+        [
+          {
+            "node": "Update rows in a table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Early Response Data": {
+      "main": [
+        [
+          {
+            "node": "Early Respond with ExecutionId",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Webhook Trigger": [
+      {
+        "json": {
+          "headers": {
+            "host": "utilco.app.n8n.cloud",
+            "user-agent": "node",
+            "content-length": "63",
+            "accept": "application/json",
+            "accept-encoding": "gzip, br",
+            "accept-language": "*",
+            "cdn-loop": "netlify, cloudflare; loops=1; subreqs=1",
+            "cf-connecting-ip": "3.120.31.133",
+            "cf-ew-via": "15",
+            "cf-ipcountry": "DE",
+            "cf-ray": "9a0e7bdd038865d0-FRA",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "cf-worker": "n8n.cloud",
+            "content-type": "application/json",
+            "sec-fetch-mode": "cors",
+            "x-forwarded-for": "3.120.31.133, 172.69.151.56",
+            "x-forwarded-host": "utilco.app.n8n.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "traefik-prod-users-gwc-10-6888ffdd77-9vgr4",
+            "x-is-trusted": "yes",
+            "x-real-ip": "3.120.31.133",
+            "x-webhook-secret": "vczUfUpZhtQkJXFoP6hN"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "pestle_definition_id": "ecc37ed0-db7a-45a5-ab8e-06f0fd82d7b4"
+          },
+          "webhookUrl": "https://utilco.app.n8n.cloud/webhook/pestle-definition-webhook",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "versionId": "5e89ef31-7a6f-4b78-ade1-555681e1a48c",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-11-19T05:52:27.552Z",
+      "createdAt": "2025-11-19T05:52:27.552Z",
+      "role": "workflow:owner",
+      "workflowId": "0uJMyz4K8D3V327F",
+      "projectId": "SFLNAzqJIfhKMhJx"
+    }
+  ],
+  "tags": []
+}
