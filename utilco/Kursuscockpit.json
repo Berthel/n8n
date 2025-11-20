@@ -1,9 +1,9 @@
 {
+  "updatedAt": "2025-11-19T20:03:44.000Z",
   "createdAt": "2025-05-26T09:15:58.847Z",
-  "updatedAt": "2025-10-11T15:07:22.000Z",
   "id": "cIyAT2GKM5Ng1Wwa",
   "name": "Kursuscockpit",
-  "active": false,
+  "active": true,
   "isArchived": false,
   "nodes": [
     {
@@ -107,23 +107,6 @@
       ],
       "id": "63806f42-4a1d-4203-9a5b-c89fa82777b0",
       "name": "Module creator"
-    },
-    {
-      "parameters": {
-        "rule": {
-          "interval": [
-            {}
-          ]
-        }
-      },
-      "type": "n8n-nodes-base.scheduleTrigger",
-      "typeVersion": 1.2,
-      "position": [
-        0,
-        256
-      ],
-      "id": "770fc477-fc62-4370-a608-e3d7873736f4",
-      "name": "Schedule Trigger"
     },
     {
       "parameters": {
@@ -508,6 +491,74 @@
       ],
       "id": "388dcf52-f39b-4a2c-b7f4-b76bab396bb6",
       "name": "Course type"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "d0bc0adf-07a0-4c29-af4d-f88d9910d16a",
+        "authentication": "headerAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -16,
+        240
+      ],
+      "id": "a0bdaba4-bf00-44a1-ba30-c5e56257f239",
+      "name": "Webhook",
+      "webhookId": "d0bc0adf-07a0-4c29-af4d-f88d9910d16a",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "WwlGKLCrVwJHzSyW",
+          "name": "Academy webhook"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "executionId",
+              "value": "={{ $execution.id }}",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "status",
+              "value": "processing",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0c218a3f-d61b-43f3-8e63-89e1f062dc09",
+      "name": "Early Response Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        336,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {}
+      },
+      "id": "e6ea6e80-464f-4c28-a250-59443cb9e11b",
+      "name": "Early Respond with ExecutionId",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        624,
+        16
+      ]
     }
   ],
   "connections": {
@@ -527,17 +578,6 @@
         [
           {
             "node": "Lesson creator",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Schedule Trigger": {
-      "main": [
-        [
-          {
-            "node": "Course type",
             "type": "main",
             "index": 0
           }
@@ -687,6 +727,33 @@
           }
         ]
       ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Course type",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Early Response Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Early Response Data": {
+      "main": [
+        [
+          {
+            "node": "Early Respond with ExecutionId",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -701,12 +768,12 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "5ceced55-fe07-4007-85c1-f146091767c9",
+  "versionId": "d0711e2c-a1df-4409-9721-439c484c3882",
   "triggerCount": 1,
   "shared": [
     {
-      "createdAt": "2025-05-26T09:15:58.853Z",
       "updatedAt": "2025-05-26T09:15:58.853Z",
+      "createdAt": "2025-05-26T09:15:58.853Z",
       "role": "workflow:owner",
       "workflowId": "cIyAT2GKM5Ng1Wwa",
       "projectId": "SFLNAzqJIfhKMhJx"
@@ -714,8 +781,8 @@
   ],
   "tags": [
     {
-      "createdAt": "2025-03-18T13:45:14.553Z",
       "updatedAt": "2025-03-18T13:45:14.553Z",
+      "createdAt": "2025-03-18T13:45:14.553Z",
       "id": "6pOUCPP24FxgjbZJ",
       "name": "Kursus"
     }
