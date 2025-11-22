@@ -1,0 +1,442 @@
+{
+  "updatedAt": "2025-11-21T06:57:21.000Z",
+  "createdAt": "2025-11-21T05:32:33.932Z",
+  "id": "nphu3smdVLhfFGnv",
+  "name": "Generate SWOT Analysis from PESTLE Input",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "swot-generation-webhook",
+        "authentication": "headerAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "c4853375-0033-4c6a-b47b-b818ce729b59",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        176,
+        128
+      ],
+      "webhookId": "b71816b3-b312-4b15-8fc4-9ea15648e704",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "WwlGKLCrVwJHzSyW",
+          "name": "Academy webhook"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "swot_definitions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{ $('Webhook Trigger').item.json.body.swot_definition_id }}"
+            }
+          ]
+        }
+      },
+      "id": "4c93cc04-73d8-42f2-8759-3b9e465a6880",
+      "name": "Get SWOT Data",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        608,
+        128
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "bvMVIJLed9p3sKxS",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=ROLLE\nDu er en forretningsanalytiker med speciale i intern virksomhedsanalyse.\nDu udarbejder \"Strengths\" (Styrker) og \"Weaknesses\" (Svagheder) delen af en SWOT-analyse.\n\nINPUT\nDu har følgende information om organisationen:\n\n- Navn: {{ $json[\"org_name\"] }}\n- Type/Branche: {{ $json[\"org_type\"] }} / {{ $json[\"org_industry\"] }}\n- Interne ressourcer (input): {{ $json[\"internal_resources\"] }}\n- Interne kompetencer/evner (input): {{ $json[\"internal_capabilities\"] }}\n- Kendte interne udfordringer (input): {{ $json[\"internal_challenges\"] }}\n- Formål med analysen: {{ $json[\"analysis_objective\"] }}\n\nOPGAVE\nAnalyser de interne input og identificer de vigtigste Styrker og Svagheder.\n\nLEVERING\nSprog: {{ $json[\"analysis_language\"] }}\nFormat: Markdown\n\n### S: Styrker (Strengths)\nIdentificer 3-5 kernestyrker. Fokusér på:\n- Hvad gør organisationen bedre end andre?\n- Unikke ressourcer eller kompetencer.\n- Positive finansielle eller strukturelle forhold.\n\n### W: Svagheder (Weaknesses)\nIdentificer 3-5 kernesvagheder. Fokusér på:\n- Hvor mangler organisationen ressourcer?\n- Hvilke processer eller kompetencer er under standard?\n- Hvad vil konkurrenter se som sårbarheder?\n\nVær ærlig og direkte.",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "={{ $('Systemprompt').item.json.Systemprompt }}"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        1072,
+        128
+      ],
+      "id": "371e7c69-5233-4e96-8ed7-d3c2b2cc8984",
+      "name": "S & W: Internal Analysis"
+    },
+    {
+      "parameters": {
+        "model": "google/gemini-3-pro-preview",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1216,
+        400
+      ],
+      "id": "825aede8-b24a-45d6-b954-4c460faacf81",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "0zn5wOZxvTwrpo6y",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "sys-prompt-id",
+              "name": "Systemprompt",
+              "value": "Du er en professionel strategikonsulent. Du skriver klart, præcist og struktureret i Markdown. Du baserer dig kun på de givne informationer.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        384,
+        128
+      ],
+      "id": "75d256fb-b75b-478d-882c-c222516db5d3",
+      "name": "Systemprompt"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=ROLLE\nDu er markeds- og strategianalytiker.\nDu udarbejder \"Opportunities\" (Muligheder) og \"Threats\" (Trusler) delen af en SWOT-analyse.\n\nINPUT\n1. Organisation: {{ $('Get SWOT Data').item.json.org_name }} ({{ $('Get SWOT Data').item.json.org_industry }})\n2. **PESTLE Analyse (Din primære kilde):**\n{{ $('Get SWOT Data').item.json.pestle_analysis_input }}\n\nOPGAVE\nDin opgave er at \"oversætte\" de eksterne faktorer fra PESTLE-analysen til konkrete strategiske Muligheder og Trusler for denne specifikke organisation.\n\nLEVERING\nSprog: {{ $('Get SWOT Data').item.json.analysis_language }}\nFormat: Markdown\n\n### O: Muligheder (Opportunities)\nUdvælg de 3-5 mest lovende muligheder fra PESTLE-analysen. (Fx markedsvækst, ny teknologi, lovændringer der gavner os).\n- **Titel**\n- **Hvorfor er det en mulighed?** (Kobl det direkte til PESTLE-fundet)\n\n### T: Trusler (Threats)\nUdvælg de 3-5 mest kritiske trusler fra PESTLE-analysen. (Fx nye regulativer, økonomisk nedgang, skiftende forbrugeradfærd).\n- **Titel**\n- **Hvorfor er det en trussel?** (Kobl det direkte til PESTLE-fundet)\n\nVIGTIGT: Du må ikke opfinde nye data. Brug PESTLE-analysen som evidens.",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "={{ $('Systemprompt').item.json.Systemprompt }}"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        1536,
+        128
+      ],
+      "id": "0e1b4196-472d-40f8-ac4b-c68d5e9f6c48",
+      "name": "O & T: External Analysis (from PESTLE)"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=ROLLE\nDu er chefredaktør og strategisk rådgiver.\nDu skal samle input fra interne (S/W) og eksterne (O/T) analyser til en færdig SWOT-rapport.\n\nINPUT\n1. Interne forhold (S/W): {{ $('S & W: Internal Analysis').item.json.text }}\n2. Eksterne forhold fra PESTLE (O/T): {{ $('O & T: External Analysis (from PESTLE)').item.json.text }}\n3. Kontekst: {{ $('Get SWOT Data').item.json.org_name }}, Formål: {{ $('Get SWOT Data').item.json.analysis_objective }}\n\nOPGAVE\nLav den endelige SWOT-analyse og tilføj en strategisk konklusion (TOWS-tankegang).\n\nLEVERING\nSprog: {{ $('Get SWOT Data').item.json.analysis_language }}\nFormat: Markdown\n\n# SWOT Analyse: {{ $('Get SWOT Data').item.json.org_name }}\n\n## 1. Overblik (SWOT Matrix)\nOpstil de 4 elementer klart (brug gerne punktopstillinger under overskrifterne Strengths, Weaknesses, Opportunities, Threats).\n\n## 2. Strategisk Analyse (Syntese)\nHer skal du koble punkterne sammen:\n- **Udnyt styrker til at gribe muligheder:** (Hvordan kan virksomheden bruge sine styrker til at aktivere mulighederne fra PESTLE?)\n- **Minimer svagheder for at undgå trusler:** (Hvor er virksomheden mest sårbar, og hvad skal fikses?)\n- **Konverter trusler:** (Kan styrker bruges til at afværge trusler?)\n\n## 3. Anbefalinger\n3 konkrete strategiske tiltag baseret på analysen.\n\nHold tonen professionel og handlingsorienteret.",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "={{ $('Systemprompt').item.json.Systemprompt }}"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        1984,
+        128
+      ],
+      "id": "4aa20dd2-21d8-42ca-b664-c958959892ed",
+      "name": "SWOT Editor & Strategy"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "swot_definitions",
+          "mode": "list",
+          "cachedResultName": "swot_definitions"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Get SWOT Data').item.json.id }}",
+            "swot_final_result": "={{ $json.text }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "swot_final_result",
+              "displayName": "swot_final_result",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2448,
+        128
+      ],
+      "id": "090f900b-4e33-47cd-8773-c241af765a60",
+      "name": "Update Supabase",
+      "credentials": {
+        "postgres": {
+          "id": "RUVxlMmZvsZC2IGe",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {}
+      },
+      "id": "8daac76d-0a63-4a05-9543-a4b7c4997a06",
+      "name": "Early Respond with ExecutionId",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        704,
+        -160
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "executionId",
+              "value": "={{ $execution.id }}",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "status",
+              "value": "processing",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0b91d3c5-2a5a-4f50-9b5d-4fbd96caacc8",
+      "name": "Early Response Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        384,
+        -160
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Systemprompt",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Early Response Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get SWOT Data": {
+      "main": [
+        [
+          {
+            "node": "S & W: Internal Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "S & W: Internal Analysis": {
+      "main": [
+        [
+          {
+            "node": "O & T: External Analysis (from PESTLE)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "S & W: Internal Analysis",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "O & T: External Analysis (from PESTLE)",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "SWOT Editor & Strategy",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Systemprompt": {
+      "main": [
+        [
+          {
+            "node": "Get SWOT Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "O & T: External Analysis (from PESTLE)": {
+      "main": [
+        [
+          {
+            "node": "SWOT Editor & Strategy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SWOT Editor & Strategy": {
+      "main": [
+        [
+          {
+            "node": "Update Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Early Response Data": {
+      "main": [
+        [
+          {
+            "node": "Early Respond with ExecutionId",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Webhook Trigger": [
+      {
+        "json": {
+          "headers": {
+            "host": "utilco.app.n8n.cloud",
+            "user-agent": "node",
+            "content-length": "61",
+            "accept": "application/json",
+            "accept-encoding": "gzip, br",
+            "accept-language": "*",
+            "cdn-loop": "netlify, cloudflare; loops=1; subreqs=1",
+            "cf-connecting-ip": "3.67.186.142",
+            "cf-ew-via": "15",
+            "cf-ipcountry": "DE",
+            "cf-ray": "9a1e45d5c1343655-FRA",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "cf-worker": "n8n.cloud",
+            "content-type": "application/json",
+            "sec-fetch-mode": "cors",
+            "x-forwarded-for": "3.67.186.142, 162.158.110.131",
+            "x-forwarded-host": "utilco.app.n8n.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "traefik-prod-users-gwc-10-6888ffdd77-zl6sm",
+            "x-is-trusted": "yes",
+            "x-real-ip": "3.67.186.142",
+            "x-webhook-secret": "vczUfUpZhtQkJXFoP6hN"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "swot_definition_id": "b64162ff-1920-4ff9-ba45-dc0067a494fb"
+          },
+          "webhookUrl": "https://utilco.app.n8n.cloud/webhook/swot-generation-webhook",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "versionId": "fcc1b394-4fff-48c3-b371-96a1ae1ead21",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-11-21T05:32:33.937Z",
+      "createdAt": "2025-11-21T05:32:33.937Z",
+      "role": "workflow:owner",
+      "workflowId": "nphu3smdVLhfFGnv",
+      "projectId": "SFLNAzqJIfhKMhJx"
+    }
+  ],
+  "tags": []
+}
