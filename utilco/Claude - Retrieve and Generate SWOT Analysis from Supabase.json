@@ -1,0 +1,503 @@
+{
+  "updatedAt": "2025-11-21T05:34:58.000Z",
+  "createdAt": "2025-11-21T05:34:58.432Z",
+  "id": "WzxPJ1C77rDmiU5K",
+  "name": "Claude - Retrieve and Generate SWOT Analysis from Supabase",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "swot-analysis-webhook",
+        "authentication": "headerAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "e255c6b1-61f3-4701-aa59-1a100c3decd5",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -96,
+        192
+      ],
+      "webhookId": "swot-webhook-id",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "WwlGKLCrVwJHzSyW",
+          "name": "Academy webhook"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "swot_definitions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{ $('Webhook Trigger').item.json.body.swot_definition_id }}"
+            }
+          ]
+        }
+      },
+      "id": "ca6c9421-8626-466c-ad18-68eb75c826a0",
+      "name": "Get SWOT Definition",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        208,
+        192
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "bvMVIJLed9p3sKxS",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "system-prompt-id",
+              "name": "Systemprompt",
+              "value": "Du skal lave en grundig SWOT-analyse:\n- Identificere 5-7 vigtigste forhold i hver kategori (Styrker, Svagheder, Muligheder, Trusler)\n- Koble hvert forhold direkte til organisationen\n- Kvantificere eller kvalificere påvirkningen hvor muligt\n- Give konkrete handlingsanbefalinger\n- Henvise til kilder og data",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        400,
+        384
+      ],
+      "id": "6f557883-9e20-49a3-943f-ac8f2ce6c6aa",
+      "name": "Systemprompt"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=ROLLE\nDu er en strategisk analytiker, der laver baggrundsresearch til en SWOT-analyse.\nDu har adgang til internetsøgning.\n\nINPUT\nDu får følgende input fra en formular (brugersvar):\n\n- Organisation: {{ $json[\"org_name\"] }}\n- Type: {{ $json[\"org_type\"] }}\n- Beskrivelse: {{ $json[\"org_description\"] }}\n- Branche/sektor: {{ $json[\"org_industry\"] }}\n- Marked: {{ $json[\"market_geography\"] }}\n- Konkurrenter: {{ $json[\"main_competitors\"] }}\n- Kerneaktiviteter: {{ $json[\"core_activities\"] }}\n- Ressourcer: {{ $json[\"key_resources\"] }}\n- Strategiske mål: {{ $json[\"strategic_goals\"] }}\n- Analyseformål: {{ $json[\"analysis_purpose\"] }}\n- Tidshorisont: {{ $json[\"time_horizon\"] }}\n- PESTLE analyse (hvis tilgængelig): {{ $json[\"pestle_analysis\"] }}\n- Sprog: {{ $json[\"analysis_language\"] }}\n\nOPGAVE\n1. Brug internetsøgning til at finde relevant, opdateret information om:\n   - Organisationen (hjemmeside, årsrapporter, pressemeddelelser)\n   - Branchen og markedstendenser\n   - Konkurrentlandskabet\n   - Teknologiske og regulatoriske forhold\n2. Lav en faktabaseret baggrundsbeskrivelse som grundlag for SWOT-analysen.\n\nLEVERING\nSkriv i sproget: {{ $json[\"analysis_language\"] }}.\nSkriv i Markdown med denne struktur:\n\n### Organisationsprofil\n- Hovedaktiviteter og værdikæde\n- Markedsposition og markedsandel\n- Nøgleressourcer og kompetencer\n- Økonomiske nøgletal (hvis tilgængelige)\n\n### Markedskontekst\n- Brancheudvikling og trends\n- Konkurrentanalyse\n- Kundesegmenter og -behov\n- Værdikædedynamikker\n\n### Strategisk kontekst\n- Nuværende strategi og prioriteter\n- Tidligere strategiske beslutninger og resultater\n- Kritiske succesfaktorer i branchen\n\n### Eksterne faktorer (fra PESTLE hvis tilgængelig)\n- Opsummering af vigtigste eksterne påvirkninger\n- Kobling til organisationens strategiske situation\n\n### Kilder\n- Punktliste med de vigtigste kilder og links (max 10)\n- Kort beskrivelse af hver kildes bidrag\n\nFokuser på fakta og undgå spekulation. Marker usikkerheder tydeligt.",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "={{ $('Systemprompt').item.json.Systemprompt }}"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        608,
+        192
+      ],
+      "id": "78a70b9c-b927-4e49-9797-a2caf864d490",
+      "name": "Baggrundsinformation"
+    },
+    {
+      "parameters": {
+        "model": "google/gemini-3-pro-preview",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        704,
+        448
+      ],
+      "id": "85f3c1ec-8062-46cf-8193-56a99ece051b",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "0zn5wOZxvTwrpo6y",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=ROLLE\nDu er en intern strategisk analytiker.\nDu laver \"Strengths\" (Styrker) delen af en SWOT-analyse.\n\nINPUT\n1) Baggrundsnote om organisationen:\n{{ $('Baggrundsinformation').item.json.text }}\n\n2) Formularfelter:\n- Organisation: {{ $json.org_name }}\n- Kerneaktiviteter: {{ $json.core_activities }}\n- Nøgleressourcer: {{ $json.key_resources }}\n- Unikke kompetencer: {{ $json.unique_capabilities }}\n- Succesfaktorer: {{ $json.success_factors }}\n- Tidshorisont: {{ $json.time_horizon }}\n- Sprog: {{ $json.analysis_language }}\n\nOPGAVE\nAnalyser organisationens interne styrker - de positive, kontrollerbare faktorer der giver konkurrencefordele.\n\nFokusområder:\n- Ressourcer (fysiske, finansielle, menneskelige, teknologiske)\n- Kompetencer og kapabiliteter\n- Markedsposition og brand\n- Organisationskultur og processer\n- Teknologi og innovation\n- Relationer og netværk\n\nLEVERING\nSkriv i sproget: {{ $json.analysis_language }}.\nSkriv i Markdown med følgende struktur:\n\n### S: Styrker - overblik\nKort opsummering (3-5 sætninger) af de vigtigste interne styrker.\n\n### Centrale styrker (5-7 punkter)\nFor hver styrke:\n\n- **Styrke:** [Præcis titel]\n- **Beskrivelse:** Hvad består styrken af?\n- **Evidens:** Konkrete eksempler eller data der understøtter dette\n- **Konkurrencefordel:** Hvordan skaber dette værdi ift. konkurrenter?\n- **Bæredygtighed:** Hvor holdbar er denne styrke over tid?\n- **Strategisk betydning:** Hvordan kan styrken udnyttes fremadrettet?\n- **Score:** [1-5, hvor 5 er mest kritisk styrke]\n\n### Sammenhæng og synergi\n- Hvordan forstærker styrkerne hinanden?\n- Hvilke styrker er mest kritiske for strategien?\n\n### Datakilder\n- Liste over kilder brugt til at identificere styrker\n- Intern vs. ekstern validering\n\nVær specifik og undgå generiske påstande. Fokuser på det der virkelig differentierer organisationen.",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "={{ $('Systemprompt').item.json.Systemprompt }}"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        912,
+        192
+      ],
+      "id": "f6853654-4804-4cbd-8a64-36ee7743935a",
+      "name": "S: Strengths"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=ROLLE\nDu er en kritisk intern revisor.\nDu laver \"Weaknesses\" (Svagheder) delen af en SWOT-analyse.\n\nINPUT\n1) Baggrundsnote om organisationen:\n{{ $('Baggrundsinformation').item.json.text }}\n\n2) Styrker-analyse:\n{{ $('S: Strengths').item.json.text }}\n\n3) Formularfelter:\n- Organisation: {{ $('Get SWOT Definition').item.json.org_name }}\n- Kendte udfordringer: {{ $('Get SWOT Definition').item.json.known_challenges }}\n- Ressourcebegrænsninger: {{ $('Get SWOT Definition').item.json.resource_constraints }}\n- Kompetencegab: {{ $('Get SWOT Definition').item.json.competency_gaps }}\n- Tidshorisont: {{ $('Get SWOT Definition').item.json.time_horizon }}\n- Sprog: {{ $('Get SWOT Definition').item.json.analysis_language }}\n\nOPGAVE\nAnalyser organisationens interne svagheder - områder der begrænser præstation eller konkurrenceevne.\n\nFokusområder:\n- Ressourcemangel eller -kvalitet\n- Kompetencegab og manglende kapabiliteter\n- Processer og systemer der ikke fungerer optimalt\n- Organisatoriske barrierer\n- Teknologisk efterslæb\n- Finansielle begrænsninger\n- Kulturelle udfordringer\n\nLEVERING\nSkriv i sproget: {{ $('Get SWOT Definition').item.json.analysis_language }}.\nSkriv i Markdown med følgende struktur:\n\n### W: Svagheder - overblik\nKort opsummering (3-5 sætninger) af de mest kritiske interne svagheder.\n\n### Centrale svagheder (5-7 punkter)\nFor hver svaghed:\n\n- **Svaghed:** [Præcis titel]\n- **Beskrivelse:** Hvad består svagheden af?\n- **Konsekvenser:** Hvordan påvirker det organisationens præstation?\n- **Årsager:** Hvorfor eksisterer denne svaghed?\n- **Sammenligning:** Hvordan står vi ift. konkurrenter på dette område?\n- **Forbedringsmuligheder:** Kan svagheden adresseres? Hvordan?\n- **Kritikalitet:** [1-5, hvor 5 er mest kritisk svaghed]\n- **Tidsfaktor:** Hvor hurtigt skal dette adresseres?\n\n### Systemiske udfordringer\n- Er der mønstre eller grundlæggende årsager til flere svagheder?\n- Hvilke svagheder forstærker hinanden negativt?\n\n### Prioritering\n- Top 3 svagheder der kræver øjeblikkelig handling\n- Svagheder der kan blive kritiske på sigt\n\n### Datakilder\n- Interne evalueringer og målinger\n- Eksterne vurderinger\n- Benchmarking data\n\nVær ærlig men konstruktiv. Fokuser på områder hvor forbedring er mulig og vil gøre en forskel.",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "={{ $('Systemprompt').item.json.Systemprompt }}"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        1200,
+        192
+      ],
+      "id": "1e16d781-f6e7-4bda-9bf3-4903fff6bb78",
+      "name": "W: Weaknesses"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=ROLLE\nDu er en ekstern markedsanalytiker.\nDu laver \"Opportunities\" (Muligheder) delen af en SWOT-analyse.\n\nINPUT\n1) Baggrundsnote:\n{{ $('Baggrundsinformation').item.json.text }}\n\n2) Styrker der kan udnyttes:\n{{ $('S: Strengths').item.json.text }}\n\n3) PESTLE-analyse (eksterne faktorer):\n{{ $('Get SWOT Definition').item.json.pestle_analysis }}\n\n4) Formularfelter:\n- Organisation: {{ $('Get SWOT Definition').item.json.org_name }}\n- Marked: {{ $('Get SWOT Definition').item.json.market_geography }}\n- Vækstområder: {{ $('Get SWOT Definition').item.json.growth_areas }}\n- Emerging trends: {{ $('Get SWOT Definition').item.json.emerging_trends }}\n- Tidshorisont: {{ $('Get SWOT Definition').item.json.time_horizon }}\n- Sprog: {{ $('Get SWOT Definition').item.json.analysis_language }}\n\nOPGAVE\nIdentificer eksterne muligheder som organisationen kan udnytte.\nBrug særligt PESTLE-analysen til at identificere muligheder fra:\n- Politiske forhold (nye støtteordninger, politisk fokus)\n- Økonomiske trends (vækst, investeringer)\n- Sociale ændringer (nye behov, adfærd)\n- Teknologiske fremskridt (nye løsninger, digitalisering)\n- Juridiske ændringer (deregulering, nye standarder)\n- Miljømæssige forhold (grøn omstilling, bæredygtighed)\n\nLEVERING\nSkriv i sproget: {{ $('Get SWOT Definition').item.json.analysis_language }}.\nSkriv i Markdown med følgende struktur:\n\n### O: Muligheder - overblik\nKort opsummering (3-5 sætninger) af de mest lovende eksterne muligheder.\n\n### Centrale muligheder (5-7 punkter)\nFor hver mulighed:\n\n- **Mulighed:** [Præcis titel]\n- **Beskrivelse:** Hvad består muligheden af?\n- **PESTLE-kobling:** Hvilke eksterne faktorer driver denne mulighed?\n- **Markedspotentiale:** Størrelse, vækstrate, tilgængelighed\n- **Strategisk fit:** Hvordan matcher det vores styrker?\n- **Ressourcekrav:** Hvad kræves for at udnytte muligheden?\n- **Tidsvindue:** Hvor lang tid har vi til at agere?\n- **Sandsynlighed:** [Lav/Medium/Høj]\n- **Potentiel værdi:** [1-5, hvor 5 er højest]\n\n### Strategiske valg\n- Hvilke muligheder bør prioriteres først?\n- Hvordan kan flere muligheder kombineres?\n- Trade-offs mellem forskellige muligheder\n\n### Forudsætninger\n- Hvad skal være på plads for at realisere mulighederne?\n- Eksterne faktorer der skal overvåges\n- Kritiske succesfaktorer\n\n### Referencer til PESTLE\n- Direkte koblinger til PESTLE-analysens findings\n- Hvordan eksterne trends skaber muligheder\n\nVær konkret og realistisk om hvad der faktisk kan opnås inden for tidshorisonten.",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "={{ $('Systemprompt').item.json.Systemprompt }}"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        1504,
+        192
+      ],
+      "id": "23a6a4e1-4f31-4ad4-8c99-011799a0d378",
+      "name": "O: Opportunities"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=ROLLE\nDu er en risikoanalytiker.\nDu laver \"Threats\" (Trusler) delen af en SWOT-analyse.\n\nINPUT\n1) Baggrundsnote:\n{{ $('Baggrundsinformation').item.json.text }}\n\n2) Svagheder der kan forværres:\n{{ $('W: Weaknesses').item.json.text }}\n\n3) PESTLE-analyse (eksterne faktorer):\n{{ $('Get SWOT Definition').item.json.pestle_analysis }}\n\n4) Formularfelter:\n- Organisation: {{ $('Get SWOT Definition').item.json.org_name }}\n- Konkurrenter: {{ $('Get SWOT Definition').item.json.main_competitors }}\n- Kendte risici: {{ $('Get SWOT Definition').item.json.known_risks }}\n- Disruptive faktorer: {{ $('Get SWOT Definition').item.json.disruptive_factors }}\n- Tidshorisont: {{ $('Get SWOT Definition').item.json.time_horizon }}\n- Sprog: {{ $('Get SWOT Definition').item.json.analysis_language }}\n\nOPGAVE\nIdentificer eksterne trusler som kan skade organisationen.\nBrug særligt PESTLE-analysen til at identificere trusler fra:\n- Politisk ustabilitet eller ugunstige politikker\n- Økonomiske nedgange eller markedsændringer\n- Sociale skift væk fra vores værdier/produkter\n- Teknologisk disruption eller efterslæb\n- Juridiske skærpelser eller compliance-krav\n- Miljøkrav eller klimaændringer\n\nLEVERING\nSkriv i sproget: {{ $('Get SWOT Definition').item.json.analysis_language }}.\nSkriv i Markdown med følgende struktur:\n\n### T: Trusler - overblik\nKort opsummering (3-5 sætninger) af de mest kritiske eksterne trusler.\n\n### Centrale trusler (5-7 punkter)\nFor hver trussel:\n\n- **Trussel:** [Præcis titel]\n- **Beskrivelse:** Hvad består truslen af?\n- **PESTLE-kobling:** Hvilke eksterne faktorer driver denne trussel?\n- **Påvirkningsområder:** Hvilke dele af organisationen rammes?\n- **Sårbarhed:** Hvordan forstærker vores svagheder denne trussel?\n- **Sandsynlighed:** [Lav/Medium/Høj]\n- **Konsekvens:** [1-5, hvor 5 er mest alvorlig]\n- **Tidslinje:** Hvornår kan truslen materialisere sig?\n- **Early warning signs:** Hvad skal vi holde øje med?\n\n### Risikomatrix\n- Høj sandsynlighed + Høj konsekvens = Kritiske trusler\n- Prioriteret liste over trusler efter risiko\n\n### Mitigeringsstrategier\n- Hvordan kan hver trussel imødegås eller reduceres?\n- Hvilke styrker kan bruges defensivt?\n- Nødvendige beredskabsplaner\n\n### Sammenhæng med PESTLE\n- Direkte referencer til PESTLE-analysens risikoidentifikation\n- Hvordan eksterne trends skaber trusler\n- Kombinationseffekter mellem forskellige PESTLE-faktorer\n\n### Overvågning\n- KPI'er og indikatorer for hver trussel\n- Informationskilder at følge\n- Beslutningspunkter\n\nVær realistisk men ikke alarmistisk. Fokuser på trusler der kræver handling eller forberedelse.",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "={{ $('Systemprompt').item.json.Systemprompt }}"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        1808,
+        192
+      ],
+      "id": "90d67b18-cb4c-4735-8368-ddb29c11daf7",
+      "name": "T: Threats"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=ROLLE\nDu er chefstrateg og skal sammenfatte og kvalitetssikre SWOT-analysen.\n\nINPUT - alle SWOT-komponenter:\n1) Baggrundsinformation:\n{{ $('Baggrundsinformation').item.json.text }}\n\n2) Strengths:\n{{ $('S: Strengths').item.json.text }}\n\n3) Weaknesses:\n{{ $('W: Weaknesses').item.json.text }}\n\n4) Opportunities:\n{{ $('O: Opportunities').item.json.text }}\n\n5) Threats:\n{{ $('T: Threats').item.json.text }}\n\n6) Analyseformål: {{ $('Get SWOT Definition').item.json.analysis_purpose }}\n7) Organisation: {{ $('Get SWOT Definition').item.json.org_name }}\n8) Tidshorisont: {{ $('Get SWOT Definition').item.json.time_horizon }}\n9) Strategiske mål: {{ $('Get SWOT Definition').item.json.strategic_goals }}\n10) Sprog: {{ $('Get SWOT Definition').item.json.analysis_language }}\n11) Tone: {{ $('Get SWOT Definition').item.json.analysis_tone }}\n12) Max ord: {{ $('Get SWOT Definition').item.json.max_words }}\n\nOPGAVE\n1. Gennemgå alle fire SWOT-komponenter for kvalitet og sammenhæng\n2. Identificer de vigtigste strategiske indsigter\n3. Lav TOWS-matrix med strategiske handlinger\n4. Formuler konkrete anbefalinger\n5. Lav en sammenhængende, velskrevet endelig rapport\n\nLEVERING\nSkriv i sproget: {{ $('Get SWOT Definition').item.json.analysis_language }}.\nTone: {{ $('Get SWOT Definition').item.json.analysis_tone }}.\nMaksimalt {{ $('Get SWOT Definition').item.json.max_words }} ord.\n\nStruktur i Markdown:\n\n# SWOT-analyse: {{ $('Get SWOT Definition').item.json.org_name }}\n\n## Executive Summary\n[Kort opsummering af hovedkonklusioner og anbefalinger - max 200 ord]\n\n## SWOT Matrix\n\n### Styrker (Interne +)\n[Top 5-7 styrker i prioriteret punktform]\n\n### Svagheder (Interne -)\n[Top 5-7 svagheder i prioriteret punktform]\n\n### Muligheder (Eksterne +)\n[Top 5-7 muligheder i prioriteret punktform]\n\n### Trusler (Eksterne -)\n[Top 5-7 trusler i prioriteret punktform]\n\n## TOWS Strategisk Matrix\n\n### SO-Strategier (Styrke-Mulighed)\n[Hvordan bruge styrker til at udnytte muligheder]\n\n### WO-Strategier (Svaghed-Mulighed)\n[Hvordan overvinde svagheder ved at udnytte muligheder]\n\n### ST-Strategier (Styrke-Trussel)\n[Hvordan bruge styrker til at imødegå trusler]\n\n### WT-Strategier (Svaghed-Trussel)\n[Hvordan minimere svagheder og undgå trusler]\n\n## Strategiske Prioriteter\n\n### Øjeblikkelig handling (0-6 måneder)\n[3-5 konkrete initiativer]\n\n### Kort sigt (6-12 måneder)\n[3-5 konkrete initiativer]\n\n### Mellemlang sigt (1-3 år)\n[3-5 konkrete initiativer]\n\n## Kritiske Succesfaktorer\n[5 faktorer der skal være på plads for succes]\n\n## Risici og Mitigering\n[Top 3 risici og hvordan de håndteres]\n\n## Implementeringsplan\n[Konkrete næste skridt, ansvarlige, deadlines]\n\n## Konklusion\n[Samlet vurdering og call-to-action]\n\n---\n*Analyse udført: [dato]*\n*Næste revision: [dato]*\n\nSkriv professionelt, konkret og handlingsorienteret. Undgå gentagelser mellem sektioner.",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "={{ $('Systemprompt').item.json.Systemprompt }}"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        2112,
+        192
+      ],
+      "id": "541dac94-c0db-460f-b893-00e63b498559",
+      "name": "SWOT Editor/Sammenfatning"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "swot_analyses",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "swot_definition_id",
+              "keyValue": "={{ $('Get SWOT Definition').item.json.id }}"
+            }
+          ]
+        }
+      },
+      "id": "7cee65a8-e93e-4713-ae14-af456d1584b8",
+      "name": "Update SWOT Analysis",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2400,
+        192
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "bvMVIJLed9p3sKxS",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"success\": true,\n  \"message\": \"SWOT analysis completed successfully\",\n  \"swot_definition_id\": \"{{ $('Get SWOT Definition').item.json.id }}\",\n  \"execution_id\": \"{{ $execution.id }}\",\n  \"timestamp\": \"{{ $now.toISO() }}\"\n}",
+        "options": {}
+      },
+      "id": "21bdc817-ec63-438f-9160-54a741e3203b",
+      "name": "Webhook Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        2704,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "early-response",
+              "name": "response",
+              "value": "={{ { \"execution_id\": $execution.id, \"status\": \"processing\", \"message\": \"SWOT analysis started\" } }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "23a0015c-cdb5-4ba0-b8db-212c6b3ce710",
+      "name": "Early Response Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        400,
+        -16
+      ],
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseCode": 202
+        }
+      },
+      "id": "d73cada1-903a-43a4-a645-fe790e251e86",
+      "name": "Early Respond with ExecutionId",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        608,
+        -16
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get SWOT Definition",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Early Response Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get SWOT Definition": {
+      "main": [
+        [
+          {
+            "node": "Baggrundsinformation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Systemprompt": {
+      "main": [
+        [
+          {
+            "node": "Get SWOT Definition",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Baggrundsinformation",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "S: Strengths",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "W: Weaknesses",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "O: Opportunities",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "T: Threats",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "SWOT Editor/Sammenfatning",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Baggrundsinformation": {
+      "main": [
+        [
+          {
+            "node": "S: Strengths",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "S: Strengths": {
+      "main": [
+        [
+          {
+            "node": "W: Weaknesses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "W: Weaknesses": {
+      "main": [
+        [
+          {
+            "node": "O: Opportunities",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "O: Opportunities": {
+      "main": [
+        [
+          {
+            "node": "T: Threats",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T: Threats": {
+      "main": [
+        [
+          {
+            "node": "SWOT Editor/Sammenfatning",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SWOT Editor/Sammenfatning": {
+      "main": [
+        [
+          {
+            "node": "Update SWOT Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update SWOT Analysis": {
+      "main": [
+        [
+          {
+            "node": "Webhook Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Early Response Data": {
+      "main": [
+        [
+          {
+            "node": "Early Respond with ExecutionId",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "21c5ec54-e558-4987-92ac-39ea0b9cd881",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2025-11-21T05:34:58.437Z",
+      "createdAt": "2025-11-21T05:34:58.437Z",
+      "role": "workflow:owner",
+      "workflowId": "WzxPJ1C77rDmiU5K",
+      "projectId": "SFLNAzqJIfhKMhJx"
+    }
+  ],
+  "tags": []
+}
