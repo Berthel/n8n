@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2025-11-13T11:30:16.000Z",
+  "updatedAt": "2025-11-22T13:49:48.000Z",
   "createdAt": "2025-07-31T07:32:55.692Z",
   "id": "VA0dFZ33EsLIgmkN",
   "name": "Universal Image Creator v2",
@@ -873,36 +873,36 @@
           "headers": {
             "host": "utilco.app.n8n.cloud",
             "user-agent": "node",
-            "content-length": "168",
+            "content-length": "174",
             "accept": "*/*",
             "accept-encoding": "gzip, br",
             "accept-language": "*",
             "cdn-loop": "netlify, cloudflare; loops=1; subreqs=1",
-            "cf-connecting-ip": "35.159.250.13",
+            "cf-connecting-ip": "3.76.118.78",
             "cf-ew-via": "15",
             "cf-ipcountry": "DE",
-            "cf-ray": "99adec06d3e318c3-FRA",
+            "cf-ray": "9a28dbd101ae4db6-FRA",
             "cf-visitor": "{\"scheme\":\"https\"}",
             "cf-worker": "n8n.cloud",
             "content-type": "application/json",
             "sec-fetch-mode": "cors",
-            "x-forwarded-for": "35.159.250.13, 162.158.110.131",
+            "x-forwarded-for": "3.76.118.78, 172.69.151.56",
             "x-forwarded-host": "utilco.app.n8n.cloud",
             "x-forwarded-port": "443",
             "x-forwarded-proto": "https",
             "x-forwarded-server": "traefik-prod-users-gwc-10-6888ffdd77-9vgr4",
             "x-is-trusted": "yes",
-            "x-real-ip": "35.159.250.13",
+            "x-real-ip": "3.76.118.78",
             "x-webhook-secret": "vczUfUpZhtQkJXFoP6hN"
           },
           "params": {},
           "query": {},
           "body": {
-            "webhook_data": " Billedstil: Abstrakt",
+            "webhook_data": " Billedstil: Fotorealistisk",
             "direct_prompt": false,
-            "course_id": "a89f4ffc-2e63-47eb-9af0-0d085ea574ce",
+            "module_id": "9eb1b38e-8a6f-4b2f-9be6-fb1ff0fdb58c",
             "image_width": 1024,
-            "image_height": 768,
+            "image_height": 576,
             "model": "banana"
           },
           "webhookUrl": "https://utilco.app.n8n.cloud/webhook/23075b57-e528-4636-936f-b2273bd3750b",
@@ -911,7 +911,7 @@
       }
     ]
   },
-  "versionId": "0746a4d1-e804-420b-8709-4a9c5067eab5",
+  "versionId": "23e4bfe9-15be-4f7e-a38c-874569c68265",
   "triggerCount": 1,
   "shared": [
     {
