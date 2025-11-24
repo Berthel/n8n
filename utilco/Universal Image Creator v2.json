@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2025-11-22T13:49:48.000Z",
+  "updatedAt": "2025-11-23T11:01:30.000Z",
   "createdAt": "2025-07-31T07:32:55.692Z",
   "id": "VA0dFZ33EsLIgmkN",
   "name": "Universal Image Creator v2",
@@ -19,8 +19,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -1248,
-        304
+        2688,
+        976
       ],
       "webhookId": "23075b57-e528-4636-936f-b2273bd3750b",
       "credentials": {
@@ -85,8 +85,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -1024,
-        304
+        2912,
+        976
       ]
     },
     {
@@ -98,8 +98,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -800,
-        304
+        3136,
+        976
       ]
     },
     {
@@ -184,8 +184,8 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.2,
       "position": [
-        -576,
-        288
+        3360,
+        960
       ]
     },
     {
@@ -199,8 +199,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -352,
-        112
+        3584,
+        784
       ],
       "credentials": {
         "postgres": {
@@ -220,8 +220,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -352,
-        304
+        3584,
+        976
       ],
       "credentials": {
         "postgres": {
@@ -241,8 +241,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -352,
-        496
+        3584,
+        1168
       ],
       "credentials": {
         "postgres": {
@@ -258,8 +258,8 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3,
       "position": [
-        -128,
-        304
+        3808,
+        976
       ]
     },
     {
@@ -324,8 +324,8 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.2,
       "position": [
-        96,
-        304
+        4032,
+        976
       ]
     },
     {
@@ -337,8 +337,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        320,
-        464
+        4256,
+        1136
       ]
     },
     {
@@ -356,8 +356,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        560,
-        688
+        4496,
+        1360
       ],
       "credentials": {
         "openAiApi": {
@@ -375,8 +375,8 @@
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.2,
       "position": [
-        688,
-        688
+        4624,
+        1360
       ]
     },
     {
@@ -387,7 +387,7 @@
         "messages": {
           "messageValues": [
             {
-              "message": "# Rolle\nDu er en ekspert i at generere billedprompts til AI billedgenerering for professionelle B2B e-learning kurser.\n\n# Opgave\nGenerer en billedprompt og billedtekst baseret på det givne kursusindhold, ønske fra brugeren og tilpasset målgruppen.\n\n\n# Output krav\nReturner et JSON objekt med:\n1. **imagePrompt**: En detaljeret prompt på engelsk til Flux-pro der beskriver det ønskede billede. Inkluder stil, komposition, farver og stemning. Billedet skal være simpelt i kompositionen uden for mange små detaljer. Afslut altid med \"professional, engaging, suitable for corporate training.\"\n2. **imageText**: En kort dansk tekst (max 200 karakterer) til billedet\"\n\n# Eksempel output:\n```json\n{\n  \"imagePrompt\": \"Professional business illustration showing a modern water treatment facility with clean lines, blue and white color scheme, minimalist design, workers collaborating around digital displays showing water flow diagrams, professional, engaging, suitable for corporate training.\",\n  \"imageText\": \"Introduktion til vandbehandling - illustration\"\n}\n```\n\nDu benytter principperne i denne prompt guide når ud laver imagePrompt:\n# Flux‑Pro Prompt Guide (v1.1)\n\n*A concise field manual for producing powerful images with **Flux‑Pro / FLUX 1.1** on Getimg.ai. Follow these best practices—and sidestep common pitfalls—to get crisp, on‑brief results every time.*\n\n---\n\n## Quick‑Start Checklist ✅\n\n* **Subject first** – open with the main person / object / scene.\n* **Style specification** – artistic movement or photorealism.\n* **Composition details** – angle, framing, perspective.\n* **Lighting preferences** – type, direction, mood.\n* **Quality modifiers** – *high‑quality, detailed, professional*.\n* Use **logical, layered sentences** (foreground → mid‑ground → background).\n* Avoid syntax not supported in Flux‑Pro (*\"++\"*, `::`, weight brackets).\n* In **\\[dev]** model, do *not* write *“white background”*—use *“clean studio background”* or leave the backdrop open.\n\n---\n\n## 1 · Crafting Effective Prompts\n\n### 1.1 Prompt Structure Best Practices\n\n| Order                    | What to Include                       | Example Snippet                                              |\n| ------------------------ | ------------------------------------- | ------------------------------------------------------------ |\n| **1. Subject**           | Person, object, or scene              | *“Professional headshot of a confident business executive”*  |\n| **2. Style**             | Photorealism or art style             | *“high‑resolution photography”* / *“impressionist painting”* |\n| **3. Composition**       | Angle, framing, perspective           | *“sharp focus, studio lighting, neutral background”*         |\n| **4. Lighting & Mood**   | Key/fill light, golden hour, dramatic | *“warm golden‑hour glow”*                                    |\n| **5. Quality Modifiers** | Resolution, detail, vibe              | *“ultra‑sharp details, 8 K quality”*                         |\n\n### 1.2 Example High‑Performance Prompts\n\n```text\nPortrait Photography\nProfessional headshot of a confident business executive, sharp focus, studio lighting, neutral background, high‑resolution photography, commercial quality\n\nArtistic Creation\nImpressionist painting of a French countryside village at sunset, warm golden‑hour lighting, soft brushstrokes, vibrant colors, masterpiece quality\n\nProduct Visualization\nPremium watch on marble surface, dramatic side lighting, luxury commercial photography, ultra‑sharp details, professional product shot, 8K quality\n```\n\n---\n\n## 2 · Layered Composition 🧬\n\nDescribe each depth plane explicitly:\n\n```text\nForeground: A vintage car with license plate “CLASSIC” parked on cobblestones.\nMid‑ground: A busy market stall with colorful awnings.\nBackground: A medieval castle rising through fog on a hill.\nShot on iPhone 16 Pro, f/1.8, 35 mm.\n```\n\n* Revise earlier layers instead of appending stray details at the end.\n\n---\n\n## 3 · Contrasting Aesthetics 🎨\n\n* Combine opposing moods, palettes, or climates for drama.\n* State whether transitions are *abrupt* or *soft‑blended*.\n\n---\n\n## 4 · Transparent & Translucent Materials 🔍\n\n* Declare the object in front *and* the one seen through the medium.\n* Specify material (glass, ice, acrylic) and distortion/glow level.\n\n---\n\n## 5 · Integrating Text ✍️\n\nFlux‑Pro renders typography reliably—treat it like a design brief:\n\n```text\nTypography: H1 “SOLAR PUNK”, bold Futura, neon green, slight outer‑glow, centered top.\n```\n\n---\n\n## 6 · Common Mistakes (and Fixes) 🚫\n\n| Mistake                                    | Why It Fails                        | Fix                                        |\n| ------------------------------------------ | ----------------------------------- | ------------------------------------------ |\n| **Prompt weights** (`::`, `++`, `(x:1.5)`) | Not supported in Flux‑Pro 1.1       | Say *“with emphasis on…”* instead          |\n| **“White background” in dev model**        | Triggers blurry low‑res output      | Use *“clean studio background”* or omit BG |\n| **Keyword soup**                           | Illogical word order confuses model | Write coherent sentences; group concepts   |\n\n---\n\n## 7 · Advanced Tips 🛠️\n\n* Use **AI Improve** to stretch a short idea into a layered prompt.\n* Switch models:\n\n  * **\\[schnell]** – faster drafts\n  * **\\[dev]** – bleeding‑edge features\n  * **\\[ultra]** – maximal detail\n* Break long prompts into **one concise line per aspect** (subject, lighting, mood, typography…).\n\n---\n\n## 8 · Prompt Template 📄\n\n```text\n<Foreground>: …\n<Mid‑ground>: …\n<Background>: …\n\nStyle: …\nColor palette: …\nLighting & Mood: …\nCamera/Render details: …\nTypography (optional): …\n\nExtras: transitions, atmosphere, time of day, etc.\n```\n\n"
+              "message": "=## Rolle\n\nDu er en ekspert i \"Prompt Engineering\" med speciale i at skabe visuelt materiale til professionelle B2B e-learning kurser. Din styrke ligger i at oversætte abstrakte læringsmål til konkrete, æstetiske billedbeskrivelser.\n\n## Opgave\n\nDin opgave er at generere et JSON-objekt, der indeholder en engelsk billedprompt og en dansk billedtekst, baseret på brugerens indtastning (kursusindhold/emne).\n\n## Output Format (JSON)\n\nDu skal returnere et gyldigt JSON objekt med følgende felter:\n\n1.  **`imagePrompt`**: En detaljeret, beskrivende prompt på engelsk, optimeret til moderne AI-billedgeneratorer (Midjourney, DALL-E 3, Flux, SDXL). Prompten skal følge \"Universal Prompting Framework\" beskrevet nedenfor.\n2.  **`imageText`**: En kort, pædagogisk tekst på dansk (maks. 200 tegn), der kobler billedet til læringssituationen.\n\n### Eksempel på Output:\n\n```json\n{\n  \"imagePrompt\": \"Minimalist 3D isometric illustration of a supply chain network, packages moving along conveyor belts, soft blue and white corporate color palette, clean background, soft studio lighting, 4k resolution, high quality, professional style suitable for corporate training.\",\n  \"imageText\": \"Effektiv styring af forsyningskæden sikrer rettidig levering.\"\n}\n```\n\n-----\n\n## Universal Prompting Framework (Guideline)\n\nNår du skriver `imagePrompt`, skal du følge denne struktur for at sikre kompatibilitet med alle billedgeneratorer:\n\n### 1\\. Struktur (Rækkefølge er vigtig)\n\nOpbyg din prompt i denne rækkefølge:\n\n1.  **Hovedmotiv (Subject):** Hvem eller hvad ser vi? (Person, objekt, scene).\n2.  **Handling/Kontekst:** Hvad sker der?\n3.  **Kunstnerisk Stil (Art Style):** Fx \"Photorealistic\", \"Minimalist vector illustration\", \"3D render\", \"Corporate Memphis style\".\n4.  **Komposition & Perspektiv:** Fx \"Wide angle\", \"Close-up\", \"Isometric view\", \"Clean composition\".\n5.  **Lys & Farver:** Fx \"Soft studio lighting\", \"Golden hour\", \"Blue and teal color scheme\".\n6.  **Kvalitets-modifiers:** \"4k\", \"High resolution\", \"Sharp focus\", \"Professional\".\n\n### 2\\. Designprincipper for E-learning\n\n  * **Simplicitet:** Billedet skal kunne aflæses hurtigt. Undgå \"visuel støj\" og rod.\n  * **Professionalisme:** Stilen skal være troværdig og egnet til et arbejdsmiljø.\n  * **Neutralitet:** Medmindre andet er angivet, brug en \"clean studio background\" eller \"blurred office background\" for at holde fokus på emnet.\n\n### 3\\. Hvad du skal UNDGÅ (Universal Regler)\n\n  * **Ingen teknisk syntax:** Undgå at bruge model-specifikke koder som `--v 6`, `::5`, eller `(weight:1.5)`. Brug kun naturligt beskrivende engelsk.\n  * **Ingen tekst i billedet:** Bed ikke AI'en om at skrive specifik tekst (fx skilte) inde i selve billedet, da dette ofte fejler på tværs af modeller.\n  * **Undgå negative prompts i hovedteksten:** Beskriv hvad du *vil* se, fremfor hvad du *ikke* vil se.\n\n-----\n\n## Din tankeproces (Step-by-Step)\n\n1.  Analyser brugerens emne.\n2.  Vælg en visuel metafor eller konkret situation, der understøtter emnet.\n3.  Konstruer `imagePrompt` ved hjælp af **Universal Prompting Framework** (Subject -\\> Style -\\> Lighting).\n4.  Forfat `imageText` på dansk.\n5.  Generer JSON outputtet."
             }
           ]
         }
@@ -397,8 +397,8 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.6,
       "position": [
-        544,
-        464
+        4480,
+        1136
       ]
     },
     {
@@ -426,8 +426,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        608,
-        160
+        4544,
+        832
       ]
     },
     {
@@ -439,24 +439,16 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        896,
-        304
+        4832,
+        976
       ]
     },
     {
       "parameters": {
-        "respondWith": "json",
-        "responseBody": "={\n  \"success\": true,\n  \"message\": \"Billede genereret\",\n  \"data\": {\n    \"image_url\": \"{{ $json.output }}\",\n    \"image_text\": \"{{ $('Clean Prompt').item.json.output.imageText }}\",\n    \"image_prompt\": \"{{ $json.input.prompt }}\",\n    \"generated_at\": \"{{ $now.toISO() }}\"\n  }\n}",
+        "respondWith": "text",
+        "responseBody": "={{ $json.output }}",
         "options": {
-          "responseCode": 200,
-          "responseHeaders": {
-            "entries": [
-              {
-                "name": "Content-Type",
-                "value": "application/json"
-              }
-            ]
-          }
+          "responseCode": 200
         }
       },
       "id": "620e61d9-82a9-428c-b4eb-39c0f96defe8",
@@ -464,8 +456,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.5,
       "position": [
-        1792,
-        304
+        7392,
+        752
       ]
     },
     {
@@ -495,8 +487,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1568,
-        208
+        6192,
+        752
       ],
       "credentials": {
         "httpHeaderAuth": {
@@ -508,23 +500,14 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://api.replicate.com/v1/models/google/nano-banana/predictions",
+        "url": "https://api.replicate.com/v1/models/google/nano-banana-pro/predictions",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Prefer",
-              "value": "wait"
-            }
-          ]
-        },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"input\": {\n    \"prompt\": \"{{ $('Switch').item.json.output.imagePrompt }}\",\n    \"aspect_ratio\": \"{{ $json.ratio }}\",\n    \"steps\": 30\n  }\n}",
+        "jsonBody": "={\n  \"input\": {\n    \"prompt\": \"{{ $('Clean Prompt').item.json.imagePrompt }}\",\n    \"aspect_ratio\": \"{{ $json.ratio }}\",\n    \"steps\": 30,\n    \"output_format\": \"jpg\"\n  }\n}",
         "options": {
-          "timeout": 30000
+          "timeout": 120000
         }
       },
       "id": "8db8c080-1d4f-414b-ba60-393c7c631aa7",
@@ -532,8 +515,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1568,
-        400
+        5504,
+        1072
       ],
       "credentials": {
         "httpHeaderAuth": {
@@ -602,8 +585,8 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.2,
       "position": [
-        1120,
-        304
+        5056,
+        976
       ],
       "id": "ae9fb153-e641-46a3-8022-b12483aa843c",
       "name": "Switch"
@@ -615,11 +598,302 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1344,
-        400
+        5280,
+        1072
       ],
       "id": "6c26a961-e337-41ab-a59b-4eeb3a9bbcbc",
       "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.replicate.com/v1/models/google/nano-banana/predictions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Prefer",
+              "value": "wait"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"input\": {\n    \"prompt\": \"{{ $('Switch').item.json.output.imagePrompt }}\",\n    \"aspect_ratio\": \"{{ $json.ratio }}\",\n    \"steps\": 30\n  }\n}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "6af10ae1-1f53-4836-b608-0d71ca4ecaf5",
+      "name": "Nano Banana1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2688,
+        1456
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "NHMKteatPDSTW5FQ",
+          "name": "Replicate"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Nano Banana').item.json.urls.get }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "074c3778-c690-4f9d-aba2-41fb1eb56fc7",
+      "name": "Poll Replicate Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        5952,
+        1008
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "NHMKteatPDSTW5FQ",
+          "name": "Replicate"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "id-1",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "succeeded",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "4dc94842-af9b-4cd2-bdb4-4dc49f9d042c",
+      "name": "Check If Complete",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        6176,
+        1072
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Poll Replicate Status').item.json.output }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "id": "97e937d5-0f0d-4654-9d71-909546f8b168",
+      "name": "Download Image",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6496,
+        1136
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "3b59bc82-02cd-4c94-832b-9b3c8e4200df",
+      "name": "Wait 5 Seconds",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        5728,
+        1072
+      ],
+      "webhookId": "e867736b-f048-4bf5-9ee0-4ecf6817d5a2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://iynjlzzmszozpxpgldaa.supabase.co/storage/v1/object/public/course-images/testnavn.webp",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "image/webp"
+            },
+            {
+              "name": "Cache-Control",
+              "value": "public,max-age=31536000,immutable"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6352,
+        1632
+      ],
+      "id": "82ef2bae-043b-45f5-ab28-f95081804991",
+      "name": "Upload billede",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "G86aTIt2hb72yHxm",
+          "name": "Supabase storage"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://iynjlzzmszozpxpgldaa.supabase.co/storage/v1/object/course-images/temp.webp",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "image/webp"
+            },
+            {
+              "name": "x-upsert",
+              "value": "true"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        6912,
+        1088
+      ],
+      "id": "fd06dacf-6897-47e7-a274-ed7afcb48079",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "G86aTIt2hb72yHxm",
+          "name": "Supabase storage"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.output }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "id": "c508c045-3d02-4fdf-a028-5020e9172923",
+      "name": "Download Image1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6512,
+        784
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseCode": 202
+        }
+      },
+      "id": "e13779e5-86c6-46cb-95a9-bb014564dacc",
+      "name": "Early Respond with ExecutionId",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        3328,
+        672
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "executionId",
+              "value": "={{ $execution.id }}",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "status",
+              "value": "processing",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "559c05dd-88f1-4d9f-b86b-5a1dcce1f576",
+      "name": "Early Response Data1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2848,
+        672
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "279a94b6-4cf9-4cef-b56d-47338f09d7ba",
+              "name": "output",
+              "value": "=https://iynjlzzmszozpxpgldaa.supabase.co/storage/v1/object/{{ $json.Key }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        7120,
+        1088
+      ],
+      "id": "270d2b7c-161e-463f-adac-ae8ff4571401",
+      "name": "Edit Fields"
     }
   ],
   "connections": {
@@ -628,6 +902,11 @@
         [
           {
             "node": "Set Variables",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Early Response Data1",
             "type": "main",
             "index": 0
           }
@@ -813,7 +1092,7 @@
       "main": [
         [
           {
-            "node": "Success Response1",
+            "node": "Wait 5 Seconds",
             "type": "main",
             "index": 0
           }
@@ -842,7 +1121,7 @@
       "main": [
         [
           {
-            "node": "Success Response1",
+            "node": "Download Image1",
             "type": "main",
             "index": 0
           }
@@ -854,6 +1133,101 @@
         [
           {
             "node": "Nano Banana",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 5 Seconds": {
+      "main": [
+        [
+          {
+            "node": "Poll Replicate Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Poll Replicate Status": {
+      "main": [
+        [
+          {
+            "node": "Check If Complete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check If Complete": {
+      "main": [
+        [
+          {
+            "node": "Download Image",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait 5 Seconds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Image": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Image1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Early Response Data1": {
+      "main": [
+        [
+          {
+            "node": "Early Respond with ExecutionId",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Success Response1",
             "type": "main",
             "index": 0
           }
@@ -877,22 +1251,22 @@
             "accept": "*/*",
             "accept-encoding": "gzip, br",
             "accept-language": "*",
-            "cdn-loop": "netlify, cloudflare; loops=1; subreqs=1",
-            "cf-connecting-ip": "3.76.118.78",
+            "cdn-loop": "cloudflare; loops=1; subreqs=1",
+            "cf-connecting-ip": "2001:8a0:58dc:d500:85e4:74bd:78e4:8a60",
             "cf-ew-via": "15",
-            "cf-ipcountry": "DE",
-            "cf-ray": "9a28dbd101ae4db6-FRA",
+            "cf-ipcountry": "PT",
+            "cf-ray": "9a2fb60215e0c1b1-LIS",
             "cf-visitor": "{\"scheme\":\"https\"}",
             "cf-worker": "n8n.cloud",
             "content-type": "application/json",
             "sec-fetch-mode": "cors",
-            "x-forwarded-for": "3.76.118.78, 172.69.151.56",
+            "x-forwarded-for": "2001:8a0:58dc:d500:85e4:74bd:78e4:8a60, 104.22.13.16",
             "x-forwarded-host": "utilco.app.n8n.cloud",
             "x-forwarded-port": "443",
             "x-forwarded-proto": "https",
             "x-forwarded-server": "traefik-prod-users-gwc-10-6888ffdd77-9vgr4",
             "x-is-trusted": "yes",
-            "x-real-ip": "3.76.118.78",
+            "x-real-ip": "2001:8a0:58dc:d500:85e4:74bd:78e4:8a60",
             "x-webhook-secret": "vczUfUpZhtQkJXFoP6hN"
           },
           "params": {},
@@ -900,10 +1274,10 @@
           "body": {
             "webhook_data": " Billedstil: Fotorealistisk",
             "direct_prompt": false,
-            "module_id": "9eb1b38e-8a6f-4b2f-9be6-fb1ff0fdb58c",
+            "course_id": "4f4756c7-ddb0-4aa4-bc0d-2d7b4384fc50",
             "image_width": 1024,
             "image_height": 576,
-            "model": "banana"
+            "model": "flux"
           },
           "webhookUrl": "https://utilco.app.n8n.cloud/webhook/23075b57-e528-4636-936f-b2273bd3750b",
           "executionMode": "production"
@@ -911,7 +1285,7 @@
       }
     ]
   },
-  "versionId": "23e4bfe9-15be-4f7e-a38c-874569c68265",
+  "versionId": "7af21e44-7317-4dd4-af9f-54586dd97dd8",
   "triggerCount": 1,
   "shared": [
     {
