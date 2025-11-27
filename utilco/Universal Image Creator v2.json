@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2025-11-23T11:01:30.000Z",
+  "updatedAt": "2025-11-26T11:00:30.000Z",
   "createdAt": "2025-07-31T07:32:55.692Z",
   "id": "VA0dFZ33EsLIgmkN",
   "name": "Universal Image Creator v2",
@@ -463,7 +463,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://api.replicate.com/v1/models/black-forest-labs/flux-pro/predictions",
+        "url": "https://api.replicate.com/v1/models/black-forest-labs/flux-2-pro/predictions",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendHeaders": true,
@@ -894,6 +894,43 @@
       ],
       "id": "270d2b7c-161e-463f-adac-ae8ff4571401",
       "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.replicate.com/v1/models/black-forest-labs/flux-pro/predictions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Prefer",
+              "value": "wait"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"input\": {\n    \"prompt\": \"{{ $json.imagePrompt }}\",\n    \"aspect_ratio\": \"custom\",\n    \"width\": {{ $('Set Variables').item.json.body.image_width }},\n    \"height\": {{ $('Set Variables').item.json.body.image_height }},\n    \"steps\": 30\n  }\n}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "10d80aa6-f29b-4d61-b735-c095717ed38b",
+      "name": "Flux1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6048,
+        496
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "NHMKteatPDSTW5FQ",
+          "name": "Replicate"
+        }
+      }
     }
   ],
   "connections": {
@@ -1277,7 +1314,7 @@
             "course_id": "4f4756c7-ddb0-4aa4-bc0d-2d7b4384fc50",
             "image_width": 1024,
             "image_height": 576,
-            "model": "flux"
+            "model": "banana"
           },
           "webhookUrl": "https://utilco.app.n8n.cloud/webhook/23075b57-e528-4636-936f-b2273bd3750b",
           "executionMode": "production"
@@ -1285,7 +1322,7 @@
       }
     ]
   },
-  "versionId": "7af21e44-7317-4dd4-af9f-54586dd97dd8",
+  "versionId": "1efaaa61-d9f4-4a1f-a382-65dcac88dde5",
   "triggerCount": 1,
   "shared": [
     {
