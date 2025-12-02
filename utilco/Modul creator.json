@@ -1,6 +1,6 @@
 {
+  "updatedAt": "2025-12-01T16:03:32.000Z",
   "createdAt": "2025-05-16T13:32:22.255Z",
-  "updatedAt": "2025-10-11T14:53:39.000Z",
   "id": "qWxRPLsazbaV2TpV",
   "name": "Modul creator",
   "active": false,
@@ -15,7 +15,7 @@
       "typeVersion": 1.1,
       "position": [
         672,
-        -128
+        -308
       ],
       "id": "4b69bba5-b3a3-4eb9-b1db-887cd8308854",
       "name": "When Executed by Another Workflow"
@@ -37,7 +37,7 @@
       "typeVersion": 1,
       "position": [
         896,
-        -128
+        -308
       ],
       "id": "dca6ad3a-3350-41e0-a85f-998c4a727c46",
       "name": "Get course",
@@ -66,7 +66,7 @@
       "typeVersion": 1,
       "position": [
         1344,
-        -128
+        -308
       ],
       "id": "e54a72b2-1090-490b-9232-b31fdca22d26",
       "name": "Get modules id",
@@ -95,7 +95,7 @@
       "typeVersion": 1,
       "position": [
         1568,
-        -128
+        -308
       ],
       "id": "c892ef1c-2ecd-4a7d-87e6-0d3b608338ac",
       "name": "Get title & description",
@@ -127,7 +127,7 @@
       "typeVersion": 1,
       "position": [
         1120,
-        -128
+        -308
       ],
       "id": "1cfb9a80-8717-4ee8-a3de-5fc30311cc71",
       "name": "Get course content",
@@ -148,7 +148,7 @@
       "typeVersion": 2.6,
       "position": [
         2016,
-        -256
+        -432
       ],
       "id": "03038e27-75da-4499-b3bf-ae714d779481",
       "name": "Postgres",
@@ -183,7 +183,7 @@
       "typeVersion": 3.4,
       "position": [
         2464,
-        -256
+        -432
       ],
       "id": "0bffbd40-e3b4-40be-95f6-5504b279defd",
       "name": "Lessons collect"
@@ -206,7 +206,7 @@
       "typeVersion": 1,
       "position": [
         2240,
-        -256
+        -432
       ],
       "id": "b0afb8a3-1996-482c-8ab9-c03d08a3e18a",
       "name": "Aggregate1"
@@ -219,7 +219,7 @@
       "typeVersion": 3,
       "position": [
         1792,
-        -128
+        -308
       ],
       "id": "4c94c9c9-05b3-4019-82d1-788625f3a073",
       "name": "Loop Over Items"
@@ -240,7 +240,7 @@
       "typeVersion": 1.6,
       "position": [
         2912,
-        -256
+        -432
       ],
       "id": "7df7524e-f133-41dd-8975-4448b47728e4",
       "name": "Modultekst Creator"
@@ -259,7 +259,7 @@
       "typeVersion": 1.3,
       "position": [
         672,
-        96
+        -84
       ],
       "id": "0ca2f8ea-6fdd-4719-9f83-ee9e17c573f9",
       "name": "Anthropic Chat Model1",
@@ -286,7 +286,7 @@
       "typeVersion": 1.6,
       "position": [
         3488,
-        -256
+        -432
       ],
       "id": "d31eceeb-9430-49ff-a323-22ad428cdabd",
       "name": "Video script creator"
@@ -319,6 +319,14 @@
             {
               "fieldId": "videoscript",
               "fieldValue": "={{ $('Video script creator').item.json.text }}"
+            },
+            {
+              "fieldId": "reflection_questions",
+              "fieldValue": "={{ $json.text }}"
+            },
+            {
+              "fieldId": "exercises",
+              "fieldValue": "={{ $('Module Exercises Creator').item.json.text }}"
             }
           ]
         }
@@ -326,8 +334,8 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        3840,
-        -256
+        4992,
+        -432
       ],
       "id": "a1df4500-e158-4daa-a25a-e2892134856d",
       "name": "Update module translation",
@@ -425,8 +433,8 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.2,
       "position": [
-        4064,
-        -128
+        5216,
+        -308
       ],
       "id": "e5308bc6-5672-4395-9d4e-d1a04ca71d1d",
       "name": "Genererer modulbillede",
@@ -442,7 +450,7 @@
       "typeVersion": 2.6,
       "position": [
         2688,
-        -256
+        -432
       ],
       "id": "22ef0cc1-abfb-4abf-8610-4895f85d7708",
       "name": "Get prompt",
@@ -465,8 +473,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        2992,
-        -32
+        2984,
+        -208
       ],
       "id": "0589e9e5-fd65-496a-9b5c-0a3b83838e9b",
       "name": "Open Router",
@@ -487,7 +495,7 @@
       "typeVersion": 2.6,
       "position": [
         3264,
-        -256
+        -432
       ],
       "id": "afb8c16d-132f-4eef-9184-7517b292f30a",
       "name": "Get prompt1",
@@ -510,8 +518,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        3568,
-        -32
+        3560,
+        -208
       ],
       "id": "6703bc9e-203a-4bf4-a5cb-a404f1875078",
       "name": "Open Router1",
@@ -521,6 +529,138 @@
           "name": "Open Router"
         }
       }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select v.prompt_id, v.content, v.llm\nfrom prompts p \njoin prompt_versions v on \n  p.id = v.prompt_id\n  and p.active_version_id = v.id\njoin prompt_course_relations pcr on \n  p.id = pcr.prompt_id\njoin course_types t on \n  pcr.course_type_id = t.id\nwhere v.prompt_id = '46ef4b97-547c-417f-8b64-2d81a872becc'",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        4416,
+        -432
+      ],
+      "id": "1984ab4e-678e-4da6-81b6-56e1ed4e86df",
+      "name": "Get prompt2",
+      "credentials": {
+        "postgres": {
+          "id": "RUVxlMmZvsZC2IGe",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "={{ $('Get prompt2').item.json.llm }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        4712,
+        -208
+      ],
+      "id": "23ab3994-a5ab-474c-9c78-7ed89d6f961f",
+      "name": "Open Router2",
+      "credentials": {
+        "openAiApi": {
+          "id": "wLbV0srlBMaP36mY",
+          "name": "Open Router"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select v.prompt_id, v.content, v.llm\nfrom prompts p \njoin prompt_versions v on \n  p.id = v.prompt_id\n  and p.active_version_id = v.id\njoin prompt_course_relations pcr on \n  p.id = pcr.prompt_id\njoin course_types t on \n  pcr.course_type_id = t.id\nwhere v.prompt_id = '2fd62d3f-8f29-4f1f-881e-5e03dc5da910'",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        3840,
+        -432
+      ],
+      "id": "a315d6e1-257a-4b12-9bf1-d657bbfb2706",
+      "name": "Get prompt3",
+      "credentials": {
+        "postgres": {
+          "id": "RUVxlMmZvsZC2IGe",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "={{ $('Get prompt3').item.json.llm }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        4136,
+        -208
+      ],
+      "id": "5f5d24f5-ef4e-43e1-82f1-15e7985b94b5",
+      "name": "Open Router3",
+      "credentials": {
+        "openAiApi": {
+          "id": "wLbV0srlBMaP36mY",
+          "name": "Open Router"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=#Input\n\n##Kursusinformation\n\nKursustitel: {{ $('Get course content').item.json.title }}\n\nKursusniveau: {{ $('Get course').item.json.course_level }}\n\nMålgruppe: {{ $('Get course').item.json.target_audience }}\n\nSprog: {{ $('Get course').item.json.course_language }}\n\nSektor: {{ $('Get course').item.json.sector }}\n\nKursusbeskrivelse: {{ $('Get course content').item.json.description }}\n\nKursusindhold: {{ $('Get course content').item.json.content }}\n\nKursusresearch: {{ $('Get course').item.json.research }}\n\n##Modulinformation\n\nModulnavn: {{ $('Loop Over Items').item.json.content }}\n\nModulcontent: {{ $('Loop Over Items').item.json.content }}\n\n\n\n\n",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "={{ $('Get prompt3').item.json.content }}"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.6,
+      "position": [
+        4064,
+        -432
+      ],
+      "id": "0f6f00d0-4d5f-4e55-8395-cf25d9c3b803",
+      "name": "Module Exercises Creator"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=#Input\n\n##Kursusinformation\n\nKursustitel: {{ $('Get course content').item.json.title }}\n\nKursusniveau: {{ $('Get course').item.json.course_level }}\n\nMålgruppe: {{ $('Get course').item.json.target_audience }}\n\nSprog: {{ $('Get course').item.json.course_language }}\n\nSektor: {{ $('Get course').item.json.sector }}\n\nKursusbeskrivelse: {{ $('Get course content').item.json.description }}\n\nKursusindhold: {{ $('Get course content').item.json.content }}\n\nKursusresearch: {{ $('Get course').item.json.research }}\n\n##Modulinformation\n\nModulnavn: {{ $('Loop Over Items').item.json.title }}\n\nModulcontent: {{ $('Loop Over Items').item.json.content }}\n",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "={{ $('Get prompt2').item.json.content }}"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.6,
+      "position": [
+        4640,
+        -432
+      ],
+      "id": "4aa11328-8b7f-439c-b562-8195879c7d83",
+      "name": "Module Reflection Questions"
     }
   ],
   "connections": {
@@ -644,7 +784,7 @@
       "main": [
         [
           {
-            "node": "Update module translation",
+            "node": "Get prompt3",
             "type": "main",
             "index": 0
           }
@@ -716,6 +856,72 @@
           }
         ]
       ]
+    },
+    "Get prompt2": {
+      "main": [
+        [
+          {
+            "node": "Module Reflection Questions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Open Router2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Module Reflection Questions",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get prompt3": {
+      "main": [
+        [
+          {
+            "node": "Module Exercises Creator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Open Router3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Module Exercises Creator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Module Exercises Creator": {
+      "main": [
+        [
+          {
+            "node": "Get prompt2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Module Reflection Questions": {
+      "main": [
+        [
+          {
+            "node": "Update module translation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -729,18 +935,18 @@
     "When Executed by Another Workflow": [
       {
         "json": {
-          "courses_id": "504067cf-2274-40dc-bd94-1b1aa8dfea0e",
+          "courses_id": "beb3e070-90a5-4847-ac8a-6dca5eb2d6e0",
           "course_type": "Default"
         }
       }
     ]
   },
-  "versionId": "da6f4f75-0963-450c-88d6-345797f3ff12",
+  "versionId": "a4a65f05-9132-4fc4-914a-dddb7c183f6e",
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-05-16T13:32:22.260Z",
       "updatedAt": "2025-05-16T13:32:22.260Z",
+      "createdAt": "2025-05-16T13:32:22.260Z",
       "role": "workflow:owner",
       "workflowId": "qWxRPLsazbaV2TpV",
       "projectId": "SFLNAzqJIfhKMhJx"
@@ -748,8 +954,8 @@
   ],
   "tags": [
     {
-      "createdAt": "2025-03-18T13:45:14.553Z",
       "updatedAt": "2025-03-18T13:45:14.553Z",
+      "createdAt": "2025-03-18T13:45:14.553Z",
       "id": "6pOUCPP24FxgjbZJ",
       "name": "Kursus"
     }
