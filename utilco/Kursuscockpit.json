@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2025-11-19T20:03:44.000Z",
+  "updatedAt": "2025-12-02T06:55:37.000Z",
   "createdAt": "2025-05-26T09:15:58.847Z",
   "id": "cIyAT2GKM5Ng1Wwa",
   "name": "Kursuscockpit",
@@ -767,8 +767,49 @@
   "meta": {
     "templateCredsSetupCompleted": true
   },
-  "pinData": {},
-  "versionId": "d0711e2c-a1df-4409-9721-439c484c3882",
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "utilco.app.n8n.cloud",
+            "user-agent": "node",
+            "content-length": "104",
+            "accept": "application/json",
+            "accept-encoding": "gzip, br",
+            "accept-language": "*",
+            "cdn-loop": "netlify, cloudflare; loops=1; subreqs=1",
+            "cf-connecting-ip": "18.195.33.37",
+            "cf-ew-via": "15",
+            "cf-ipcountry": "DE",
+            "cf-ray": "9a789e4554aad260-FRA",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "cf-worker": "n8n.cloud",
+            "content-type": "application/json",
+            "sec-fetch-mode": "cors",
+            "x-forwarded-for": "18.195.33.37, 172.71.164.233",
+            "x-forwarded-host": "utilco.app.n8n.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "traefik-prod-users-gwc-10-6888ffdd77-zl6sm",
+            "x-is-trusted": "yes",
+            "x-real-ip": "18.195.33.37",
+            "x-webhook-secret": "vczUfUpZhtQkJXFoP6hN"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "courseId": "beb3e070-90a5-4847-ac8a-6dca5eb2d6e0",
+            "locale": "da",
+            "timestamp": "2025-12-02T06:02:56.137Z"
+          },
+          "webhookUrl": "https://utilco.app.n8n.cloud/webhook/d0bc0adf-07a0-4c29-af4d-f88d9910d16a",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "versionId": "91c79540-a6fa-4f20-8276-d24aea14d5b8",
   "triggerCount": 1,
   "shared": [
     {
