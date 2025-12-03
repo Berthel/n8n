@@ -1,6 +1,6 @@
 {
+  "updatedAt": "2025-12-02T16:10:18.000Z",
   "createdAt": "2025-05-23T12:23:10.568Z",
-  "updatedAt": "2025-10-11T14:53:04.000Z",
   "id": "JFxTvX4GDNqmUX0R",
   "name": "Lessons creator",
   "active": false,
@@ -397,7 +397,7 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=#Input\n\n##Kursusinformation\n\nKursustitel: {{ $('Get course content').item.json.title }}\n\nKursusniveau: {{ $('Get course').item.json.course_level }}\n\nMålgruppe: {{ $('Get course').item.json.target_audience }}\n\nSprog: {{ $('Get course').item.json.course_language }}\n\nSektor: {{ $('Get course').item.json.sector }}\n\nKursusbeskrivelse: {{ $('Get course content').item.json.description }}\n\nKursusindhold: {{ $('Get course content').item.json.content }}\n\nKursusresearch: {{ $('Get course').item.json.research }}\n\n##Modulinformation\n\nModulnavn: {{ $('Get module content').item.json.title }}\n\nModulbeskrivelse: {{ $('Get module content').item.json.description }}\n\nModulcontent: {{ $('Get module content').item.json.content }}\n\nAntal moduler i kurset: {{ $('Get no of modules and lessons').item.json.no_of_modules }}\n\n##Lektioner\nLektionstitel: {{ $('Loop Over Items').item.json.title }}\n\nAntal lektioner i modulet: {{ $('Get no of modules and lessons').item.json.no_of_lessons }}\n\nLektionsnummer i kurset: {{ $('Get lessons_id').item.json.position }}\n\nLektionsindhold: {{ $json.text }}\n",
+        "text": "=#Input\n\n##Kursusinformation\n\nKursustitel: {{ $('Get course content').item.json.title }}\n\nKursusniveau: {{ $('Get course').item.json.course_level }}\n\nMålgruppe: {{ $('Get course').item.json.target_audience }}\n\nSprog: {{ $('Get course').item.json.course_language }}\n\nSektor: {{ $('Get course').item.json.sector }}\n\nKursusbeskrivelse: {{ $('Get course content').item.json.description }}\n\nKursusindhold: {{ $('Get course content').item.json.content }}\n\nKursusresearch: {{ $('Get course').item.json.research }}\n\n##Modulinformation\n\nModulnavn: {{ $('Get module content').item.json.title }}\n\nModulbeskrivelse: {{ $('Get module content').item.json.description }}\n\nModulcontent: {{ $('Get module content').item.json.content }}\n\nAntal moduler i kurset: {{ $('Get no of modules and lessons').item.json.no_of_modules }}\n\n##Lektioner\nLektionstitel: {{ $('Loop Over Items').item.json.title }}\n\nAntal lektioner i modulet: {{ $('Get no of modules and lessons').item.json.no_of_lessons }}\n\nLektionsnummer i kurset: {{ $('Get lessons_id').item.json.position }}\n\nLektionsindhold: {{ $('Lesson Content Creator').item.json.text }}\n",
         "messages": {
           "messageValues": [
             {
@@ -940,36 +940,36 @@
     "When Executed by Another Workflow": [
       {
         "json": {
-          "module_id": "63f7ac7c-5f53-4c62-a8f8-d19f3850f39b",
+          "module_id": "b0b082de-e471-4b1b-992d-a85cb1acd0b7",
           "course_type": "Default"
         }
       },
       {
         "json": {
-          "module_id": "b1b3b44c-b189-4e67-8bb6-53a588fabda2",
+          "module_id": "307783cd-e8f7-40b8-a3c7-00c133bbb92f",
           "course_type": "Default"
         }
       },
       {
         "json": {
-          "module_id": "ae3ec442-1a66-4ee7-83b7-63168f8379e4",
+          "module_id": "9e10fb93-36a8-43f6-bb70-d768fb89743a",
           "course_type": "Default"
         }
       },
       {
         "json": {
-          "module_id": "ae4b944f-93f1-49ad-9836-2d6d0b29bc28",
+          "module_id": "52816b9e-3f4d-4892-aa25-9689c8463032",
           "course_type": "Default"
         }
       }
     ]
   },
-  "versionId": "51f36495-b188-4ccf-a5db-1dc8d4de25cf",
+  "versionId": "1f6f0869-4e13-4aa3-9ba3-077960df6c3e",
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-05-23T12:23:10.573Z",
       "updatedAt": "2025-05-23T12:23:10.573Z",
+      "createdAt": "2025-05-23T12:23:10.573Z",
       "role": "workflow:owner",
       "workflowId": "JFxTvX4GDNqmUX0R",
       "projectId": "SFLNAzqJIfhKMhJx"
@@ -977,8 +977,8 @@
   ],
   "tags": [
     {
-      "createdAt": "2025-03-18T13:45:14.553Z",
       "updatedAt": "2025-03-18T13:45:14.553Z",
+      "createdAt": "2025-03-18T13:45:14.553Z",
       "id": "6pOUCPP24FxgjbZJ",
       "name": "Kursus"
     }
