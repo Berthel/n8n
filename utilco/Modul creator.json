@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2025-12-01T16:03:32.000Z",
+  "updatedAt": "2025-12-02T06:21:26.000Z",
   "createdAt": "2025-05-16T13:32:22.255Z",
   "id": "qWxRPLsazbaV2TpV",
   "name": "Modul creator",
@@ -293,62 +293,6 @@
     },
     {
       "parameters": {
-        "operation": "update",
-        "tableId": "module_translations",
-        "matchType": "allFilters",
-        "filters": {
-          "conditions": [
-            {
-              "keyName": "module_id",
-              "condition": "eq",
-              "keyValue": "={{ $('Loop Over Items').item.json.module_id }}"
-            },
-            {
-              "keyName": "language_code",
-              "condition": "eq",
-              "keyValue": "={{ $('Loop Over Items').item.json.language_code }}"
-            }
-          ]
-        },
-        "fieldsUi": {
-          "fieldValues": [
-            {
-              "fieldId": "content",
-              "fieldValue": "={{ $('Modultekst Creator').item.json.text }}"
-            },
-            {
-              "fieldId": "videoscript",
-              "fieldValue": "={{ $('Video script creator').item.json.text }}"
-            },
-            {
-              "fieldId": "reflection_questions",
-              "fieldValue": "={{ $json.text }}"
-            },
-            {
-              "fieldId": "exercises",
-              "fieldValue": "={{ $('Module Exercises Creator').item.json.text }}"
-            }
-          ]
-        }
-      },
-      "type": "n8n-nodes-base.supabase",
-      "typeVersion": 1,
-      "position": [
-        4992,
-        -432
-      ],
-      "id": "a1df4500-e158-4daa-a25a-e2892134856d",
-      "name": "Update module translation",
-      "alwaysOutputData": true,
-      "credentials": {
-        "supabaseApi": {
-          "id": "bvMVIJLed9p3sKxS",
-          "name": "Supabase account"
-        }
-      }
-    },
-    {
-      "parameters": {
         "workflowId": {
           "__rl": true,
           "value": "hs2iwVsjN8phf01l",
@@ -433,7 +377,7 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.2,
       "position": [
-        5216,
+        4064,
         -308
       ],
       "id": "e5308bc6-5672-4395-9d4e-d1a04ca71d1d",
@@ -532,135 +476,51 @@
     },
     {
       "parameters": {
-        "operation": "executeQuery",
-        "query": "select v.prompt_id, v.content, v.llm\nfrom prompts p \njoin prompt_versions v on \n  p.id = v.prompt_id\n  and p.active_version_id = v.id\njoin prompt_course_relations pcr on \n  p.id = pcr.prompt_id\njoin course_types t on \n  pcr.course_type_id = t.id\nwhere v.prompt_id = '46ef4b97-547c-417f-8b64-2d81a872becc'",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        4416,
-        -432
-      ],
-      "id": "1984ab4e-678e-4da6-81b6-56e1ed4e86df",
-      "name": "Get prompt2",
-      "credentials": {
-        "postgres": {
-          "id": "RUVxlMmZvsZC2IGe",
-          "name": "Postgres account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "model": {
-          "__rl": true,
-          "value": "={{ $('Get prompt2').item.json.llm }}",
-          "mode": "id"
+        "operation": "update",
+        "tableId": "module_translations",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "module_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Loop Over Items').item.json.module_id }}"
+            },
+            {
+              "keyName": "language_code",
+              "condition": "eq",
+              "keyValue": "={{ $('Loop Over Items').item.json.language_code }}"
+            }
+          ]
         },
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
-      "typeVersion": 1.2,
-      "position": [
-        4712,
-        -208
-      ],
-      "id": "23ab3994-a5ab-474c-9c78-7ed89d6f961f",
-      "name": "Open Router2",
-      "credentials": {
-        "openAiApi": {
-          "id": "wLbV0srlBMaP36mY",
-          "name": "Open Router"
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "content",
+              "fieldValue": "={{ $('Modultekst Creator').item.json.text }}"
+            },
+            {
+              "fieldId": "videoscript",
+              "fieldValue": "={{ $('Video script creator').item.json.text }}"
+            }
+          ]
         }
-      }
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "select v.prompt_id, v.content, v.llm\nfrom prompts p \njoin prompt_versions v on \n  p.id = v.prompt_id\n  and p.active_version_id = v.id\njoin prompt_course_relations pcr on \n  p.id = pcr.prompt_id\njoin course_types t on \n  pcr.course_type_id = t.id\nwhere v.prompt_id = '2fd62d3f-8f29-4f1f-881e-5e03dc5da910'",
-        "options": {}
       },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
       "position": [
         3840,
         -432
       ],
-      "id": "a315d6e1-257a-4b12-9bf1-d657bbfb2706",
-      "name": "Get prompt3",
+      "id": "1af4fa68-3a1c-49fa-85d6-534331ccc311",
+      "name": "Update module translation",
+      "alwaysOutputData": true,
       "credentials": {
-        "postgres": {
-          "id": "RUVxlMmZvsZC2IGe",
-          "name": "Postgres account"
+        "supabaseApi": {
+          "id": "bvMVIJLed9p3sKxS",
+          "name": "Supabase account"
         }
       }
-    },
-    {
-      "parameters": {
-        "model": {
-          "__rl": true,
-          "value": "={{ $('Get prompt3').item.json.llm }}",
-          "mode": "id"
-        },
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
-      "typeVersion": 1.2,
-      "position": [
-        4136,
-        -208
-      ],
-      "id": "5f5d24f5-ef4e-43e1-82f1-15e7985b94b5",
-      "name": "Open Router3",
-      "credentials": {
-        "openAiApi": {
-          "id": "wLbV0srlBMaP36mY",
-          "name": "Open Router"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "promptType": "define",
-        "text": "=#Input\n\n##Kursusinformation\n\nKursustitel: {{ $('Get course content').item.json.title }}\n\nKursusniveau: {{ $('Get course').item.json.course_level }}\n\nMålgruppe: {{ $('Get course').item.json.target_audience }}\n\nSprog: {{ $('Get course').item.json.course_language }}\n\nSektor: {{ $('Get course').item.json.sector }}\n\nKursusbeskrivelse: {{ $('Get course content').item.json.description }}\n\nKursusindhold: {{ $('Get course content').item.json.content }}\n\nKursusresearch: {{ $('Get course').item.json.research }}\n\n##Modulinformation\n\nModulnavn: {{ $('Loop Over Items').item.json.content }}\n\nModulcontent: {{ $('Loop Over Items').item.json.content }}\n\n\n\n\n",
-        "messages": {
-          "messageValues": [
-            {
-              "message": "={{ $('Get prompt3').item.json.content }}"
-            }
-          ]
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.chainLlm",
-      "typeVersion": 1.6,
-      "position": [
-        4064,
-        -432
-      ],
-      "id": "0f6f00d0-4d5f-4e55-8395-cf25d9c3b803",
-      "name": "Module Exercises Creator"
-    },
-    {
-      "parameters": {
-        "promptType": "define",
-        "text": "=#Input\n\n##Kursusinformation\n\nKursustitel: {{ $('Get course content').item.json.title }}\n\nKursusniveau: {{ $('Get course').item.json.course_level }}\n\nMålgruppe: {{ $('Get course').item.json.target_audience }}\n\nSprog: {{ $('Get course').item.json.course_language }}\n\nSektor: {{ $('Get course').item.json.sector }}\n\nKursusbeskrivelse: {{ $('Get course content').item.json.description }}\n\nKursusindhold: {{ $('Get course content').item.json.content }}\n\nKursusresearch: {{ $('Get course').item.json.research }}\n\n##Modulinformation\n\nModulnavn: {{ $('Loop Over Items').item.json.title }}\n\nModulcontent: {{ $('Loop Over Items').item.json.content }}\n",
-        "messages": {
-          "messageValues": [
-            {
-              "message": "={{ $('Get prompt2').item.json.content }}"
-            }
-          ]
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.chainLlm",
-      "typeVersion": 1.6,
-      "position": [
-        4640,
-        -432
-      ],
-      "id": "4aa11328-8b7f-439c-b562-8195879c7d83",
-      "name": "Module Reflection Questions"
     }
   ],
   "connections": {
@@ -784,18 +644,7 @@
       "main": [
         [
           {
-            "node": "Get prompt3",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Update module translation": {
-      "main": [
-        [
-          {
-            "node": "Genererer modulbillede",
+            "node": "Update module translation",
             "type": "main",
             "index": 0
           }
@@ -857,66 +706,11 @@
         ]
       ]
     },
-    "Get prompt2": {
+    "Update module translation": {
       "main": [
         [
           {
-            "node": "Module Reflection Questions",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Open Router2": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "Module Reflection Questions",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Get prompt3": {
-      "main": [
-        [
-          {
-            "node": "Module Exercises Creator",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Open Router3": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "Module Exercises Creator",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Module Exercises Creator": {
-      "main": [
-        [
-          {
-            "node": "Get prompt2",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Module Reflection Questions": {
-      "main": [
-        [
-          {
-            "node": "Update module translation",
+            "node": "Genererer modulbillede",
             "type": "main",
             "index": 0
           }
@@ -941,7 +735,7 @@
       }
     ]
   },
-  "versionId": "a4a65f05-9132-4fc4-914a-dddb7c183f6e",
+  "versionId": "aeb31648-3e23-4146-a69f-c499e72404c7",
   "triggerCount": 0,
   "shared": [
     {
