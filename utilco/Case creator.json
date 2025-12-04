@@ -1,6 +1,6 @@
 {
+  "updatedAt": "2025-12-03T12:36:45.000Z",
   "createdAt": "2025-06-09T04:39:10.303Z",
-  "updatedAt": "2025-10-11T14:51:49.000Z",
   "id": "TM4BtRHM82JhtiIH",
   "name": "Case creator",
   "active": false,
@@ -105,7 +105,8 @@
     },
     {
       "parameters": {
-        "jsonSchemaExample": "{\n  \"course_cases\": [\n    {\n      \"module_id\": \"<samme id som i user prompt>\",\n      \"case_title\": \"<kort, fængende titel>\",\n      \"case_tekst\": \"<ca. 400 ord, struktureret med markdown overskrifter>\"\n    }\n  ]\n}"
+        "jsonSchemaExample": "{\n  \"course_cases\": [\n    {\n      \"module_id\": \"<samme id som i user prompt>\",\n      \"case_title\": \"<kort, fængende titel>\",\n      \"case_tekst\": \"<ca. 400 ord, struktureret med markdown overskrifter>\"\n    }\n  ]\n}",
+        "autoFix": true
       },
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.2,
@@ -264,6 +265,32 @@
           "name": "Open Router"
         }
       }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "openai/gpt-4o",
+          "mode": "list",
+          "cachedResultName": "openai/gpt-4o"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1872,
+        1056
+      ],
+      "id": "a47389da-0c7e-4682-b48c-449421e29099",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "wLbV0srlBMaP36mY",
+          "name": "Open Router"
+        }
+      }
     }
   ],
   "connections": {
@@ -370,6 +397,17 @@
           }
         ]
       ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Structured Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -380,12 +418,12 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "bf9b6724-7e65-43d1-8acc-d4ed35e376c4",
+  "versionId": "9dd87532-c7ff-4c64-8a3d-8c91bf6dd99b",
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-06-09T04:39:10.308Z",
       "updatedAt": "2025-06-09T04:39:10.308Z",
+      "createdAt": "2025-06-09T04:39:10.308Z",
       "role": "workflow:owner",
       "workflowId": "TM4BtRHM82JhtiIH",
       "projectId": "SFLNAzqJIfhKMhJx"
@@ -393,8 +431,8 @@
   ],
   "tags": [
     {
-      "createdAt": "2025-03-18T13:45:14.553Z",
       "updatedAt": "2025-03-18T13:45:14.553Z",
+      "createdAt": "2025-03-18T13:45:14.553Z",
       "id": "6pOUCPP24FxgjbZJ",
       "name": "Kursus"
     }
