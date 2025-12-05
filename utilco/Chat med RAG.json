@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-03-06T15:10:25.443Z",
   "updatedAt": "2025-03-06T15:52:13.000Z",
+  "createdAt": "2025-03-06T15:10:25.443Z",
   "id": "TcwRnfkcttH3ryih",
   "name": "Chat med RAG",
   "active": false,
@@ -217,15 +217,17 @@
   },
   "pinData": {},
   "versionId": "261b345f-a5cd-4cc0-90d9-32cc7233d0e9",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-03-06T15:14:06.355Z",
       "updatedAt": "2025-03-06T15:14:06.355Z",
+      "createdAt": "2025-03-06T15:14:06.355Z",
       "role": "workflow:owner",
       "workflowId": "TcwRnfkcttH3ryih",
       "projectId": "SFLNAzqJIfhKMhJx"
     }
   ],
+  "activeVersion": null,
   "tags": []
 }
