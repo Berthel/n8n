@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-10-21T17:32:07.530Z",
   "updatedAt": "2025-10-21T17:53:43.000Z",
+  "createdAt": "2025-10-21T17:32:07.530Z",
   "id": "GxqVPnihHHeIxTTP",
   "name": "Box to Pinecone RAG Document Ingestion with Metadata",
   "active": false,
@@ -274,15 +274,17 @@
   },
   "pinData": {},
   "versionId": "20e167e3-6028-495d-9a27-0e2680b9b87a",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-10-21T17:32:07.540Z",
       "updatedAt": "2025-10-21T17:32:07.540Z",
+      "createdAt": "2025-10-21T17:32:07.540Z",
       "role": "workflow:owner",
       "workflowId": "GxqVPnihHHeIxTTP",
       "projectId": "amlePLldrdBTzDyr"
     }
   ],
+  "activeVersion": null,
   "tags": []
 }
