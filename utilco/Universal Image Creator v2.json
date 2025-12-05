@@ -1323,6 +1323,7 @@
     ]
   },
   "versionId": "1efaaa61-d9f4-4a1f-a382-65dcac88dde5",
+  "activeVersionId": "1efaaa61-d9f4-4a1f-a382-65dcac88dde5",
   "triggerCount": 1,
   "shared": [
     {
@@ -1333,5 +1334,1281 @@
       "projectId": "SFLNAzqJIfhKMhJx"
     }
   ],
+  "activeVersion": {
+    "updatedAt": "2025-12-04T14:45:44.020Z",
+    "createdAt": "2025-12-04T14:45:44.020Z",
+    "versionId": "1efaaa61-d9f4-4a1f-a382-65dcac88dde5",
+    "workflowId": "VA0dFZ33EsLIgmkN",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "23075b57-e528-4636-936f-b2273bd3750b",
+          "authentication": "headerAuth",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "id": "79d605c4-9daf-47e4-bf8f-ff8bdff980a9",
+        "name": "Webhook Trigger",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          2688,
+          976
+        ],
+        "webhookId": "23075b57-e528-4636-936f-b2273bd3750b",
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "WwlGKLCrVwJHzSyW",
+            "name": "Academy webhook"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "1",
+                "name": "lesson_id",
+                "value": "={{ $json.body.lesson_id }}",
+                "type": "string"
+              },
+              {
+                "id": "2",
+                "name": "module_id",
+                "value": "={{ $json.body.module_id }}",
+                "type": "string"
+              },
+              {
+                "id": "3",
+                "name": "course_id",
+                "value": "={{ $json.body.course_id }}",
+                "type": "string"
+              },
+              {
+                "id": "5",
+                "name": "webhook_data",
+                "value": "={{ $json.body.webhook_data }}",
+                "type": "string"
+              },
+              {
+                "id": "6",
+                "name": "direct_prompt",
+                "value": "={{ $json.body.direct_prompt || false }}",
+                "type": "boolean"
+              },
+              {
+                "id": "1c7f466b-bc0b-454c-848d-0860ef27b1d3",
+                "name": "body.image_width",
+                "value": "={{ $json.body.image_width }}",
+                "type": "number"
+              },
+              {
+                "id": "5f978443-e410-48db-b2be-cf3c01ea35ce",
+                "name": "body.image_height",
+                "value": "={{ $json.body.image_height }}",
+                "type": "number"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "d1c70ec9-c06c-49f5-a1aa-0b812a68c1c4",
+        "name": "Set Variables",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          2912,
+          976
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "// Determine content type based on which ID is provided\nconst item = items[0].json;\n\nlet contentType = null;\nlet contentId = null;\n\nif (item.lesson_id && item.lesson_id !== '') {\n  contentType = 'lesson';\n  contentId = item.lesson_id;\n} else if (item.module_id && item.module_id !== '') {\n  contentType = 'module';\n  contentId = item.module_id;\n} else if (item.course_id && item.course_id !== '') {\n  contentType = 'course';\n  contentId = item.course_id;\n} else {\n  throw new Error('No valid ID provided. Must provide either lesson_id, module_id, or course_id');\n}\n\nreturn [{\n  json: {\n    ...item,\n    contentType,\n    contentId\n  }\n}];"
+        },
+        "id": "66daa5e4-165a-4945-bc5a-8bc10192ac87",
+        "name": "Detect Content Type",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          3136,
+          976
+        ]
+      },
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.contentType }}",
+                      "rightValue": "lesson",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "lesson"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.contentType }}",
+                      "rightValue": "module",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "module"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.contentType }}",
+                      "rightValue": "course",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "course"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "7fbd4947-fa17-44cc-af57-b2c5dcb4b6bb",
+        "name": "Route by Type",
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.2,
+        "position": [
+          3360,
+          960
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "SELECT \n  l.id as lesson_id,\n  l.module_id,\n  lt.title as lesson_title,\n  lt.content as lesson_content,\n  m.course_id,\n  mt.title as module_title,\n  mt.description as module_description,\n  ct.title as course_title,\n  ct.description as course_description,\n  c.target_audience\nFROM lessons l\nJOIN lesson_translations lt ON l.id = lt.lesson_id AND lt.language_code = 'da'\nJOIN modules m ON l.module_id = m.id\nJOIN module_translations mt ON m.id = mt.module_id AND mt.language_code = 'da'\nJOIN courses c ON m.course_id = c.id\nJOIN course_translations ct ON c.id = ct.course_id AND ct.language_code = 'da'\nWHERE l.id = '{{ $json.contentId }}'",
+          "options": {}
+        },
+        "id": "439e605a-1559-4507-a91f-612bfa3b5550",
+        "name": "Get Lesson Context",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          3584,
+          784
+        ],
+        "credentials": {
+          "postgres": {
+            "id": "RUVxlMmZvsZC2IGe",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "WITH sample_lessons AS (\n  SELECT \n    m.id as module_id,\n    STRING_AGG(lt.title, ', ' ORDER BY l.position) as sample_lessons\n  FROM modules m\n  LEFT JOIN lessons l ON m.id = l.module_id\n  LEFT JOIN lesson_translations lt ON l.id = lt.lesson_id AND lt.language_code = 'da'\n  WHERE m.id = '{{ $json.contentId }}'\n  GROUP BY m.id\n)\nSELECT \n  m.id as module_id,\n  m.course_id,\n  mt.title as module_title,\n  mt.description as module_description,\n  ct.title as course_title,\n  ct.description as course_description,\n  c.target_audience,\n  sl.sample_lessons\nFROM modules m\nJOIN module_translations mt ON m.id = mt.module_id AND mt.language_code = 'da'\nJOIN courses c ON m.course_id = c.id\nJOIN course_translations ct ON c.id = ct.course_id AND ct.language_code = 'da'\nLEFT JOIN sample_lessons sl ON m.id = sl.module_id\nWHERE m.id = '{{ $json.contentId }}'",
+          "options": {}
+        },
+        "id": "926d0508-53a8-453e-afac-60aed155473d",
+        "name": "Get Module Context",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          3584,
+          976
+        ],
+        "credentials": {
+          "postgres": {
+            "id": "RUVxlMmZvsZC2IGe",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "WITH sample_modules AS (\n  SELECT \n    c.id as course_id,\n    STRING_AGG(DISTINCT mt.title, ', ' ORDER BY mt.title) as sample_modules\n  FROM courses c\n  LEFT JOIN modules m ON c.id = m.course_id\n  LEFT JOIN module_translations mt ON m.id = mt.module_id AND mt.language_code = 'da'\n  WHERE c.id = '{{ $json.contentId }}'\n  GROUP BY c.id\n)\nSELECT \n  c.id as course_id,\n  ct.title as course_title,\n  ct.description as course_description,\n  c.target_audience,\n  ct.learning_objectives,\n  sm.sample_modules\nFROM courses c\nJOIN course_translations ct ON c.id = ct.course_id AND ct.language_code = 'da'\nLEFT JOIN sample_modules sm ON c.id = sm.course_id\nWHERE c.id = '{{ $json.contentId }}'",
+          "options": {}
+        },
+        "id": "0fe848ed-b978-48b7-bbcf-67791d4bbaee",
+        "name": "Get Course Context",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          3584,
+          1168
+        ],
+        "credentials": {
+          "postgres": {
+            "id": "RUVxlMmZvsZC2IGe",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {},
+        "id": "1eb4d1e5-7da7-4c5c-99e9-3d5334c6d935",
+        "name": "Merge Context",
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3,
+        "position": [
+          3808,
+          976
+        ]
+      },
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $('Webhook Trigger').item.json.body.direct_prompt }}",
+                      "rightValue": "",
+                      "operator": {
+                        "type": "boolean",
+                        "operation": "true",
+                        "singleValue": true
+                      },
+                      "id": "2064a186-41a1-4a6e-bbcf-ac953fb80f59"
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "direct"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $('Webhook Trigger').item.json.body.direct_prompt }}",
+                      "rightValue": "",
+                      "operator": {
+                        "type": "boolean",
+                        "operation": "false",
+                        "singleValue": true
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "ai-generated"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "64b2a73c-08a4-43f7-a862-5dcedb0f05fd",
+        "name": "Check Direct Prompt",
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.2,
+        "position": [
+          4032,
+          976
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "// n8n Code‑node: Prepare AI Context\n// Modtager ét item som repræsenterer enten et course, module eller lesson\n// Returnerer det samme item + et \"context\"‑objekt klar til LLM‑noden\n\nconst item = items[0].json;\n\n/* --------------------------------------------------\n   1. Fastslå indholdstypen\n   -------------------------------------------------- */\nlet contentType = item.contentType;        // kan være sat af Route‑node\n\nif (!contentType) {                        // fallback – detekter ud fra ID‑felter\n  if (item.lesson_id)         contentType = 'lesson';\n  else if (item.module_id)    contentType = 'module';\n  else                        contentType = 'course';\n}\n\n/* --------------------------------------------------\n   2. Grundlæggende kontekst\n   -------------------------------------------------- */\nlet context = {\n  contentType,\n  contentId      : item.lesson_id || item.module_id || item.course_id,\n  imageType      : item.image_type || item.imageType,\n  targetAudience : item.target_audience || item.targetAudience || 'Professionelle i vandbranchen',\n};\n\n/* --------------------------------------------------\n   3. Entitetsspecifik kontekst\n   -------------------------------------------------- */\nswitch (contentType) {\n  /* ---------- LESSON ---------- */\n  case 'lesson': {\n    context.title       = item.lesson_title;\n    context.description = (item.lesson_content || '')\n                            .substring(0, 500)                                    // maks. 500 tegn\n                          + ((item.lesson_content || '').length > 500 ? '…' : '');\n\n    context.parentContext =\n      `Modul:  ${item.module_title} – ${item.module_description}\\n` +\n      `Kursus: ${item.course_title}${item.course_description ? ' – ' + item.course_description : ''}`;\n    break;\n  }\n\n  /* ---------- MODULE ---------- */\n  case 'module': {\n    context.title       = item.module_title;\n    context.description = item.module_description;\n\n    context.parentContext =\n      `Kursus: ${item.course_title}${item.course_description ? ' – ' + item.course_description : ''}`;\n\n    if (item.sample_lessons) {\n      context.childContext = `Eksempler på lektioner: ${item.sample_lessons}`;\n    }\n    break;\n  }\n\n  /* ---------- COURSE ---------- */\n  default: {                                // 'course'\n    context.title       = item.course_title;\n    context.description = item.course_description;\n\n    if (item.learning_objectives) {\n      context.learningObjectives = item.learning_objectives;\n    }\n    if (item.sample_modules) {\n      context.childContext = `Eksempler på moduler: ${item.sample_modules}`;\n    }\n    break;\n  }\n}\n\n/* --------------------------------------------------\n   4. Fjern tomme værdier\n   -------------------------------------------------- */\nObject.keys(context).forEach(key => context[key] === undefined && delete context[key]);\n\n/* --------------------------------------------------\n   5. Returnér resultatet\n   -------------------------------------------------- */\nreturn [\n  {\n    json: {\n      ...item,\n      context\n    }\n  }\n];\n"
+        },
+        "id": "7642db2d-51c7-46b8-bb4c-59afe188ee2b",
+        "name": "Prepare AI Context",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          4256,
+          1136
+        ]
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "value": "openai/gpt-4.1",
+            "mode": "list",
+            "cachedResultName": "openai/gpt-4.1"
+          },
+          "options": {}
+        },
+        "id": "d75a2276-0de2-469c-af0b-611c9db02702",
+        "name": "AI Model",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2,
+        "position": [
+          4496,
+          1360
+        ],
+        "credentials": {
+          "openAiApi": {
+            "id": "wLbV0srlBMaP36mY",
+            "name": "Open Router"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsonSchemaExample": "{\n  \"imagePrompt\": \"Professional business illustration showing...\",\n  \"imageText\": \"Titel - billedtype\"\n}"
+        },
+        "id": "dd1112f6-bd79-46e0-adb5-9e9f3faa2db6",
+        "name": "Output Parser",
+        "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+        "typeVersion": 1.2,
+        "position": [
+          4624,
+          1360
+        ]
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=Indholdstype: {{ $json.context.contentType }}\nTitel:       {{ $json.context.title }}\nBeskrivelse: {{ $json.context.description }}\nMålgruppe:   {{ $json.context.targetAudience }}\n{{ $json.context.parentContext ? '\\nOverordnet kontekst:\\n' + $json.context.parentContext : '' }}\n{{ $json.context.childContext  ? '\\nUnderliggende indhold:\\n' + $json.context.childContext  : '' }}\n{{ $json.context.learningObjectives ? '\\nLæringsmål:\\n' + $json.context.learningObjectives : '' }}\n\nØnske fra brugeren: {{ $('Webhook Trigger').item.json.body.webhook_data }}",
+          "hasOutputParser": true,
+          "messages": {
+            "messageValues": [
+              {
+                "message": "=## Rolle\n\nDu er en ekspert i \"Prompt Engineering\" med speciale i at skabe visuelt materiale til professionelle B2B e-learning kurser. Din styrke ligger i at oversætte abstrakte læringsmål til konkrete, æstetiske billedbeskrivelser.\n\n## Opgave\n\nDin opgave er at generere et JSON-objekt, der indeholder en engelsk billedprompt og en dansk billedtekst, baseret på brugerens indtastning (kursusindhold/emne).\n\n## Output Format (JSON)\n\nDu skal returnere et gyldigt JSON objekt med følgende felter:\n\n1.  **`imagePrompt`**: En detaljeret, beskrivende prompt på engelsk, optimeret til moderne AI-billedgeneratorer (Midjourney, DALL-E 3, Flux, SDXL). Prompten skal følge \"Universal Prompting Framework\" beskrevet nedenfor.\n2.  **`imageText`**: En kort, pædagogisk tekst på dansk (maks. 200 tegn), der kobler billedet til læringssituationen.\n\n### Eksempel på Output:\n\n```json\n{\n  \"imagePrompt\": \"Minimalist 3D isometric illustration of a supply chain network, packages moving along conveyor belts, soft blue and white corporate color palette, clean background, soft studio lighting, 4k resolution, high quality, professional style suitable for corporate training.\",\n  \"imageText\": \"Effektiv styring af forsyningskæden sikrer rettidig levering.\"\n}\n```\n\n-----\n\n## Universal Prompting Framework (Guideline)\n\nNår du skriver `imagePrompt`, skal du følge denne struktur for at sikre kompatibilitet med alle billedgeneratorer:\n\n### 1\\. Struktur (Rækkefølge er vigtig)\n\nOpbyg din prompt i denne rækkefølge:\n\n1.  **Hovedmotiv (Subject):** Hvem eller hvad ser vi? (Person, objekt, scene).\n2.  **Handling/Kontekst:** Hvad sker der?\n3.  **Kunstnerisk Stil (Art Style):** Fx \"Photorealistic\", \"Minimalist vector illustration\", \"3D render\", \"Corporate Memphis style\".\n4.  **Komposition & Perspektiv:** Fx \"Wide angle\", \"Close-up\", \"Isometric view\", \"Clean composition\".\n5.  **Lys & Farver:** Fx \"Soft studio lighting\", \"Golden hour\", \"Blue and teal color scheme\".\n6.  **Kvalitets-modifiers:** \"4k\", \"High resolution\", \"Sharp focus\", \"Professional\".\n\n### 2\\. Designprincipper for E-learning\n\n  * **Simplicitet:** Billedet skal kunne aflæses hurtigt. Undgå \"visuel støj\" og rod.\n  * **Professionalisme:** Stilen skal være troværdig og egnet til et arbejdsmiljø.\n  * **Neutralitet:** Medmindre andet er angivet, brug en \"clean studio background\" eller \"blurred office background\" for at holde fokus på emnet.\n\n### 3\\. Hvad du skal UNDGÅ (Universal Regler)\n\n  * **Ingen teknisk syntax:** Undgå at bruge model-specifikke koder som `--v 6`, `::5`, eller `(weight:1.5)`. Brug kun naturligt beskrivende engelsk.\n  * **Ingen tekst i billedet:** Bed ikke AI'en om at skrive specifik tekst (fx skilte) inde i selve billedet, da dette ofte fejler på tværs af modeller.\n  * **Undgå negative prompts i hovedteksten:** Beskriv hvad du *vil* se, fremfor hvad du *ikke* vil se.\n\n-----\n\n## Din tankeproces (Step-by-Step)\n\n1.  Analyser brugerens emne.\n2.  Vælg en visuel metafor eller konkret situation, der understøtter emnet.\n3.  Konstruer `imagePrompt` ved hjælp af **Universal Prompting Framework** (Subject -\\> Style -\\> Lighting).\n4.  Forfat `imageText` på dansk.\n5.  Generer JSON outputtet."
+              }
+            ]
+          }
+        },
+        "id": "7cf1143b-a30b-4225-815e-c55bd52cb47a",
+        "name": "Generate Image Prompt",
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "typeVersion": 1.6,
+        "position": [
+          4480,
+          1136
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "1",
+                "name": "imagePrompt",
+                "value": "={{ $('Webhook Trigger').item.json.body.webhook_data }}",
+                "type": "string"
+              },
+              {
+                "id": "2",
+                "name": "imageText",
+                "value": "=",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "58624d68-600a-49ea-99a5-0c79c4e1d9ec",
+        "name": "Set Direct Prompt",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          4544,
+          832
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "// --- Sanitize imagePrompt --------------------------------------------------\n\n// Hent den rå prompt (læg evt. flere fallback‑felter til efter behov)\nlet prompt =\n\titems[0].json.imagePrompt ??\n\titems[0].json.output?.imagePrompt ??\n\t\"\";\n\n/*\n * 1. Fjern **Prompt:**‑overskrift + “(xxx characters)”‑hale\n * 2. Klem linjeskift/whitespace sammen\n * 3. Fjern rester af markdown‑fed (**…**)\n */\nprompt = prompt\n\t.replace(/^\\s*\\*\\*prompt:\\*\\*\\s*/i, \"\")          // **Prompt:** …\n\t.replace(/\\(\\s*\\d+\\s*characters\\)\\s*$/i, \"\")    // (…)‑hale\n\t.replace(/[\\r\\n]+/g, \" \")                       // linjeskift → mellemrum\n\t.replace(/\\*\\*/g, \"\")                           // fed‑markering\n\t.replace(/\\s+/g, \" \")                           // dublerede mellemrum\n\t.trim();\n\n/*\n * 4. Erstat “smarte” citationstegn, tankestreger m.m. med ASCII‑ækvivalenter\n *    – udvid selv kortet, hvis andre unicode‑tegn driller\n */\nconst unicodeMap = {\n\t\"\\u2018\": \"'\", \"\\u2019\": \"'\", \"\\u201A\": \"'\", \"\\u201B\": \"'\",\n\t\"\\u201C\": '\"', \"\\u201D\": '\"', \"\\u201E\": '\"', \"\\u201F\": '\"',\n\t\"\\u2013\": \"-\", \"\\u2014\": \"-\", \"\\u2015\": \"-\",\n\t\"\\u2212\": \"-\", \"\\u00A0\": \" \"\n};\nprompt = prompt.replace(/[\\u2018-\\u201F\\u2212\\u00A0]/g, ch => unicodeMap[ch] ?? ch);\n\n/*\n * 5. (valgfrit) fjern *kursiv*-asterisker\n *    – hvis du vil beholde dem, så slet blot linjen herunder\n */\nprompt = prompt.replace(/\\*(\\S(?:.*?\\S)?)\\*/g, \"$1\");\n\n/* 6. Fjern eventuelle kontroltegn (< U+0020) en ekstra gang */\nprompt = prompt.replace(/[\\u0000-\\u001F\\u007F]/g, \"\");\n\n/*\n * 7. Fjern omsluttende citationstegn, hvis prompten starter **og** slutter\n *    med det samme anførselstegn (\") eller (')\n */\nif (\n\t(prompt.startsWith('\"') && prompt.endsWith('\"')) ||\n\t(prompt.startsWith(\"'\") && prompt.endsWith(\"'\"))\n) {\n\tprompt = prompt.slice(1, -1).trim();\n}\n\n// --- Saml output -----------------------------------------------------------\n\nconst imageText =\n\titems[0].json.imageText ??\n\titems[0].json.output?.imageText ??\n\t\"\";\n\nreturn [\n\t{\n\t\tjson: {\n\t\t\t...items[0].json,\n\t\t\timagePrompt: prompt,\n\t\t\timageText\n\t\t}\n\t}\n];\n"
+        },
+        "id": "45dcaea2-8f8c-45a9-a2c3-1691e1fb5700",
+        "name": "Clean Prompt",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          4832,
+          976
+        ]
+      },
+      {
+        "parameters": {
+          "respondWith": "text",
+          "responseBody": "={{ $json.output }}",
+          "options": {
+            "responseCode": 200
+          }
+        },
+        "id": "620e61d9-82a9-428c-b4eb-39c0f96defe8",
+        "name": "Success Response1",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          7392,
+          752
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.replicate.com/v1/models/black-forest-labs/flux-2-pro/predictions",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Prefer",
+                "value": "wait"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"input\": {\n    \"prompt\": \"{{ $json.imagePrompt }}\",\n    \"aspect_ratio\": \"custom\",\n    \"width\": {{ $('Set Variables').item.json.body.image_width }},\n    \"height\": {{ $('Set Variables').item.json.body.image_height }},\n    \"steps\": 30\n  }\n}",
+          "options": {
+            "timeout": 30000
+          }
+        },
+        "id": "44e0f7a1-1d76-4591-87d2-bc6cd0e4dbdf",
+        "name": "Flux",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          6192,
+          752
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "NHMKteatPDSTW5FQ",
+            "name": "Replicate"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.replicate.com/v1/models/google/nano-banana-pro/predictions",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"input\": {\n    \"prompt\": \"{{ $('Clean Prompt').item.json.imagePrompt }}\",\n    \"aspect_ratio\": \"{{ $json.ratio }}\",\n    \"steps\": 30,\n    \"output_format\": \"jpg\"\n  }\n}",
+          "options": {
+            "timeout": 120000
+          }
+        },
+        "id": "8db8c080-1d4f-414b-ba60-393c7c631aa7",
+        "name": "Nano Banana",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          5504,
+          1072
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "NHMKteatPDSTW5FQ",
+            "name": "Replicate"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $('Webhook Trigger').item.json.body.model }}",
+                      "rightValue": "flux",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      },
+                      "id": "c1e83186-0262-4321-b86b-3df09fcd4b52"
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "flux"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "id": "ced19be3-ea20-4d4e-ba33-3ba4f485be00",
+                      "leftValue": "={{ $('Webhook Trigger').item.json.body.model }}",
+                      "rightValue": "banana",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals",
+                        "name": "filter.operator.equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "banana"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.2,
+        "position": [
+          5056,
+          976
+        ],
+        "id": "ae9fb153-e641-46a3-8022-b12483aa843c",
+        "name": "Switch"
+      },
+      {
+        "parameters": {
+          "jsCode": "const width = $('Set Variables').first().json.body.image_width;\nconst height = $('Set Variables').first().json.body.image_height;\n\nlet ratio = '16:9'; // default\n\nif (width === 1024 && height === 768) {\n  ratio = '4:3';\n} else if (width === 1024 && height === 576) {\n  ratio = '16:9';\n} else if (width === 1024 && height === 683) {\n  ratio = '3:2';\n}\n\nreturn [{ json: { ratio } }];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          5280,
+          1072
+        ],
+        "id": "6c26a961-e337-41ab-a59b-4eeb3a9bbcbc",
+        "name": "Code in JavaScript"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.replicate.com/v1/models/google/nano-banana/predictions",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Prefer",
+                "value": "wait"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"input\": {\n    \"prompt\": \"{{ $('Switch').item.json.output.imagePrompt }}\",\n    \"aspect_ratio\": \"{{ $json.ratio }}\",\n    \"steps\": 30\n  }\n}",
+          "options": {
+            "timeout": 30000
+          }
+        },
+        "id": "6af10ae1-1f53-4836-b608-0d71ca4ecaf5",
+        "name": "Nano Banana1",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          2688,
+          1456
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "NHMKteatPDSTW5FQ",
+            "name": "Replicate"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "url": "={{ $('Nano Banana').item.json.urls.get }}",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "options": {}
+        },
+        "id": "074c3778-c690-4f9d-aba2-41fb1eb56fc7",
+        "name": "Poll Replicate Status",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          5952,
+          1008
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "NHMKteatPDSTW5FQ",
+            "name": "Replicate"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": false,
+              "leftValue": "",
+              "typeValidation": "loose"
+            },
+            "conditions": [
+              {
+                "id": "id-1",
+                "leftValue": "={{ $json.status }}",
+                "rightValue": "succeeded",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "4dc94842-af9b-4cd2-bdb4-4dc49f9d042c",
+        "name": "Check If Complete",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          6176,
+          1072
+        ]
+      },
+      {
+        "parameters": {
+          "url": "={{ $('Poll Replicate Status').item.json.output }}",
+          "options": {
+            "response": {
+              "response": {
+                "responseFormat": "file"
+              }
+            }
+          }
+        },
+        "id": "97e937d5-0f0d-4654-9d71-909546f8b168",
+        "name": "Download Image",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          6496,
+          1136
+        ]
+      },
+      {
+        "parameters": {},
+        "id": "3b59bc82-02cd-4c94-832b-9b3c8e4200df",
+        "name": "Wait 5 Seconds",
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          5728,
+          1072
+        ],
+        "webhookId": "e867736b-f048-4bf5-9ee0-4ecf6817d5a2"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://iynjlzzmszozpxpgldaa.supabase.co/storage/v1/object/public/course-images/testnavn.webp",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "image/webp"
+              },
+              {
+                "name": "Cache-Control",
+                "value": "public,max-age=31536000,immutable"
+              }
+            ]
+          },
+          "sendBody": true,
+          "contentType": "binaryData",
+          "inputDataFieldName": "data",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          6352,
+          1632
+        ],
+        "id": "82ef2bae-043b-45f5-ab28-f95081804991",
+        "name": "Upload billede",
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "G86aTIt2hb72yHxm",
+            "name": "Supabase storage"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://iynjlzzmszozpxpgldaa.supabase.co/storage/v1/object/course-images/temp.webp",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "image/webp"
+              },
+              {
+                "name": "x-upsert",
+                "value": "true"
+              }
+            ]
+          },
+          "sendBody": true,
+          "contentType": "binaryData",
+          "inputDataFieldName": "data",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          6912,
+          1088
+        ],
+        "id": "fd06dacf-6897-47e7-a274-ed7afcb48079",
+        "name": "HTTP Request",
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "G86aTIt2hb72yHxm",
+            "name": "Supabase storage"
+          }
+        },
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "url": "={{ $json.output }}",
+          "options": {
+            "response": {
+              "response": {
+                "responseFormat": "file"
+              }
+            }
+          }
+        },
+        "id": "c508c045-3d02-4fdf-a028-5020e9172923",
+        "name": "Download Image1",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          6512,
+          784
+        ]
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ $json }}",
+          "options": {
+            "responseCode": 202
+          }
+        },
+        "id": "e13779e5-86c6-46cb-95a9-bb014564dacc",
+        "name": "Early Respond with ExecutionId",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          3328,
+          672
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "id-1",
+                "name": "executionId",
+                "value": "={{ $execution.id }}",
+                "type": "string"
+              },
+              {
+                "id": "id-2",
+                "name": "status",
+                "value": "processing",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "559c05dd-88f1-4d9f-b86b-5a1dcce1f576",
+        "name": "Early Response Data1",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          2848,
+          672
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "279a94b6-4cf9-4cef-b56d-47338f09d7ba",
+                "name": "output",
+                "value": "=https://iynjlzzmszozpxpgldaa.supabase.co/storage/v1/object/{{ $json.Key }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          7120,
+          1088
+        ],
+        "id": "270d2b7c-161e-463f-adac-ae8ff4571401",
+        "name": "Edit Fields"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.replicate.com/v1/models/black-forest-labs/flux-pro/predictions",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Prefer",
+                "value": "wait"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"input\": {\n    \"prompt\": \"{{ $json.imagePrompt }}\",\n    \"aspect_ratio\": \"custom\",\n    \"width\": {{ $('Set Variables').item.json.body.image_width }},\n    \"height\": {{ $('Set Variables').item.json.body.image_height }},\n    \"steps\": 30\n  }\n}",
+          "options": {
+            "timeout": 30000
+          }
+        },
+        "id": "10d80aa6-f29b-4d61-b735-c095717ed38b",
+        "name": "Flux1",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          6048,
+          496
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "NHMKteatPDSTW5FQ",
+            "name": "Replicate"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Webhook Trigger": {
+        "main": [
+          [
+            {
+              "node": "Set Variables",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Early Response Data1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set Variables": {
+        "main": [
+          [
+            {
+              "node": "Detect Content Type",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Detect Content Type": {
+        "main": [
+          [
+            {
+              "node": "Route by Type",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Route by Type": {
+        "main": [
+          [
+            {
+              "node": "Get Lesson Context",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Get Module Context",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Get Course Context",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Lesson Context": {
+        "main": [
+          [
+            {
+              "node": "Merge Context",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Module Context": {
+        "main": [
+          [
+            {
+              "node": "Merge Context",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Course Context": {
+        "main": [
+          [
+            {
+              "node": "Merge Context",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Merge Context": {
+        "main": [
+          [
+            {
+              "node": "Check Direct Prompt",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Check Direct Prompt": {
+        "main": [
+          [
+            {
+              "node": "Set Direct Prompt",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare AI Context",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare AI Context": {
+        "main": [
+          [
+            {
+              "node": "Generate Image Prompt",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AI Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Generate Image Prompt",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Output Parser": {
+        "ai_outputParser": [
+          [
+            {
+              "node": "Generate Image Prompt",
+              "type": "ai_outputParser",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Generate Image Prompt": {
+        "main": [
+          [
+            {
+              "node": "Clean Prompt",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set Direct Prompt": {
+        "main": [
+          [
+            {
+              "node": "Clean Prompt",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Clean Prompt": {
+        "main": [
+          [
+            {
+              "node": "Switch",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Nano Banana": {
+        "main": [
+          [
+            {
+              "node": "Wait 5 Seconds",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Switch": {
+        "main": [
+          [
+            {
+              "node": "Flux",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Code in JavaScript",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Flux": {
+        "main": [
+          [
+            {
+              "node": "Download Image1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code in JavaScript": {
+        "main": [
+          [
+            {
+              "node": "Nano Banana",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait 5 Seconds": {
+        "main": [
+          [
+            {
+              "node": "Poll Replicate Status",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Poll Replicate Status": {
+        "main": [
+          [
+            {
+              "node": "Check If Complete",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Check If Complete": {
+        "main": [
+          [
+            {
+              "node": "Download Image",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Wait 5 Seconds",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Download Image": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Download Image1": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Early Response Data1": {
+        "main": [
+          [
+            {
+              "node": "Early Respond with ExecutionId",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "Success Response1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": null,
+    "description": null
+  },
   "tags": []
 }
