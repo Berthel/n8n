@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-08-25T13:20:07.583Z",
   "updatedAt": "2025-09-05T14:46:56.000Z",
+  "createdAt": "2025-08-25T13:20:07.583Z",
   "id": "pyOuC3TZmuw6UgCe",
   "name": "Course translation med 2 adskilte loops",
   "active": false,
@@ -3112,15 +3112,17 @@
     ]
   },
   "versionId": "dd18fc8a-1494-4f14-ad45-f7b43b99f825",
+  "activeVersionId": null,
   "triggerCount": 1,
   "shared": [
     {
-      "createdAt": "2025-08-25T13:20:07.589Z",
       "updatedAt": "2025-08-25T13:20:07.589Z",
+      "createdAt": "2025-08-25T13:20:07.589Z",
       "role": "workflow:owner",
       "workflowId": "pyOuC3TZmuw6UgCe",
       "projectId": "SFLNAzqJIfhKMhJx"
     }
   ],
+  "activeVersion": null,
   "tags": []
 }
