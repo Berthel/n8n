@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-08-22T09:23:41.121Z",
   "updatedAt": "2025-08-22T09:58:06.000Z",
+  "createdAt": "2025-08-22T09:23:41.121Z",
   "id": "CpVRQxIfWQFBkV4R",
   "name": "Course Translation Workflow",
   "active": false,
@@ -516,15 +516,17 @@
     ]
   },
   "versionId": "ba118d10-ab2d-4664-aa44-0393d80f5072",
+  "activeVersionId": null,
   "triggerCount": 1,
   "shared": [
     {
-      "createdAt": "2025-08-22T09:29:24.694Z",
       "updatedAt": "2025-08-22T09:29:24.694Z",
+      "createdAt": "2025-08-22T09:29:24.694Z",
       "role": "workflow:owner",
       "workflowId": "CpVRQxIfWQFBkV4R",
       "projectId": "SFLNAzqJIfhKMhJx"
     }
   ],
+  "activeVersion": null,
   "tags": []
 }
