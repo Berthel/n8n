@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-08-24T07:21:14.292Z",
   "updatedAt": "2025-09-05T14:46:56.000Z",
+  "createdAt": "2025-08-24T07:21:14.292Z",
   "id": "fZNRCqdcoe681CAE",
   "name": "Course translation med loop",
   "active": false,
@@ -2944,15 +2944,17 @@
     ]
   },
   "versionId": "acd857ed-caed-4edb-a5ab-00c843090493",
+  "activeVersionId": null,
   "triggerCount": 1,
   "shared": [
     {
-      "createdAt": "2025-08-24T07:21:14.297Z",
       "updatedAt": "2025-08-24T07:21:14.297Z",
+      "createdAt": "2025-08-24T07:21:14.297Z",
       "role": "workflow:owner",
       "workflowId": "fZNRCqdcoe681CAE",
       "projectId": "SFLNAzqJIfhKMhJx"
     }
   ],
+  "activeVersion": null,
   "tags": []
 }
