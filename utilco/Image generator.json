@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-04-24T10:59:19.312Z",
   "updatedAt": "2025-05-01T12:35:23.000Z",
+  "createdAt": "2025-04-24T10:59:19.312Z",
   "id": "TfCfIheIc5Ogo5i0",
   "name": "Image generator",
   "active": false,
@@ -570,15 +570,17 @@
   "meta": null,
   "pinData": {},
   "versionId": "dd811a45-89f2-4f9f-a597-bd9616f9ae37",
+  "activeVersionId": null,
   "triggerCount": 1,
   "shared": [
     {
-      "createdAt": "2025-04-24T11:15:54.307Z",
       "updatedAt": "2025-04-24T11:15:54.307Z",
+      "createdAt": "2025-04-24T11:15:54.307Z",
       "role": "workflow:owner",
       "workflowId": "TfCfIheIc5Ogo5i0",
       "projectId": "SFLNAzqJIfhKMhJx"
     }
   ],
+  "activeVersion": null,
   "tags": []
 }
