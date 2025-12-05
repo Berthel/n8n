@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-08-24T12:51:00.310Z",
   "updatedAt": "2025-09-05T14:46:56.000Z",
+  "createdAt": "2025-08-24T12:51:00.310Z",
   "id": "GkTvY9SaR3MYNsNS",
   "name": "Course translation simple",
   "active": false,
@@ -3962,15 +3962,17 @@
     ]
   },
   "versionId": "c7ffbc4a-f9ae-4a8b-88f2-3a42a2c70676",
+  "activeVersionId": null,
   "triggerCount": 1,
   "shared": [
     {
-      "createdAt": "2025-08-24T12:51:00.317Z",
       "updatedAt": "2025-08-24T12:51:00.317Z",
+      "createdAt": "2025-08-24T12:51:00.317Z",
       "role": "workflow:owner",
       "workflowId": "GkTvY9SaR3MYNsNS",
       "projectId": "SFLNAzqJIfhKMhJx"
     }
   ],
+  "activeVersion": null,
   "tags": []
 }
