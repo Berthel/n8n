@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-08-22T08:35:55.064Z",
   "updatedAt": "2025-08-22T08:40:40.000Z",
+  "createdAt": "2025-08-22T08:35:55.064Z",
   "id": "lCya5Mn4UTGmQPJN",
   "name": "Course Translation via Webhook",
   "active": false,
@@ -244,15 +244,17 @@
   "meta": null,
   "pinData": null,
   "versionId": "591c4f16-3f21-4e02-9159-2366a8044b05",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-08-22T08:35:55.065Z",
       "updatedAt": "2025-08-22T08:35:55.065Z",
+      "createdAt": "2025-08-22T08:35:55.065Z",
       "role": "workflow:owner",
       "workflowId": "lCya5Mn4UTGmQPJN",
       "projectId": "amlePLldrdBTzDyr"
     }
   ],
+  "activeVersion": null,
   "tags": []
 }
