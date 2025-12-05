@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-03-31T13:25:25.691Z",
   "updatedAt": "2025-07-23T16:51:40.000Z",
+  "createdAt": "2025-03-31T13:25:25.691Z",
   "id": "3VWiQm8stMjt2QkE",
   "name": "Grafisk designer",
   "active": false,
@@ -61,15 +61,17 @@
   "meta": null,
   "pinData": {},
   "versionId": "57e5fa50-c73f-4ec9-9f17-93f8afecdfb0",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-03-31T13:25:25.694Z",
       "updatedAt": "2025-03-31T13:25:25.694Z",
+      "createdAt": "2025-03-31T13:25:25.694Z",
       "role": "workflow:owner",
       "workflowId": "3VWiQm8stMjt2QkE",
       "projectId": "SFLNAzqJIfhKMhJx"
     }
   ],
+  "activeVersion": null,
   "tags": []
 }
