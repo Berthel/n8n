@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-08-22T12:57:18.424Z",
   "updatedAt": "2025-09-05T14:46:56.000Z",
+  "createdAt": "2025-08-22T12:57:18.424Z",
   "id": "92s5sogGiwikj7Ai",
   "name": "Course translation",
   "active": false,
@@ -2906,15 +2906,17 @@
     ]
   },
   "versionId": "42c91bf8-1822-4652-a660-caf315f5aaa3",
+  "activeVersionId": null,
   "triggerCount": 1,
   "shared": [
     {
-      "createdAt": "2025-08-22T12:57:18.430Z",
       "updatedAt": "2025-08-22T12:57:18.430Z",
+      "createdAt": "2025-08-22T12:57:18.430Z",
       "role": "workflow:owner",
       "workflowId": "92s5sogGiwikj7Ai",
       "projectId": "SFLNAzqJIfhKMhJx"
     }
   ],
+  "activeVersion": null,
   "tags": []
 }
