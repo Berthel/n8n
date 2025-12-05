@@ -690,6 +690,7 @@
     ]
   },
   "versionId": "2f8d7ff8-6df1-4324-879f-92c9f8cf48f9",
+  "activeVersionId": "2f8d7ff8-6df1-4324-879f-92c9f8cf48f9",
   "triggerCount": 1,
   "shared": [
     {
@@ -700,5 +701,651 @@
       "projectId": "SFLNAzqJIfhKMhJx"
     }
   ],
+  "activeVersion": {
+    "updatedAt": "2025-12-04T14:45:44.020Z",
+    "createdAt": "2025-12-04T14:45:44.020Z",
+    "versionId": "2f8d7ff8-6df1-4324-879f-92c9f8cf48f9",
+    "workflowId": "Gmw423TMGpJGS3AT",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "d404182c-14d3-4937-a4f9-b23bf6c2eb1a",
+          "authentication": "headerAuth",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -2192,
+          512
+        ],
+        "id": "584a2340-952a-457e-a4f4-83dfe836abb0",
+        "name": "Webhook",
+        "webhookId": "d404182c-14d3-4937-a4f9-b23bf6c2eb1a",
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "WwlGKLCrVwJHzSyW",
+            "name": "Academy webhook"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "get",
+          "fileId": "={{ $('Webhook').item.json.body.fileId }}",
+          "additionalFields": {}
+        },
+        "type": "n8n-nodes-base.box",
+        "typeVersion": 1,
+        "position": [
+          -1968,
+          512
+        ],
+        "id": "913d5b6a-839f-4bad-b371-e9980a753597",
+        "name": "Get a file",
+        "credentials": {
+          "boxOAuth2Api": {
+            "id": "yIAh3gThcR2qpEHQ",
+            "name": "Box Christian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "download",
+          "fileId": "={{ $('Get a file').item.json.id }}"
+        },
+        "type": "n8n-nodes-base.box",
+        "typeVersion": 1,
+        "position": [
+          -704,
+          512
+        ],
+        "id": "690ec2f3-7a71-43e1-ba09-a90400a1e86f",
+        "name": "Download a file",
+        "credentials": {
+          "boxOAuth2Api": {
+            "id": "yIAh3gThcR2qpEHQ",
+            "name": "Box Christian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "url": "={{ $('Wait1').item.json.request_check_url }}",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "options": {}
+        },
+        "id": "d9fe016f-a472-4a08-98de-783318fc4f84",
+        "name": "Get Markdown",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          192,
+          432
+        ],
+        "typeVersion": 4.2,
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "CDnA62zdXmFpBWGu",
+            "name": "datalab"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://www.datalab.to/api/v1/marker",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendBody": true,
+          "contentType": "multipart-form-data",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "max_pages",
+                "value": "120"
+              },
+              {
+                "name": "use_llm",
+                "value": "true"
+              },
+              {
+                "name": "output_format",
+                "value": "markdown"
+              },
+              {
+                "parameterType": "formBinaryData",
+                "name": "file",
+                "inputDataFieldName": "data"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "3b6784b3-f912-4078-bdbb-1ba9f382107a",
+        "name": "Send to Datalab API",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          -480,
+          512
+        ],
+        "typeVersion": 4.2,
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "CDnA62zdXmFpBWGu",
+            "name": "datalab"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "amount": 1,
+          "unit": "minutes"
+        },
+        "id": "db51428b-28cd-4ceb-a925-865b619217ea",
+        "name": "Wait1",
+        "type": "n8n-nodes-base.wait",
+        "position": [
+          -256,
+          512
+        ],
+        "webhookId": "7b49cf9b-9859-4361-a8b8-2407d114d418",
+        "typeVersion": 1.1
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "1c85917b-c2a8-4718-96d2-aa45bc85b853",
+                "leftValue": "={{ $json.status }}",
+                "rightValue": "complete",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals",
+                  "name": "filter.operator.equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          416,
+          432
+        ],
+        "id": "60addf60-1b77-4098-8b4e-e0ac8521b975",
+        "name": "If1"
+      },
+      {
+        "parameters": {
+          "amount": 30
+        },
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          848,
+          608
+        ],
+        "id": "d607c81a-c7c2-45d4-b3e4-8b4f5836115b",
+        "name": "Wait3",
+        "webhookId": "cfc0aa35-c1f3-428b-97e1-b3daa041e375"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "dc2fe6c1-6f19-4623-9a90-21c00e0284bc",
+                "name": "request_check_url",
+                "value": "{{ $json.request_check_url }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -32,
+          512
+        ],
+        "id": "11620343-6fa7-422e-92fd-dd33fd2f1801",
+        "name": "Edit Fields"
+      },
+      {
+        "parameters": {
+          "respondWith": "text",
+          "responseBody": "={{ $json.markdown }}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.4,
+        "position": [
+          1248,
+          176
+        ],
+        "id": "d219fa9d-5b3c-4f78-89d4-63c5490ce058",
+        "name": "Respond to Webhook"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "id-1",
+                "name": "executionId",
+                "value": "={{ $execution.id }}",
+                "type": "string"
+              },
+              {
+                "id": "id-2",
+                "name": "status",
+                "value": "processing",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "01f88bd9-f1d4-46d3-92f6-bb686f1bdee0",
+        "name": "Early Response Data",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -2320,
+          48
+        ]
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ $json }}",
+          "options": {}
+        },
+        "id": "db2cce00-5751-42f5-9a0a-9bca6ea30dfb",
+        "name": "Early Respond with ExecutionId",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.4,
+        "position": [
+          -2032,
+          16
+        ]
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.limit",
+        "typeVersion": 1,
+        "position": [
+          -1760,
+          512
+        ],
+        "id": "6c6f27e6-85d1-4fd3-bf35-a466ce126c37",
+        "name": "Limit"
+      },
+      {
+        "parameters": {
+          "operation": "upsert",
+          "schema": {
+            "__rl": true,
+            "mode": "list",
+            "value": "public"
+          },
+          "table": {
+            "__rl": true,
+            "value": "box_markdown_cache",
+            "mode": "list",
+            "cachedResultName": "box_markdown_cache"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "markdown": "={{ $('Get Markdown').item.json.markdown }}",
+              "file_id": "={{ $('Get a file').item.json.id }}",
+              "sha1": "={{ $('Get a file').item.json.file_version.sha1 }}"
+            },
+            "matchingColumns": [
+              "file_id"
+            ],
+            "schema": [
+              {
+                "id": "file_id",
+                "displayName": "file_id",
+                "required": true,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "sha1",
+                "displayName": "sha1",
+                "required": true,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "markdown",
+                "displayName": "markdown",
+                "required": true,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "created_at",
+                "displayName": "created_at",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "dateTime",
+                "canBeUsedToMatch": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          704,
+          320
+        ],
+        "id": "298c545d-7632-4d92-b1cd-11041454aecc",
+        "name": "Insert or update rows in a table",
+        "credentials": {
+          "postgres": {
+            "id": "RUVxlMmZvsZC2IGe",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "select coalesce(\n  (\n    select sha1\n    from box_markdown_cache\n    where file_id = '{{ $json.id }}'\n    order by created_at desc\n    limit 1\n  ),\n  'NA'\n) as sha1;",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          -1552,
+          512
+        ],
+        "id": "8f9728b0-3e98-4255-a6e0-3ae4a0f9acc2",
+        "name": "het sha1",
+        "alwaysOutputData": true,
+        "credentials": {
+          "postgres": {
+            "id": "RUVxlMmZvsZC2IGe",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "c46d317e-1321-4e86-af41-e10591498557",
+                "leftValue": "={{ $json.sha1 }}",
+                "rightValue": "={{ $('Limit').item.json.file_version.sha1 }}",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals",
+                  "name": "filter.operator.equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          -1344,
+          512
+        ],
+        "id": "45a4d4ca-6afe-4be6-8ee2-539484f17df0",
+        "name": "If"
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "select markdown\nfrom box_markdown_cache\nwhere file_id = '{{ $('Get a file').item.json.id }}'",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          912,
+          176
+        ],
+        "id": "93c2a22d-8858-4161-b02e-f6b51e3161f8",
+        "name": "get markdown",
+        "credentials": {
+          "postgres": {
+            "id": "RUVxlMmZvsZC2IGe",
+            "name": "Postgres account"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Get a file": {
+        "main": [
+          [
+            {
+              "node": "Limit",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Get a file",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Early Response Data",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Markdown": {
+        "main": [
+          [
+            {
+              "node": "If1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Send to Datalab API": {
+        "main": [
+          [
+            {
+              "node": "Wait1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait1": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If1": {
+        "main": [
+          [
+            {
+              "node": "Insert or update rows in a table",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Wait3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait3": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "Get Markdown",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Download a file": {
+        "main": [
+          [
+            {
+              "node": "Send to Datalab API",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Early Response Data": {
+        "main": [
+          [
+            {
+              "node": "Early Respond with ExecutionId",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Limit": {
+        "main": [
+          [
+            {
+              "node": "het sha1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Insert or update rows in a table": {
+        "main": [
+          [
+            {
+              "node": "get markdown",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "het sha1": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "node": "get markdown",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Download a file",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "get markdown": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": null,
+    "description": null
+  },
   "tags": []
 }
