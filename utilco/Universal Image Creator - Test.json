@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-07-27T08:56:33.266Z",
   "updatedAt": "2025-07-27T08:57:17.541Z",
+  "createdAt": "2025-07-27T08:56:33.266Z",
   "id": "w9iMrK1mtX5s4i1D",
   "name": "Universal Image Creator - Test",
   "active": false,
@@ -161,15 +161,17 @@
   "meta": null,
   "pinData": null,
   "versionId": "2969dea0-e52c-4eff-8efd-8cadb396e32e",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-07-27T08:56:33.268Z",
       "updatedAt": "2025-07-27T08:56:33.268Z",
+      "createdAt": "2025-07-27T08:56:33.268Z",
       "role": "workflow:owner",
       "workflowId": "w9iMrK1mtX5s4i1D",
       "projectId": "amlePLldrdBTzDyr"
     }
   ],
+  "activeVersion": null,
   "tags": []
 }
