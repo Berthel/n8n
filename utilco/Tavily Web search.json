@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-03-28T14:26:19.327Z",
   "updatedAt": "2025-03-28T14:40:18.000Z",
+  "createdAt": "2025-03-28T14:26:19.327Z",
   "id": "eUU7d4LQhYtqNkH6",
   "name": "Tavily Web search",
   "active": false,
@@ -377,15 +377,17 @@
   },
   "pinData": {},
   "versionId": "7bd1000e-0598-4e34-9f1c-d5560ccd257a",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-03-28T14:39:06.562Z",
       "updatedAt": "2025-03-28T14:39:06.562Z",
+      "createdAt": "2025-03-28T14:39:06.562Z",
       "role": "workflow:owner",
       "workflowId": "eUU7d4LQhYtqNkH6",
       "projectId": "SFLNAzqJIfhKMhJx"
     }
   ],
+  "activeVersion": null,
   "tags": []
 }
