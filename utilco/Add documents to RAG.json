@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-03-06T15:56:37.830Z",
   "updatedAt": "2025-03-17T12:09:01.000Z",
+  "createdAt": "2025-03-06T15:56:37.830Z",
   "id": "SuKWOeWT9FUO7wTo",
   "name": "Add documents to RAG",
   "active": false,
@@ -986,15 +986,17 @@
   },
   "pinData": {},
   "versionId": "807d4d23-2d68-4823-86fd-9e01b2d53088",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-03-06T15:56:37.832Z",
       "updatedAt": "2025-03-06T15:56:37.832Z",
+      "createdAt": "2025-03-06T15:56:37.832Z",
       "role": "workflow:owner",
       "workflowId": "SuKWOeWT9FUO7wTo",
       "projectId": "SFLNAzqJIfhKMhJx"
     }
   ],
+  "activeVersion": null,
   "tags": []
 }
