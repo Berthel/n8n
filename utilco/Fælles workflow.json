@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-02-27T08:45:38.954Z",
   "updatedAt": "2025-03-06T15:55:47.000Z",
+  "createdAt": "2025-02-27T08:45:38.954Z",
   "id": "WNLhMgceqYvWFvgr",
   "name": "Fælles workflow",
   "active": false,
@@ -973,15 +973,17 @@
   },
   "pinData": {},
   "versionId": "1c525066-447d-417a-a028-6f2edef9813c",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-02-27T08:45:38.958Z",
       "updatedAt": "2025-02-27T08:45:38.958Z",
+      "createdAt": "2025-02-27T08:45:38.958Z",
       "role": "workflow:owner",
       "workflowId": "WNLhMgceqYvWFvgr",
       "projectId": "amlePLldrdBTzDyr"
     }
   ],
+  "activeVersion": null,
   "tags": []
 }
