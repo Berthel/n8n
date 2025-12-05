@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-08-25T08:15:28.654Z",
   "updatedAt": "2025-08-25T08:15:28.654Z",
+  "createdAt": "2025-08-25T08:15:28.654Z",
   "id": "TNdFO3Ik5keaMB3j",
   "name": "Translate course dynamic - FIXED",
   "active": false,
@@ -93,15 +93,17 @@
   "meta": null,
   "pinData": null,
   "versionId": "a2a4d963-678b-4772-8b78-fcd001835f6c",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-08-25T08:15:28.656Z",
       "updatedAt": "2025-08-25T08:15:28.656Z",
+      "createdAt": "2025-08-25T08:15:28.656Z",
       "role": "workflow:owner",
       "workflowId": "TNdFO3Ik5keaMB3j",
       "projectId": "amlePLldrdBTzDyr"
     }
   ],
+  "activeVersion": null,
   "tags": []
 }
