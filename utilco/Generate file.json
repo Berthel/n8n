@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-06-08T05:55:57.998Z",
   "updatedAt": "2025-08-14T10:08:46.000Z",
+  "createdAt": "2025-06-08T05:55:57.998Z",
   "id": "IZrX1epHYgKahRP9",
   "name": "Generate file",
   "active": false,
@@ -132,20 +132,22 @@
   "meta": null,
   "pinData": {},
   "versionId": "a6a5604c-a3a0-41b5-8e79-19a0ce8d4ca9",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-06-08T05:55:58.005Z",
       "updatedAt": "2025-06-08T05:55:58.005Z",
+      "createdAt": "2025-06-08T05:55:58.005Z",
       "role": "workflow:owner",
       "workflowId": "IZrX1epHYgKahRP9",
       "projectId": "SFLNAzqJIfhKMhJx"
     }
   ],
+  "activeVersion": null,
   "tags": [
     {
-      "createdAt": "2025-03-18T13:45:14.553Z",
       "updatedAt": "2025-03-18T13:45:14.553Z",
+      "createdAt": "2025-03-18T13:45:14.553Z",
       "id": "6pOUCPP24FxgjbZJ",
       "name": "Kursus"
     }
