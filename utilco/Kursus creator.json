@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-05-06T13:41:14.352Z",
   "updatedAt": "2025-10-11T14:50:27.000Z",
+  "createdAt": "2025-05-06T13:41:14.352Z",
   "id": "ZOTTc7BFoxlnLyvP",
   "name": "Kursus creator",
   "active": false,
@@ -1287,20 +1287,22 @@
     ]
   },
   "versionId": "71d1ccd9-87ca-4bd6-a4ce-910415197397",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-05-06T13:41:14.359Z",
       "updatedAt": "2025-05-06T13:41:14.359Z",
+      "createdAt": "2025-05-06T13:41:14.359Z",
       "role": "workflow:owner",
       "workflowId": "ZOTTc7BFoxlnLyvP",
       "projectId": "SFLNAzqJIfhKMhJx"
     }
   ],
+  "activeVersion": null,
   "tags": [
     {
-      "createdAt": "2025-03-18T13:45:14.553Z",
       "updatedAt": "2025-03-18T13:45:14.553Z",
+      "createdAt": "2025-03-18T13:45:14.553Z",
       "id": "6pOUCPP24FxgjbZJ",
       "name": "Kursus"
     }
