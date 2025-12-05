@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-10-13T05:22:06.277Z",
   "updatedAt": "2025-10-13T06:13:18.000Z",
+  "createdAt": "2025-10-13T05:22:06.277Z",
   "id": "AQA4B8m0jyhTe5Vh",
   "name": "Deep Research",
   "active": false,
@@ -222,15 +222,17 @@
   },
   "pinData": {},
   "versionId": "2be316ee-8523-4d5b-8d66-ee664177df7e",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-10-13T05:22:06.283Z",
       "updatedAt": "2025-10-13T05:22:06.283Z",
+      "createdAt": "2025-10-13T05:22:06.283Z",
       "role": "workflow:owner",
       "workflowId": "AQA4B8m0jyhTe5Vh",
       "projectId": "SFLNAzqJIfhKMhJx"
     }
   ],
+  "activeVersion": null,
   "tags": []
 }
