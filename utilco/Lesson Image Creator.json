@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-07-23T11:53:32.550Z",
   "updatedAt": "2025-07-23T15:23:21.000Z",
+  "createdAt": "2025-07-23T11:53:32.550Z",
   "id": "AUd1W5LsSlGeRKJX",
   "name": "Lesson Image Creator",
   "active": false,
@@ -365,15 +365,17 @@
   },
   "pinData": {},
   "versionId": "a9d98c28-f471-4c9e-ab6f-d0f07e5be005",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-07-23T11:53:32.558Z",
       "updatedAt": "2025-07-23T11:53:32.558Z",
+      "createdAt": "2025-07-23T11:53:32.558Z",
       "role": "workflow:owner",
       "workflowId": "AUd1W5LsSlGeRKJX",
       "projectId": "SFLNAzqJIfhKMhJx"
     }
   ],
+  "activeVersion": null,
   "tags": []
 }
