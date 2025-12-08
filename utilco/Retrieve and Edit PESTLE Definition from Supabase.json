@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2025-11-19T14:36:04.000Z",
+  "updatedAt": "2025-12-07T15:42:50.000Z",
   "createdAt": "2025-11-19T05:52:27.548Z",
   "id": "0uJMyz4K8D3V327F",
   "name": "Retrieve and Edit PESTLE Definition from Supabase",
@@ -57,22 +57,6 @@
           "name": "Supabase account"
         }
       }
-    },
-    {
-      "parameters": {
-        "mode": "raw",
-        "jsonOutput": "\n  {\n    \"id\": \"ecc37ed0-db7a-45a5-ab8e-06f0fd82d7b4\",\n    \"name\": \"Utilco PESTLE test\",\n    \"org_type\": \"Virksomhed\",\n    \"org_name\": \"Utilco ApS\",\n    \"org_short_description\": \"Virksomhedsbeskrivelse: Utilco ApS\\nUtilco ApS er en specialiseret rådgivningsvirksomhed, der opererer i krydsfeltet mellem teknik, ledelse og bæredygtighed. Virksomheden har fokus på forsyningssektoren (el, vand, varme og gas) samt anlægsintensive virksomheder. Deres kernemission er at hjælpe disse aktører med at sikre en effektiv, sikker og bæredygtig infrastruktur gennem målrettet rådgivning.\\n\\nVirksomhedens forretningsgrundlag hviler på tre primære søjler, som er relevante at inddrage i en PESTLE-analyse:\\n\\nAsset Management (ISO 55001): Rådgivning om optimal styring, drift og vedligehold af fysiske anlægsaktiver gennem hele deres livscyklus. Dette sikrer, at forsyningsselskaber kan maksimere værdien af deres investeringer.\\n\\nESG & Compliance: Hjælp til at navigere i kompleks lovgivning og stigende krav til bæredygtighedsrapportering (f.eks. EU's CSRD-direktiv). Utilco oversætter regulatoriske krav til konkrete handlingsplaner.\\n\\nStrategiudvikling: Datadrevet beslutningsstøtte, der hjælper ledelser med at prioritere investeringer til fremtidssikring og grøn omstilling.\",\n    \"org_industry\": \"Konsulent, forsyning, anlægsvirksomheder\",\n    \"org_geography_main\": \"Danmark\",\n    \"org_geography_other\": \"Norden\",\n    \"org_customers_type\": \"B2B\",\n    \"org_size_employees\": \"0-10\",\n    \"org_business_model\": \"Konsulentydelser, Online kurser, Analyser\",\n    \"analysis_purpose\": \"Strategisk planlægning\",\n    \"analysis_time_horizon\": \"3 år\",\n    \"analysis_focus\": \"Balanceret\",\n    \"analysis_depth\": \"Normal\",\n    \"scope_countries\": \"Danmark\",\n    \"scope_segments\": \"Forsyningsselskaber i Danmark\",\n    \"analysis_special_topics\": \"Dataregulering, grøn omstilling, AI, Cybersikkerhed\",\n    \"analysis_user_notes\": null,\n    \"analysis_language\": \"da-DK\",\n    \"analysis_tone\": \"Rådgivende\",\n    \"analysis_max_words\": \"2000\",\n    \"created_at\": \"2025-11-19T06:07:03.776588+00:00\",\n    \"updated_at\": \"2025-11-19T06:07:03.776588+00:00\",\n    \"created_by\": \"f6a7bb45-2f57-49df-86a9-c1531b18c314\",\n    \"updated_by\": \"f6a7bb45-2f57-49df-86a9-c1531b18c314\"\n  }\n\n",
-        "includeOtherFields": true,
-        "options": {}
-      },
-      "id": "0a7647ce-86ff-4b29-957d-93c1ccfcda01",
-      "name": "PESTLE definition",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        16,
-        -64
-      ]
     },
     {
       "parameters": {
@@ -674,17 +658,6 @@
       "main": [
         [
           {
-            "node": "PESTLE definition",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "PESTLE definition": {
-      "main": [
-        [
-          {
             "node": "Baggrundsinformation",
             "type": "main",
             "index": 0
@@ -868,27 +841,27 @@
             "accept-encoding": "gzip, br",
             "accept-language": "*",
             "cdn-loop": "netlify, cloudflare; loops=1; subreqs=1",
-            "cf-connecting-ip": "3.120.31.133",
+            "cf-connecting-ip": "3.120.224.237",
             "cf-ew-via": "15",
             "cf-ipcountry": "DE",
-            "cf-ray": "9a0e7bdd038865d0-FRA",
+            "cf-ray": "9aa5028df34e382c-FRA",
             "cf-visitor": "{\"scheme\":\"https\"}",
             "cf-worker": "n8n.cloud",
             "content-type": "application/json",
             "sec-fetch-mode": "cors",
-            "x-forwarded-for": "3.120.31.133, 172.69.151.56",
+            "x-forwarded-for": "3.120.224.237, 172.68.193.176",
             "x-forwarded-host": "utilco.app.n8n.cloud",
             "x-forwarded-port": "443",
             "x-forwarded-proto": "https",
-            "x-forwarded-server": "traefik-prod-users-gwc-10-6888ffdd77-9vgr4",
+            "x-forwarded-server": "traefik-prod-users-gwc-10-6888ffdd77-zl6sm",
             "x-is-trusted": "yes",
-            "x-real-ip": "3.120.31.133",
+            "x-real-ip": "3.120.224.237",
             "x-webhook-secret": "vczUfUpZhtQkJXFoP6hN"
           },
           "params": {},
           "query": {},
           "body": {
-            "pestle_definition_id": "ecc37ed0-db7a-45a5-ab8e-06f0fd82d7b4"
+            "pestle_definition_id": "753a16ee-6540-42d2-a46a-91038f430826"
           },
           "webhookUrl": "https://utilco.app.n8n.cloud/webhook/pestle-definition-webhook",
           "executionMode": "production"
@@ -896,8 +869,8 @@
       }
     ]
   },
-  "versionId": "5e89ef31-7a6f-4b78-ade1-555681e1a48c",
-  "activeVersionId": "5e89ef31-7a6f-4b78-ade1-555681e1a48c",
+  "versionId": "30ba87f5-c18d-4ebf-99b2-07b2b8d95174",
+  "activeVersionId": "30ba87f5-c18d-4ebf-99b2-07b2b8d95174",
   "triggerCount": 1,
   "shared": [
     {
@@ -909,9 +882,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2025-12-04T14:45:44.020Z",
-    "createdAt": "2025-12-04T14:45:44.020Z",
-    "versionId": "5e89ef31-7a6f-4b78-ade1-555681e1a48c",
+    "updatedAt": "2025-12-07T15:42:50.018Z",
+    "createdAt": "2025-12-07T15:42:50.018Z",
+    "versionId": "30ba87f5-c18d-4ebf-99b2-07b2b8d95174",
     "workflowId": "0uJMyz4K8D3V327F",
     "nodes": [
       {
@@ -965,22 +938,6 @@
             "name": "Supabase account"
           }
         }
-      },
-      {
-        "parameters": {
-          "mode": "raw",
-          "jsonOutput": "\n  {\n    \"id\": \"ecc37ed0-db7a-45a5-ab8e-06f0fd82d7b4\",\n    \"name\": \"Utilco PESTLE test\",\n    \"org_type\": \"Virksomhed\",\n    \"org_name\": \"Utilco ApS\",\n    \"org_short_description\": \"Virksomhedsbeskrivelse: Utilco ApS\\nUtilco ApS er en specialiseret rådgivningsvirksomhed, der opererer i krydsfeltet mellem teknik, ledelse og bæredygtighed. Virksomheden har fokus på forsyningssektoren (el, vand, varme og gas) samt anlægsintensive virksomheder. Deres kernemission er at hjælpe disse aktører med at sikre en effektiv, sikker og bæredygtig infrastruktur gennem målrettet rådgivning.\\n\\nVirksomhedens forretningsgrundlag hviler på tre primære søjler, som er relevante at inddrage i en PESTLE-analyse:\\n\\nAsset Management (ISO 55001): Rådgivning om optimal styring, drift og vedligehold af fysiske anlægsaktiver gennem hele deres livscyklus. Dette sikrer, at forsyningsselskaber kan maksimere værdien af deres investeringer.\\n\\nESG & Compliance: Hjælp til at navigere i kompleks lovgivning og stigende krav til bæredygtighedsrapportering (f.eks. EU's CSRD-direktiv). Utilco oversætter regulatoriske krav til konkrete handlingsplaner.\\n\\nStrategiudvikling: Datadrevet beslutningsstøtte, der hjælper ledelser med at prioritere investeringer til fremtidssikring og grøn omstilling.\",\n    \"org_industry\": \"Konsulent, forsyning, anlægsvirksomheder\",\n    \"org_geography_main\": \"Danmark\",\n    \"org_geography_other\": \"Norden\",\n    \"org_customers_type\": \"B2B\",\n    \"org_size_employees\": \"0-10\",\n    \"org_business_model\": \"Konsulentydelser, Online kurser, Analyser\",\n    \"analysis_purpose\": \"Strategisk planlægning\",\n    \"analysis_time_horizon\": \"3 år\",\n    \"analysis_focus\": \"Balanceret\",\n    \"analysis_depth\": \"Normal\",\n    \"scope_countries\": \"Danmark\",\n    \"scope_segments\": \"Forsyningsselskaber i Danmark\",\n    \"analysis_special_topics\": \"Dataregulering, grøn omstilling, AI, Cybersikkerhed\",\n    \"analysis_user_notes\": null,\n    \"analysis_language\": \"da-DK\",\n    \"analysis_tone\": \"Rådgivende\",\n    \"analysis_max_words\": \"2000\",\n    \"created_at\": \"2025-11-19T06:07:03.776588+00:00\",\n    \"updated_at\": \"2025-11-19T06:07:03.776588+00:00\",\n    \"created_by\": \"f6a7bb45-2f57-49df-86a9-c1531b18c314\",\n    \"updated_by\": \"f6a7bb45-2f57-49df-86a9-c1531b18c314\"\n  }\n\n",
-          "includeOtherFields": true,
-          "options": {}
-        },
-        "id": "0a7647ce-86ff-4b29-957d-93c1ccfcda01",
-        "name": "PESTLE definition",
-        "type": "n8n-nodes-base.set",
-        "typeVersion": 3.4,
-        "position": [
-          16,
-          -64
-        ]
       },
       {
         "parameters": {
@@ -1582,17 +1539,6 @@
         "main": [
           [
             {
-              "node": "PESTLE definition",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "PESTLE definition": {
-        "main": [
-          [
-            {
               "node": "Baggrundsinformation",
               "type": "main",
               "index": 0
@@ -1757,7 +1703,7 @@
         ]
       }
     },
-    "authors": "system migration",
+    "authors": "Flemming Berthelsen",
     "name": null,
     "description": null
   },
