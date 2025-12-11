@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2025-12-07T15:42:50.000Z",
+  "updatedAt": "2025-12-10T10:36:46.000Z",
   "createdAt": "2025-11-19T05:52:27.548Z",
   "id": "0uJMyz4K8D3V327F",
   "name": "Retrieve and Edit PESTLE Definition from Supabase",
@@ -82,7 +82,7 @@
     },
     {
       "parameters": {
-        "model": "google/gemini-3-pro-preview",
+        "model": "google/gemini-2.5-pro",
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
@@ -107,7 +107,7 @@
             {
               "id": "780802ba-3b3c-4c86-b7f9-098e85baeb3d",
               "name": "Systemprompt",
-              "value": "Du skal skal: \n- fokusere på 3–7 vigtigste forhold (altid de nyeste, så du aldrig fokuserer på forhold som ikke længere gælder)\n- koble hvert forhold direkte til casen \t\n- markere risiko/mulighed \t\n- Foreslå indikatorer at holde øje med \t\n- give kilder.",
+              "value": "Du skal: \n- fokusere på 4–7 vigtigste forhold (altid de nyeste, så du aldrig fokuserer på forhold som ikke længere gælder)\n- koble hvert forhold direkte til casen \t\n- angive konsekvens\n- angive risiko/mulighed (skal altid begrundes)\n- Foreslå indikatorer at holde øje med \t\n- give kilder.",
               "type": "string"
             }
           ]
@@ -258,7 +258,7 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=ROLLE\nDu er redaktør og strategikonsulent.\nDu får udkast til en PESTLE-analyse fra flere specialiserede \"forfattere\" (LLM-noder).\nDin opgave er at samle, rense og skærpe det hele til én samlet, læsbar PESTLE-analyse i Markdown.\n\nINPUT\n1) Baggrundsnote om casen:\n{{ $('Baggrundsinformation').item.json.text }}\n\n\n2) P: Politiske forhold:\n{{ $('P: Political').item.json.text }}\n\n3) E: Økonomiske forhold:\n{{ $('E: Economic').item.json.text }}\n\n4) S: Sociokulturelle forhold:\n{{ $('S: Social').item.json.text }}\n\n5) T: Teknologiske forhold:\n{{ $('T: Technological').item.json.text }}\n\n6) L: Juridiske forhold:\n{{ $('L: Legal').item.json.text }}\n\n7) E: Miljø- og klimaforhold:\n{{ $json.text }}\n\n8) Formularfelter (kort opsummeret):\n- Type: {{ $('Get PESTLE Definition').item.json.org_type }}\n- Navn: {{ $('Get PESTLE Definition').item.json.org_name }}\n- Branche/sektor: {{ $('Get PESTLE Definition').item.json.org_industry }}\n- Geografi (primært): {{ $('Get PESTLE Definition').item.json.org_geography_main }}\n- Øvrige markeder: {{ $('Get PESTLE Definition').item.json.org_geography_other }}\n- Tidshorisont: {{ $('Get PESTLE Definition').item.json.analysis_time_horizon }}\n- Fokus: {{ $('Get PESTLE Definition').item.json.analysis_focus }}\n- Særlige temaer: {{ $('Get PESTLE Definition').item.json.analysis_special_topics }}\n- Sprog: {{ $('Get PESTLE Definition').item.json.analysis_language }}\n\nOPGAVE\n1. Fjern gentagelser og modsigelser i de indkomne tekster.\n2. Vælg og omformulér så analysen bliver:\n   - kortere, hvis muligt (fokus på det væsentlige)\n   - klar, saglig og konsekvensorienteret\n3. Sørg for at alle P/E/S/T/L/E-dimensioner er dækket og tydeligt adskilt.\n4. Træk tydelige konklusioner og anbefalinger frem, der matcher analysens formål.\n\nLEVERING\nSkriv i sproget: {{ $('Get PESTLE Definition').item.json.analysis_language }}.\nSkriv udelukkende i Markdown med denne struktur:\n\n# PESTLE-analyse for  {{ $('Get PESTLE Definition').item.json.org_name }}\n\n## 1. Executive summary\n- 3–7 punktnedslag med de vigtigste konklusioner på tværs af P/E/S/T/L/E.\n- Tydelig markering af de 3 mest kritiske risici.\n- Tydelig markering af de 3 mest lovende muligheder.\n\n## 2. Kontekst\n- Kort opsummering af casen (type, branche, geografi, formål med analysen)\n- Tidshorisont og evt. særligt fokus\n\n## 3. P: Politiske forhold\n- Kort overblik (3–5 sætninger)\n- Bulletpoints med de vigtigste drivere, konsekvenser og usikkerheder\n\n## 4. E: Økonomiske forhold\n(samme logik: kort overblik + strukturerede bullets)\n\n## 5. S: Sociokulturelle forhold\n\n## 6. T: Teknologiske forhold\n\n## 7. L: Juridiske og regulatoriske forhold\n\n## 8. E: Miljø- og klimaforhold\n\n## 9. Samlet vurdering og anbefalinger\n- Kort vurdering af det samlede risikobillede\n- Kort vurdering af de største strategiske muligheder\n- 3–7 konkrete anbefalinger til næste skridt (fx hvor man bør dykke dybere, mulige strategiske spor, behov for yderligere analyser)\n\nRETNINGSLINJER\n- Brug et nøgternt, professionelt sprog – ingen marketing-fraser.\n- Vær eksplicit om usikkerheder: skriv, hvis noget hviler på svage eller få kilder.\n- Hvis tidligere noder har modstridende udsagn, så forklar kort, hvordan du tolker det.\n- Ingen rå JSON i output – kun færdig, læsbar Markdown-tekst.",
+        "text": "=ROLLE\nDu er redaktør og strategikonsulent.\nDu får udkast til en PESTLE-analyse fra flere specialiserede “forfattere” (LLM-noder).\nDin opgave er at samle, rense og skærpe det hele til én samlet, læsbar PESTLE-analyse i Markdown.\n\nINPUT\n\t1.\tBaggrundsnote om casen:\n{{ $('Baggrundsinformation').item.json.text }}\n\t2.\tP: Politiske forhold:\n{{ $('P: Political').item.json.text }}\n\t3.\tE: Økonomiske forhold:\n{{ $('E: Economic').item.json.text }}\n\t4.\tS: Sociokulturelle forhold:\n{{ $('S: Social').item.json.text }}\n\t5.\tT: Teknologiske forhold:\n{{ $('T: Technological').item.json.text }}\n\t6.\tL: Juridiske forhold:\n{{ $('L: Legal').item.json.text }}\n\t7.\tE: Miljø- og klimaforhold:\n{{ $json.text }}\n\t8.\tFormularfelter (kort opsummeret):\n\n- Type: {{ $('Get PESTLE Definition').item.json.org_type }}\n- Navn: {{ $('Get PESTLE Definition').item.json.org_name }}\n- Branche/sektor: {{ $('Get PESTLE Definition').item.json.org_industry }}\n- Geografi (primært): {{ $('Get PESTLE Definition').item.json.org_geography_main }}\n- Øvrige markeder: {{ $('Get PESTLE Definition').item.json.org_geography_other }}\n- Tidshorisont: {{ $('Get PESTLE Definition').item.json.analysis_time_horizon }}\n- Fokus: {{ $('Get PESTLE Definition').item.json.analysis_focus }}\n- Særlige temaer: {{ $('Get PESTLE Definition').item.json.analysis_special_topics }}\n- Sprog: {{ $('Get PESTLE Definition').item.json.analysis_language }}\n\nOPGAVE\n\t1.\tFjern gentagelser og modsigelser i de indkomne tekster.\n\t2.\tSaml og omformulér så analysen bliver:\n\t•\tkortere, hvis muligt (fokus på det væsentlige)\n\t•\tklar, saglig og konsekvensorienteret\n\t•\tlet for en travl beslutningstager at skimme.\n\t3.\tSørg for at alle P/E/S/T/L/E-dimensioner er dækket og tydeligt adskilt.\n\t4.\tTræk tydelige konklusioner og anbefalinger frem, der matcher analysens formål.\n\t5.\tGiv lidt ekstra kontekst til de vigtigste tendenser: hvorfor er de relevante for denne type organisation, i denne branche og geografi, og på den angivne tidshorisont.\n\t6.\tSkab konsistens på tværs af P/E/S/T/L/E: brug samme logik for, hvordan tendenser, risici, muligheder, indikatorer og kilder beskrives.\n\nSTRUKTUR FOR TENDENSER, RISICI OG MULIGHEDER\nNår du beskriver tendenser i hver PESTLE-dimension, skal du så vidt muligt bruge følgende struktur:\n\t•\tTendens: 8-10 linier med konkret beskrivelse af selve udviklingen.\n\t•\tKonsekvens: Hvad betyder dette for {{ $('Get PESTLE Definition').item.json.org_name }} (drift, økonomi, kunder, regulering osv.)?\n\t•\tRisiko/mulighed: Angiv tydeligt om det primært er en risiko, en mulighed eller begge dele – og forklar altid “risiko for hvad / mulighed for hvad / for hvem og hvornår”. Undgå formuleringer som “høj risiko” uden forklaring.\n\t•\tIndikatorer/kilder: Hvis der henvises til konkrete aftaler, lovforslag, pakker eller rapporter (fx “EU Gas Package”), så forklar kort hvad det er, og angiv status (fx “vedtaget”, “foreslået”, “parkeret”). Undgå henvisninger, hvor det er uklart, hvad kilden er.\n\nSPROG- OG STILKRAV\n\t•\tSkriv i sproget: {{ $('Get PESTLE Definition').item.json.analysis_language }}.\n\t•\tBrug et nøgternt, professionelt sprog – ingen marketing-fraser.\n\t•\tUndgå uformelle eller billedlige engelske vendinger og slang (fx “death spiral”, “backbone” osv.).\n\t•\tFaglige begreber på engelsk kan bruges, hvis de er almindelige i branchen, men forklar dem kort første gang.\n\t•\tForklar altid forkortelser første gang de anvendes (fx “NIMBY (Not In My Back Yard)”).\n\t•\tVær eksplicit om usikkerheder: skriv, hvis noget hviler på svage eller få kilder.\n\t•\tHvis de indkomne tekster er uenige, skal du vælge den mest plausible tolkning og kort forklare, hvordan du har håndteret uenigheden.\n\t•\tIngen rå JSON i output – kun færdig, læsbar Markdown-tekst.\n\nLEVERING\nSkriv udelukkende i Markdown med denne struktur:\n\nPESTLE-analyse for {{ $('Get PESTLE Definition').item.json.org_name }}\n\n1. Executive summary\n\t•\t3–7 punktnedslag med de vigtigste konklusioner på tværs af P/E/S/T/L/E.\n\t•\tTydelig markering af de 3 mest kritiske risici.\n\t•\tTydelig markering af de 3 mest lovende muligheder.\n\n2. Kontekst\n\t•\tKort opsummering af casen (type, branche, geografi, formål med analysen).\n\t•\tTidshorisont og evt. særligt fokus.\n\n3. P: Politiske forhold\n\t•\tKort overblik (3–5 sætninger), som placerer de vigtigste tendenser i kontekst.\n\t•\tBulletpoints efter strukturen: Tendens → Implikation → Risiko/mulighed → Indikatorer/kilder.\n\n4. E: Økonomiske forhold\n\t•\tSamme logik: kort overblik + strukturerede bullets med Tendens/Implikation/Risiko-mulighed/Indikatorer.\n\n5. S: Sociokulturelle forhold\n\n6. T: Teknologiske forhold\n\n7. L: Juridiske og regulatoriske forhold\n\n8. E: Miljø- og klimaforhold\n\n9. Samlet vurdering og anbefalinger\n\t•\tKort vurdering af det samlede risikobillede.\n\t•\tKort vurdering af de største strategiske muligheder.\n\t•\t3–7 konkrete anbefalinger til næste skridt (fx hvor man bør dykke dybere, mulige strategiske spor, behov for yderligere analyser).\n\n⸻\n",
         "messages": {
           "messageValues": [
             {
@@ -635,6 +635,26 @@
         -112,
         -416
       ]
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-opus-4.5",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        2640,
+        144
+      ],
+      "id": "43d0992f-cd2a-48ec-8705-3be8195b1183",
+      "name": "OpenRouter Chat Model1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "0zn5wOZxvTwrpo6y",
+          "name": "OpenRouter account"
+        }
+      }
     }
   ],
   "connections": {
@@ -700,11 +720,6 @@
           },
           {
             "node": "E: Environmental",
-            "type": "ai_languageModel",
-            "index": 0
-          },
-          {
-            "node": "Editor/redaktør",
             "type": "ai_languageModel",
             "index": 0
           }
@@ -820,6 +835,17 @@
           }
         ]
       ]
+    },
+    "OpenRouter Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Editor/redaktør",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -841,21 +867,21 @@
             "accept-encoding": "gzip, br",
             "accept-language": "*",
             "cdn-loop": "netlify, cloudflare; loops=1; subreqs=1",
-            "cf-connecting-ip": "3.120.224.237",
+            "cf-connecting-ip": "18.159.141.69",
             "cf-ew-via": "15",
             "cf-ipcountry": "DE",
-            "cf-ray": "9aa5028df34e382c-FRA",
+            "cf-ray": "9aa52325c1949125-FRA",
             "cf-visitor": "{\"scheme\":\"https\"}",
             "cf-worker": "n8n.cloud",
             "content-type": "application/json",
             "sec-fetch-mode": "cors",
-            "x-forwarded-for": "3.120.224.237, 172.68.193.176",
+            "x-forwarded-for": "18.159.141.69, 172.70.251.24",
             "x-forwarded-host": "utilco.app.n8n.cloud",
             "x-forwarded-port": "443",
             "x-forwarded-proto": "https",
-            "x-forwarded-server": "traefik-prod-users-gwc-10-6888ffdd77-zl6sm",
+            "x-forwarded-server": "traefik-prod-users-gwc-10-6888ffdd77-9vgr4",
             "x-is-trusted": "yes",
-            "x-real-ip": "3.120.224.237",
+            "x-real-ip": "18.159.141.69",
             "x-webhook-secret": "vczUfUpZhtQkJXFoP6hN"
           },
           "params": {},
@@ -869,8 +895,8 @@
       }
     ]
   },
-  "versionId": "30ba87f5-c18d-4ebf-99b2-07b2b8d95174",
-  "activeVersionId": "30ba87f5-c18d-4ebf-99b2-07b2b8d95174",
+  "versionId": "d47b86cd-b89c-4b55-95fd-181d2610eea8",
+  "activeVersionId": "d47b86cd-b89c-4b55-95fd-181d2610eea8",
   "triggerCount": 1,
   "shared": [
     {
@@ -882,9 +908,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2025-12-07T15:42:50.018Z",
-    "createdAt": "2025-12-07T15:42:50.018Z",
-    "versionId": "30ba87f5-c18d-4ebf-99b2-07b2b8d95174",
+    "updatedAt": "2025-12-10T10:36:46.020Z",
+    "createdAt": "2025-12-10T10:36:46.020Z",
+    "versionId": "d47b86cd-b89c-4b55-95fd-181d2610eea8",
     "workflowId": "0uJMyz4K8D3V327F",
     "nodes": [
       {
@@ -963,7 +989,7 @@
       },
       {
         "parameters": {
-          "model": "google/gemini-3-pro-preview",
+          "model": "google/gemini-2.5-pro",
           "options": {}
         },
         "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
@@ -988,7 +1014,7 @@
               {
                 "id": "780802ba-3b3c-4c86-b7f9-098e85baeb3d",
                 "name": "Systemprompt",
-                "value": "Du skal skal: \n- fokusere på 3–7 vigtigste forhold (altid de nyeste, så du aldrig fokuserer på forhold som ikke længere gælder)\n- koble hvert forhold direkte til casen \t\n- markere risiko/mulighed \t\n- Foreslå indikatorer at holde øje med \t\n- give kilder.",
+                "value": "Du skal: \n- fokusere på 4–7 vigtigste forhold (altid de nyeste, så du aldrig fokuserer på forhold som ikke længere gælder)\n- koble hvert forhold direkte til casen \t\n- angive konsekvens\n- angive risiko/mulighed (skal altid begrundes)\n- Foreslå indikatorer at holde øje med \t\n- give kilder.",
                 "type": "string"
               }
             ]
@@ -1139,7 +1165,7 @@
       {
         "parameters": {
           "promptType": "define",
-          "text": "=ROLLE\nDu er redaktør og strategikonsulent.\nDu får udkast til en PESTLE-analyse fra flere specialiserede \"forfattere\" (LLM-noder).\nDin opgave er at samle, rense og skærpe det hele til én samlet, læsbar PESTLE-analyse i Markdown.\n\nINPUT\n1) Baggrundsnote om casen:\n{{ $('Baggrundsinformation').item.json.text }}\n\n\n2) P: Politiske forhold:\n{{ $('P: Political').item.json.text }}\n\n3) E: Økonomiske forhold:\n{{ $('E: Economic').item.json.text }}\n\n4) S: Sociokulturelle forhold:\n{{ $('S: Social').item.json.text }}\n\n5) T: Teknologiske forhold:\n{{ $('T: Technological').item.json.text }}\n\n6) L: Juridiske forhold:\n{{ $('L: Legal').item.json.text }}\n\n7) E: Miljø- og klimaforhold:\n{{ $json.text }}\n\n8) Formularfelter (kort opsummeret):\n- Type: {{ $('Get PESTLE Definition').item.json.org_type }}\n- Navn: {{ $('Get PESTLE Definition').item.json.org_name }}\n- Branche/sektor: {{ $('Get PESTLE Definition').item.json.org_industry }}\n- Geografi (primært): {{ $('Get PESTLE Definition').item.json.org_geography_main }}\n- Øvrige markeder: {{ $('Get PESTLE Definition').item.json.org_geography_other }}\n- Tidshorisont: {{ $('Get PESTLE Definition').item.json.analysis_time_horizon }}\n- Fokus: {{ $('Get PESTLE Definition').item.json.analysis_focus }}\n- Særlige temaer: {{ $('Get PESTLE Definition').item.json.analysis_special_topics }}\n- Sprog: {{ $('Get PESTLE Definition').item.json.analysis_language }}\n\nOPGAVE\n1. Fjern gentagelser og modsigelser i de indkomne tekster.\n2. Vælg og omformulér så analysen bliver:\n   - kortere, hvis muligt (fokus på det væsentlige)\n   - klar, saglig og konsekvensorienteret\n3. Sørg for at alle P/E/S/T/L/E-dimensioner er dækket og tydeligt adskilt.\n4. Træk tydelige konklusioner og anbefalinger frem, der matcher analysens formål.\n\nLEVERING\nSkriv i sproget: {{ $('Get PESTLE Definition').item.json.analysis_language }}.\nSkriv udelukkende i Markdown med denne struktur:\n\n# PESTLE-analyse for  {{ $('Get PESTLE Definition').item.json.org_name }}\n\n## 1. Executive summary\n- 3–7 punktnedslag med de vigtigste konklusioner på tværs af P/E/S/T/L/E.\n- Tydelig markering af de 3 mest kritiske risici.\n- Tydelig markering af de 3 mest lovende muligheder.\n\n## 2. Kontekst\n- Kort opsummering af casen (type, branche, geografi, formål med analysen)\n- Tidshorisont og evt. særligt fokus\n\n## 3. P: Politiske forhold\n- Kort overblik (3–5 sætninger)\n- Bulletpoints med de vigtigste drivere, konsekvenser og usikkerheder\n\n## 4. E: Økonomiske forhold\n(samme logik: kort overblik + strukturerede bullets)\n\n## 5. S: Sociokulturelle forhold\n\n## 6. T: Teknologiske forhold\n\n## 7. L: Juridiske og regulatoriske forhold\n\n## 8. E: Miljø- og klimaforhold\n\n## 9. Samlet vurdering og anbefalinger\n- Kort vurdering af det samlede risikobillede\n- Kort vurdering af de største strategiske muligheder\n- 3–7 konkrete anbefalinger til næste skridt (fx hvor man bør dykke dybere, mulige strategiske spor, behov for yderligere analyser)\n\nRETNINGSLINJER\n- Brug et nøgternt, professionelt sprog – ingen marketing-fraser.\n- Vær eksplicit om usikkerheder: skriv, hvis noget hviler på svage eller få kilder.\n- Hvis tidligere noder har modstridende udsagn, så forklar kort, hvordan du tolker det.\n- Ingen rå JSON i output – kun færdig, læsbar Markdown-tekst.",
+          "text": "=ROLLE\nDu er redaktør og strategikonsulent.\nDu får udkast til en PESTLE-analyse fra flere specialiserede “forfattere” (LLM-noder).\nDin opgave er at samle, rense og skærpe det hele til én samlet, læsbar PESTLE-analyse i Markdown.\n\nINPUT\n\t1.\tBaggrundsnote om casen:\n{{ $('Baggrundsinformation').item.json.text }}\n\t2.\tP: Politiske forhold:\n{{ $('P: Political').item.json.text }}\n\t3.\tE: Økonomiske forhold:\n{{ $('E: Economic').item.json.text }}\n\t4.\tS: Sociokulturelle forhold:\n{{ $('S: Social').item.json.text }}\n\t5.\tT: Teknologiske forhold:\n{{ $('T: Technological').item.json.text }}\n\t6.\tL: Juridiske forhold:\n{{ $('L: Legal').item.json.text }}\n\t7.\tE: Miljø- og klimaforhold:\n{{ $json.text }}\n\t8.\tFormularfelter (kort opsummeret):\n\n- Type: {{ $('Get PESTLE Definition').item.json.org_type }}\n- Navn: {{ $('Get PESTLE Definition').item.json.org_name }}\n- Branche/sektor: {{ $('Get PESTLE Definition').item.json.org_industry }}\n- Geografi (primært): {{ $('Get PESTLE Definition').item.json.org_geography_main }}\n- Øvrige markeder: {{ $('Get PESTLE Definition').item.json.org_geography_other }}\n- Tidshorisont: {{ $('Get PESTLE Definition').item.json.analysis_time_horizon }}\n- Fokus: {{ $('Get PESTLE Definition').item.json.analysis_focus }}\n- Særlige temaer: {{ $('Get PESTLE Definition').item.json.analysis_special_topics }}\n- Sprog: {{ $('Get PESTLE Definition').item.json.analysis_language }}\n\nOPGAVE\n\t1.\tFjern gentagelser og modsigelser i de indkomne tekster.\n\t2.\tSaml og omformulér så analysen bliver:\n\t•\tkortere, hvis muligt (fokus på det væsentlige)\n\t•\tklar, saglig og konsekvensorienteret\n\t•\tlet for en travl beslutningstager at skimme.\n\t3.\tSørg for at alle P/E/S/T/L/E-dimensioner er dækket og tydeligt adskilt.\n\t4.\tTræk tydelige konklusioner og anbefalinger frem, der matcher analysens formål.\n\t5.\tGiv lidt ekstra kontekst til de vigtigste tendenser: hvorfor er de relevante for denne type organisation, i denne branche og geografi, og på den angivne tidshorisont.\n\t6.\tSkab konsistens på tværs af P/E/S/T/L/E: brug samme logik for, hvordan tendenser, risici, muligheder, indikatorer og kilder beskrives.\n\nSTRUKTUR FOR TENDENSER, RISICI OG MULIGHEDER\nNår du beskriver tendenser i hver PESTLE-dimension, skal du så vidt muligt bruge følgende struktur:\n\t•\tTendens: 8-10 linier med konkret beskrivelse af selve udviklingen.\n\t•\tKonsekvens: Hvad betyder dette for {{ $('Get PESTLE Definition').item.json.org_name }} (drift, økonomi, kunder, regulering osv.)?\n\t•\tRisiko/mulighed: Angiv tydeligt om det primært er en risiko, en mulighed eller begge dele – og forklar altid “risiko for hvad / mulighed for hvad / for hvem og hvornår”. Undgå formuleringer som “høj risiko” uden forklaring.\n\t•\tIndikatorer/kilder: Hvis der henvises til konkrete aftaler, lovforslag, pakker eller rapporter (fx “EU Gas Package”), så forklar kort hvad det er, og angiv status (fx “vedtaget”, “foreslået”, “parkeret”). Undgå henvisninger, hvor det er uklart, hvad kilden er.\n\nSPROG- OG STILKRAV\n\t•\tSkriv i sproget: {{ $('Get PESTLE Definition').item.json.analysis_language }}.\n\t•\tBrug et nøgternt, professionelt sprog – ingen marketing-fraser.\n\t•\tUndgå uformelle eller billedlige engelske vendinger og slang (fx “death spiral”, “backbone” osv.).\n\t•\tFaglige begreber på engelsk kan bruges, hvis de er almindelige i branchen, men forklar dem kort første gang.\n\t•\tForklar altid forkortelser første gang de anvendes (fx “NIMBY (Not In My Back Yard)”).\n\t•\tVær eksplicit om usikkerheder: skriv, hvis noget hviler på svage eller få kilder.\n\t•\tHvis de indkomne tekster er uenige, skal du vælge den mest plausible tolkning og kort forklare, hvordan du har håndteret uenigheden.\n\t•\tIngen rå JSON i output – kun færdig, læsbar Markdown-tekst.\n\nLEVERING\nSkriv udelukkende i Markdown med denne struktur:\n\nPESTLE-analyse for {{ $('Get PESTLE Definition').item.json.org_name }}\n\n1. Executive summary\n\t•\t3–7 punktnedslag med de vigtigste konklusioner på tværs af P/E/S/T/L/E.\n\t•\tTydelig markering af de 3 mest kritiske risici.\n\t•\tTydelig markering af de 3 mest lovende muligheder.\n\n2. Kontekst\n\t•\tKort opsummering af casen (type, branche, geografi, formål med analysen).\n\t•\tTidshorisont og evt. særligt fokus.\n\n3. P: Politiske forhold\n\t•\tKort overblik (3–5 sætninger), som placerer de vigtigste tendenser i kontekst.\n\t•\tBulletpoints efter strukturen: Tendens → Implikation → Risiko/mulighed → Indikatorer/kilder.\n\n4. E: Økonomiske forhold\n\t•\tSamme logik: kort overblik + strukturerede bullets med Tendens/Implikation/Risiko-mulighed/Indikatorer.\n\n5. S: Sociokulturelle forhold\n\n6. T: Teknologiske forhold\n\n7. L: Juridiske og regulatoriske forhold\n\n8. E: Miljø- og klimaforhold\n\n9. Samlet vurdering og anbefalinger\n\t•\tKort vurdering af det samlede risikobillede.\n\t•\tKort vurdering af de største strategiske muligheder.\n\t•\t3–7 konkrete anbefalinger til næste skridt (fx hvor man bør dykke dybere, mulige strategiske spor, behov for yderligere analyser).\n\n⸻\n",
           "messages": {
             "messageValues": [
               {
@@ -1516,6 +1542,26 @@
           -112,
           -416
         ]
+      },
+      {
+        "parameters": {
+          "model": "anthropic/claude-opus-4.5",
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+        "typeVersion": 1,
+        "position": [
+          2640,
+          144
+        ],
+        "id": "43d0992f-cd2a-48ec-8705-3be8195b1183",
+        "name": "OpenRouter Chat Model1",
+        "credentials": {
+          "openRouterApi": {
+            "id": "0zn5wOZxvTwrpo6y",
+            "name": "OpenRouter account"
+          }
+        }
       }
     ],
     "connections": {
@@ -1581,11 +1627,6 @@
             },
             {
               "node": "E: Environmental",
-              "type": "ai_languageModel",
-              "index": 0
-            },
-            {
-              "node": "Editor/redaktør",
               "type": "ai_languageModel",
               "index": 0
             }
@@ -1697,6 +1738,17 @@
             {
               "node": "Early Respond with ExecutionId",
               "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenRouter Chat Model1": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Editor/redaktør",
+              "type": "ai_languageModel",
               "index": 0
             }
           ]
