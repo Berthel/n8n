@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2025-12-02T06:55:37.000Z",
+  "updatedAt": "2025-12-24T07:05:41.000Z",
   "createdAt": "2025-05-26T09:15:58.847Z",
   "id": "cIyAT2GKM5Ng1Wwa",
   "name": "Kursuscockpit",
@@ -50,8 +50,8 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.2,
       "position": [
-        1104,
-        256
+        3280,
+        1208
       ],
       "id": "681d0b70-4333-4da9-9e39-60dead0056cd",
       "name": "Course creation"
@@ -102,8 +102,8 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.2,
       "position": [
-        1328,
-        256
+        3504,
+        1208
       ],
       "id": "63806f42-4a1d-4203-9a5b-c89fa82777b0",
       "name": "Module creator"
@@ -125,8 +125,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        656,
-        256
+        2608,
+        1232
       ],
       "id": "2569b1a8-6d50-43e3-aa54-b473d3b4d981",
       "name": "Course id"
@@ -137,13 +137,15 @@
           "__rl": true,
           "value": "JFxTvX4GDNqmUX0R",
           "mode": "list",
+          "cachedResultUrl": "/workflow/JFxTvX4GDNqmUX0R",
           "cachedResultName": "My project — Lessons creator"
         },
         "workflowInputs": {
           "mappingMode": "defineBelow",
           "value": {
             "module_id": "={{ $('Module creator').item.json.module_id }}",
-            "course_type": "={{ $('Course type').item.json.course_type }}"
+            "course_type": "={{ $('Course type').item.json.course_type }}",
+            "generationStage": "={{ $('Course type').item.json.generationStage }}"
           },
           "matchingColumns": [
             "module_id"
@@ -168,6 +170,16 @@
               "canBeUsedToMatch": true,
               "type": "string",
               "removed": false
+            },
+            {
+              "id": "generationStage",
+              "displayName": "generationStage",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
             }
           ],
           "attemptToConvertTypes": false,
@@ -178,8 +190,8 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.2,
       "position": [
-        1552,
-        256
+        3728,
+        1208
       ],
       "id": "b02579fc-e2d0-4625-ba29-2c075ce2b173",
       "name": "Lesson creator"
@@ -189,8 +201,8 @@
       "type": "n8n-nodes-base.limit",
       "typeVersion": 1,
       "position": [
-        1776,
-        256
+        3280,
+        1400
       ],
       "id": "02937a44-6c78-4234-97df-46125ad9b514",
       "name": "Limit"
@@ -201,6 +213,7 @@
           "__rl": true,
           "value": "cgya94OU6IhFm58p",
           "mode": "list",
+          "cachedResultUrl": "/workflow/cgya94OU6IhFm58p",
           "cachedResultName": "My project — Module questions creator"
         },
         "workflowInputs": {
@@ -242,8 +255,8 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.2,
       "position": [
-        2880,
-        256
+        4400,
+        1328
       ],
       "id": "a6c60a3f-0338-402f-9614-87b3bb4e0646",
       "name": "Module question creator"
@@ -257,8 +270,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2432,
-        256
+        3952,
+        1400
       ],
       "id": "ea7a87af-e4dd-4306-857e-ffea631753df",
       "name": "Get module id",
@@ -277,8 +290,8 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        0,
-        -160
+        1936,
+        816
       ],
       "id": "a214051f-c394-4901-b0b4-dade44b87306",
       "name": "Split Out"
@@ -330,8 +343,8 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.2,
       "position": [
-        2000,
-        256
+        3504,
+        1400
       ],
       "id": "2498f7a5-a77c-490a-86e4-8d7927022b91",
       "name": "Case creator"
@@ -345,8 +358,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        432,
-        256
+        2384,
+        1232
       ],
       "id": "b0136059-5041-40df-84da-7c5aae7fe683",
       "name": "Get course_id",
@@ -366,8 +379,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2880,
-        64
+        4400,
+        1136
       ],
       "id": "5a166a53-ebbe-444f-822f-2b9d9686703f",
       "name": "Updata course status = draft",
@@ -414,8 +427,8 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.2,
       "position": [
-        880,
-        256
+        2832,
+        1232
       ],
       "id": "d5476ce4-c43f-4561-87b7-57f58e768d09",
       "name": "Deep Research",
@@ -428,8 +441,8 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        2656,
-        256
+        4176,
+        1400
       ],
       "id": "d12c1866-ae53-4e96-b015-118fd7179531",
       "name": "Loop Over Items"
@@ -439,8 +452,8 @@
       "type": "n8n-nodes-base.limit",
       "typeVersion": 1,
       "position": [
-        3104,
-        336
+        4624,
+        1328
       ],
       "id": "2596facc-a6e0-4853-8db2-f34d63cce721",
       "name": "Limit1"
@@ -450,8 +463,8 @@
       "type": "n8n-nodes-base.limit",
       "typeVersion": 1,
       "position": [
-        2208,
-        256
+        3728,
+        1400
       ],
       "id": "adba7b7e-3c57-4003-8d3d-8dfe0d875816",
       "name": "Limit2"
@@ -463,8 +476,8 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        48,
-        480
+        2000,
+        1456
       ],
       "id": "46319d74-794f-4183-ab3b-9b7fa41fdcfc",
       "name": "Sticky Note"
@@ -478,6 +491,12 @@
               "name": "course_type",
               "value": "Default",
               "type": "string"
+            },
+            {
+              "id": "a7f03eef-ca72-4031-8701-21190504bded",
+              "name": "generationStage",
+              "value": "={{ $json.body.generationStage }}",
+              "type": "string"
             }
           ]
         },
@@ -486,8 +505,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        208,
-        256
+        2160,
+        1232
       ],
       "id": "388dcf52-f39b-4a2c-b7f4-b76bab396bb6",
       "name": "Course type"
@@ -503,8 +522,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -16,
-        240
+        1936,
+        1136
       ],
       "id": "a0bdaba4-bf00-44a1-ba30-c5e56257f239",
       "name": "Webhook",
@@ -541,8 +560,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        336,
-        48
+        2160,
+        1040
       ]
     },
     {
@@ -556,9 +575,118 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        624,
-        16
+        2384,
+        1040
       ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "id-1",
+              "leftValue": "={{ $('Course type').item.json.generationStage }}",
+              "rightValue": "fase1",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "5d177b3a-9842-48cd-9be8-d1e7d6c9011f",
+      "name": "Check if fase1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3056,
+        1232
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "JFxTvX4GDNqmUX0R",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/JFxTvX4GDNqmUX0R",
+          "cachedResultName": "My project — Lessons creator"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "module_id": "={{ $('Loop Over Items').item.json.id }}",
+            "course_type": "={{ $('Course type').item.json.course_type }}",
+            "generationStage": "={{ $('Course type').item.json.generationStage }}"
+          },
+          "matchingColumns": [
+            "module_id"
+          ],
+          "schema": [
+            {
+              "id": "module_id",
+              "displayName": "module_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "course_type",
+              "displayName": "course_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "generationStage",
+              "displayName": "generationStage",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        4848,
+        1328
+      ],
+      "id": "43614b78-9cad-43ea-aa1b-0331384f109f",
+      "name": "Lesson creator1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        5072,
+        1400
+      ],
+      "id": "f0895688-855f-4354-873a-d253ccfef671",
+      "name": "Limit3"
     }
   ],
   "connections": {
@@ -597,13 +725,7 @@
     },
     "Lesson creator": {
       "main": [
-        [
-          {
-            "node": "Limit",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "Limit": {
@@ -639,11 +761,6 @@
         ]
       ]
     },
-    "Split Out": {
-      "main": [
-        []
-      ]
-    },
     "Case creator": {
       "main": [
         [
@@ -660,17 +777,6 @@
         [
           {
             "node": "Course id",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Deep Research": {
-      "main": [
-        [
-          {
-            "node": "Course creation",
             "type": "main",
             "index": 0
           }
@@ -699,7 +805,7 @@
       "main": [
         [
           {
-            "node": "Loop Over Items",
+            "node": "Lesson creator1",
             "type": "main",
             "index": 0
           }
@@ -732,12 +838,12 @@
       "main": [
         [
           {
-            "node": "Course type",
+            "node": "Early Response Data",
             "type": "main",
             "index": 0
           },
           {
-            "node": "Early Response Data",
+            "node": "Course type",
             "type": "main",
             "index": 0
           }
@@ -749,6 +855,57 @@
         [
           {
             "node": "Early Respond with ExecutionId",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deep Research": {
+      "main": [
+        [
+          {
+            "node": "Check if fase1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if fase1": {
+      "main": [
+        [
+          {
+            "node": "Course creation",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lesson creator1": {
+      "main": [
+        [
+          {
+            "node": "Limit3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit3": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
             "type": "main",
             "index": 0
           }
@@ -774,26 +931,26 @@
           "headers": {
             "host": "utilco.app.n8n.cloud",
             "user-agent": "node",
-            "content-length": "104",
+            "content-length": "130",
             "accept": "application/json",
             "accept-encoding": "gzip, br",
             "accept-language": "*",
             "cdn-loop": "netlify, cloudflare; loops=1; subreqs=1",
-            "cf-connecting-ip": "18.195.33.37",
+            "cf-connecting-ip": "3.73.50.105",
             "cf-ew-via": "15",
             "cf-ipcountry": "DE",
-            "cf-ray": "9a789e4554aad260-FRA",
+            "cf-ray": "9b2e31d4d3aae282-FRA",
             "cf-visitor": "{\"scheme\":\"https\"}",
             "cf-worker": "n8n.cloud",
             "content-type": "application/json",
             "sec-fetch-mode": "cors",
-            "x-forwarded-for": "18.195.33.37, 172.71.164.233",
+            "x-forwarded-for": "3.73.50.105, 104.23.239.58",
             "x-forwarded-host": "utilco.app.n8n.cloud",
             "x-forwarded-port": "443",
             "x-forwarded-proto": "https",
-            "x-forwarded-server": "traefik-prod-users-gwc-10-6888ffdd77-zl6sm",
+            "x-forwarded-server": "traefik-prod-users-gwc-10-6888ffdd77-9vgr4",
             "x-is-trusted": "yes",
-            "x-real-ip": "18.195.33.37",
+            "x-real-ip": "3.73.50.105",
             "x-webhook-secret": "vczUfUpZhtQkJXFoP6hN"
           },
           "params": {},
@@ -801,7 +958,8 @@
           "body": {
             "courseId": "beb3e070-90a5-4847-ac8a-6dca5eb2d6e0",
             "locale": "da",
-            "timestamp": "2025-12-02T06:02:56.137Z"
+            "generationStage": "fase2",
+            "timestamp": "2025-12-24T06:55:42.801Z"
           },
           "webhookUrl": "https://utilco.app.n8n.cloud/webhook/d0bc0adf-07a0-4c29-af4d-f88d9910d16a",
           "executionMode": "production"
@@ -809,8 +967,8 @@
       }
     ]
   },
-  "versionId": "91c79540-a6fa-4f20-8276-d24aea14d5b8",
-  "activeVersionId": "91c79540-a6fa-4f20-8276-d24aea14d5b8",
+  "versionId": "9f55c0a7-5ca7-48bb-aeff-d53aa7adc8f1",
+  "activeVersionId": "9f55c0a7-5ca7-48bb-aeff-d53aa7adc8f1",
   "triggerCount": 1,
   "shared": [
     {
@@ -822,9 +980,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2025-12-02T06:55:37.506Z",
-    "createdAt": "2025-12-02T06:55:37.506Z",
-    "versionId": "91c79540-a6fa-4f20-8276-d24aea14d5b8",
+    "updatedAt": "2025-12-24T07:05:41.678Z",
+    "createdAt": "2025-12-24T07:05:41.678Z",
+    "versionId": "9f55c0a7-5ca7-48bb-aeff-d53aa7adc8f1",
     "workflowId": "cIyAT2GKM5Ng1Wwa",
     "nodes": [
       {
@@ -871,8 +1029,8 @@
         "type": "n8n-nodes-base.executeWorkflow",
         "typeVersion": 1.2,
         "position": [
-          1104,
-          256
+          3280,
+          1208
         ],
         "id": "681d0b70-4333-4da9-9e39-60dead0056cd",
         "name": "Course creation"
@@ -923,8 +1081,8 @@
         "type": "n8n-nodes-base.executeWorkflow",
         "typeVersion": 1.2,
         "position": [
-          1328,
-          256
+          3504,
+          1208
         ],
         "id": "63806f42-4a1d-4203-9a5b-c89fa82777b0",
         "name": "Module creator"
@@ -946,8 +1104,8 @@
         "type": "n8n-nodes-base.set",
         "typeVersion": 3.4,
         "position": [
-          656,
-          256
+          2608,
+          1232
         ],
         "id": "2569b1a8-6d50-43e3-aa54-b473d3b4d981",
         "name": "Course id"
@@ -958,13 +1116,15 @@
             "__rl": true,
             "value": "JFxTvX4GDNqmUX0R",
             "mode": "list",
+            "cachedResultUrl": "/workflow/JFxTvX4GDNqmUX0R",
             "cachedResultName": "My project — Lessons creator"
           },
           "workflowInputs": {
             "mappingMode": "defineBelow",
             "value": {
               "module_id": "={{ $('Module creator').item.json.module_id }}",
-              "course_type": "={{ $('Course type').item.json.course_type }}"
+              "course_type": "={{ $('Course type').item.json.course_type }}",
+              "generationStage": "={{ $('Course type').item.json.generationStage }}"
             },
             "matchingColumns": [
               "module_id"
@@ -989,6 +1149,16 @@
                 "canBeUsedToMatch": true,
                 "type": "string",
                 "removed": false
+              },
+              {
+                "id": "generationStage",
+                "displayName": "generationStage",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": false
               }
             ],
             "attemptToConvertTypes": false,
@@ -999,8 +1169,8 @@
         "type": "n8n-nodes-base.executeWorkflow",
         "typeVersion": 1.2,
         "position": [
-          1552,
-          256
+          3728,
+          1208
         ],
         "id": "b02579fc-e2d0-4625-ba29-2c075ce2b173",
         "name": "Lesson creator"
@@ -1010,8 +1180,8 @@
         "type": "n8n-nodes-base.limit",
         "typeVersion": 1,
         "position": [
-          1776,
-          256
+          3280,
+          1400
         ],
         "id": "02937a44-6c78-4234-97df-46125ad9b514",
         "name": "Limit"
@@ -1022,6 +1192,7 @@
             "__rl": true,
             "value": "cgya94OU6IhFm58p",
             "mode": "list",
+            "cachedResultUrl": "/workflow/cgya94OU6IhFm58p",
             "cachedResultName": "My project — Module questions creator"
           },
           "workflowInputs": {
@@ -1063,8 +1234,8 @@
         "type": "n8n-nodes-base.executeWorkflow",
         "typeVersion": 1.2,
         "position": [
-          2880,
-          256
+          4400,
+          1328
         ],
         "id": "a6c60a3f-0338-402f-9614-87b3bb4e0646",
         "name": "Module question creator"
@@ -1078,8 +1249,8 @@
         "type": "n8n-nodes-base.postgres",
         "typeVersion": 2.6,
         "position": [
-          2432,
-          256
+          3952,
+          1400
         ],
         "id": "ea7a87af-e4dd-4306-857e-ffea631753df",
         "name": "Get module id",
@@ -1098,8 +1269,8 @@
         "type": "n8n-nodes-base.splitOut",
         "typeVersion": 1,
         "position": [
-          0,
-          -160
+          1936,
+          816
         ],
         "id": "a214051f-c394-4901-b0b4-dade44b87306",
         "name": "Split Out"
@@ -1151,8 +1322,8 @@
         "type": "n8n-nodes-base.executeWorkflow",
         "typeVersion": 1.2,
         "position": [
-          2000,
-          256
+          3504,
+          1400
         ],
         "id": "2498f7a5-a77c-490a-86e4-8d7927022b91",
         "name": "Case creator"
@@ -1166,8 +1337,8 @@
         "type": "n8n-nodes-base.postgres",
         "typeVersion": 2.6,
         "position": [
-          432,
-          256
+          2384,
+          1232
         ],
         "id": "b0136059-5041-40df-84da-7c5aae7fe683",
         "name": "Get course_id",
@@ -1187,8 +1358,8 @@
         "type": "n8n-nodes-base.postgres",
         "typeVersion": 2.6,
         "position": [
-          2880,
-          64
+          4400,
+          1136
         ],
         "id": "5a166a53-ebbe-444f-822f-2b9d9686703f",
         "name": "Updata course status = draft",
@@ -1235,8 +1406,8 @@
         "type": "n8n-nodes-base.executeWorkflow",
         "typeVersion": 1.2,
         "position": [
-          880,
-          256
+          2832,
+          1232
         ],
         "id": "d5476ce4-c43f-4561-87b7-57f58e768d09",
         "name": "Deep Research",
@@ -1249,8 +1420,8 @@
         "type": "n8n-nodes-base.splitInBatches",
         "typeVersion": 3,
         "position": [
-          2656,
-          256
+          4176,
+          1400
         ],
         "id": "d12c1866-ae53-4e96-b015-118fd7179531",
         "name": "Loop Over Items"
@@ -1260,8 +1431,8 @@
         "type": "n8n-nodes-base.limit",
         "typeVersion": 1,
         "position": [
-          3104,
-          336
+          4624,
+          1328
         ],
         "id": "2596facc-a6e0-4853-8db2-f34d63cce721",
         "name": "Limit1"
@@ -1271,8 +1442,8 @@
         "type": "n8n-nodes-base.limit",
         "typeVersion": 1,
         "position": [
-          2208,
-          256
+          3728,
+          1400
         ],
         "id": "adba7b7e-3c57-4003-8d3d-8dfe0d875816",
         "name": "Limit2"
@@ -1284,8 +1455,8 @@
         "type": "n8n-nodes-base.stickyNote",
         "typeVersion": 1,
         "position": [
-          48,
-          480
+          2000,
+          1456
         ],
         "id": "46319d74-794f-4183-ab3b-9b7fa41fdcfc",
         "name": "Sticky Note"
@@ -1299,6 +1470,12 @@
                 "name": "course_type",
                 "value": "Default",
                 "type": "string"
+              },
+              {
+                "id": "a7f03eef-ca72-4031-8701-21190504bded",
+                "name": "generationStage",
+                "value": "={{ $json.body.generationStage }}",
+                "type": "string"
               }
             ]
           },
@@ -1307,8 +1484,8 @@
         "type": "n8n-nodes-base.set",
         "typeVersion": 3.4,
         "position": [
-          208,
-          256
+          2160,
+          1232
         ],
         "id": "388dcf52-f39b-4a2c-b7f4-b76bab396bb6",
         "name": "Course type"
@@ -1324,8 +1501,8 @@
         "type": "n8n-nodes-base.webhook",
         "typeVersion": 2.1,
         "position": [
-          -16,
-          240
+          1936,
+          1136
         ],
         "id": "a0bdaba4-bf00-44a1-ba30-c5e56257f239",
         "name": "Webhook",
@@ -1362,8 +1539,8 @@
         "type": "n8n-nodes-base.set",
         "typeVersion": 3.4,
         "position": [
-          336,
-          48
+          2160,
+          1040
         ]
       },
       {
@@ -1377,9 +1554,118 @@
         "type": "n8n-nodes-base.respondToWebhook",
         "typeVersion": 1.4,
         "position": [
-          624,
-          16
+          2384,
+          1040
         ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "id-1",
+                "leftValue": "={{ $('Course type').item.json.generationStage }}",
+                "rightValue": "fase1",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "5d177b3a-9842-48cd-9be8-d1e7d6c9011f",
+        "name": "Check if fase1",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          3056,
+          1232
+        ]
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "JFxTvX4GDNqmUX0R",
+            "mode": "list",
+            "cachedResultUrl": "/workflow/JFxTvX4GDNqmUX0R",
+            "cachedResultName": "My project — Lessons creator"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "module_id": "={{ $('Loop Over Items').item.json.id }}",
+              "course_type": "={{ $('Course type').item.json.course_type }}",
+              "generationStage": "={{ $('Course type').item.json.generationStage }}"
+            },
+            "matchingColumns": [
+              "module_id"
+            ],
+            "schema": [
+              {
+                "id": "module_id",
+                "displayName": "module_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": false
+              },
+              {
+                "id": "course_type",
+                "displayName": "course_type",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": false
+              },
+              {
+                "id": "generationStage",
+                "displayName": "generationStage",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.2,
+        "position": [
+          4848,
+          1328
+        ],
+        "id": "43614b78-9cad-43ea-aa1b-0331384f109f",
+        "name": "Lesson creator1"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.limit",
+        "typeVersion": 1,
+        "position": [
+          5072,
+          1400
+        ],
+        "id": "f0895688-855f-4354-873a-d253ccfef671",
+        "name": "Limit3"
       }
     ],
     "connections": {
@@ -1418,13 +1704,7 @@
       },
       "Lesson creator": {
         "main": [
-          [
-            {
-              "node": "Limit",
-              "type": "main",
-              "index": 0
-            }
-          ]
+          []
         ]
       },
       "Limit": {
@@ -1460,11 +1740,6 @@
           ]
         ]
       },
-      "Split Out": {
-        "main": [
-          []
-        ]
-      },
       "Case creator": {
         "main": [
           [
@@ -1481,17 +1756,6 @@
           [
             {
               "node": "Course id",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Deep Research": {
-        "main": [
-          [
-            {
-              "node": "Course creation",
               "type": "main",
               "index": 0
             }
@@ -1520,7 +1784,7 @@
         "main": [
           [
             {
-              "node": "Loop Over Items",
+              "node": "Lesson creator1",
               "type": "main",
               "index": 0
             }
@@ -1553,12 +1817,12 @@
         "main": [
           [
             {
-              "node": "Course type",
+              "node": "Early Response Data",
               "type": "main",
               "index": 0
             },
             {
-              "node": "Early Response Data",
+              "node": "Course type",
               "type": "main",
               "index": 0
             }
@@ -1570,6 +1834,57 @@
           [
             {
               "node": "Early Respond with ExecutionId",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Deep Research": {
+        "main": [
+          [
+            {
+              "node": "Check if fase1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Check if fase1": {
+        "main": [
+          [
+            {
+              "node": "Course creation",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Limit",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Lesson creator1": {
+        "main": [
+          [
+            {
+              "node": "Limit3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Limit3": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
               "type": "main",
               "index": 0
             }
