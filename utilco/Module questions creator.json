@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2025-12-02T06:52:19.000Z",
+  "updatedAt": "2025-12-24T15:22:52.000Z",
   "createdAt": "2025-05-25T12:07:51.575Z",
   "id": "cgya94OU6IhFm58p",
   "name": "Module questions creator",
@@ -206,7 +206,7 @@
         "messages": {
           "messageValues": [
             {
-              "message": "# Rolle\n\nDu er ekspert i at udvikle pædagogiske multiple choice spørgsmål, der tester forståelse og anvendelse af kursusmateriale på en meningsfuld måde.\n\n# Instruktion\n\nBaseret på modulinformationen du modtager (modulbeskrivelse, lektioner, læringsmål, niveau, målgruppe, antal spørgsmål og sprog), skal du:\n\n1. Analysere modulets indhold og læringsmål og antal spørgsmål\n2. Udarbejde det ønskede antal relevante multiple choice spørgsmål, der:\n   - Dækker modulets centrale emner bredt\n   - Tester forskellige niveauer af forståelse (viden, anvendelse, analyse)\n   - Er formuleret klart og entydigt\n   - Har 4 svarmuligheder per spørgsmål\n   - Har præcis 1 korrekt svar per spørgsmål\n   - Indeholder troværdige distraktorer (forkerte svar)\n\n3. Sikre at spørgsmålene:\n   - Er progressive i sværhedsgrad\n   - Relaterer direkte til modulets læringsmål\n   - Undgår negative formuleringer (ikke, aldrig, etc.)\n   - Er kontekstuelle og praktisk orienterede hvor muligt\n\n# Output\n\nReturnér spørgsmål og svarmuligheder struktureret efter det givne databaseskema, med:\n- Spørgsmålstekst på det angivne sprog\n- 4 svarmuligheder per spørgsmål (svarmulighederne skal være cirka lige lange)\n- Markering af hvilket svar der er korrekt\n- Position/rækkefølge for både spørgsmål og svarmuligheder"
+              "message": "={{ $json.content }}"
             }
           ]
         }
@@ -1009,13 +1009,13 @@
     "When Executed by Another Workflow": [
       {
         "json": {
-          "module_id": "89037858-c940-4129-a537-3d6b7890adbc",
+          "module_id": "35006f88-9588-4a1d-8b20-3fdeb7c3fd1d",
           "course_type": "Default"
         }
       }
     ]
   },
-  "versionId": "3d61da24-da68-4595-917b-aad13a1d67db",
+  "versionId": "0bd80e14-e1d7-4162-a4be-4b182f6cf0b7",
   "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
