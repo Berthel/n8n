@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2025-12-04T16:58:22.000Z",
+  "updatedAt": "2025-12-24T08:23:01.000Z",
   "createdAt": "2025-05-23T12:23:10.568Z",
   "id": "JFxTvX4GDNqmUX0R",
   "name": "Lessons creator",
@@ -9,13 +9,13 @@
     {
       "parameters": {
         "inputSource": "jsonExample",
-        "jsonExample": "{\n  \"module_id\": \"a string\",\n  \"course_type\": \"course type\"\n}"
+        "jsonExample": "{\n  \"module_id\": \"a string\",\n  \"course_type\": \"course type\",\n  \"generationStage\": \"fase1\"\n}"
       },
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
       "position": [
         0,
-        784
+        1124
       ],
       "id": "12cb3263-719f-4819-a733-a35b12166cf4",
       "name": "When Executed by Another Workflow"
@@ -37,7 +37,7 @@
       "typeVersion": 1,
       "position": [
         448,
-        784
+        1124
       ],
       "id": "c056b915-09c4-4ff7-bc22-ec78a1333ced",
       "name": "Get course",
@@ -69,7 +69,7 @@
       "typeVersion": 1,
       "position": [
         672,
-        784
+        1124
       ],
       "id": "991202ef-f1c9-49a9-b6aa-4b8da1b1587a",
       "name": "Get course content",
@@ -88,7 +88,7 @@
       "typeVersion": 3,
       "position": [
         1792,
-        784
+        1124
       ],
       "id": "df76781b-a665-46e3-9801-c74404ee0e19",
       "name": "Loop Over Items"
@@ -109,7 +109,7 @@
       "typeVersion": 1.3,
       "position": [
         0,
-        1008
+        1444
       ],
       "id": "9e0b87ab-208d-4015-9f9c-03d174c3035c",
       "name": "Anthropic Chat Model1",
@@ -137,7 +137,7 @@
       "typeVersion": 1,
       "position": [
         224,
-        784
+        1124
       ],
       "id": "6ad22f16-9626-46cd-a7e0-aaf5067e71ac",
       "name": "Get module",
@@ -165,7 +165,7 @@
       "typeVersion": 1,
       "position": [
         896,
-        784
+        1124
       ],
       "id": "6833734e-b3d7-4642-acd1-b54ad4390a5e",
       "name": "Get module content",
@@ -194,7 +194,7 @@
       "typeVersion": 1,
       "position": [
         1344,
-        784
+        1124
       ],
       "id": "df58ded4-e98b-4d6f-a591-6862e2c74ba1",
       "name": "Get lessons_id",
@@ -222,7 +222,7 @@
       "typeVersion": 1,
       "position": [
         1568,
-        784
+        1124
       ],
       "id": "4c267e3a-25af-4a18-b137-7718c0524bbf",
       "name": "Get lessons_title",
@@ -265,7 +265,7 @@
       "typeVersion": 2.6,
       "position": [
         1120,
-        784
+        1124
       ],
       "id": "3cb1d80b-6e01-4e2f-8eb7-a1da276c3eb0",
       "name": "Get no of modules and lessons",
@@ -298,10 +298,6 @@
         "fieldsUi": {
           "fieldValues": [
             {
-              "fieldId": "content",
-              "fieldValue": "={{ $('Lesson Content Creator').item.json.text }}"
-            },
-            {
               "fieldId": "exercises",
               "fieldValue": "={{ $('Lesson Exercises Creator').item.json.text }}"
             },
@@ -319,8 +315,8 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        4320,
-        784
+        3968,
+        1220
       ],
       "id": "254b3be7-b972-48fe-8922-71c784c2ac13",
       "name": "Update lessons translation",
@@ -345,7 +341,7 @@
       "typeVersion": 1.2,
       "position": [
         0,
-        1424
+        1860
       ],
       "id": "451ad9bd-b57c-4875-b24b-87056331fc9a",
       "name": "OpenAI Chat Model",
@@ -364,7 +360,7 @@
       "typeVersion": 1.2,
       "position": [
         0,
-        1632
+        2068
       ],
       "id": "799c8b13-74e8-4465-b120-822fd5a6003a",
       "name": "Structured Output Parser"
@@ -383,7 +379,7 @@
       "typeVersion": 1.2,
       "position": [
         0,
-        1216
+        1652
       ],
       "id": "06ef9691-571e-4a40-9bf3-28a089644fac",
       "name": "OpenAI Chat Model1",
@@ -397,7 +393,7 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=#Input\n\n##Kursusinformation\n\nKursustitel: {{ $('Get course content').item.json.title }}\n\nKursusniveau: {{ $('Get course').item.json.course_level }}\n\nMålgruppe: {{ $('Get course').item.json.target_audience }}\n\nSprog: {{ $('Get course').item.json.course_language }}\n\nSektor: {{ $('Get course').item.json.sector }}\n\nKursusbeskrivelse: {{ $('Get course content').item.json.description }}\n\nKursusindhold: {{ $('Get course content').item.json.content }}\n\nKursusresearch: {{ $('Get course').item.json.research }}\n\n##Modulinformation\n\nModulnavn: {{ $('Get module content').item.json.title }}\n\nModulbeskrivelse: {{ $('Get module content').item.json.description }}\n\nModulcontent: {{ $('Get module content').item.json.content }}\n\nAntal moduler i kurset: {{ $('Get no of modules and lessons').item.json.no_of_modules }}\n\n##Lektioner\nLektionstitel: {{ $('Loop Over Items').item.json.title }}\n\nAntal lektioner i modulet: {{ $('Get no of modules and lessons').item.json.no_of_lessons }}\n\nLektionsnummer i kurset: {{ $('Get lessons_id').item.json.position }}\n\nLektionsindhold: {{ $('Lesson Content Creator').item.json.text }}\n",
+        "text": "=#Input\n\n##Kursusinformation\n\nKursustitel: {{ $('Get course content').item.json.title }}\n\nKursusniveau: {{ $('Get course').item.json.course_level }}\n\nMålgruppe: {{ $('Get course').item.json.target_audience }}\n\nSprog: {{ $('Get course').item.json.course_language }}\n\nSektor: {{ $('Get course').item.json.sector }}\n\nKursusbeskrivelse: {{ $('Get course content').item.json.description }}\n\nKursusindhold: {{ $('Get course content').item.json.content }}\n\nKursusresearch: {{ $('Get course').item.json.research }}\n\n##Modulinformation\n\nModulnavn: {{ $('Get module content').item.json.title }}\n\nModulbeskrivelse: {{ $('Get module content').item.json.description }}\n\nModulcontent: {{ $('Get module content').item.json.content }}\n\nAntal moduler i kurset: {{ $('Get no of modules and lessons').item.json.no_of_modules }}\n\n##Lektioner\nLektionstitel: {{ $('Loop Over Items').item.json.title }}\n\nAntal lektioner i modulet: {{ $('Get no of modules and lessons').item.json.no_of_lessons }}\n\nLektionsnummer i kurset: {{ $('Get lessons_id').item.json.position }}\n\nLektionsindhold: {{ $('Loop Over Items').item.json.content }}\n",
         "messages": {
           "messageValues": [
             {
@@ -409,8 +405,8 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.6,
       "position": [
-        2816,
-        656
+        2464,
+        1048
       ],
       "id": "373eae15-4bc9-43a1-9940-bc3983806eff",
       "name": "Lesson Exercises Creator",
@@ -431,8 +427,8 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.6,
       "position": [
-        2240,
-        656
+        2464,
+        544
       ],
       "id": "cc664d61-3f78-4fd9-ba91-6764eb720c6e",
       "name": "Lesson Content Creator"
@@ -440,7 +436,7 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=#Input\n\n##Kursusinformation\n\nKursustitel: {{ $('Get course content').item.json.title }}\n\nKursusniveau: {{ $('Get course').item.json.course_level }}\n\nMålgruppe: {{ $('Get course').item.json.target_audience }}\n\nSprog: {{ $('Get course').item.json.course_language }}\n\nSektor: {{ $('Get course').item.json.sector }}\n\nKursusbeskrivelse: {{ $('Get course content').item.json.description }}\n\nKursusindhold: {{ $('Get course content').item.json.content }}\n\nKursusresearch: {{ $('Get course').item.json.research }}\n\n##Modulinformation\n\nModulnavn: {{ $('Get module content').item.json.title }}\n\nModulbeskrivelse: {{ $('Get module content').item.json.description }}\n\nModulcontent: {{ $('Get module content').item.json.content }}\n\nAntal moduler i kurset: {{ $('Get no of modules and lessons').item.json.no_of_modules }}\n\n##Lektioner\nLektionstitel: {{ $('Loop Over Items').item.json.title }}\n\nAntal lektioner i modulet: {{ $('Get no of modules and lessons').item.json.no_of_lessons }}\n\nLektionsnummer i kurset: {{ $('Get lessons_id').item.json.position }}\n\nLektionsindhold: {{ $('Lesson Content Creator').item.json.text }}\n\nLektions øvelser: {{ $('Lesson Exercises Creator').item.json.text }}",
+        "text": "=#Input\n\n##Kursusinformation\n\nKursustitel: {{ $('Get course content').item.json.title }}\n\nKursusniveau: {{ $('Get course').item.json.course_level }}\n\nMålgruppe: {{ $('Get course').item.json.target_audience }}\n\nSprog: {{ $('Get course').item.json.course_language }}\n\nSektor: {{ $('Get course').item.json.sector }}\n\nKursusbeskrivelse: {{ $('Get course content').item.json.description }}\n\nKursusindhold: {{ $('Get course content').item.json.content }}\n\nKursusresearch: {{ $('Get course').item.json.research }}\n\n##Modulinformation\n\nModulnavn: {{ $('Get module content').item.json.title }}\n\nModulbeskrivelse: {{ $('Get module content').item.json.description }}\n\nModulcontent: {{ $('Get module content').item.json.content }}\n\nAntal moduler i kurset: {{ $('Get no of modules and lessons').item.json.no_of_modules }}\n\n##Lektioner\nLektionstitel: {{ $('Loop Over Items').item.json.title }}\n\nAntal lektioner i modulet: {{ $('Get no of modules and lessons').item.json.no_of_lessons }}\n\nLektionsnummer i kurset: {{ $('Get lessons_id').item.json.position }}\n\nLektionsindhold: {{ $('Loop Over Items').item.json.content }}\n\nLektions øvelser: {{ $('Lesson Exercises Creator').item.json.text }}",
         "messages": {
           "messageValues": [
             {
@@ -452,8 +448,8 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.6,
       "position": [
-        3392,
-        656
+        3040,
+        1048
       ],
       "id": "d621bfe2-efed-4553-8bdf-f4e03a7e83a5",
       "name": "Lesson Reflection Questions"
@@ -461,7 +457,7 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=#Input\n\n##Kursusinformation\n\nKursustitel: {{ $('Get course content').item.json.title }}\n\nKursusniveau: {{ $('Get course').item.json.course_level }}\n\nMålgruppe: {{ $('Get course').item.json.target_audience }}\n\nSprog: {{ $('Get course').item.json.course_language }}\n\nSektor: {{ $('Get course').item.json.sector }}\n\nKursusbeskrivelse: {{ $('Get course content').item.json.description }}\n\nKursusindhold: {{ $('Get course content').item.json.content }}\n\nKursusresearch: {{ $('Get course').item.json.research }}\n\n##Modulinformation\n\nModulnavn: {{ $('Get module content').item.json.title }}\n\nModulbeskrivelse: {{ $('Get module content').item.json.description }}\n\nModulcontent: {{ $('Get module content').item.json.content }}\n\nAntal moduler i kurset: {{ $('Get no of modules and lessons').item.json.no_of_modules }}\n\n##Lektioner\nLektionstitel: {{ $('Loop Over Items').item.json.title }}\n\nAntal lektioner i modulet: {{ $('Get no of modules and lessons').item.json.no_of_lessons }}\n\nLektionsnummer i kurset: {{ $('Get lessons_id').item.json.position }}\n\nLektionsindhold: {{ $('Lesson Content Creator').item.json.text }}\n\n",
+        "text": "=#Input\n\n##Kursusinformation\n\nKursustitel: {{ $('Get course content').item.json.title }}\n\nKursusniveau: {{ $('Get course').item.json.course_level }}\n\nMålgruppe: {{ $('Get course').item.json.target_audience }}\n\nSprog: {{ $('Get course').item.json.course_language }}\n\nSektor: {{ $('Get course').item.json.sector }}\n\nKursusbeskrivelse: {{ $('Get course content').item.json.description }}\n\nKursusindhold: {{ $('Get course content').item.json.content }}\n\nKursusresearch: {{ $('Get course').item.json.research }}\n\n##Modulinformation\n\nModulnavn: {{ $('Get module content').item.json.title }}\n\nModulbeskrivelse: {{ $('Get module content').item.json.description }}\n\nModulcontent: {{ $('Get module content').item.json.content }}\n\nAntal moduler i kurset: {{ $('Get no of modules and lessons').item.json.no_of_modules }}\n\n##Lektioner\nLektionstitel: {{ $('Loop Over Items').item.json.title }}\n\nAntal lektioner i modulet: {{ $('Get no of modules and lessons').item.json.no_of_lessons }}\n\nLektionsnummer i kurset: {{ $('Get lessons_id').item.json.position }}\n\nLektionsindhold: {{ $('Loop Over Items').item.json.content }}\n\n",
         "messages": {
           "messageValues": [
             {
@@ -473,8 +469,8 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.6,
       "position": [
-        3968,
-        656
+        3616,
+        1048
       ],
       "id": "465791b8-9b2f-47bc-b9f3-e989759395ff",
       "name": "Lesson Resources"
@@ -488,8 +484,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2016,
-        656
+        2240,
+        648
       ],
       "id": "921af7bc-67cc-4099-99dd-d3a078c033cb",
       "name": "Get prompt",
@@ -512,8 +508,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        2320,
-        880
+        2536,
+        768
       ],
       "id": "6a59f8d2-10c1-407c-84de-76a88aaaf513",
       "name": "Open Router",
@@ -533,8 +529,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2592,
-        656
+        2240,
+        1048
       ],
       "id": "122f5d90-9b08-42ae-8d46-b083a1f87607",
       "name": "Get prompt1",
@@ -557,8 +553,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        2896,
-        880
+        2536,
+        1272
       ],
       "id": "1ec52c08-34d0-4528-9da7-79b560afd6c2",
       "name": "Open Router1",
@@ -578,8 +574,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        3168,
-        656
+        2816,
+        1048
       ],
       "id": "a3f1a99d-9b2d-468d-a0fa-9d21cc806fee",
       "name": "Get prompt2",
@@ -602,8 +598,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        3472,
-        880
+        3112,
+        1272
       ],
       "id": "c8e190fb-94e6-428f-8f2a-77aa31f0ec43",
       "name": "Open Router2",
@@ -623,8 +619,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        3744,
-        656
+        3392,
+        1048
       ],
       "id": "ee923c4b-3cce-40f2-a8e4-e4f1d86d5832",
       "name": "Get prompt3",
@@ -647,8 +643,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        4048,
-        880
+        3688,
+        1272
       ],
       "id": "b9c6d5d9-aff8-4e77-8b01-db5736cf9fd2",
       "name": "Open Router3",
@@ -656,6 +652,82 @@
         "openAiApi": {
           "id": "wLbV0srlBMaP36mY",
           "name": "Open Router"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "id-1",
+              "leftValue": "={{ $('When Executed by Another Workflow').item.json.generationStage }}",
+              "rightValue": "fase1",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "5a78d33f-5a45-4b40-aacb-0b329ad45a3a",
+      "name": "Check if fase1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2016,
+        676
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "lesson_translations",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "lesson_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Loop Over Items').item.json.lesson_id }}"
+            },
+            {
+              "keyName": "language_code",
+              "condition": "eq",
+              "keyValue": "={{ $('Loop Over Items').item.json.language_code }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "content",
+              "fieldValue": "={{ $('Lesson Content Creator').item.json.text }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2816,
+        648
+      ],
+      "id": "93ba6d35-c482-4a27-b933-04b92fde9aff",
+      "name": "Update lessons translation1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "bvMVIJLed9p3sKxS",
+          "name": "Supabase account"
         }
       }
     }
@@ -699,7 +771,7 @@
         [],
         [
           {
-            "node": "Get prompt",
+            "node": "Check if fase1",
             "type": "main",
             "index": 0
           }
@@ -812,7 +884,7 @@
       "main": [
         [
           {
-            "node": "Get prompt1",
+            "node": "Update lessons translation1",
             "type": "main",
             "index": 0
           }
@@ -928,6 +1000,35 @@
           }
         ]
       ]
+    },
+    "Check if fase1": {
+      "main": [
+        [
+          {
+            "node": "Get prompt",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get prompt1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update lessons translation1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -941,25 +1042,14 @@
     "When Executed by Another Workflow": [
       {
         "json": {
-          "module_id": "bf058810-d6c7-4024-a78e-1cac62d29dcf",
-          "course_type": "Default"
-        }
-      },
-      {
-        "json": {
-          "module_id": "24f30552-abf8-4228-86f5-40f339f27480",
-          "course_type": "Default"
-        }
-      },
-      {
-        "json": {
-          "module_id": "f9053c5c-0e5a-4ac3-8c3b-729e4bf17fd2",
-          "course_type": "Default"
+          "module_id": "35006f88-9588-4a1d-8b20-3fdeb7c3fd1d",
+          "course_type": "Default",
+          "generationStage": "fase2"
         }
       }
     ]
   },
-  "versionId": "8814ac22-c468-4477-a3cf-c9366b50c23d",
+  "versionId": "c1ad808b-077d-4b7c-8039-a7e30efb7042",
   "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
