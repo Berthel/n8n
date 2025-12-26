@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2025-12-24T07:05:41.000Z",
+  "updatedAt": "2025-12-25T10:14:56.000Z",
   "createdAt": "2025-05-26T09:15:58.847Z",
   "id": "cIyAT2GKM5Ng1Wwa",
   "name": "Kursuscockpit",
@@ -51,7 +51,7 @@
       "typeVersion": 1.2,
       "position": [
         3280,
-        1208
+        1216
       ],
       "id": "681d0b70-4333-4da9-9e39-60dead0056cd",
       "name": "Course creation"
@@ -103,7 +103,7 @@
       "typeVersion": 1.2,
       "position": [
         3504,
-        1208
+        1216
       ],
       "id": "63806f42-4a1d-4203-9a5b-c89fa82777b0",
       "name": "Module creator"
@@ -191,7 +191,7 @@
       "typeVersion": 1.2,
       "position": [
         3728,
-        1208
+        1216
       ],
       "id": "b02579fc-e2d0-4625-ba29-2c075ce2b173",
       "name": "Lesson creator"
@@ -202,7 +202,7 @@
       "typeVersion": 1,
       "position": [
         3280,
-        1400
+        1408
       ],
       "id": "02937a44-6c78-4234-97df-46125ad9b514",
       "name": "Limit"
@@ -255,7 +255,7 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.2,
       "position": [
-        4400,
+        4608,
         1328
       ],
       "id": "a6c60a3f-0338-402f-9614-87b3bb4e0646",
@@ -271,7 +271,7 @@
       "typeVersion": 2.6,
       "position": [
         3952,
-        1400
+        1408
       ],
       "id": "ea7a87af-e4dd-4306-857e-ffea631753df",
       "name": "Get module id",
@@ -344,7 +344,7 @@
       "typeVersion": 1.2,
       "position": [
         3504,
-        1400
+        1408
       ],
       "id": "2498f7a5-a77c-490a-86e4-8d7927022b91",
       "name": "Case creator"
@@ -379,7 +379,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        4400,
+        4608,
         1136
       ],
       "id": "5a166a53-ebbe-444f-822f-2b9d9686703f",
@@ -442,7 +442,7 @@
       "typeVersion": 3,
       "position": [
         4176,
-        1400
+        1408
       ],
       "id": "d12c1866-ae53-4e96-b015-118fd7179531",
       "name": "Loop Over Items"
@@ -452,7 +452,7 @@
       "type": "n8n-nodes-base.limit",
       "typeVersion": 1,
       "position": [
-        4624,
+        4832,
         1328
       ],
       "id": "2596facc-a6e0-4853-8db2-f34d63cce721",
@@ -464,7 +464,7 @@
       "typeVersion": 1,
       "position": [
         3728,
-        1400
+        1408
       ],
       "id": "adba7b7e-3c57-4003-8d3d-8dfe0d875816",
       "name": "Limit2"
@@ -671,7 +671,7 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.2,
       "position": [
-        4848,
+        5056,
         1328
       ],
       "id": "43614b78-9cad-43ea-aa1b-0331384f109f",
@@ -682,11 +682,63 @@
       "type": "n8n-nodes-base.limit",
       "typeVersion": 1,
       "position": [
-        5072,
-        1400
+        5280,
+        1408
       ],
       "id": "f0895688-855f-4354-873a-d253ccfef671",
       "name": "Limit3"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "VJUKCG09GhpgdhsU",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/VJUKCG09GhpgdhsU",
+          "cachedResultName": "My project — Course questions creator"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "course_id": "={{ $('Course id').item.json.course_id }}",
+            "language_code": "={{ $('Webhook').item.json.body.locale }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "course_id",
+              "displayName": "course_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "language_code",
+              "displayName": "language_code",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        4384,
+        1184
+      ],
+      "id": "d593733b-738b-4af7-9cee-359375f66101",
+      "name": "Call 'Course questions creator'"
     }
   ],
   "connections": {
@@ -787,7 +839,7 @@
       "main": [
         [
           {
-            "node": "Updata course status = draft",
+            "node": "Call 'Course questions creator'",
             "type": "main",
             "index": 0
           }
@@ -911,6 +963,17 @@
           }
         ]
       ]
+    },
+    "Call 'Course questions creator'": {
+      "main": [
+        [
+          {
+            "node": "Updata course status = draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -967,8 +1030,8 @@
       }
     ]
   },
-  "versionId": "9f55c0a7-5ca7-48bb-aeff-d53aa7adc8f1",
-  "activeVersionId": "9f55c0a7-5ca7-48bb-aeff-d53aa7adc8f1",
+  "versionId": "b058cd6d-de7e-4fa9-a347-abc29dfc159b",
+  "activeVersionId": "b058cd6d-de7e-4fa9-a347-abc29dfc159b",
   "triggerCount": 1,
   "shared": [
     {
@@ -980,9 +1043,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2025-12-24T07:05:41.678Z",
-    "createdAt": "2025-12-24T07:05:41.678Z",
-    "versionId": "9f55c0a7-5ca7-48bb-aeff-d53aa7adc8f1",
+    "updatedAt": "2025-12-25T10:14:56.296Z",
+    "createdAt": "2025-12-25T10:14:56.296Z",
+    "versionId": "b058cd6d-de7e-4fa9-a347-abc29dfc159b",
     "workflowId": "cIyAT2GKM5Ng1Wwa",
     "nodes": [
       {
@@ -1030,7 +1093,7 @@
         "typeVersion": 1.2,
         "position": [
           3280,
-          1208
+          1216
         ],
         "id": "681d0b70-4333-4da9-9e39-60dead0056cd",
         "name": "Course creation"
@@ -1082,7 +1145,7 @@
         "typeVersion": 1.2,
         "position": [
           3504,
-          1208
+          1216
         ],
         "id": "63806f42-4a1d-4203-9a5b-c89fa82777b0",
         "name": "Module creator"
@@ -1170,7 +1233,7 @@
         "typeVersion": 1.2,
         "position": [
           3728,
-          1208
+          1216
         ],
         "id": "b02579fc-e2d0-4625-ba29-2c075ce2b173",
         "name": "Lesson creator"
@@ -1181,7 +1244,7 @@
         "typeVersion": 1,
         "position": [
           3280,
-          1400
+          1408
         ],
         "id": "02937a44-6c78-4234-97df-46125ad9b514",
         "name": "Limit"
@@ -1234,7 +1297,7 @@
         "type": "n8n-nodes-base.executeWorkflow",
         "typeVersion": 1.2,
         "position": [
-          4400,
+          4608,
           1328
         ],
         "id": "a6c60a3f-0338-402f-9614-87b3bb4e0646",
@@ -1250,7 +1313,7 @@
         "typeVersion": 2.6,
         "position": [
           3952,
-          1400
+          1408
         ],
         "id": "ea7a87af-e4dd-4306-857e-ffea631753df",
         "name": "Get module id",
@@ -1323,7 +1386,7 @@
         "typeVersion": 1.2,
         "position": [
           3504,
-          1400
+          1408
         ],
         "id": "2498f7a5-a77c-490a-86e4-8d7927022b91",
         "name": "Case creator"
@@ -1358,7 +1421,7 @@
         "type": "n8n-nodes-base.postgres",
         "typeVersion": 2.6,
         "position": [
-          4400,
+          4608,
           1136
         ],
         "id": "5a166a53-ebbe-444f-822f-2b9d9686703f",
@@ -1421,7 +1484,7 @@
         "typeVersion": 3,
         "position": [
           4176,
-          1400
+          1408
         ],
         "id": "d12c1866-ae53-4e96-b015-118fd7179531",
         "name": "Loop Over Items"
@@ -1431,7 +1494,7 @@
         "type": "n8n-nodes-base.limit",
         "typeVersion": 1,
         "position": [
-          4624,
+          4832,
           1328
         ],
         "id": "2596facc-a6e0-4853-8db2-f34d63cce721",
@@ -1443,7 +1506,7 @@
         "typeVersion": 1,
         "position": [
           3728,
-          1400
+          1408
         ],
         "id": "adba7b7e-3c57-4003-8d3d-8dfe0d875816",
         "name": "Limit2"
@@ -1650,7 +1713,7 @@
         "type": "n8n-nodes-base.executeWorkflow",
         "typeVersion": 1.2,
         "position": [
-          4848,
+          5056,
           1328
         ],
         "id": "43614b78-9cad-43ea-aa1b-0331384f109f",
@@ -1661,11 +1724,63 @@
         "type": "n8n-nodes-base.limit",
         "typeVersion": 1,
         "position": [
-          5072,
-          1400
+          5280,
+          1408
         ],
         "id": "f0895688-855f-4354-873a-d253ccfef671",
         "name": "Limit3"
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "VJUKCG09GhpgdhsU",
+            "mode": "list",
+            "cachedResultUrl": "/workflow/VJUKCG09GhpgdhsU",
+            "cachedResultName": "My project — Course questions creator"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "course_id": "={{ $('Course id').item.json.course_id }}",
+              "language_code": "={{ $('Webhook').item.json.body.locale }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "course_id",
+                "displayName": "course_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": false
+              },
+              {
+                "id": "language_code",
+                "displayName": "language_code",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.3,
+        "position": [
+          4384,
+          1184
+        ],
+        "id": "d593733b-738b-4af7-9cee-359375f66101",
+        "name": "Call 'Course questions creator'"
       }
     ],
     "connections": {
@@ -1766,7 +1881,7 @@
         "main": [
           [
             {
-              "node": "Updata course status = draft",
+              "node": "Call 'Course questions creator'",
               "type": "main",
               "index": 0
             }
@@ -1885,6 +2000,17 @@
           [
             {
               "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Call 'Course questions creator'": {
+        "main": [
+          [
+            {
+              "node": "Updata course status = draft",
               "type": "main",
               "index": 0
             }
