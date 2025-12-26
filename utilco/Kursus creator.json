@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2025-10-11T14:50:27.000Z",
+  "updatedAt": "2025-12-25T10:09:29.000Z",
   "createdAt": "2025-05-06T13:41:14.352Z",
   "id": "ZOTTc7BFoxlnLyvP",
   "name": "Kursus creator",
@@ -634,7 +634,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "BEGIN;\n    -- Slet translations relateret til questions → options\n    DELETE FROM module_question_option_translations\n    WHERE module_question_option_id IN (\n        SELECT id FROM module_question_options\n        WHERE module_question_id IN (\n            SELECT id FROM module_questions\n            WHERE module_id IN (\n                SELECT id FROM modules WHERE course_id = $1\n            )\n        )\n    );\n\n    -- Slet translations relateret til questions\n    DELETE FROM module_question_translations\n    WHERE module_question_id IN (\n        SELECT id FROM module_questions\n        WHERE module_id IN (\n            SELECT id FROM modules WHERE course_id = $1\n        )\n    );\n\n    -- Slet options\n    DELETE FROM module_question_options\n    WHERE module_question_id IN (\n        SELECT id FROM module_questions\n        WHERE module_id IN (\n            SELECT id FROM modules WHERE course_id = $1\n        )\n    );\n\n    -- Slet spørgsmål\n    DELETE FROM module_questions\n    WHERE module_id IN (\n        SELECT id FROM modules WHERE course_id = $1\n    );\n\n\n\n\n    -- Slet lesson translations\n    DELETE FROM lesson_translations\n    WHERE lesson_id IN (\n        SELECT id FROM lessons\n        WHERE module_id IN (\n            SELECT id FROM modules WHERE course_id = $1\n        )\n    );\n\n\n\n    -- Slet lessons\n    DELETE FROM lessons\n    WHERE module_id IN (\n        SELECT id FROM modules WHERE course_id = $1\n    );\n\n    -- Slet module translations\n    DELETE FROM module_translations\n    WHERE module_id IN (\n        SELECT id FROM modules WHERE course_id = $1\n    );\n\n    -- Slet modules\n    DELETE FROM modules\n    WHERE course_id = $1;\n\n    -- Slet course translations\n    DELETE FROM course_translations\n    WHERE course_id = $1;\n\n\n\n\n    -- Endeligt: slet selve kurset\n    --DELETE FROM courses\n    --WHERE id = $1;\nEND ;\n",
+        "query": "BEGIN;\n    -- Slet translations relateret til questions → options\n    DELETE FROM module_question_option_translations\n    WHERE module_question_option_id IN (\n        SELECT id FROM module_question_options\n        WHERE module_question_id IN (\n            SELECT id FROM module_questions\n            WHERE module_id IN (\n                SELECT id FROM modules WHERE course_id = $1\n            )\n        )\n    );\n\n    -- Slet translations relateret til questions\n    DELETE FROM module_question_translations\n    WHERE module_question_id IN (\n        SELECT id FROM module_questions\n        WHERE module_id IN (\n            SELECT id FROM modules WHERE course_id = $1\n        )\n    );\n\n    -- Slet options\n    DELETE FROM module_question_options\n    WHERE module_question_id IN (\n        SELECT id FROM module_questions\n        WHERE module_id IN (\n            SELECT id FROM modules WHERE course_id = $1\n        )\n    );\n\n    -- Slet spørgsmål\n    DELETE FROM module_questions\n    WHERE module_id IN (\n        SELECT id FROM modules WHERE course_id = $1\n    );\n\n    -- Slet kursus quiz med cascading delete\n    DELETE FROM course_questions WHERE course_id = $1;\n\n\n    -- Slet lesson translations\n    DELETE FROM lesson_translations\n    WHERE lesson_id IN (\n        SELECT id FROM lessons\n        WHERE module_id IN (\n            SELECT id FROM modules WHERE course_id = $1\n        )\n    );\n\n\n\n    -- Slet lessons\n    DELETE FROM lessons\n    WHERE module_id IN (\n        SELECT id FROM modules WHERE course_id = $1\n    );\n\n    -- Slet module translations\n    DELETE FROM module_translations\n    WHERE module_id IN (\n        SELECT id FROM modules WHERE course_id = $1\n    );\n\n    -- Slet modules\n    DELETE FROM modules\n    WHERE course_id = $1;\n\n    -- Slet course translations\n    DELETE FROM course_translations\n    WHERE course_id = $1;\n\n\n\n\n    -- Endeligt: slet selve kurset\n    --DELETE FROM courses\n    --WHERE id = $1;\nEND ;\n",
         "options": {
           "queryReplacement": "={{ $('Get course_id').item.json.id }}"
         }
@@ -1286,7 +1286,7 @@
       }
     ]
   },
-  "versionId": "71d1ccd9-87ca-4bd6-a4ce-910415197397",
+  "versionId": "2a744b09-7593-414f-9c9c-08eba84975d6",
   "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
