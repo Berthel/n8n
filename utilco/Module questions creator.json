@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2025-12-24T15:22:52.000Z",
+  "updatedAt": "2025-12-25T11:34:33.000Z",
   "createdAt": "2025-05-25T12:07:51.575Z",
   "id": "cgya94OU6IhFm58p",
   "name": "Module questions creator",
@@ -214,7 +214,7 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.6,
       "position": [
-        2432,
+        2640,
         432
       ],
       "id": "cc5067a4-c98b-4fce-80d7-d1226f7e4d68",
@@ -227,7 +227,7 @@
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.2,
       "position": [
-        2576,
+        2784,
         656
       ],
       "id": "5c3d07cb-4130-4032-939e-2992c9cbaef7",
@@ -277,7 +277,7 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        3008,
+        3216,
         432
       ],
       "id": "cb3f91f1-f50e-4d0c-a446-07b0b3b3a825",
@@ -312,7 +312,7 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        3232,
+        3440,
         432
       ],
       "id": "0728ac29-2d91-4b93-a1ce-9cf2b283e381",
@@ -341,7 +341,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        3456,
+        3664,
         432
       ],
       "id": "f2018e68-b02e-4eaf-af83-b5481b2a6025",
@@ -355,7 +355,7 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        3680,
+        3888,
         432
       ],
       "id": "2714459a-add1-44c4-b0af-610a471831a3",
@@ -384,7 +384,7 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        3904,
+        4112,
         432
       ],
       "id": "26329cc1-f011-498e-9d8a-116abcd56fc8",
@@ -419,7 +419,7 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        4128,
+        4336,
         432
       ],
       "id": "c0f98849-5fc2-4bfd-a0ad-588e17abb383",
@@ -453,7 +453,7 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        2784,
+        2992,
         432
       ],
       "id": "b5556459-7af2-41d6-a48f-150e13ac6f8e",
@@ -489,7 +489,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2208,
+        2416,
         432
       ],
       "id": "c95c9552-38ea-4468-a6ee-cbe7bdde17ec",
@@ -513,7 +513,7 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        2448,
+        2656,
         656
       ],
       "id": "2b726bb3-8625-4273-bf33-f1548fddf24f",
@@ -560,7 +560,7 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        3376,
+        3584,
         1008
       ],
       "id": "8696ed15-e921-454e-8d87-0a22b195f532",
@@ -582,7 +582,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2800,
+        3008,
         1008
       ],
       "id": "39365ed3-c36b-4e0b-85e6-f82928c48371",
@@ -606,7 +606,7 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        3104,
+        3312,
         1232
       ],
       "id": "ac0cb313-a03e-4e68-9bfd-e92d18993ebe",
@@ -627,7 +627,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2224,
+        2432,
         1008
       ],
       "id": "2bad3ab4-dbd3-4126-a688-92899d037936",
@@ -651,7 +651,7 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        2528,
+        2736,
         1232
       ],
       "id": "283a15a3-ed93-4953-a64a-5c1ba9d3413b",
@@ -678,7 +678,7 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.6,
       "position": [
-        2448,
+        2656,
         1008
       ],
       "id": "3b411279-f97d-4414-b414-4108dfdcba92",
@@ -699,11 +699,32 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.6,
       "position": [
-        3024,
+        3232,
         1008
       ],
       "id": "e6248265-513a-4c6f-8ae3-13c9289c086a",
       "name": "Module Reflection Questions"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "DELETE FROM module_questions \nWHERE module_id IN (\n    SELECT id FROM modules WHERE course_id = '{{ $('Get course content').item.json.course_id }}'\n);",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2192,
+        432
+      ],
+      "id": "673c3e1f-c60f-4a17-a8d6-9c4c5e96e2cf",
+      "name": "Delete Module questions",
+      "credentials": {
+        "postgres": {
+          "id": "RUVxlMmZvsZC2IGe",
+          "name": "Postgres account"
+        }
+      }
     }
   ],
   "connections": {
@@ -875,12 +896,12 @@
       "main": [
         [
           {
-            "node": "Get prompt",
+            "node": "Get prompt3",
             "type": "main",
             "index": 0
           },
           {
-            "node": "Get prompt3",
+            "node": "Delete Module questions",
             "type": "main",
             "index": 0
           }
@@ -996,6 +1017,17 @@
           }
         ]
       ]
+    },
+    "Delete Module questions": {
+      "main": [
+        [
+          {
+            "node": "Get prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -1009,13 +1041,13 @@
     "When Executed by Another Workflow": [
       {
         "json": {
-          "module_id": "35006f88-9588-4a1d-8b20-3fdeb7c3fd1d",
+          "module_id": "b198bf1c-92ae-402d-b810-45bb95119308",
           "course_type": "Default"
         }
       }
     ]
   },
-  "versionId": "0bd80e14-e1d7-4162-a4be-4b182f6cf0b7",
+  "versionId": "90f607fb-0661-401f-93f5-ef1f15f455b1",
   "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
