@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2025-11-26T11:00:30.000Z",
+  "updatedAt": "2025-12-26T05:52:38.000Z",
   "createdAt": "2025-07-31T07:32:55.692Z",
   "id": "VA0dFZ33EsLIgmkN",
   "name": "Universal Image Creator v2",
@@ -878,8 +878,14 @@
           "assignments": [
             {
               "id": "279a94b6-4cf9-4cef-b56d-47338f09d7ba",
-              "name": "output",
+              "name": "image_url",
               "value": "=https://iynjlzzmszozpxpgldaa.supabase.co/storage/v1/object/{{ $json.Key }}",
+              "type": "string"
+            },
+            {
+              "id": "7d5d755e-10d8-4c4b-aff9-702c7f53d3cb",
+              "name": "image_text",
+              "value": "={{ $('Generate Image Prompt').item.json.output.imageText }}",
               "type": "string"
             }
           ]
@@ -1284,26 +1290,26 @@
           "headers": {
             "host": "utilco.app.n8n.cloud",
             "user-agent": "node",
-            "content-length": "174",
+            "content-length": "172",
             "accept": "*/*",
             "accept-encoding": "gzip, br",
             "accept-language": "*",
             "cdn-loop": "cloudflare; loops=1; subreqs=1",
-            "cf-connecting-ip": "2001:8a0:58dc:d500:85e4:74bd:78e4:8a60",
+            "cf-connecting-ip": "2001:8a0:58dc:d500:49bb:8299:8da:cf75",
             "cf-ew-via": "15",
             "cf-ipcountry": "PT",
-            "cf-ray": "9a2fb60215e0c1b1-LIS",
+            "cf-ray": "9b3e473fd2738eab-AMS",
             "cf-visitor": "{\"scheme\":\"https\"}",
             "cf-worker": "n8n.cloud",
             "content-type": "application/json",
             "sec-fetch-mode": "cors",
-            "x-forwarded-for": "2001:8a0:58dc:d500:85e4:74bd:78e4:8a60, 104.22.13.16",
+            "x-forwarded-for": "2001:8a0:58dc:d500:49bb:8299:8da:cf75, 104.23.168.22",
             "x-forwarded-host": "utilco.app.n8n.cloud",
             "x-forwarded-port": "443",
             "x-forwarded-proto": "https",
-            "x-forwarded-server": "traefik-prod-users-gwc-10-6888ffdd77-9vgr4",
+            "x-forwarded-server": "traefik-prod-users-gwc-10-6888ffdd77-g92dm",
             "x-is-trusted": "yes",
-            "x-real-ip": "2001:8a0:58dc:d500:85e4:74bd:78e4:8a60",
+            "x-real-ip": "2001:8a0:58dc:d500:49bb:8299:8da:cf75",
             "x-webhook-secret": "vczUfUpZhtQkJXFoP6hN"
           },
           "params": {},
@@ -1314,7 +1320,7 @@
             "course_id": "4f4756c7-ddb0-4aa4-bc0d-2d7b4384fc50",
             "image_width": 1024,
             "image_height": 576,
-            "model": "banana"
+            "model": "flux"
           },
           "webhookUrl": "https://utilco.app.n8n.cloud/webhook/23075b57-e528-4636-936f-b2273bd3750b",
           "executionMode": "production"
@@ -1322,8 +1328,8 @@
       }
     ]
   },
-  "versionId": "1efaaa61-d9f4-4a1f-a382-65dcac88dde5",
-  "activeVersionId": "1efaaa61-d9f4-4a1f-a382-65dcac88dde5",
+  "versionId": "7a2b729f-ff53-4bc0-bf04-d4f8b643b227",
+  "activeVersionId": "7a2b729f-ff53-4bc0-bf04-d4f8b643b227",
   "triggerCount": 1,
   "shared": [
     {
@@ -1335,9 +1341,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2025-12-04T14:45:44.020Z",
-    "createdAt": "2025-12-04T14:45:44.020Z",
-    "versionId": "1efaaa61-d9f4-4a1f-a382-65dcac88dde5",
+    "updatedAt": "2025-12-26T05:52:38.413Z",
+    "createdAt": "2025-12-26T05:52:38.413Z",
+    "versionId": "7a2b729f-ff53-4bc0-bf04-d4f8b643b227",
     "workflowId": "VA0dFZ33EsLIgmkN",
     "nodes": [
       {
@@ -2212,8 +2218,14 @@
             "assignments": [
               {
                 "id": "279a94b6-4cf9-4cef-b56d-47338f09d7ba",
-                "name": "output",
+                "name": "image_url",
                 "value": "=https://iynjlzzmszozpxpgldaa.supabase.co/storage/v1/object/{{ $json.Key }}",
+                "type": "string"
+              },
+              {
+                "id": "7d5d755e-10d8-4c4b-aff9-702c7f53d3cb",
+                "name": "image_text",
+                "value": "={{ $('Generate Image Prompt').item.json.output.imageText }}",
                 "type": "string"
               }
             ]
@@ -2606,7 +2618,7 @@
         ]
       }
     },
-    "authors": "system migration",
+    "authors": "Flemming Berthelsen",
     "name": null,
     "description": null
   },
