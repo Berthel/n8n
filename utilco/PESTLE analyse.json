@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2025-11-12T05:29:02.000Z",
+  "updatedAt": "2025-12-28T17:27:15.000Z",
   "createdAt": "2025-10-13T16:42:29.128Z",
   "id": "rhKuy3BLp0x2h1v0",
   "name": "PESTLE analyse",
@@ -103,9 +103,9 @@
       "parameters": {
         "model": {
           "__rl": true,
-          "value": "google/gemini-2.5-pro",
+          "value": "perplexity/sonar-reasoning-pro",
           "mode": "list",
-          "cachedResultName": "google/gemini-2.5-pro"
+          "cachedResultName": "perplexity/sonar-reasoning-pro"
         },
         "options": {}
       },
@@ -584,7 +584,7 @@
       }
     ]
   },
-  "versionId": "9cd4c42b-6708-40aa-b4cf-8bf7f74e949f",
+  "versionId": "5c08ded7-503a-400e-87e8-a909bc6860e9",
   "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
