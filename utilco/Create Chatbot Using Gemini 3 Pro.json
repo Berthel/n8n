@@ -1,0 +1,141 @@
+{
+  "updatedAt": "2025-12-28T17:18:41.000Z",
+  "createdAt": "2025-12-28T17:15:09.975Z",
+  "id": "O10E4g0rAwal0GDR",
+  "name": "Create Chatbot Using Gemini 3 Pro",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "options": {
+          "loadPreviousSession": "memory"
+        }
+      },
+      "id": "bdb05c20-8133-4692-a3e1-b165a1a42808",
+      "name": "Chat Trigger",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "b3d2fcba-87d0-43bb-9ef4-6d54783f380c"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are a helpful AI assistant. Answer questions clearly and concisely. Be friendly and professional in your responses."
+        }
+      },
+      "id": "b9b723f3-ab4b-4d74-8f66-6c377bee348a",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        352,
+        0
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "430c3114-2769-48ca-b033-99957eda1970",
+      "name": "Simple Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        72,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "openai/gpt-5.2-chat",
+          "mode": "list",
+          "cachedResultName": "openai/gpt-5.2-chat"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        224,
+        208
+      ],
+      "id": "36730ca7-0609-45b9-93ac-cb357dd2c67a",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "wLbV0srlBMaP36mY",
+          "name": "Open Router"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Chat Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          },
+          {
+            "node": "Chat Trigger",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "deb4db11-3a02-4f77-9130-09f0708692c3",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2025-12-28T17:15:09.978Z",
+      "createdAt": "2025-12-28T17:15:09.978Z",
+      "role": "workflow:owner",
+      "workflowId": "O10E4g0rAwal0GDR",
+      "projectId": "SFLNAzqJIfhKMhJx"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
