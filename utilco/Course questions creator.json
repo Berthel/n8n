@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2025-12-25T11:28:48.000Z",
+  "updatedAt": "2026-01-06T14:45:55.000Z",
   "createdAt": "2025-12-25T08:53:40.131Z",
   "id": "VJUKCG09GhpgdhsU",
   "name": "Course questions creator",
@@ -106,7 +106,7 @@
             },
             {
               "fieldId": "language_code",
-              "fieldValue": "={{ $('When Executed by Another Workflow').item.json.language_code }}"
+              "fieldValue": "={{ $('When Executed by Another Workflow').first().json.language_code }}"
             },
             {
               "fieldId": "option_text",
@@ -213,7 +213,7 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=#Input\n\n##Kursusindhold\n\n{{ $('Hent kursusindhold').item.json.get_course_text_outline_locale }}",
+        "text": "=#Input\n\n##Kursusindhold\n\n{{ $('Hent kursusindhold').first().json.get_course_text_outline_locale }}\n\n",
         "hasOutputParser": true,
         "messages": {
           "messageValues": [
@@ -239,7 +239,7 @@
           "fieldValues": [
             {
               "fieldId": "course_id",
-              "fieldValue": "={{ $('When Executed by Another Workflow').item.json.course_id }}"
+              "fieldValue": "={{ $('When Executed by Another Workflow').first().json.course_id }}"
             },
             {
               "fieldId": "position",
@@ -274,7 +274,7 @@
             },
             {
               "fieldId": "language_code",
-              "fieldValue": "={{ $('When Executed by Another Workflow').item.json.language_code }}"
+              "fieldValue": "={{ $('When Executed by Another Workflow').first().json.language_code }}"
             },
             {
               "fieldId": "question_text",
@@ -521,13 +521,25 @@
     "When Executed by Another Workflow": [
       {
         "json": {
-          "course_id": "beb3e070-90a5-4847-ac8a-6dca5eb2d6e0",
+          "course_id": "3afddd88-c144-40bb-a38b-8b92b968365e",
+          "language_code": "da"
+        }
+      },
+      {
+        "json": {
+          "course_id": "3afddd88-c144-40bb-a38b-8b92b968365e",
+          "language_code": "da"
+        }
+      },
+      {
+        "json": {
+          "course_id": "3afddd88-c144-40bb-a38b-8b92b968365e",
           "language_code": "da"
         }
       }
     ]
   },
-  "versionId": "fe499624-d7a6-46c1-8e55-99b0957f3036",
+  "versionId": "363aa600-172e-472f-b755-40a5806de787",
   "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
