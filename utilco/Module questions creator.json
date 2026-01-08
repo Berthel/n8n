@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2025-12-25T11:34:33.000Z",
+  "updatedAt": "2026-01-07T11:36:57.000Z",
   "createdAt": "2025-05-25T12:07:51.575Z",
   "id": "cgya94OU6IhFm58p",
   "name": "Module questions creator",
@@ -708,7 +708,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "DELETE FROM module_questions \nWHERE module_id IN (\n    SELECT id FROM modules WHERE course_id = '{{ $('Get course content').item.json.course_id }}'\n);",
+        "query": "DELETE FROM module_questions \nWHERE module_id IN (\n    SELECT id FROM modules WHERE module_id = '{{ $('When Executed by Another Workflow').first().json.module_id }}'\n);",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -1041,13 +1041,13 @@
     "When Executed by Another Workflow": [
       {
         "json": {
-          "module_id": "b198bf1c-92ae-402d-b810-45bb95119308",
+          "module_id": "6a86648f-88a5-41d1-b3b6-3a74c8aa2b1a",
           "course_type": "Default"
         }
       }
     ]
   },
-  "versionId": "90f607fb-0661-401f-93f5-ef1f15f455b1",
+  "versionId": "ed0f610e-39b3-4ff8-bc46-20ee6e87f6b3",
   "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
