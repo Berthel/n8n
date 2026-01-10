@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-01-06T14:46:59.000Z",
+  "updatedAt": "2026-01-09T13:29:15.000Z",
   "createdAt": "2025-05-26T09:15:58.847Z",
   "id": "cIyAT2GKM5Ng1Wwa",
   "name": "Kursuscockpit",
@@ -352,7 +352,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "select id from courses where status = 'next'\nlimit 1",
+        "query": "select id from courses where status = 'next' and id = '{{ $('Webhook').item.json.body.courseId }}'\nlimit 1",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -999,30 +999,30 @@
             "accept-encoding": "gzip, br",
             "accept-language": "*",
             "cdn-loop": "netlify, cloudflare; loops=1; subreqs=1",
-            "cf-connecting-ip": "18.157.76.215",
+            "cf-connecting-ip": "35.159.250.26",
             "cf-ew-via": "15",
             "cf-ipcountry": "DE",
-            "cf-ray": "9b9bbce673fe1fad-FRA",
+            "cf-ray": "9bb40014a1d3557f-FRA",
             "cf-visitor": "{\"scheme\":\"https\"}",
             "cf-worker": "n8n.cloud",
             "content-type": "application/json",
             "sec-fetch-mode": "cors",
-            "x-forwarded-for": "18.157.76.215, 172.70.248.62",
+            "x-forwarded-for": "35.159.250.26, 172.70.240.175",
             "x-forwarded-host": "utilco.app.n8n.cloud",
             "x-forwarded-port": "443",
             "x-forwarded-proto": "https",
-            "x-forwarded-server": "traefik-prod-users-gwc-10-6888ffdd77-g92dm",
+            "x-forwarded-server": "traefik-prod-users-gwc-10-6888ffdd77-zl6sm",
             "x-is-trusted": "yes",
-            "x-real-ip": "18.157.76.215",
+            "x-real-ip": "35.159.250.26",
             "x-webhook-secret": "vczUfUpZhtQkJXFoP6hN"
           },
           "params": {},
           "query": {},
           "body": {
-            "courseId": "3afddd88-c144-40bb-a38b-8b92b968365e",
+            "courseId": "0a2b32e7-f162-4c3b-a846-707242b5dd9a",
             "locale": "da",
-            "generationStage": "fase2",
-            "timestamp": "2026-01-06T13:59:46.860Z"
+            "generationStage": "fase1",
+            "timestamp": "2026-01-09T12:39:56.834Z"
           },
           "webhookUrl": "https://utilco.app.n8n.cloud/webhook/d0bc0adf-07a0-4c29-af4d-f88d9910d16a",
           "executionMode": "production"
@@ -1030,8 +1030,8 @@
       }
     ]
   },
-  "versionId": "0bd1f6b4-4674-46ff-999f-9b7b5c29d241",
-  "activeVersionId": "0bd1f6b4-4674-46ff-999f-9b7b5c29d241",
+  "versionId": "d8893e68-4342-4d41-9477-cef9a4d9c373",
+  "activeVersionId": "d8893e68-4342-4d41-9477-cef9a4d9c373",
   "triggerCount": 1,
   "shared": [
     {
@@ -1043,9 +1043,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-01-06T14:46:59.761Z",
-    "createdAt": "2026-01-06T14:46:59.761Z",
-    "versionId": "0bd1f6b4-4674-46ff-999f-9b7b5c29d241",
+    "updatedAt": "2026-01-09T13:29:15.231Z",
+    "createdAt": "2026-01-09T13:29:15.231Z",
+    "versionId": "d8893e68-4342-4d41-9477-cef9a4d9c373",
     "workflowId": "cIyAT2GKM5Ng1Wwa",
     "nodes": [
       {
@@ -1394,7 +1394,7 @@
       {
         "parameters": {
           "operation": "executeQuery",
-          "query": "select id from courses where status = 'next'\nlimit 1",
+          "query": "select id from courses where status = 'next' and id = '{{ $('Webhook').item.json.body.courseId }}'\nlimit 1",
           "options": {}
         },
         "type": "n8n-nodes-base.postgres",
