@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-01-25T16:58:00.314Z",
   "updatedAt": "2025-01-27T04:17:41.000Z",
+  "createdAt": "2025-01-25T16:58:00.314Z",
   "id": "F4oG3v3bBgCCglWN",
   "name": "DeepSeek R1 Planner Agent",
   "active": false,
@@ -574,20 +574,22 @@
   "meta": null,
   "pinData": {},
   "versionId": "4b939923-36ac-44e5-9251-9a4aaf179b85",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-01-31T04:38:34.663Z",
       "updatedAt": "2025-01-31T04:38:34.663Z",
+      "createdAt": "2025-01-31T04:38:34.663Z",
       "role": "workflow:owner",
       "workflowId": "F4oG3v3bBgCCglWN",
       "projectId": "GfhaYhFYRk0TRXAf"
     }
   ],
+  "activeVersion": null,
   "tags": [
     {
-      "createdAt": "2025-01-27T04:17:35.792Z",
       "updatedAt": "2025-01-27T04:17:35.792Z",
+      "createdAt": "2025-01-27T04:17:35.792Z",
       "id": "CzaVYuF3ScM6UHnf",
       "name": "demo"
     }
