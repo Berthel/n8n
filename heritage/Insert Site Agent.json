@@ -1,9 +1,9 @@
 {
-  "createdAt": "2025-01-27T05:30:47.556Z",
   "updatedAt": "2025-04-10T05:56:13.000Z",
+  "createdAt": "2025-01-27T05:30:47.556Z",
   "id": "WdNyDCo81L6luW0s",
   "name": "Insert Site Agent",
-  "active": false,
+  "active": true,
   "isArchived": false,
   "nodes": [
     {
@@ -331,26 +331,325 @@
     ]
   },
   "versionId": "9dd85e83-5fd9-4ad2-ab75-58dd005d49be",
+  "activeVersionId": "9dd85e83-5fd9-4ad2-ab75-58dd005d49be",
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-01-27T05:32:38.510Z",
       "updatedAt": "2025-01-27T05:32:38.510Z",
+      "createdAt": "2025-01-27T05:32:38.510Z",
       "role": "workflow:owner",
       "workflowId": "WdNyDCo81L6luW0s",
       "projectId": "rkqKISKa14HwF9Xd"
     }
   ],
+  "activeVersion": {
+    "updatedAt": "2025-11-26T07:13:51.767Z",
+    "createdAt": "2025-11-26T07:13:51.767Z",
+    "versionId": "9dd85e83-5fd9-4ad2-ab75-58dd005d49be",
+    "workflowId": "WdNyDCo81L6luW0s",
+    "nodes": [
+      {
+        "parameters": {
+          "workflowInputs": {
+            "values": [
+              {
+                "name": "global_code"
+              },
+              {
+                "name": "latitude"
+              },
+              {
+                "name": "longitude"
+              },
+              {
+                "name": "address"
+              },
+              {
+                "name": "website_url"
+              },
+              {
+                "name": "CID"
+              },
+              {
+                "name": "place_id"
+              },
+              {
+                "name": "site_name"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          -360,
+          -80
+        ],
+        "id": "1862de26-7df9-40e1-aad1-bf344fe95493",
+        "name": "Workflow Input Trigger"
+      },
+      {
+        "parameters": {
+          "jsCode": "return items.map(item => {\n  item.json.latitude = parseFloat(item.json.latitude);\n  item.json.longitude = parseFloat(item.json.longitude);\n  return item;\n});\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -140,
+          -80
+        ],
+        "id": "9485f533-3040-4e28-b342-b54bbea3006a",
+        "name": "Code"
+      },
+      {
+        "parameters": {
+          "tableId": "sites",
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "id",
+                "fieldValue": "={{ $json.output.site_id }}"
+              },
+              {
+                "fieldId": "city_id",
+                "fieldValue": "tavira"
+              },
+              {
+                "fieldId": "latitude",
+                "fieldValue": "={{ $('Code').item.json.latitude }}"
+              },
+              {
+                "fieldId": "longitude",
+                "fieldValue": "={{ $('Code').item.json.longitude }}"
+              },
+              {
+                "fieldId": "address",
+                "fieldValue": "={{ $('Code').item.json.address }}"
+              },
+              {
+                "fieldId": "website_url",
+                "fieldValue": "={{ $('Code').item.json.website_url }}"
+              },
+              {
+                "fieldId": "cid",
+                "fieldValue": "={{ $('Code').item.json.CID }}"
+              },
+              {
+                "fieldId": "place_id",
+                "fieldValue": "={{ $('Code').item.json.place_id }}"
+              },
+              {
+                "fieldId": "status",
+                "fieldValue": "active"
+              },
+              {
+                "fieldId": "global_code",
+                "fieldValue": "={{ $('Code').item.json.global_code }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          456,
+          -80
+        ],
+        "id": "abf3f3d8-29de-4e8e-b202-a6d25530fb8e",
+        "name": "Sites",
+        "credentials": {
+          "supabaseApi": {
+            "id": "1Yc1VOr8K1yXCO1Q",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "tableId": "site_translations",
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "site_id",
+                "fieldValue": "={{ $json.id }}"
+              },
+              {
+                "fieldId": "language_code",
+                "fieldValue": "en"
+              },
+              {
+                "fieldId": "name",
+                "fieldValue": "={{ $('Workflow Input Trigger').item.json.site_name }}"
+              },
+              {
+                "fieldId": "description",
+                "fieldValue": "tbd"
+              },
+              {
+                "fieldId": "city_id",
+                "fieldValue": "={{ $json.city_id }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          676,
+          -80
+        ],
+        "id": "63e660bc-3bfd-440f-9130-106fe3ad7910",
+        "name": "Supabase",
+        "credentials": {
+          "supabaseApi": {
+            "id": "1Yc1VOr8K1yXCO1Q",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=Stednavn: {{ $json.site_name }}",
+          "hasOutputParser": true,
+          "messages": {
+            "messageValues": [
+              {
+                "message": "=Du er en assistent som skaber site_id til en applikation med historiske steder (sites)\n\nInput: Stednavn\n\n**Opgave:** Konverter et stednavn til et site_id.  \n**Regler:**  \n1. Gør alle bogstaver til lowercase.  \n2. Erstat alle mellemrum med bindestreger (-).  \n3. Fjern alle specialtegn (herunder accenttegn).  \n4. Returnér kun selve site_id (uden ekstra tekst).\n \n**Eksempel:**  \n\"Ermida de São Lázaro\" → \"ermida-de-sao-lazaro\"\n\n"
+              }
+            ]
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "typeVersion": 1.6,
+        "position": [
+          80,
+          -80
+        ],
+        "id": "d8d49ed5-62e8-493a-a2bf-9db093ebcedb",
+        "name": "Basic LLM Chain"
+      },
+      {
+        "parameters": {
+          "jsonSchemaExample": "{\n\t\"site_id\": \"ermida-de-sao-lazaro\"\n}"
+        },
+        "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+        "typeVersion": 1.2,
+        "position": [
+          228,
+          140
+        ],
+        "id": "856d14df-e645-4e83-b088-fd35aca27a7c",
+        "name": "Structured Output Parser"
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gpt-4o-mini"
+          },
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2,
+        "position": [
+          108,
+          140
+        ],
+        "id": "05f82952-d5c1-4f6a-89f7-066011309aca",
+        "name": "OpenAI Chat Model",
+        "credentials": {
+          "openAiApi": {
+            "id": "ZjiR1Y4tdzymEK1L",
+            "name": "OpenAi account"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Workflow Input Trigger": {
+        "main": [
+          [
+            {
+              "node": "Code",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code": {
+        "main": [
+          [
+            {
+              "node": "Basic LLM Chain",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Sites": {
+        "main": [
+          [
+            {
+              "node": "Supabase",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Basic LLM Chain": {
+        "main": [
+          [
+            {
+              "node": "Sites",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Structured Output Parser": {
+        "ai_outputParser": [
+          [
+            {
+              "node": "Basic LLM Chain",
+              "type": "ai_outputParser",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Basic LLM Chain",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
   "tags": [
     {
-      "createdAt": "2025-01-28T15:25:26.214Z",
       "updatedAt": "2025-01-28T15:25:26.214Z",
+      "createdAt": "2025-01-28T15:25:26.214Z",
       "id": "BngebX50Ev8rBclu",
       "name": "HN Content manager"
     },
     {
-      "createdAt": "2025-01-27T04:16:57.472Z",
       "updatedAt": "2025-01-27T04:16:57.472Z",
+      "createdAt": "2025-01-27T04:16:57.472Z",
       "id": "twGRqDemoRyf0IES",
       "name": "sub"
     }
