@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-04-06T18:01:33.213Z",
   "updatedAt": "2025-05-09T06:06:01.000Z",
+  "createdAt": "2025-04-06T18:01:33.213Z",
   "id": "w7XM6TQuhqlq8sdO",
   "name": "Udfyld opening hours",
   "active": false,
@@ -225,20 +225,22 @@
     ]
   },
   "versionId": "00a625c8-30db-4c65-a114-e37a80956c6d",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-04-06T18:04:03.592Z",
       "updatedAt": "2025-04-06T18:04:03.592Z",
+      "createdAt": "2025-04-06T18:04:03.592Z",
       "role": "workflow:owner",
       "workflowId": "w7XM6TQuhqlq8sdO",
       "projectId": "rkqKISKa14HwF9Xd"
     }
   ],
+  "activeVersion": null,
   "tags": [
     {
-      "createdAt": "2025-01-27T04:16:13.710Z",
       "updatedAt": "2025-01-27T04:16:13.710Z",
+      "createdAt": "2025-01-27T04:16:13.710Z",
       "id": "UKDDqdJlo9qVGTuK",
       "name": "navigator"
     }
