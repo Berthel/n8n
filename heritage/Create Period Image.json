@@ -1,9 +1,9 @@
 {
-  "createdAt": "2025-04-24T19:04:58.073Z",
   "updatedAt": "2025-04-25T05:40:16.000Z",
+  "createdAt": "2025-04-24T19:04:58.073Z",
   "id": "Rd36ihKTpjRIw05V",
   "name": "Create Period Image",
-  "active": false,
+  "active": true,
   "isArchived": false,
   "nodes": [
     {
@@ -393,20 +393,410 @@
   },
   "pinData": {},
   "versionId": "8a5244eb-5404-4f16-8b82-d7725c8190ff",
+  "activeVersionId": "8a5244eb-5404-4f16-8b82-d7725c8190ff",
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-04-24T19:04:58.077Z",
       "updatedAt": "2025-04-24T19:04:58.077Z",
+      "createdAt": "2025-04-24T19:04:58.077Z",
       "role": "workflow:owner",
       "workflowId": "Rd36ihKTpjRIw05V",
       "projectId": "rkqKISKa14HwF9Xd"
     }
   ],
+  "activeVersion": {
+    "updatedAt": "2025-11-26T07:13:51.767Z",
+    "createdAt": "2025-11-26T07:13:51.767Z",
+    "versionId": "8a5244eb-5404-4f16-8b82-d7725c8190ff",
+    "workflowId": "Rd36ihKTpjRIw05V",
+    "nodes": [
+      {
+        "parameters": {
+          "operation": "toBinary",
+          "sourceProperty": "data[0].b64_json",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.convertToFile",
+        "typeVersion": 1.1,
+        "position": [
+          576,
+          -460
+        ],
+        "id": "af785adf-2108-44eb-aeb0-9c670eca7314",
+        "name": "Convert to File"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.openai.com/v1/images/edits",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendBody": true,
+          "contentType": "multipart-form-data",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "model",
+                "value": "gpt-image-1"
+              },
+              {
+                "parameterType": "formBinaryData",
+                "name": "image",
+                "inputDataFieldName": "data"
+              },
+              {
+                "name": "prompt",
+                "value": "={{ $('Basic LLM Chain').item.json.text }}. PNG med gennemsigtig baggrund."
+              },
+              {
+                "name": "size",
+                "value": "1024x1024"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          356,
+          -460
+        ],
+        "id": "27597459-5105-4144-a48f-94dd71fe2b75",
+        "name": "Generate Image",
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "GnmWmujubTc3Ar6Y",
+            "name": "Verified"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "url": "https://rrkivosxnrfvdawawexd.supabase.co/storage/v1/object/public/period-icons//pre-roman.png",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          136,
+          -460
+        ],
+        "id": "52c98e01-b667-482e-81b9-e4fcae79fd8a",
+        "name": "Timeline Eksempel"
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=Bynavn: {{ $('Edit Fields').item.json.By }}\nPeriodenavn: {{ $json.name }}\nDetaljeret historisk periodetekst: {{ $json.description }}",
+          "messages": {
+            "messageValues": [
+              {
+                "message": "## Prompt til image-generator-agent til **gpt-image-1**\n\n---\n\n### OVERVIEW  \nDu er en AI-agent, som modtager\n \n1. **Bynavn**  \n2. **Periodenavn**\n3. **Detaljeret historisk periode­tekst**\n\nog skal producere **én kort tekst-prompt** til OpenAI-modellen **gpt-image-1**. Målet er et **baggrundsløst ikon** til en mobil lokal­historie-app, der matcher reference­billedets stil, som OpenAI-modellen **gpt-image-1** også har fået.\n\n> **Bemærk:** Da selve image-API-kaldet sender reference­billedet som et separat `image_url`, behøver du **ikke** beskrive farve­koder eller linjetykkelser i detaljer – du kan blot henvise til *“samme stil som reference­billedet”*.  \n\n---\n\n### OBJECTIVE  \n\n1. **Udvælg 2-3 ikoniske hovedsymboler** fra periode­teksten, der dækker tids­spændet.  \n   - Maks. 2 små sekundær­elementer, hvis det giver mening.\n\n2. **Skriv en prompt, der**  \n   - starter med *“Baggrundsløst ikon i samme stil som referencebilledet.”*  \n   - nævner de valgte symboler og deres placering.  \n   - tillader kun en let diffus halo/tåge (hvis tematisk relevant); ellers ingen baggrund.  \n   - minder modellen om læsbarhed ved 128 × 128 px.  \n\n---\n\n### INPUTS  \n- **reference_image_url** (transmitteres i API-kaldet)  \n- **city_name**  \n- **historical_period_description**\n\n---\n\n### OUTPUT INSTRUCTIONS  \n\n- **Returnér kun selve prompt-teksten** – ingen anførselstegn, ingen metatekst.  \n- Brug aktivt, kortfattet sprog; én-til-to sætninger er nok.  \n- Henvis til reference­billedets stil således: *“…i samme stil som reference­billedet”*.  \n- Undgå enhver gentagelse af periode­teksten; brug kun de udvalgte symboler.  \n\n---\n\n### STYLE GUIDELINES (implicit for din interne beslutning)  \n\n| Parameter          | Krav                                                   |\n|--------------------|--------------------------------------------------------|\n| Farver & linjer    | “Samme stil som reference” er tilstrækkeligt.          |\n| Antal hovedelementer | 3 store + maks. 2 små.                                 |\n| Baggrund           | Transparent; kun svag halo/tåge tilladt.               |\n| Læsbarhed          | Detaljer tydelige ved 128 × 128 px.                     |\n| Render-stil        | Flad / semi-flad vektorikon; ingen fotorealisme.       |\n\n---\n\n### EKSEMPEL PÅ OUTPUT (Sintra før islams indtog)  \n\n> Baggrundsløst ikon i samme stil som referencebilledet: central megalit-dysse, til venstre en romersk mosaikflise, til højre en visigotisk guldring; let tåge-halo antyder Sintras hellige bjerg; klar ved 128 × 128 px."
+              }
+            ]
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "typeVersion": 1.6,
+        "position": [
+          -240,
+          -460
+        ],
+        "id": "95f52d66-cb44-45ec-b31e-52ab0f1dfbd1",
+        "name": "Basic LLM Chain"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "05db5739-cb8d-46e8-9d78-a25beaba2039",
+                "name": "By",
+                "value": "={{ $json.By }}",
+                "type": "string"
+              },
+              {
+                "id": "8350def5-fea9-470f-a8bc-78449b01c971",
+                "name": "period_id",
+                "value": "={{ $json.period_id }}",
+                "type": "string"
+              },
+              {
+                "id": "6cb0e803-ed2b-4fe6-8c4f-ebea136d0d58",
+                "name": "language_code",
+                "value": "={{ $json.language_code }}",
+                "type": "string"
+              },
+              {
+                "id": "042928d2-6f23-4554-ab8b-b70515304add",
+                "name": "eksempel_url",
+                "value": "https://rrkivosxnrfvdawawexd.supabase.co/storage/v1/object/public/period-icons//pre-roman.png",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -680,
+          -460
+        ],
+        "id": "a12724e2-2caf-4280-bfc0-246dfe7c20b2",
+        "name": "Edit Fields"
+      },
+      {
+        "parameters": {
+          "operation": "get",
+          "tableId": "period_translations",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "period_id",
+                "keyValue": "={{ $json.period_id }}"
+              },
+              {
+                "keyName": "language_code",
+                "keyValue": "={{ $json.language_code }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          -460,
+          -460
+        ],
+        "id": "b2594aae-086a-44d4-b03b-a956c2b44fd6",
+        "name": "Supabase",
+        "credentials": {
+          "supabaseApi": {
+            "id": "1Yc1VOr8K1yXCO1Q",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "model": "openai/gpt-4.1",
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+        "typeVersion": 1,
+        "position": [
+          -152,
+          -240
+        ],
+        "id": "694a1737-7836-415e-b161-20350486d4db",
+        "name": "OpenRouter Chat Model",
+        "credentials": {
+          "openRouterApi": {
+            "id": "p82huCAcsjyIZh7S",
+            "name": "OpenRouter account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://rrkivosxnrfvdawawexd.supabase.co/storage/v1/object/period-icons/{{ $('Supabase').item.json.period_id }}.png",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "image/png"
+              }
+            ]
+          },
+          "sendBody": true,
+          "contentType": "binaryData",
+          "inputDataFieldName": "data",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          796,
+          -460
+        ],
+        "id": "ab336acd-028b-448a-818b-dcea3e16efc4",
+        "name": "Upload billede",
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "znNIyfNCzQN57VEr",
+            "name": "supabase service role api"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "tableId": "periods",
+          "matchType": "allFilters",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "id",
+                "condition": "eq",
+                "keyValue": "={{ $('Supabase').item.json.period_id }}"
+              }
+            ]
+          },
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "icon_url",
+                "fieldValue": "=https://rrkivosxnrfvdawawexd.supabase.co/storage/v1/object/public/period-icons//{{ $('Supabase').item.json.period_id }}.png"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          1016,
+          -460
+        ],
+        "id": "7692b432-25c5-4bd6-8ea9-9a13e22c37c7",
+        "name": "Supabase1",
+        "credentials": {
+          "supabaseApi": {
+            "id": "1Yc1VOr8K1yXCO1Q",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "inputSource": "jsonExample",
+          "jsonExample": "{\n\"By\": \"Sintra\",\n    \"period_id\": \"sintra_iberian_union\",\n    \"language_code\": \"da\"\n}"
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          -900,
+          -460
+        ],
+        "id": "16545ea8-4be4-4ab8-9d9f-29df99cc539b",
+        "name": "When Executed by Another Workflow"
+      }
+    ],
+    "connections": {
+      "Generate Image": {
+        "main": [
+          [
+            {
+              "node": "Convert to File",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Timeline Eksempel": {
+        "main": [
+          [
+            {
+              "node": "Generate Image",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Basic LLM Chain": {
+        "main": [
+          [
+            {
+              "node": "Timeline Eksempel",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "Supabase",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Supabase": {
+        "main": [
+          [
+            {
+              "node": "Basic LLM Chain",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenRouter Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Basic LLM Chain",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Convert to File": {
+        "main": [
+          [
+            {
+              "node": "Upload billede",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Upload billede": {
+        "main": [
+          [
+            {
+              "node": "Supabase1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
   "tags": [
     {
-      "createdAt": "2025-01-28T15:25:26.214Z",
       "updatedAt": "2025-01-28T15:25:26.214Z",
+      "createdAt": "2025-01-28T15:25:26.214Z",
       "id": "BngebX50Ev8rBclu",
       "name": "HN Content manager"
     }
