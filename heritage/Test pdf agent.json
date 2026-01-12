@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-02-04T05:00:03.373Z",
   "updatedAt": "2025-02-09T16:43:05.000Z",
+  "createdAt": "2025-02-04T05:00:03.373Z",
   "id": "r974LclSE8iTLifE",
   "name": "Test pdf agent",
   "active": false,
@@ -728,15 +728,17 @@
   },
   "pinData": {},
   "versionId": "7053ac5d-7397-4e37-bc2f-4aade93b4ca8",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-02-09T16:43:21.367Z",
       "updatedAt": "2025-02-09T16:43:21.367Z",
+      "createdAt": "2025-02-09T16:43:21.367Z",
       "role": "workflow:owner",
       "workflowId": "r974LclSE8iTLifE",
       "projectId": "GfhaYhFYRk0TRXAf"
     }
   ],
+  "activeVersion": null,
   "tags": []
 }
