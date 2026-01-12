@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-10-25T06:00:11.108Z",
   "updatedAt": "2025-10-25T06:05:23.000Z",
+  "createdAt": "2025-10-25T06:00:11.108Z",
   "id": "XT0UtxRMcZ7EVc0P",
   "name": "🤖 AI Powered RAG Chatbot for Your Docs + Google Drive + Gemini + Qdrant",
   "active": false,
@@ -1272,15 +1272,17 @@
   "meta": null,
   "pinData": {},
   "versionId": "40646d6a-19c0-4111-9a72-819d302c8449",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-10-25T06:00:11.111Z",
       "updatedAt": "2025-10-25T06:00:11.111Z",
+      "createdAt": "2025-10-25T06:00:11.111Z",
       "role": "workflow:owner",
       "workflowId": "XT0UtxRMcZ7EVc0P",
       "projectId": "Oe16LxplPC150asV"
     }
   ],
+  "activeVersion": null,
   "tags": []
 }
