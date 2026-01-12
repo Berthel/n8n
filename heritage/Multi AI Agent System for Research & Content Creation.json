@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-02-12T20:12:43.686Z",
   "updatedAt": "2025-02-12T20:12:48.000Z",
+  "createdAt": "2025-02-12T20:12:43.686Z",
   "id": "hAlVHTllAJ62pFGt",
   "name": "Multi AI Agent System for Research & Content Creation",
   "active": false,
@@ -453,20 +453,22 @@
   "meta": null,
   "pinData": {},
   "versionId": "b366612e-d1db-4e69-8ae9-b7ceb6ffd1c9",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-02-12T20:12:43.689Z",
       "updatedAt": "2025-02-12T20:12:43.689Z",
+      "createdAt": "2025-02-12T20:12:43.689Z",
       "role": "workflow:owner",
       "workflowId": "hAlVHTllAJ62pFGt",
       "projectId": "PH5AAePaZfow61Bz"
     }
   ],
+  "activeVersion": null,
   "tags": [
     {
-      "createdAt": "2025-02-11T04:13:44.194Z",
       "updatedAt": "2025-02-11T04:13:44.194Z",
+      "createdAt": "2025-02-11T04:13:44.194Z",
       "id": "EtWh3oSAkx4xw5uF",
       "name": "nate"
     }
