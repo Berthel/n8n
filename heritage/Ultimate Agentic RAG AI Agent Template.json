@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-03-02T15:31:29.561Z",
   "updatedAt": "2025-03-02T15:32:03.000Z",
+  "createdAt": "2025-03-02T15:31:29.561Z",
   "id": "znUq1vIs4aLeWjPM",
   "name": "Ultimate Agentic RAG AI Agent Template",
   "active": false,
@@ -1728,20 +1728,22 @@
     ]
   },
   "versionId": "dd1931ff-5187-4ffb-8516-d7217b185f0e",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-03-02T15:31:29.565Z",
       "updatedAt": "2025-03-02T15:31:29.565Z",
+      "createdAt": "2025-03-02T15:31:29.565Z",
       "role": "workflow:owner",
       "workflowId": "znUq1vIs4aLeWjPM",
       "projectId": "PH5AAePaZfow61Bz"
     }
   ],
+  "activeVersion": null,
   "tags": [
     {
-      "createdAt": "2025-03-02T15:32:02.696Z",
       "updatedAt": "2025-03-02T15:32:02.696Z",
+      "createdAt": "2025-03-02T15:32:02.696Z",
       "id": "JLKyuLORqgoTBTR7",
       "name": "Cole"
     }
