@@ -1,9 +1,9 @@
 {
-  "createdAt": "2025-01-30T04:17:03.403Z",
   "updatedAt": "2025-04-10T14:16:02.000Z",
+  "createdAt": "2025-01-30T04:17:03.403Z",
   "id": "MtjUwZHaTIg7pnHI",
   "name": "Add Photo Agent",
-  "active": false,
+  "active": true,
   "isArchived": false,
   "nodes": [
     {
@@ -292,20 +292,299 @@
     ]
   },
   "versionId": "07123965-8d1b-4900-893f-625b32963a45",
+  "activeVersionId": "07123965-8d1b-4900-893f-625b32963a45",
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-01-30T04:17:03.407Z",
       "updatedAt": "2025-01-30T04:17:03.407Z",
+      "createdAt": "2025-01-30T04:17:03.407Z",
       "role": "workflow:owner",
       "workflowId": "MtjUwZHaTIg7pnHI",
       "projectId": "rkqKISKa14HwF9Xd"
     }
   ],
+  "activeVersion": {
+    "updatedAt": "2025-11-26T07:13:51.767Z",
+    "createdAt": "2025-11-26T07:13:51.767Z",
+    "versionId": "07123965-8d1b-4900-893f-625b32963a45",
+    "workflowId": "MtjUwZHaTIg7pnHI",
+    "nodes": [
+      {
+        "parameters": {
+          "url": "={{ $json.query.pages[Object.keys($json.query.pages)[0]].imageinfo[0].url }}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          620,
+          0
+        ],
+        "id": "003907ec-8296-44d6-98fb-6ea335d7950f",
+        "name": "Hent billede"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://rrkivosxnrfvdawawexd.supabase.co/storage/v1/object/images/img-{{ $('Workflow Input Trigger').item.json.city_id }}/original/{{ $('Nyt filnavn').item.json.NewFilename }}",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "image/jpeg"
+              }
+            ]
+          },
+          "sendBody": true,
+          "contentType": "binaryData",
+          "inputDataFieldName": "data",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          880,
+          0
+        ],
+        "id": "b63d4eba-6706-41fe-a02c-5b27a993fac4",
+        "name": "Upload billede",
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "znNIyfNCzQN57VEr",
+            "name": "supabase service role api"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "c49ef23c-974d-4275-8658-60223cb02df8",
+                "name": "NewFilename",
+                "value": "={{$now.format('yyyyMMddhhmmss')}}.jpeg",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          200,
+          0
+        ],
+        "id": "a4d8ae64-f968-4b23-89ed-a9c89b01baaa",
+        "name": "Nyt filnavn"
+      },
+      {
+        "parameters": {
+          "tableId": "images",
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "id",
+                "fieldValue": "={{ $('Nyt filnavn').item.json.NewFilename }}"
+              },
+              {
+                "fieldId": "url",
+                "fieldValue": "=https://rrkivosxnrfvdawawexd.supabase.co/storage/v1/object/public/{{ $json.Key }}"
+              },
+              {
+                "fieldId": "credit",
+                "fieldValue": "={{ Object.values($('Hent billede').item.json.query.pages)[0].imageinfo[0].extmetadata.Artist.value }}\n"
+              },
+              {
+                "fieldId": "year",
+                "fieldValue": "={{ Object.values($('Wikimedia').item.json.query.pages)[0].imageinfo[0].extmetadata.DateTime.value.toDateTime().format('yyyy') }}"
+              },
+              {
+                "fieldId": "thumbnail_url",
+                "fieldValue": "=https://rrkivosxnrfvdawawexd.supabase.co/storage/v1/object/public/{{ $json.Key }}"
+              },
+              {
+                "fieldId": "medium_url",
+                "fieldValue": "=https://rrkivosxnrfvdawawexd.supabase.co/storage/v1/object/public/{{ $json.Key }}"
+              },
+              {
+                "fieldId": "large_url",
+                "fieldValue": "=https://rrkivosxnrfvdawawexd.supabase.co/storage/v1/object/public/{{ $json.Key }}"
+              },
+              {
+                "fieldId": "width",
+                "fieldValue": "0"
+              },
+              {
+                "fieldId": "height",
+                "fieldValue": "0"
+              },
+              {
+                "fieldId": "contexts",
+                "fieldValue": "{\"gallery\"}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          1100,
+          0
+        ],
+        "id": "923f3f89-fae1-4b43-a0f7-929feb0acc93",
+        "name": "Insert Images",
+        "credentials": {
+          "supabaseApi": {
+            "id": "1Yc1VOr8K1yXCO1Q",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "tableId": "site_images",
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "site_id",
+                "fieldValue": "={{ $('Workflow Input Trigger').item.json.site_id }}"
+              },
+              {
+                "fieldId": "image_id",
+                "fieldValue": "={{ $json.id }}"
+              },
+              {
+                "fieldId": "city_id",
+                "fieldValue": "={{ $('Workflow Input Trigger').item.json.city_id }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          1320,
+          0
+        ],
+        "id": "387ae00a-f608-4fdd-88ab-7998cbd1a95e",
+        "name": "Insert site_images",
+        "credentials": {
+          "supabaseApi": {
+            "id": "1Yc1VOr8K1yXCO1Q",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "inputSource": "jsonExample",
+          "jsonExample": "\n{\n\"site_id\": \n\"cacela-velha\",\n\"city_id\": \"tavira\",\n\"wikimediaPageid\": \n\"2319161\"\n}"
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          -200,
+          0
+        ],
+        "id": "d24c80fc-f934-4493-8cc6-e986c8835780",
+        "name": "Workflow Input Trigger"
+      },
+      {
+        "parameters": {
+          "url": "=https://commons.wikimedia.org/w/api.php?action=query&pageids={{ $('Workflow Input Trigger').first().json.wikimediaPageid }}&prop=imageinfo&iiprop=url|extmetadata&iiurlwidth=800&iiurlheight=800&format=json",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          420,
+          0
+        ],
+        "id": "65f59e3f-febf-4eed-9cd1-071d41b9f2c6",
+        "name": "Wikimedia"
+      }
+    ],
+    "connections": {
+      "Hent billede": {
+        "main": [
+          [
+            {
+              "node": "Upload billede",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Nyt filnavn": {
+        "main": [
+          [
+            {
+              "node": "Wikimedia",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Upload billede": {
+        "main": [
+          [
+            {
+              "node": "Insert Images",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Insert Images": {
+        "main": [
+          [
+            {
+              "node": "Insert site_images",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Workflow Input Trigger": {
+        "main": [
+          [
+            {
+              "node": "Nyt filnavn",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wikimedia": {
+        "main": [
+          [
+            {
+              "node": "Hent billede",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
   "tags": [
     {
-      "createdAt": "2025-01-28T15:25:26.214Z",
       "updatedAt": "2025-01-28T15:25:26.214Z",
+      "createdAt": "2025-01-28T15:25:26.214Z",
       "id": "BngebX50Ev8rBclu",
       "name": "HN Content manager"
     }
