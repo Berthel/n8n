@@ -577,6 +577,7 @@
   },
   "pinData": {},
   "versionId": "b7f5b961-6cd6-40f6-9ecc-6fb86e5f1317",
+  "activeVersionId": null,
   "triggerCount": 1,
   "shared": [
     {
@@ -587,5 +588,6 @@
       "projectId": "Oe16LxplPC150asV"
     }
   ],
+  "activeVersion": null,
   "tags": []
 }
