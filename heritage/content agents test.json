@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-02-18T10:52:06.438Z",
   "updatedAt": "2025-02-18T14:46:29.000Z",
+  "createdAt": "2025-02-18T10:52:06.438Z",
   "id": "F7ttj0crM7jPVbcS",
   "name": "content agents test",
   "active": false,
@@ -347,15 +347,17 @@
     ]
   },
   "versionId": "d519d0c4-ca6c-49b1-826b-e2e6c59b2d32",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-02-18T10:52:06.441Z",
       "updatedAt": "2025-02-18T10:52:06.441Z",
+      "createdAt": "2025-02-18T10:52:06.441Z",
       "role": "workflow:owner",
       "workflowId": "F7ttj0crM7jPVbcS",
       "projectId": "rkqKISKa14HwF9Xd"
     }
   ],
+  "activeVersion": null,
   "tags": []
 }
