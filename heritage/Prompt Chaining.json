@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-02-11T04:24:58.702Z",
   "updatedAt": "2025-02-11T04:25:04.000Z",
+  "createdAt": "2025-02-11T04:24:58.702Z",
   "id": "BKcxuLKNLMJCqSGk",
   "name": "Prompt Chaining",
   "active": false,
@@ -253,26 +253,28 @@
   "meta": null,
   "pinData": {},
   "versionId": "e9e9122d-3d6f-4bbc-a8d3-0ff52cefed59",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-02-11T04:24:58.705Z",
       "updatedAt": "2025-02-11T04:24:58.705Z",
+      "createdAt": "2025-02-11T04:24:58.705Z",
       "role": "workflow:owner",
       "workflowId": "BKcxuLKNLMJCqSGk",
       "projectId": "PH5AAePaZfow61Bz"
     }
   ],
+  "activeVersion": null,
   "tags": [
     {
-      "createdAt": "2025-02-11T04:13:44.194Z",
       "updatedAt": "2025-02-11T04:13:44.194Z",
+      "createdAt": "2025-02-11T04:13:44.194Z",
       "id": "EtWh3oSAkx4xw5uF",
       "name": "nate"
     },
     {
-      "createdAt": "2025-02-11T04:21:49.564Z",
       "updatedAt": "2025-02-11T04:22:36.344Z",
+      "createdAt": "2025-02-11T04:21:49.564Z",
       "id": "q5mFv9M5YWiJHj0q",
       "name": "agentic_framework"
     }
