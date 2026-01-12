@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-03-05T18:47:29.459Z",
   "updatedAt": "2025-03-05T20:07:05.000Z",
+  "createdAt": "2025-03-05T18:47:29.459Z",
   "id": "KEVULtu8zqlBV7Sr",
   "name": "Vision test",
   "active": false,
@@ -265,15 +265,17 @@
     ]
   },
   "versionId": "61db70fc-fd47-4605-bc84-ae1f613896a4",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-03-05T18:47:29.463Z",
       "updatedAt": "2025-03-05T18:47:29.463Z",
+      "createdAt": "2025-03-05T18:47:29.463Z",
       "role": "workflow:owner",
       "workflowId": "KEVULtu8zqlBV7Sr",
       "projectId": "rkqKISKa14HwF9Xd"
     }
   ],
+  "activeVersion": null,
   "tags": []
 }
