@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-02-05T19:23:10.697Z",
   "updatedAt": "2025-02-05T20:44:31.000Z",
+  "createdAt": "2025-02-05T19:23:10.697Z",
   "id": "zSmGnvMNmoVzRvwt",
   "name": "Manuel ocr",
   "active": false,
@@ -446,15 +446,17 @@
     ]
   },
   "versionId": "5a43e7e6-042a-4763-99c5-e0844396037a",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-02-05T19:23:10.700Z",
       "updatedAt": "2025-02-05T19:23:10.700Z",
+      "createdAt": "2025-02-05T19:23:10.700Z",
       "role": "workflow:owner",
       "workflowId": "zSmGnvMNmoVzRvwt",
       "projectId": "rkqKISKa14HwF9Xd"
     }
   ],
+  "activeVersion": null,
   "tags": []
 }
