@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-04-26T15:32:41.035Z",
   "updatedAt": "2025-05-22T10:56:03.000Z",
+  "createdAt": "2025-04-26T15:32:41.035Z",
   "id": "PRROtJ4Avz5xvnHJ",
   "name": "Google maps data til sites tabellen",
   "active": false,
@@ -369,15 +369,17 @@
     ]
   },
   "versionId": "d15ed0be-5c08-4361-b7e7-fdfb3ef4560a",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-04-26T15:32:41.040Z",
       "updatedAt": "2025-04-26T15:32:41.040Z",
+      "createdAt": "2025-04-26T15:32:41.040Z",
       "role": "workflow:owner",
       "workflowId": "PRROtJ4Avz5xvnHJ",
       "projectId": "rkqKISKa14HwF9Xd"
     }
   ],
+  "activeVersion": null,
   "tags": []
 }
