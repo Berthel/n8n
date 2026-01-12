@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-03-08T15:55:55.418Z",
   "updatedAt": "2025-03-08T16:33:05.000Z",
+  "createdAt": "2025-03-08T15:55:55.418Z",
   "id": "UsOr8kJyouJJQ6rw",
   "name": "Perplexity deep research",
   "active": false,
@@ -82,15 +82,17 @@
   "meta": null,
   "pinData": {},
   "versionId": "7e98436a-b1f1-4d30-a644-e659fddea001",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-03-08T15:55:55.422Z",
       "updatedAt": "2025-03-08T15:55:55.422Z",
+      "createdAt": "2025-03-08T15:55:55.422Z",
       "role": "workflow:owner",
       "workflowId": "UsOr8kJyouJJQ6rw",
       "projectId": "rkqKISKa14HwF9Xd"
     }
   ],
+  "activeVersion": null,
   "tags": []
 }
