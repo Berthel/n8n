@@ -1335,6 +1335,7 @@
     ]
   },
   "versionId": "0e4c8b46-578c-437f-a677-ca3ab2c9746a",
+  "activeVersionId": "0e4c8b46-578c-437f-a677-ca3ab2c9746a",
   "triggerCount": 1,
   "shared": [
     {
@@ -1345,5 +1346,1314 @@
       "projectId": "Oe16LxplPC150asV"
     }
   ],
+  "activeVersion": {
+    "updatedAt": "2025-11-26T07:13:51.767Z",
+    "createdAt": "2025-11-26T07:13:51.767Z",
+    "versionId": "0e4c8b46-578c-437f-a677-ca3ab2c9746a",
+    "workflowId": "3CTmzMZYXkeInqsw",
+    "nodes": [
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "minutes",
+                "minutesInterval": 15
+              }
+            ]
+          }
+        },
+        "id": "f42bc482-0053-4213-88d4-b63830e4f4e5",
+        "name": "Every 15 Minutes",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2,
+        "position": [
+          -1088,
+          256
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "id-1",
+                "name": "goveeApiUrl",
+                "value": "https://openapi.api.govee.com/router/api/v1/device/state",
+                "type": "string"
+              },
+              {
+                "id": "1ae66dc6-0f66-4133-8111-a5625933f7c0",
+                "name": "varme_on_kl",
+                "value": "={{ $json.varme_on_kl }}",
+                "type": "number"
+              },
+              {
+                "id": "28cfa3b9-9bf2-4cd6-b08b-04c2f84ae075",
+                "name": "varme_off_kl",
+                "value": "={{ $json.varme_off_kl }}",
+                "type": "number"
+              },
+              {
+                "id": "8c92d133-f3e1-4973-9942-3c14b64e69c1",
+                "name": "varme_on_temp",
+                "value": "={{ $json.varme_on_temp }}",
+                "type": "number"
+              },
+              {
+                "id": "f1b950d2-907c-48ed-85cc-87e3887bb603",
+                "name": "varme_off_temp",
+                "value": "={{ $json.varme_off_temp }}",
+                "type": "number"
+              },
+              {
+                "id": "60c67cfe-e1e5-4b6e-b84d-fc3d665d118d",
+                "name": "lys_on_aften",
+                "value": "={{ $json.lys_on_aften }}",
+                "type": "number"
+              },
+              {
+                "id": "a0a012ce-56f9-4478-8d6d-5c099fb66008",
+                "name": "lys_off_aften",
+                "value": "={{ $json.lys_off_aften }}",
+                "type": "number"
+              },
+              {
+                "id": "16fcdfa7-4cc0-4b36-bae2-72bdb922b833",
+                "name": "lys_on_morgen",
+                "value": "={{ $json.lys_on_morgen }}",
+                "type": "number"
+              },
+              {
+                "id": "0a9a20a8-9d2c-4cab-97be-270413df1365",
+                "name": "lys_off_morgen",
+                "value": "={{ $json.lys_off_morgen }}",
+                "type": "number"
+              },
+              {
+                "id": "12b435c0-f0cd-40aa-871b-27155fde218b",
+                "name": "varme_auto",
+                "value": "={{ $json.varme_auto }}",
+                "type": "boolean"
+              },
+              {
+                "id": "42b4a825-90f0-4494-8587-8870ba1390a5",
+                "name": "lys_auto",
+                "value": "={{ $json.lys_auto }}",
+                "type": "boolean"
+              }
+            ]
+          },
+          "includeOtherFields": true,
+          "options": {}
+        },
+        "id": "20668273-2f72-4c4e-a436-d8e53ff16a3f",
+        "name": "Workflow Configuration",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -656,
+          256
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "={{ $('Workflow Configuration').first().json.goveeApiUrl }}",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Accept",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "{\n  \"requestId\": \"sensor-request-123\",\n  \"payload\": {\n    \"device\": \"24:52:EE:2D:C5:46:77:71\",\n    \"sku\": \"H5179\",\n    \"capabilities\": [\n      {\n        \"type\": \"devices.capabilities.property\",\n        \"instance\": \"sensorTemperature\"\n      },\n      {\n        \"type\": \"devices.capabilities.property\",\n        \"instance\": \"sensorHumidity\"\n      }\n    ]\n  }\n}",
+          "options": {}
+        },
+        "id": "abf1588d-618a-4b24-9565-2cd9450717a3",
+        "name": "Get Greenhouse Temperature and Humidity",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          -432,
+          256
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "O7Gj8lwvWewv9eTH",
+            "name": "Govee"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "url": "={{ $('Workflow Configuration').first().json.merossApiUrl }}",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "options": {}
+        },
+        "id": "70241f92-b2c7-4ddb-ba0d-338cec416cca",
+        "name": "Get Light and Heat Status",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          -1088,
+          -160
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "mo1QMdrN5FL1Cp8C",
+            "name": "Meross"
+          }
+        },
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "7fb44ea6-5864-4d38-92f5-ece20b2ae777",
+                "name": "heating_on",
+                "value": "={{ $json.data.devices_status.b08184e8d1d8['switch:0'].output }}",
+                "type": "boolean"
+              },
+              {
+                "id": "c23c6be9-1504-4b6e-9d9d-1789c04e8c48",
+                "name": "light_on",
+                "value": "={{ $json.data.devices_status.b08184e91518['switch:0'].output }}",
+                "type": "boolean"
+              },
+              {
+                "id": "3389423f-22ce-4004-be6a-21d8163c344c",
+                "name": "temperature_celcius",
+                "value": "={{ ( $('Get Greenhouse Temperature and Humidity').item.json.payload.capabilities[3].state.value - 32 ) / 1.8 }}",
+                "type": "number"
+              },
+              {
+                "id": "3e23952d-9b93-4c52-8ea5-dd2eae7442a2",
+                "name": "humidity_percent",
+                "value": "={{ $('Get Greenhouse Temperature and Humidity').item.json.payload.capabilities[4].state.value }}",
+                "type": "number"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          16,
+          256
+        ],
+        "id": "cfafdac6-dd8d-4e9a-b1ce-8aeca8f5f556",
+        "name": "Actual values"
+      },
+      {
+        "parameters": {
+          "tableId": "drivhus_log",
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "temperature_celsius",
+                "fieldValue": "={{ $json.temperature_celcius }}"
+              },
+              {
+                "fieldId": "humidity_percent",
+                "fieldValue": "={{ $json.humidity_percent }}"
+              },
+              {
+                "fieldId": "heating_on",
+                "fieldValue": "={{ $json.heating_on }}"
+              },
+              {
+                "fieldId": "light_on",
+                "fieldValue": "={{ $json.light_on }}"
+              },
+              {
+                "fieldId": "energy_total",
+                "fieldValue": "={{ $('HTTP Request').item.json.data.devices_status.b08184e91518['switch:0'].aenergy.total }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          240,
+          64
+        ],
+        "id": "3f705eb4-f021-47ff-8cad-95feac8b545b",
+        "name": "Create a row",
+        "credentials": {
+          "supabaseApi": {
+            "id": "1Yc1VOr8K1yXCO1Q",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://shelly-217-eu.shelly.cloud/device/relay/control",
+          "sendBody": true,
+          "contentType": "form-urlencoded",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "id",
+                "value": "b08184e8d1d8"
+              },
+              {
+                "name": "auth_key",
+                "value": "MzhjMTlmdWlkEAE6AC9D028351ED544B1620CADB1FC737294B54E12E8745783199D8FF8688251CEFD8EA6A578BB1"
+              },
+              {
+                "name": "turn",
+                "value": "on"
+              },
+              {
+                "name": "channel",
+                "value": "0"
+              }
+            ]
+          },
+          "options": {
+            "redirect": {
+              "redirect": {}
+            }
+          }
+        },
+        "id": "23743937-2391-41e1-a862-a0a2b9d930cf",
+        "name": "Turn Heat On",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          1136,
+          64
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://shelly-217-eu.shelly.cloud/device/relay/control",
+          "sendBody": true,
+          "contentType": "form-urlencoded",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "id",
+                "value": "b08184e8d1d8"
+              },
+              {
+                "name": "auth_key",
+                "value": "MzhjMTlmdWlkEAE6AC9D028351ED544B1620CADB1FC737294B54E12E8745783199D8FF8688251CEFD8EA6A578BB1"
+              },
+              {
+                "name": "channel",
+                "value": "0"
+              },
+              {
+                "name": "turn",
+                "value": "off"
+              }
+            ]
+          },
+          "options": {
+            "redirect": {
+              "redirect": {}
+            }
+          }
+        },
+        "id": "6bd6c2a2-07cf-4dcb-8797-4413848a7484",
+        "name": "Turn Heat Off",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          1136,
+          256
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "7d965bdb-83de-4436-b342-8ade341d78a6",
+                "leftValue": "={{ $('Actual values').item.json.heating_on }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "b27ac8c3-ec15-4083-b920-466cf46b7e9f",
+        "name": "Check Heat is on",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          688,
+          448
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://shelly-217-eu.shelly.cloud/device/relay/control",
+          "sendBody": true,
+          "contentType": "form-urlencoded",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "id",
+                "value": "b08184e8d1d8"
+              },
+              {
+                "name": "auth_key",
+                "value": "MzhjMTlmdWlkEAE6AC9D028351ED544B1620CADB1FC737294B54E12E8745783199D8FF8688251CEFD8EA6A578BB1"
+              },
+              {
+                "name": "channel",
+                "value": "0"
+              },
+              {
+                "name": "turn",
+                "value": "off"
+              }
+            ]
+          },
+          "options": {
+            "redirect": {
+              "redirect": {}
+            }
+          }
+        },
+        "id": "6f144863-8b3f-4bb4-a8d3-f489396bf95a",
+        "name": "Turn Heat Off1",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          912,
+          448
+        ]
+      },
+      {
+        "parameters": {
+          "url": "https://shelly-217-eu.shelly.cloud/device/all_status",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "auth_key",
+                "value": "MzhjMTlmdWlkEAE6AC9D028351ED544B1620CADB1FC737294B54E12E8745783199D8FF8688251CEFD8EA6A578BB1"
+              }
+            ]
+          },
+          "options": {
+            "redirect": {
+              "redirect": {}
+            }
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          -208,
+          256
+        ],
+        "id": "efc8a14f-fd6d-4443-bc1e-73adf08f41e1",
+        "name": "HTTP Request",
+        "retryOnFail": true,
+        "waitBetweenTries": 5000,
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "id-1",
+                "leftValue": "={{ $now.setZone('Europe/Lisbon').hour }}",
+                "rightValue": "={{ $('Workflow Configuration').item.json.varme_on_kl }}",
+                "operator": {
+                  "type": "number",
+                  "operation": "gte"
+                }
+              },
+              {
+                "id": "id-2",
+                "leftValue": "={{ $now.setZone('Europe/Lisbon').hour }}",
+                "rightValue": "={{ $('Workflow Configuration').item.json.varme_off_kl }}",
+                "operator": {
+                  "type": "number",
+                  "operation": "lt"
+                }
+              }
+            ],
+            "combinator": "or"
+          },
+          "looseTypeValidation": true,
+          "options": {}
+        },
+        "id": "cf191dfc-c66a-4643-87d1-26281da30f24",
+        "name": "Varme nat tid",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          464,
+          256
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "id-1",
+                "leftValue": "={{ $('Actual values').item.json.temperature_celcius }}",
+                "rightValue": "={{ $('Workflow Configuration').item.json.varme_on_temp }}",
+                "operator": {
+                  "type": "number",
+                  "operation": "lt"
+                }
+              },
+              {
+                "id": "7d965bdb-83de-4436-b342-8ade341d78a6",
+                "leftValue": "={{ $('Actual values').item.json.heating_on }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "false",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "f0fe1fbb-9a8b-4fd9-910a-92cfdfa0fba4",
+        "name": "Check Temperature Below",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          688,
+          64
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "id-1",
+                "leftValue": "={{ $('Actual values').item.json.temperature_celcius }}",
+                "rightValue": "={{ $('Workflow Configuration').item.json.varme_off_temp }}",
+                "operator": {
+                  "type": "number",
+                  "operation": "gt"
+                }
+              },
+              {
+                "id": "01e59ac4-a73f-4e01-9a4b-99c9b358d2dd",
+                "leftValue": "={{ $('Actual values').item.json.heating_on }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "7f9ba214-f1ca-4a69-bf89-462547a3ceae",
+        "name": "Check Temperature Above",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          688,
+          256
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "id-1",
+                "leftValue": "={{ $now.setZone('Europe/Lisbon').hour }}",
+                "rightValue": "={{ $('Workflow Configuration').item.json.lys_on_aften }}",
+                "operator": {
+                  "type": "number",
+                  "operation": "gte"
+                }
+              },
+              {
+                "id": "id-2",
+                "leftValue": "={{ $now.setZone('Europe/Lisbon').hour }}",
+                "rightValue": "={{ $('Workflow Configuration').item.json.lys_off_aften }}",
+                "operator": {
+                  "type": "number",
+                  "operation": "lt"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "looseTypeValidation": true,
+          "options": {}
+        },
+        "id": "8a0de0bf-b0d2-4060-a14d-2a223be6de02",
+        "name": "Lys aften tid",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          464,
+          928
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "id-1",
+                "leftValue": "={{ $now.setZone('Europe/Lisbon').hour }}",
+                "rightValue": "={{ $('Workflow Configuration').item.json.lys_on_morgen }}",
+                "operator": {
+                  "type": "number",
+                  "operation": "gte"
+                }
+              },
+              {
+                "id": "id-2",
+                "leftValue": "={{ $now.setZone('Europe/Lisbon').hour }}",
+                "rightValue": "={{ $('Workflow Configuration').item.json.lys_off_morgen }}",
+                "operator": {
+                  "type": "number",
+                  "operation": "lt"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "looseTypeValidation": true,
+          "options": {}
+        },
+        "id": "e205a26d-c4e3-412d-81d6-a1fbb2a1be3c",
+        "name": "Lys morgen tid",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          688,
+          1024
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://shelly-217-eu.shelly.cloud/device/relay/control",
+          "sendBody": true,
+          "contentType": "form-urlencoded",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "id",
+                "value": "b08184e91518"
+              },
+              {
+                "name": "auth_key",
+                "value": "MzhjMTlmdWlkEAE6AC9D028351ED544B1620CADB1FC737294B54E12E8745783199D8FF8688251CEFD8EA6A578BB1"
+              },
+              {
+                "name": "channel",
+                "value": "0"
+              },
+              {
+                "name": "turn",
+                "value": "on"
+              }
+            ]
+          },
+          "options": {
+            "redirect": {
+              "redirect": {}
+            }
+          }
+        },
+        "id": "226f40a4-7a30-423b-bc23-f531a505a954",
+        "name": "Turn Light on",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          912,
+          640
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://shelly-217-eu.shelly.cloud/device/relay/control",
+          "sendBody": true,
+          "contentType": "form-urlencoded",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "id",
+                "value": "b08184e91518"
+              },
+              {
+                "name": "auth_key",
+                "value": "MzhjMTlmdWlkEAE6AC9D028351ED544B1620CADB1FC737294B54E12E8745783199D8FF8688251CEFD8EA6A578BB1"
+              },
+              {
+                "name": "channel",
+                "value": "0"
+              },
+              {
+                "name": "turn",
+                "value": "on"
+              }
+            ]
+          },
+          "options": {
+            "redirect": {
+              "redirect": {}
+            }
+          }
+        },
+        "id": "efbaeee8-dbb6-4572-8362-383fd2267e1d",
+        "name": "Turn Light on1",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          1136,
+          832
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://shelly-217-eu.shelly.cloud/device/relay/control",
+          "sendBody": true,
+          "contentType": "form-urlencoded",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "id",
+                "value": "b08184e91518"
+              },
+              {
+                "name": "auth_key",
+                "value": "MzhjMTlmdWlkEAE6AC9D028351ED544B1620CADB1FC737294B54E12E8745783199D8FF8688251CEFD8EA6A578BB1"
+              },
+              {
+                "name": "channel",
+                "value": "0"
+              },
+              {
+                "name": "turn",
+                "value": "off"
+              }
+            ]
+          },
+          "options": {
+            "redirect": {
+              "redirect": {}
+            }
+          }
+        },
+        "id": "4277bda0-cead-47f3-b9e7-6d13c2ab0f06",
+        "name": "Turn Light off",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          1136,
+          1024
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "7d965bdb-83de-4436-b342-8ade341d78a6",
+                "leftValue": "={{ $('Actual values').item.json.heating_on }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "9734c401-0f11-4f23-8757-1be7bab38f85",
+        "name": "Check Heat is on1",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          912,
+          256
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "7d965bdb-83de-4436-b342-8ade341d78a6",
+                "leftValue": "={{ $('Actual values').item.json.heating_on }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "116cb6bf-9a23-4ab7-9615-b5b8b1dccf27",
+        "name": "Check Heat is on2",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          912,
+          64
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "7d965bdb-83de-4436-b342-8ade341d78a6",
+                "leftValue": "={{ $('Actual values').item.json.light_on }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "e2fb8f6c-3ec2-4fc8-87cf-10780acaf9b4",
+        "name": "Check Light is on",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          688,
+          640
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "7d965bdb-83de-4436-b342-8ade341d78a6",
+                "leftValue": "={{ $('Actual values').item.json.light_on }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "8b3b4b0b-aa0b-4269-8b77-cb8137025aa6",
+        "name": "Check Light is on1",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          912,
+          832
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "7d965bdb-83de-4436-b342-8ade341d78a6",
+                "leftValue": "={{ $('Actual values').item.json.light_on }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "59a734f0-3b30-4595-87da-956997f95e6c",
+        "name": "Check Light is on2",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          912,
+          1024
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "52d2ced3-0512-4e66-ba4d-19892a2db36e",
+                "leftValue": "={{ $('Workflow Configuration').item.json.lys_auto }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          240,
+          928
+        ],
+        "id": "29420f42-dbbe-43f1-a57f-728510c7beb8",
+        "name": "lys_auto"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "52d2ced3-0512-4e66-ba4d-19892a2db36e",
+                "leftValue": "={{ $('Workflow Configuration').item.json.varme_auto }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          240,
+          256
+        ],
+        "id": "4b126e74-4472-454c-af99-6b479422df73",
+        "name": "varme_auto"
+      },
+      {
+        "parameters": {
+          "operation": "get",
+          "tableId": "drivhus_config",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "id",
+                "keyValue": "1"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          -880,
+          256
+        ],
+        "id": "1932480e-a57e-4bd6-8ce7-6e59e4a6cf97",
+        "name": "Get a row",
+        "credentials": {
+          "supabaseApi": {
+            "id": "1Yc1VOr8K1yXCO1Q",
+            "name": "Supabase account"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Every 15 Minutes": {
+        "main": [
+          [
+            {
+              "node": "Get a row",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Workflow Configuration": {
+        "main": [
+          [
+            {
+              "node": "Get Greenhouse Temperature and Humidity",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Greenhouse Temperature and Humidity": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Light and Heat Status": {
+        "main": [
+          []
+        ]
+      },
+      "Actual values": {
+        "main": [
+          [
+            {
+              "node": "Create a row",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "lys_auto",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "varme_auto",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Check Heat is on": {
+        "main": [
+          [
+            {
+              "node": "Turn Heat Off1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request": {
+        "main": [
+          [
+            {
+              "node": "Actual values",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          []
+        ]
+      },
+      "Varme nat tid": {
+        "main": [
+          [
+            {
+              "node": "Check Temperature Below",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Check Temperature Above",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Check Heat is on",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Check Temperature Below": {
+        "main": [
+          [
+            {
+              "node": "Check Heat is on2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Check Temperature Above": {
+        "main": [
+          [
+            {
+              "node": "Check Heat is on1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Lys aften tid": {
+        "main": [
+          [
+            {
+              "node": "Check Light is on",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Lys morgen tid",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Lys morgen tid": {
+        "main": [
+          [
+            {
+              "node": "Check Light is on1",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Check Light is on2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Check Heat is on1": {
+        "main": [
+          [
+            {
+              "node": "Turn Heat Off",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Check Heat is on2": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Turn Heat On",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Check Light is on": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Turn Light on",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Check Light is on1": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Turn Light on1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Check Light is on2": {
+        "main": [
+          [
+            {
+              "node": "Turn Light off",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "lys_auto": {
+        "main": [
+          [
+            {
+              "node": "Lys aften tid",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "varme_auto": {
+        "main": [
+          [
+            {
+              "node": "Varme nat tid",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get a row": {
+        "main": [
+          [
+            {
+              "node": "Workflow Configuration",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
   "tags": []
 }
