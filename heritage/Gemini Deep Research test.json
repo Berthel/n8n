@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-03-15T14:37:37.532Z",
   "updatedAt": "2025-03-15T14:42:25.000Z",
+  "createdAt": "2025-03-15T14:37:37.532Z",
   "id": "mPLSjKU5yt4KTbxd",
   "name": "Gemini Deep Research test",
   "active": false,
@@ -90,15 +90,17 @@
   "meta": null,
   "pinData": {},
   "versionId": "bd351a79-a244-434d-b774-8fb8aa9229a0",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-03-15T14:37:37.535Z",
       "updatedAt": "2025-03-15T14:37:37.535Z",
+      "createdAt": "2025-03-15T14:37:37.535Z",
       "role": "workflow:owner",
       "workflowId": "mPLSjKU5yt4KTbxd",
       "projectId": "rkqKISKa14HwF9Xd"
     }
   ],
+  "activeVersion": null,
   "tags": []
 }
