@@ -1,9 +1,9 @@
 {
-  "createdAt": "2025-04-27T04:19:57.113Z",
   "updatedAt": "2025-05-17T03:13:09.000Z",
+  "createdAt": "2025-04-27T04:19:57.113Z",
   "id": "EDn9SOU8mLc0SkwH",
   "name": "Add wikmedia image",
-  "active": false,
+  "active": true,
   "isArchived": false,
   "nodes": [
     {
@@ -649,15 +649,661 @@
   },
   "pinData": {},
   "versionId": "4f61b7d3-9fd0-4db2-9756-b6cbe91c4079",
+  "activeVersionId": "4f61b7d3-9fd0-4db2-9756-b6cbe91c4079",
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-04-27T04:19:57.116Z",
       "updatedAt": "2025-04-27T04:19:57.116Z",
+      "createdAt": "2025-04-27T04:19:57.116Z",
       "role": "workflow:owner",
       "workflowId": "EDn9SOU8mLc0SkwH",
       "projectId": "rkqKISKa14HwF9Xd"
     }
   ],
+  "activeVersion": {
+    "updatedAt": "2025-11-26T07:13:51.767Z",
+    "createdAt": "2025-11-26T07:13:51.767Z",
+    "versionId": "4f61b7d3-9fd0-4db2-9756-b6cbe91c4079",
+    "workflowId": "EDn9SOU8mLc0SkwH",
+    "nodes": [
+      {
+        "parameters": {
+          "url": "={{ $json.query.pages[Object.keys($json.query.pages)[0]].imageinfo[0].url }}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          40,
+          -140
+        ],
+        "id": "58947d34-616f-402a-a22e-045b10a048d7",
+        "name": "Hent billede"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://rrkivosxnrfvdawawexd.supabase.co/storage/v1/object/images/img-{{ $('Workflow Input Trigger').item.json.city_id }}/original/{{ $('Tilret Felter').item.json.NewFilename }}",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "image/jpeg"
+              }
+            ]
+          },
+          "sendBody": true,
+          "contentType": "binaryData",
+          "inputDataFieldName": "data",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          260,
+          -140
+        ],
+        "id": "3b8a01a0-1b13-4913-8c9e-fa729ae6c016",
+        "name": "Upload billede",
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "znNIyfNCzQN57VEr",
+            "name": "supabase service role api"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "tableId": "images",
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "id",
+                "fieldValue": "={{ $('Tilret Felter').item.json.NewFilename }}"
+              },
+              {
+                "fieldId": "url",
+                "fieldValue": "={{ $json.url }}"
+              },
+              {
+                "fieldId": "credit",
+                "fieldValue": "={{ $json.Credit }}"
+              },
+              {
+                "fieldId": "year",
+                "fieldValue": "={{ $json.year }}"
+              },
+              {
+                "fieldId": "thumbnail_url",
+                "fieldValue": "={{ $json.url }}"
+              },
+              {
+                "fieldId": "medium_url",
+                "fieldValue": "={{ $json.url }}"
+              },
+              {
+                "fieldId": "large_url",
+                "fieldValue": "={{ $json.url }}"
+              },
+              {
+                "fieldId": "width",
+                "fieldValue": "={{ $json.width }}"
+              },
+              {
+                "fieldId": "height",
+                "fieldValue": "={{ $json.height }}"
+              },
+              {
+                "fieldId": "contexts",
+                "fieldValue": "{\"gallery\"}"
+              },
+              {
+                "fieldId": "license_short_name",
+                "fieldValue": "={{ $json.LicenseShortName }}"
+              },
+              {
+                "fieldId": "license_url",
+                "fieldValue": "={{ $json.LicenseUrl }}"
+              },
+              {
+                "fieldId": "artist",
+                "fieldValue": "={{ $json.Artist }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          1580,
+          120
+        ],
+        "id": "45a89a8b-2e02-409e-bb2b-d74254232c67",
+        "name": "Insert Images",
+        "credentials": {
+          "supabaseApi": {
+            "id": "1Yc1VOr8K1yXCO1Q",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "tableId": "site_images",
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "site_id",
+                "fieldValue": "={{ $('Workflow Input Trigger').item.json.site_id }}"
+              },
+              {
+                "fieldId": "image_id",
+                "fieldValue": "={{ $json.id }}"
+              },
+              {
+                "fieldId": "city_id",
+                "fieldValue": "={{ $('Workflow Input Trigger').item.json.city_id }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          1800,
+          120
+        ],
+        "id": "af7e91bc-3877-437e-8a5d-021a4704eb99",
+        "name": "Insert site_images",
+        "credentials": {
+          "supabaseApi": {
+            "id": "1Yc1VOr8K1yXCO1Q",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "inputSource": "jsonExample",
+          "jsonExample": "\n{\n\"site_id\": \n\"cacela-velha\",\n\"city_id\": \"tavira\"\n}"
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          40,
+          120
+        ],
+        "id": "9450533a-ecf2-4e28-8bdd-a726586c0640",
+        "name": "Workflow Input Trigger"
+      },
+      {
+        "parameters": {
+          "url": "=https://commons.wikimedia.org/w/api.php?action=query&pageids={{ $json.pageid }}&prop=imageinfo&iiprop=url|size|extmetadata&format=json",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          700,
+          120
+        ],
+        "id": "909dac6e-abbd-4278-9e0e-2ff00f117646",
+        "name": "Wikimedia"
+      },
+      {
+        "parameters": {
+          "fieldToSplitOut": "query.search",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1,
+        "position": [
+          480,
+          120
+        ],
+        "id": "69653f02-6787-4334-b0d8-5ef89faabf02",
+        "name": "Split Out"
+      },
+      {
+        "parameters": {
+          "url": "https://commons.wikimedia.org/w/api.php",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "action",
+                "value": "query"
+              },
+              {
+                "name": "list",
+                "value": "search"
+              },
+              {
+                "name": "srsearch",
+                "value": "={{ $('Workflow Input Trigger').item.json.site_id }}, {{ $('Workflow Input Trigger').item.json.city_id }}\nhaswbstatement:P275=Q19652|P275=Q20007257|P275=Q18199165\nfilewidth:>2000"
+              },
+              {
+                "name": "srnamespace",
+                "value": "6"
+              },
+              {
+                "name": "format",
+                "value": "json"
+              },
+              {
+                "name": "srlimit",
+                "value": "40"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          260,
+          120
+        ],
+        "id": "15c50653-9953-4adf-ac67-bf97490833a5",
+        "name": "Search Wikimedia"
+      },
+      {
+        "parameters": {
+          "fieldToSplitOut": "query.pages",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1,
+        "position": [
+          920,
+          120
+        ],
+        "id": "ed487438-e5d0-442c-968b-a876c66a8739",
+        "name": "Split Out1"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "c49ef23c-974d-4275-8658-60223cb02df8",
+                "name": "NewFilename",
+                "value": "={{ $('Workflow Input Trigger').item.json.city_id }}-{{ $('Workflow Input Trigger').item.json.site_id }}-{{ $json.pageid }}.jpeg",
+                "type": "string"
+              },
+              {
+                "id": "76cebcb7-cbba-437d-9f5e-6d1aaf748fd0",
+                "name": "url",
+                "value": "={{ $json.imageinfo[0].url }}\n",
+                "type": "string"
+              },
+              {
+                "id": "63d455aa-49ef-4d1a-9b0c-405e990bdf86",
+                "name": "year",
+                "value": "={{ $json.imageinfo[0].extmetadata.DateTime.value.toDateTime().format('yyyy')  }}",
+                "type": "string"
+              },
+              {
+                "id": "8436ecd7-b96f-4502-aaf5-e00f4d1e5d3f",
+                "name": "size",
+                "value": "={{ $json.imageinfo[0].size }}",
+                "type": "number"
+              },
+              {
+                "id": "233a6414-973e-4976-875a-b06dda8a0f16",
+                "name": "width",
+                "value": "={{ $json.imageinfo[0].width }}",
+                "type": "number"
+              },
+              {
+                "id": "8db285c9-a8bc-4b9e-8e41-030da57b7876",
+                "name": "height",
+                "value": "={{ $json.imageinfo[0].height }}",
+                "type": "number"
+              },
+              {
+                "id": "4412bc9e-3d28-4ceb-9fa6-dfea97e8a149",
+                "name": "LicenseShortName",
+                "value": "={{ $json.imageinfo[0].extmetadata.LicenseShortName.value }}",
+                "type": "string"
+              },
+              {
+                "id": "b8bacc8c-5ea2-4c4d-a3af-777d4e075d03",
+                "name": "LicenseUrl",
+                "value": "={{ $json.imageinfo[0].extmetadata.LicenseUrl.value }}",
+                "type": "string"
+              },
+              {
+                "id": "546d325c-f949-4da1-84d4-493729bddd2b",
+                "name": "Artist",
+                "value": "={{ $json.imageinfo[0].extmetadata.Artist.value }}",
+                "type": "string"
+              },
+              {
+                "id": "c5819650-2c6d-43a4-89c6-0e6151e30254",
+                "name": "Credit",
+                "value": "={{ $json.imageinfo[0].extmetadata.Credit.value }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1140,
+          120
+        ],
+        "id": "cbb11b4e-940d-4913-8513-8a72a12f918d",
+        "name": "Tilret Felter"
+      },
+      {
+        "parameters": {
+          "url": "=https://commons.wikimedia.org/w/api.php?action=query&pageids={{ $json.pageid }}&prop=imageinfo&iiprop=url|extmetadata&iiurlwidth=2400&iiurlheight=1800&format=json",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          40,
+          640
+        ],
+        "id": "7519f371-8bf1-44af-9dbf-a43de8ac0591",
+        "name": "Wikimedia1"
+      },
+      {
+        "parameters": {
+          "url": "https://commons.wikimedia.org/w/api.php",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "action",
+                "value": "query"
+              },
+              {
+                "name": "list",
+                "value": "search"
+              },
+              {
+                "name": "srsearch",
+                "value": "={{ $('Workflow Input Trigger').item.json.site_id }}, {{ $('Workflow Input Trigger').item.json.city_id }}"
+              },
+              {
+                "name": "srnamespace",
+                "value": "6"
+              },
+              {
+                "name": "format",
+                "value": "json"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          40,
+          900
+        ],
+        "id": "c6fb410c-b83a-4805-b000-6bfb4adcfb07",
+        "name": "Search Wikimedia1"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "bf803119-af13-4236-bab8-40df4cb23d74",
+                "leftValue": "={{ $json.width }}",
+                "rightValue": "={{ $json.height }}",
+                "operator": {
+                  "type": "number",
+                  "operation": "gt"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.2,
+        "position": [
+          1360,
+          120
+        ],
+        "id": "104a7d45-f49d-4ceb-8ae4-5ff63d8cd99f",
+        "name": "Filter"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://rrkivosxnrfvdawawexd.supabase.co/rest/v1/images?on_conflict=id\n",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "supabaseApi",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Prefer",
+                "value": "resolution=merge-duplicates"
+              }
+            ]
+          },
+          "sendBody": true,
+          "contentType": "raw",
+          "rawContentType": "application/json",
+          "body": "={{ JSON.stringify([$json]) }}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          260,
+          380
+        ],
+        "id": "7556fe63-bb54-440d-ae08-af77e2ee2261",
+        "name": "Upsert",
+        "executeOnce": true,
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "znNIyfNCzQN57VEr",
+            "name": "supabase service role api"
+          },
+          "supabaseApi": {
+            "id": "1Yc1VOr8K1yXCO1Q",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          40,
+          380
+        ],
+        "id": "74568ddf-0fa2-439e-b104-fd4fa4c288a1",
+        "name": "Upsert data"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://rrkivosxnrfvdawawexd.supabase.co/rest/v1/period_translations?on_conflict=language_code,period_id\n",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "supabaseApi",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Prefer",
+                "value": "resolution=merge-duplicates"
+              }
+            ]
+          },
+          "sendBody": true,
+          "contentType": "raw",
+          "rawContentType": "application/json",
+          "body": "={{ JSON.stringify([$json]) }}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          40,
+          -400
+        ],
+        "id": "b975fe4f-a63d-4756-b472-2f78f2031ba6",
+        "name": "Upsert1",
+        "executeOnce": true,
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "znNIyfNCzQN57VEr",
+            "name": "supabase service role api"
+          },
+          "supabaseApi": {
+            "id": "1Yc1VOr8K1yXCO1Q",
+            "name": "Supabase account"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Hent billede": {
+        "main": [
+          [
+            {
+              "node": "Upload billede",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Upload billede": {
+        "main": [
+          []
+        ]
+      },
+      "Insert Images": {
+        "main": [
+          [
+            {
+              "node": "Insert site_images",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Workflow Input Trigger": {
+        "main": [
+          [
+            {
+              "node": "Search Wikimedia",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wikimedia": {
+        "main": [
+          [
+            {
+              "node": "Split Out1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Search Wikimedia": {
+        "main": [
+          [
+            {
+              "node": "Split Out",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Out": {
+        "main": [
+          [
+            {
+              "node": "Wikimedia",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Out1": {
+        "main": [
+          [
+            {
+              "node": "Tilret Felter",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Tilret Felter": {
+        "main": [
+          [
+            {
+              "node": "Filter",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter": {
+        "main": [
+          [
+            {
+              "node": "Insert Images",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Upsert data": {
+        "main": [
+          [
+            {
+              "node": "Upsert",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
   "tags": []
 }
