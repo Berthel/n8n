@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-04-08T15:02:50.242Z",
   "updatedAt": "2025-04-08T18:16:16.000Z",
+  "createdAt": "2025-04-08T15:02:50.242Z",
   "id": "4zIGzoLdfRSKGj5r",
   "name": "vodafon fakturaer til google drive",
   "active": false,
@@ -181,15 +181,17 @@
   },
   "pinData": {},
   "versionId": "8a8156f8-bed8-473b-84c4-d7e1550e0242",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-04-08T18:03:48.565Z",
       "updatedAt": "2025-04-08T18:03:48.565Z",
+      "createdAt": "2025-04-08T18:03:48.565Z",
       "role": "workflow:owner",
       "workflowId": "4zIGzoLdfRSKGj5r",
       "projectId": "Oe16LxplPC150asV"
     }
   ],
+  "activeVersion": null,
   "tags": []
 }
