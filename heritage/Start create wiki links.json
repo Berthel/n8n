@@ -1,9 +1,9 @@
 {
-  "createdAt": "2025-05-13T09:45:53.361Z",
   "updatedAt": "2025-05-13T16:01:31.000Z",
+  "createdAt": "2025-05-13T09:45:53.361Z",
   "id": "6EzFOVzIoqtRGVUz",
   "name": "Start create wiki links",
-  "active": false,
+  "active": true,
   "isArchived": false,
   "nodes": [
     {
@@ -123,20 +123,140 @@
   },
   "pinData": {},
   "versionId": "85767769-8c9f-49fd-bfe6-93210604b188",
+  "activeVersionId": "85767769-8c9f-49fd-bfe6-93210604b188",
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-05-13T09:45:53.364Z",
       "updatedAt": "2025-05-13T09:45:53.364Z",
+      "createdAt": "2025-05-13T09:45:53.364Z",
       "role": "workflow:owner",
       "workflowId": "6EzFOVzIoqtRGVUz",
       "projectId": "rkqKISKa14HwF9Xd"
     }
   ],
+  "activeVersion": {
+    "updatedAt": "2025-11-26T07:13:51.767Z",
+    "createdAt": "2025-11-26T07:13:51.767Z",
+    "versionId": "85767769-8c9f-49fd-bfe6-93210604b188",
+    "workflowId": "6EzFOVzIoqtRGVUz",
+    "nodes": [
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": " SELECT DISTINCT s.id AS site_id, s.city_id\nFROM sites s\n   where exists (select 1 from site_translations where site_id = s.id and city_id = s.city_id and wiki_url is null)\n--limit 40;\n",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.5,
+        "position": [
+          -100,
+          -100
+        ],
+        "id": "b879175e-2485-4719-948e-74f18f7b47cc",
+        "name": "Postgres",
+        "credentials": {
+          "postgres": {
+            "id": "EzZYFEVPXxVDpNLe",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "XlvRLQnOpVHFWWK2",
+            "mode": "list",
+            "cachedResultName": "Heritage Navigator — Create wiki-links 2"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "site_id": "={{ $json.site_id }}",
+              "city_id": "={{ $json.city_id }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "site_id",
+                "displayName": "site_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string"
+              },
+              {
+                "id": "city_id",
+                "displayName": "city_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string"
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.2,
+        "position": [
+          120,
+          -100
+        ],
+        "id": "ab40f49e-38cc-42c1-9779-bd966b3d32c1",
+        "name": "Execute Workflow"
+      },
+      {
+        "parameters": {
+          "inputSource": "passthrough"
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          -340,
+          -100
+        ],
+        "id": "e21a0c19-956c-4f65-af0b-43d526e2fe00",
+        "name": "When Executed by Another Workflow"
+      }
+    ],
+    "connections": {
+      "Postgres": {
+        "main": [
+          [
+            {
+              "node": "Execute Workflow",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "Postgres",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
   "tags": [
     {
-      "createdAt": "2025-01-28T15:25:26.214Z",
       "updatedAt": "2025-01-28T15:25:26.214Z",
+      "createdAt": "2025-01-28T15:25:26.214Z",
       "id": "BngebX50Ev8rBclu",
       "name": "HN Content manager"
     }
