@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-05-06T19:24:04.976Z",
   "updatedAt": "2025-05-22T11:17:26.000Z",
+  "createdAt": "2025-05-06T19:24:04.976Z",
   "id": "XJ1CV3z6lerRHNDU",
   "name": "Create thumbnails",
   "active": false,
@@ -553,15 +553,17 @@
   },
   "pinData": {},
   "versionId": "ff8b4091-3c5b-4126-9716-e21af6f2e425",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-05-06T19:24:04.980Z",
       "updatedAt": "2025-05-06T19:24:04.980Z",
+      "createdAt": "2025-05-06T19:24:04.980Z",
       "role": "workflow:owner",
       "workflowId": "XJ1CV3z6lerRHNDU",
       "projectId": "rkqKISKa14HwF9Xd"
     }
   ],
+  "activeVersion": null,
   "tags": []
 }
