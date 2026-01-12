@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-10-22T14:23:42.399Z",
   "updatedAt": "2025-10-22T15:22:34.000Z",
+  "createdAt": "2025-10-22T14:23:42.399Z",
   "id": "lD7QxIRoTPXGNS3L",
   "name": "Metadata-Filtered RAG with Intelligent Document Retrieval and Reranking",
   "active": false,
@@ -306,15 +306,17 @@
   },
   "pinData": {},
   "versionId": "3fb6b7af-961e-4f43-98e9-9b9612c40fbd",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-10-22T14:23:42.401Z",
       "updatedAt": "2025-10-22T14:23:42.401Z",
+      "createdAt": "2025-10-22T14:23:42.401Z",
       "role": "workflow:owner",
       "workflowId": "lD7QxIRoTPXGNS3L",
       "projectId": "Oe16LxplPC150asV"
     }
   ],
+  "activeVersion": null,
   "tags": []
 }
