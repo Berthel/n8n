@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-03-06T10:16:45.064Z",
   "updatedAt": "2025-03-06T10:27:37.000Z",
+  "createdAt": "2025-03-06T10:16:45.064Z",
   "id": "vLt9QcV3aAGWvLPH",
   "name": "5 Ways to Process Images & PDFs with Gemini AI in n8n",
   "active": false,
@@ -730,15 +730,17 @@
   },
   "pinData": {},
   "versionId": "ae0deee0-7ef4-4a2e-81f7-dd62dabacdde",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-03-06T10:16:45.069Z",
       "updatedAt": "2025-03-06T10:16:45.069Z",
+      "createdAt": "2025-03-06T10:16:45.069Z",
       "role": "workflow:owner",
       "workflowId": "vLt9QcV3aAGWvLPH",
       "projectId": "GfhaYhFYRk0TRXAf"
     }
   ],
+  "activeVersion": null,
   "tags": []
 }
