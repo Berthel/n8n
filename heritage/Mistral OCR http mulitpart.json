@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-03-09T08:41:51.535Z",
   "updatedAt": "2025-03-09T10:59:14.000Z",
+  "createdAt": "2025-03-09T08:41:51.535Z",
   "id": "PuKjUDfPWkrZzPQc",
   "name": "Mistral OCR http mulitpart",
   "active": false,
@@ -695,20 +695,22 @@
   },
   "pinData": {},
   "versionId": "6a043bac-d430-4904-aedd-8350453e5e25",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-03-09T08:41:51.538Z",
       "updatedAt": "2025-03-09T08:41:51.538Z",
+      "createdAt": "2025-03-09T08:41:51.538Z",
       "role": "workflow:owner",
       "workflowId": "PuKjUDfPWkrZzPQc",
       "projectId": "rkqKISKa14HwF9Xd"
     }
   ],
+  "activeVersion": null,
   "tags": [
     {
-      "createdAt": "2025-01-28T15:25:26.214Z",
       "updatedAt": "2025-01-28T15:25:26.214Z",
+      "createdAt": "2025-01-28T15:25:26.214Z",
       "id": "BngebX50Ev8rBclu",
       "name": "HN Content manager"
     }
