@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-01-26T06:23:48.729Z",
   "updatedAt": "2025-01-29T09:22:44.000Z",
+  "createdAt": "2025-01-26T06:23:48.729Z",
   "id": "ypxImtRKEFDJxGuv",
   "name": "Chat with Google Maps",
   "active": false,
@@ -597,20 +597,22 @@
   },
   "pinData": {},
   "versionId": "428f5ce2-d0ad-45ee-8fc5-927c3c18da22",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-01-26T06:23:48.733Z",
       "updatedAt": "2025-01-26T06:23:48.733Z",
+      "createdAt": "2025-01-26T06:23:48.733Z",
       "role": "workflow:owner",
       "workflowId": "ypxImtRKEFDJxGuv",
       "projectId": "rkqKISKa14HwF9Xd"
     }
   ],
+  "activeVersion": null,
   "tags": [
     {
-      "createdAt": "2025-01-27T04:16:13.710Z",
       "updatedAt": "2025-01-27T04:16:13.710Z",
+      "createdAt": "2025-01-27T04:16:13.710Z",
       "id": "UKDDqdJlo9qVGTuK",
       "name": "navigator"
     }
