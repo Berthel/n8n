@@ -1,9 +1,9 @@
 {
-  "createdAt": "2025-01-29T06:08:57.142Z",
   "updatedAt": "2025-04-10T05:15:43.000Z",
+  "createdAt": "2025-01-29T06:08:57.142Z",
   "id": "nsIfPLh5dvymMIwU",
   "name": "Create Content Agent",
-  "active": false,
+  "active": true,
   "isArchived": false,
   "nodes": [
     {
@@ -276,20 +276,285 @@
     ]
   },
   "versionId": "fb082e15-7756-4f68-bcfd-808172638a1b",
+  "activeVersionId": "fb082e15-7756-4f68-bcfd-808172638a1b",
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-01-29T06:08:57.145Z",
       "updatedAt": "2025-01-29T06:08:57.145Z",
+      "createdAt": "2025-01-29T06:08:57.145Z",
       "role": "workflow:owner",
       "workflowId": "nsIfPLh5dvymMIwU",
       "projectId": "rkqKISKa14HwF9Xd"
     }
   ],
+  "activeVersion": {
+    "updatedAt": "2025-11-26T07:13:51.767Z",
+    "createdAt": "2025-11-26T07:13:51.767Z",
+    "versionId": "fb082e15-7756-4f68-bcfd-808172638a1b",
+    "workflowId": "nsIfPLh5dvymMIwU",
+    "nodes": [
+      {
+        "parameters": {
+          "inputSource": "passthrough"
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          -460,
+          80
+        ],
+        "id": "ffb7cf17-1055-4400-87d3-7c30ba1bd6b5",
+        "name": "Workflow Input Trigger"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "id": "bd795bb2-9f3b-4990-8915-8fbb5661f67d",
+        "name": "OpenAI Chat Model1",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1,
+        "position": [
+          520,
+          500
+        ],
+        "credentials": {
+          "openAiApi": {
+            "id": "ZjiR1Y4tdzymEK1L",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "name": "user_documents",
+          "description": "Contains all the user's documents that you can check for context to answer user questions. Before beginning, scan and identify all relevant occurrences of the topic or subject matter to ensure a comprehensive overview of the best descriptions. Use this overview to prioritize and refine responses effectively.",
+          "topK": 20
+        },
+        "id": "6d70521a-a479-44e8-95be-ba7dc8dcbfe7",
+        "name": "Retrieve Documents",
+        "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+        "typeVersion": 1,
+        "position": [
+          200,
+          340
+        ]
+      },
+      {
+        "parameters": {
+          "model": "text-embedding-3-small",
+          "options": {}
+        },
+        "id": "697c0771-298f-4540-9344-47472881ea61",
+        "name": "Embeddings OpenAI",
+        "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+        "typeVersion": 1,
+        "position": [
+          80,
+          640
+        ],
+        "credentials": {
+          "openAiApi": {
+            "id": "ZjiR1Y4tdzymEK1L",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "={{ $json.query }}",
+          "hasOutputParser": true,
+          "options": {
+            "systemMessage": "=# Role\nYou are a Content Creator for Heritage Navigator, an app that helps historical interested visitors discover and understand local historical sites. Your task is to create engaging, inspiring and easy understandable content for a specific historical site, targeting adult cultural travelers (45-70 years) seeking authentic experiences.\n\n# Instructions\n- The tool user_documents is your primary source for information\n- The tool Wikipedia is your secondary source for infomation, and you can use the Wikipedia tool if you don't find the information you need in the user_documents\n- Don't hallucinate and don't write anything without documented evidence\n- Do your best to find the information you need to fullfill the task, and if you don't find the information you need it is OK to tell me that you don't have the information \n\n# Rules\n- Always use local place names in their original language and do not translate them to English. For example, use \"København\" instead of \"Copenhagen\", \"Kronborg\" instead of \"Elsinore Castle\", \"São Jorge\" instead of \"St. George\", etc.\n\n# Sections\n\n- Format the content of the sections in HTML.\n- Use paragraphs <p> to break larger texts into smaller more readable peaces\n- Use styling as <b> and <i> to make the text visually attractive and readable\n\nYou create the content in theses 4 mainsections:\n### shortDescription (max 60 characters)\n### introduction (60-80 words)\nBegin overview with the header <h2>Introduction</h2>\n### mainStory (700-800 words)\nBegin mainStory with the header <h2>Overview</h2>\n### academicBackground (600-800 words)\nBegin academicBackground with the header <h2>Background</> and then <h4>Historical Timeline</h4>\nList key-historical dates and events from formatted as a <ul> list like this <li><b>period</b>period-short-description as the content of Historical Timeline like this example:\n<example>\n<ul>\n    <li><b>8th-11th centuries</b> Initial Islamic settlement and fortification of the site</li>\n    <li><b>12th century</b> Construction of the main castle structure during the Almohad period</li>\n    <li><b>1242</b> Christian reconquest of Tavira and the castle by D. Paio Peres Correia</li>\n    <li><b>14th-15th centuries</b> Major renovations and strengthening of the fortifications</li>\n    <li><b>16th-17th centuries</b> Gradual transition from military to symbolic importance</li>\n    <li><b>20th century</b> Addition of current battlements and preservation work</li>\n</ul>\n</example>\n\n\ncreate your own subsections in all sections to make the content easier readable\n\n# Output\nThe outputformat is JSON with one object for each section like this:\n{ \"shortDescription\"=\"\",\"introduction\"=\"\",\"mainStory\"=\"\",\"academicBackground\"=\"\" }"
+          }
+        },
+        "id": "9f8f340f-a3a6-437d-8940-511612059247",
+        "name": "RAG AI Agent",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 1.6,
+        "position": [
+          -240,
+          80
+        ]
+      },
+      {
+        "parameters": {
+          "tableName": {
+            "__rl": true,
+            "value": "documents",
+            "mode": "list",
+            "cachedResultName": "documents"
+          },
+          "options": {
+            "queryName": "match_documents"
+          }
+        },
+        "id": "872f8ecf-b5e7-4303-b3f5-b7007475736d",
+        "name": "Supabase Vector Store",
+        "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+        "typeVersion": 1,
+        "position": [
+          20,
+          480
+        ],
+        "credentials": {
+          "supabaseApi": {
+            "id": "1Yc1VOr8K1yXCO1Q",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {},
+        "type": "@n8n/n8n-nodes-langchain.toolWikipedia",
+        "typeVersion": 1,
+        "position": [
+          -80,
+          300
+        ],
+        "id": "de223081-14a1-4511-8417-068957341f19",
+        "name": "Wikipedia"
+      },
+      {
+        "parameters": {
+          "model": "=anthropic/claude-3.5-sonnet",
+          "options": {}
+        },
+        "id": "44ac5202-6768-43da-ab6a-792d1ecc3549",
+        "name": "Openrouter Claude",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1,
+        "position": [
+          -360,
+          320
+        ],
+        "credentials": {
+          "openAiApi": {
+            "id": "7oESUrXOypaiYfq2",
+            "name": "openrouter"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "model": "=deepseek-chat",
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.1,
+        "position": [
+          420,
+          680
+        ],
+        "id": "92b3c66f-9d14-4413-96f9-83401d178194",
+        "name": "Deepseek",
+        "credentials": {
+          "openAiApi": {
+            "id": "g9PKNXtBTvDMq49I",
+            "name": "Deepseek"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "OpenAI Chat Model1": {
+        "ai_languageModel": [
+          []
+        ]
+      },
+      "Retrieve Documents": {
+        "ai_tool": [
+          [
+            {
+              "node": "RAG AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Embeddings OpenAI": {
+        "ai_embedding": [
+          [
+            {
+              "node": "Supabase Vector Store",
+              "type": "ai_embedding",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Supabase Vector Store": {
+        "ai_vectorStore": [
+          [
+            {
+              "node": "Retrieve Documents",
+              "type": "ai_vectorStore",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wikipedia": {
+        "ai_tool": [
+          [
+            {
+              "node": "RAG AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Openrouter Claude": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "RAG AI Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Workflow Input Trigger": {
+        "main": [
+          [
+            {
+              "node": "RAG AI Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Deepseek": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Retrieve Documents",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "RAG AI Agent": {
+        "main": [
+          []
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
   "tags": [
     {
-      "createdAt": "2025-01-28T15:25:26.214Z",
       "updatedAt": "2025-01-28T15:25:26.214Z",
+      "createdAt": "2025-01-28T15:25:26.214Z",
       "id": "BngebX50Ev8rBclu",
       "name": "HN Content manager"
     }
