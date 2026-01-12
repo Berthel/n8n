@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-02-18T04:28:45.553Z",
   "updatedAt": "2025-03-09T10:44:18.000Z",
+  "createdAt": "2025-02-18T04:28:45.553Z",
   "id": "WrTRCWmkoSbRpoOe",
   "name": "Tilføj indhold til RAG 2",
   "active": false,
@@ -1040,26 +1040,28 @@
   },
   "pinData": {},
   "versionId": "cb13dbc2-5608-4bba-94ce-76cf882942f6",
+  "activeVersionId": null,
   "triggerCount": 4,
   "shared": [
     {
-      "createdAt": "2025-02-18T04:28:45.558Z",
       "updatedAt": "2025-02-18T04:28:45.558Z",
+      "createdAt": "2025-02-18T04:28:45.558Z",
       "role": "workflow:owner",
       "workflowId": "WrTRCWmkoSbRpoOe",
       "projectId": "rkqKISKa14HwF9Xd"
     }
   ],
+  "activeVersion": null,
   "tags": [
     {
-      "createdAt": "2025-01-28T15:25:26.214Z",
       "updatedAt": "2025-01-28T15:25:26.214Z",
+      "createdAt": "2025-01-28T15:25:26.214Z",
       "id": "BngebX50Ev8rBclu",
       "name": "HN Content manager"
     },
     {
-      "createdAt": "2025-02-09T16:38:26.099Z",
       "updatedAt": "2025-02-09T16:38:26.099Z",
+      "createdAt": "2025-02-09T16:38:26.099Z",
       "id": "YEStJInGeLpvHEQ8",
       "name": "tool"
     }
