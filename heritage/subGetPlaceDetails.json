@@ -1,9 +1,9 @@
 {
-  "createdAt": "2025-01-26T05:54:34.547Z",
   "updatedAt": "2025-01-27T04:16:59.000Z",
+  "createdAt": "2025-01-26T05:54:34.547Z",
   "id": "scD5ffOudFVzNGFA",
   "name": "subGetPlaceDetails",
-  "active": false,
+  "active": true,
   "isArchived": false,
   "nodes": [
     {
@@ -152,20 +152,169 @@
   },
   "pinData": {},
   "versionId": "56f8939d-4506-4bfb-8260-43989b977a51",
+  "activeVersionId": "56f8939d-4506-4bfb-8260-43989b977a51",
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-01-26T05:54:34.551Z",
       "updatedAt": "2025-01-26T05:54:34.551Z",
+      "createdAt": "2025-01-26T05:54:34.551Z",
       "role": "workflow:owner",
       "workflowId": "scD5ffOudFVzNGFA",
       "projectId": "rkqKISKa14HwF9Xd"
     }
   ],
+  "activeVersion": {
+    "updatedAt": "2025-11-26T07:13:51.767Z",
+    "createdAt": "2025-11-26T07:13:51.767Z",
+    "versionId": "56f8939d-4506-4bfb-8260-43989b977a51",
+    "workflowId": "scD5ffOudFVzNGFA",
+    "nodes": [
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://places.googleapis.com/v1/places:searchText",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "X-Goog-FieldMask",
+                "value": "places.id,places.displayName,places.types,places.formattedAddress,places.location,places.rating,places.websiteUri,places.priceLevel,places.primaryType,places.plusCode,places.business_status"
+              }
+            ]
+          },
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "textQuery",
+                "value": "={{ $json.query }}"
+              }
+            ]
+          },
+          "options": {
+            "redirect": {
+              "redirect": {}
+            }
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          160,
+          -140
+        ],
+        "id": "ba920848-b20e-4f45-b944-4bdf0d5717ef",
+        "name": "Get Place ID",
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "RBY53ewF7tAnXKlY",
+            "name": "Google API"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "url": "=https://maps.googleapis.com/maps/api/place/details/json?place_id={{ $json.places[0].id }}",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpQueryAuth",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          480,
+          -320
+        ],
+        "id": "e8c965d4-6af6-43ce-916e-541699db03ab",
+        "name": "Get Place Details",
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "RBY53ewF7tAnXKlY",
+            "name": "Google API"
+          },
+          "httpQueryAuth": {
+            "id": "5qlgt2xyQqxMW8o9",
+            "name": "Query Auth account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "inputSource": "jsonExample",
+          "jsonExample": "\n  {\n    \"query\": \"Castelo de Tavira\"\n  }\n"
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          -80,
+          -140
+        ],
+        "id": "660fa081-c223-4ecc-880a-cf7f49622f43",
+        "name": "Workflow Input Trigger"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3,
+        "position": [
+          700,
+          -140
+        ],
+        "id": "47f4a01d-efe2-4bd6-96d0-6c2963da3d08",
+        "name": "Merge"
+      }
+    ],
+    "connections": {
+      "Get Place ID": {
+        "main": [
+          [
+            {
+              "node": "Get Place Details",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Workflow Input Trigger": {
+        "main": [
+          [
+            {
+              "node": "Get Place ID",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Place Details": {
+        "main": [
+          [
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
   "tags": [
     {
-      "createdAt": "2025-01-27T04:16:57.472Z",
       "updatedAt": "2025-01-27T04:16:57.472Z",
+      "createdAt": "2025-01-27T04:16:57.472Z",
       "id": "twGRqDemoRyf0IES",
       "name": "sub"
     }
