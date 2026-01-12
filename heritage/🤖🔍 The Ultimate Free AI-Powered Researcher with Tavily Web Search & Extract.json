@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-02-07T13:35:32.185Z",
   "updatedAt": "2025-02-07T14:22:25.000Z",
+  "createdAt": "2025-02-07T13:35:32.185Z",
   "id": "4sgw1bi4aEAeNB43",
   "name": "🤖🔍 The Ultimate Free AI-Powered Researcher with Tavily Web Search & Extract",
   "active": false,
@@ -376,15 +376,17 @@
   },
   "pinData": {},
   "versionId": "7c7c3369-1829-4905-baf0-5ed62da0d831",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-02-07T13:35:32.188Z",
       "updatedAt": "2025-02-07T13:35:32.188Z",
+      "createdAt": "2025-02-07T13:35:32.188Z",
       "role": "workflow:owner",
       "workflowId": "4sgw1bi4aEAeNB43",
       "projectId": "GfhaYhFYRk0TRXAf"
     }
   ],
+  "activeVersion": null,
   "tags": []
 }
