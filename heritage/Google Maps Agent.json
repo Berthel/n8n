@@ -1,9 +1,9 @@
 {
-  "createdAt": "2025-01-28T18:35:55.459Z",
   "updatedAt": "2025-04-26T18:12:48.000Z",
+  "createdAt": "2025-01-28T18:35:55.459Z",
   "id": "0ctaaP10dQFHTwzG",
   "name": "Google Maps Agent",
-  "active": false,
+  "active": true,
   "isArchived": false,
   "nodes": [
     {
@@ -298,20 +298,307 @@
     ]
   },
   "versionId": "1d6c97bf-cb54-4e79-a0fd-8caedb109922",
+  "activeVersionId": "1d6c97bf-cb54-4e79-a0fd-8caedb109922",
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-01-28T18:35:55.462Z",
       "updatedAt": "2025-01-28T18:35:55.462Z",
+      "createdAt": "2025-01-28T18:35:55.462Z",
       "role": "workflow:owner",
       "workflowId": "0ctaaP10dQFHTwzG",
       "projectId": "rkqKISKa14HwF9Xd"
     }
   ],
+  "activeVersion": {
+    "updatedAt": "2025-11-26T07:13:51.767Z",
+    "createdAt": "2025-11-26T07:13:51.767Z",
+    "versionId": "1d6c97bf-cb54-4e79-a0fd-8caedb109922",
+    "workflowId": "0ctaaP10dQFHTwzG",
+    "nodes": [
+      {
+        "parameters": {
+          "toolDescription": "Get geografical data from one specific place",
+          "method": "POST",
+          "url": "https://places.googleapis.com/v1/places:searchText",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "parametersHeaders": {
+            "values": [
+              {
+                "name": "X-Goog-FieldMask",
+                "valueProvider": "fieldValue",
+                "value": "places.id,places.displayName,places.types,places.formattedAddress,places.location,places.rating,places.websiteUri,places.priceLevel,places.primaryType,places.plusCode,places.business_status,places.googleMapsLinks"
+              },
+              {
+                "name": "Content-Type",
+                "valueProvider": "fieldValue",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "parametersBody": {
+            "values": [
+              {
+                "name": "textQuery",
+                "valueProvider": "fieldValue",
+                "value": "{name_of_place}"
+              }
+            ]
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+        "typeVersion": 1.1,
+        "position": [
+          180,
+          -40
+        ],
+        "id": "0918fd4e-374d-4152-a965-68e8a68846fe",
+        "name": "Get Place Data",
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "RBY53ewF7tAnXKlY",
+            "name": "Google API"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "toolDescription": "Fint nearby places using latitude, longitude, number of places and distance in meter",
+          "method": "POST",
+          "url": "https://places.googleapis.com/v1/places:searchNearby",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "parametersHeaders": {
+            "values": [
+              {
+                "name": "Content-Type",
+                "valueProvider": "fieldValue",
+                "value": "application/json"
+              },
+              {
+                "name": "X-Goog-FieldMask",
+                "valueProvider": "fieldValue",
+                "value": "places.displayName,places.types,places.formattedAddress,places.location,places.editorialSummary,places.rating,places.websiteUri,places.priceLevel,places.primaryType,places.plusCode,places.googleMapsLinks,places.business_status"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"includedTypes\": {includedTypes},\n  \"locationRestriction\": {\n    \"circle\": {\n      \"center\": {\n        \"latitude\": {latitude},\n        \"longitude\": {longitude}\n      },\n      \"radius\": {radius}\n    }\n  },\n  \"maxResultCount\": 20\n}\n",
+          "placeholderDefinitions": {
+            "values": [
+              {
+                "name": "latitude",
+                "description": "The latitude of the starting place from where we search for nearby places",
+                "type": "number"
+              },
+              {
+                "name": "longitude",
+                "description": "The longitude of the starting place from where we search for nearby places",
+                "type": "number"
+              },
+              {
+                "name": "radius",
+                "description": "The radius in meters to search for nearby places",
+                "type": "number"
+              },
+              {
+                "name": "includedTypes",
+                "description": "An array of types in this format: [\"restaurant\", \"cafe\"]\nChose among these types: historical_place, cultural_landmark, monument, museum, historical_landmark, cultural_center, art_gallery, performing_arts_theater, visitor_center, church, mosque, hindu_temple, synagogue, plaza, tourist_attraction, tourist_information_center, garden, park, botanical_garden, restaurant, cafe, cafeteria, coffee_shop, bar, pub, wine_bar, public_bathroom, public_bath\n",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+        "typeVersion": 1.1,
+        "position": [
+          360,
+          -40
+        ],
+        "id": "df24a268-ea56-4e28-a3e1-36e3fb6a291c",
+        "name": "Get Nearby Places",
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "RBY53ewF7tAnXKlY",
+            "name": "Google API"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "id": "d4cbad8d-6cf7-4f4a-b045-5dc2b6d1a1b1",
+        "name": "OpenAI Chat Model",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1,
+        "position": [
+          -120,
+          -40
+        ],
+        "credentials": {
+          "openAiApi": {
+            "id": "ZjiR1Y4tdzymEK1L",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "inputSource": "passthrough"
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          -420,
+          -300
+        ],
+        "id": "6b43be77-883b-46b7-9fcc-ec264ecc9a86",
+        "name": "Workflow Input Trigger"
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "={{ $json.query }}",
+          "hasOutputParser": true,
+          "options": {
+            "systemMessage": "=Din opgave er at **hente geografiske data** for et sted og returnere en unik identifikationskode til Content Manager.  \n\n### **Hovedopgaver**  \n1. **Modtag forespørgsel** fra Content Manager med oplysninger om et sted (navn, adresse, by, Global Code).  \n2. **Identificér det korrekte sted** ved at bruge de tilgængelige værktøjer:  \n   - Hvis du modtager en **Global Code**, skal du først bruge **Get coordinates from Global Code** for at få latitude og longitude.  \n   - Brug derefter **Get Nearby Places** med en radius på 100 meter for at finde det mest relevante sted.  \n   - Slå altid det endelige sted op i **Get Place Data** for at få nøjagtige detaljer, inklusive Place ID. Brug altid bynavnet som en del af søgningen i **Get Place Data**, da der kan være steder med samme navn i andre byer\n   - Hvis ingen steder findes inden for 50 meter, informér Content Manager og returnér koordinaterne alene.  \n3. **Returnér data** i et struktureret format:  \n   - **Global Code**  \n   - **Google Place ID** (fundet i Get Place Data, aldrig kun et numerisk ID)  \n   - **CID** (ekstraheres fra placeUri i Get Place Data)  \n   - **Stedets navn**  \n   - **Fuld adresse** (hvis tilgængelig)  \n   - **Koordinater (latitude & longitude)**  \n   - **Website URL** (hvis tilgængelig)  \n\n### **Fejlhåndtering**  \n- Hvis ingen eller flere steder matcher → informér Content Manager.  \n- Hvis API-kaldet fejler → returnér en kort fejlbesked med relevante detaljer.  \n\n### **Generelle regler**  \n- Brug altid **Get Place Data** til at validere steder, selv hvis du har koordinater eller en Global Code.  \n- Returnér kun relevante oplysninger i et kortfattet format.  \n- Udfør kun præcist de opgaver, du bliver bedt om.  \n\n**Formål**: Sikre en **entydig, automatiseret og fejlsikker** levering af geografiske data til Heritage Navigator-databasen.\n"
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 1.7,
+        "position": [
+          20,
+          -300
+        ],
+        "id": "f2b56bf9-39b8-4536-9343-5db098173786",
+        "name": "Google Maps Agent"
+      },
+      {
+        "parameters": {
+          "toolDescription": "Get latitude and longitude from global code",
+          "url": "https://plus.codes/api",
+          "sendQuery": true,
+          "parametersQuery": {
+            "values": [
+              {
+                "name": "address",
+                "valueProvider": "fieldValue",
+                "value": "{global_code}"
+              },
+              {
+                "name": "key",
+                "valueProvider": "fieldValue",
+                "value": "AIzaSyDn6ReSPEfDl_32rmQxFXaH3aVMBf0dQdw"
+              }
+            ]
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+        "typeVersion": 1.1,
+        "position": [
+          520,
+          -40
+        ],
+        "id": "80b8ee63-8ae3-4f45-9a59-2433faa1aab9",
+        "name": "Get coordinates from Global Code"
+      },
+      {
+        "parameters": {
+          "schemaType": "manual",
+          "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"global_code\": {\n      \"type\": \"string\",\n      \"description\": \"The Global Code of the location\"\n    },\n    \"google_place_id\": {\n      \"type\": \"string\",\n      \"description\": \"The Google Place ID of the location, as found in Get Place Data\"\n    },\n    \"cid\": {\n      \"type\": \"string\",\n      \"description\": \"The CID extracted from the placeUri in Get Place Data\"\n    },\n    \"stedets_navn\": {\n      \"type\": \"string\",\n      \"description\": \"The name of the location\"\n    },\n    \"fuld_adresse\": {\n      \"type\": \"string\",\n      \"description\": \"The full address of the location, if available\"\n    },\n    \"koordinater\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"latitude\": {\n          \"type\": \"number\",\n          \"description\": \"The latitude coordinate of the location\"\n        },\n        \"longitude\": {\n          \"type\": \"number\",\n          \"description\": \"The longitude coordinate of the location\"\n        }\n      },\n      \"required\": [\"latitude\", \"longitude\"],\n      \"description\": \"The coordinates of the location\"\n    },\n    \"website_url\": {\n      \"type\": \"string\",\n      \"description\": \"The website URL of the location, if available\"\n    },\n    \"error\": {\n      \"type\": \"string\",\n      \"description\": \"Error message if any issues occurred during processing\"\n    }\n  },\n  \"anyOf\": [\n    {\n      \"required\": [\n        \"global_code\",\n        \"google_place_id\",\n        \"cid\",\n        \"stedets_navn\",\n        \"koordinater\"\n      ]\n    },\n    {\n      \"required\": [\"error\"]\n    }\n  ]\n}"
+        },
+        "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+        "typeVersion": 1.2,
+        "position": [
+          40,
+          140
+        ],
+        "id": "09eb0c67-8782-4482-9ae4-ba5cd6cf737c",
+        "name": "Structured Output Parser"
+      }
+    ],
+    "connections": {
+      "Get Place Data": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Maps Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Nearby Places": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Maps Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Google Maps Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Workflow Input Trigger": {
+        "main": [
+          [
+            {
+              "node": "Google Maps Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get coordinates from Global Code": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Maps Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Structured Output Parser": {
+        "ai_outputParser": [
+          [
+            {
+              "node": "Google Maps Agent",
+              "type": "ai_outputParser",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
   "tags": [
     {
-      "createdAt": "2025-01-28T15:25:26.214Z",
       "updatedAt": "2025-01-28T15:25:26.214Z",
+      "createdAt": "2025-01-28T15:25:26.214Z",
       "id": "BngebX50Ev8rBclu",
       "name": "HN Content manager"
     }
