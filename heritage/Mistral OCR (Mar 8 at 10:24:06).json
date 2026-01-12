@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-03-08T11:01:30.732Z",
   "updatedAt": "2025-03-08T11:01:30.732Z",
+  "createdAt": "2025-03-08T11:01:30.732Z",
   "id": "3jeLvEfUeyikZzlR",
   "name": "Mistral OCR (Mar 8 at 10:24:06)",
   "active": false,
@@ -576,15 +576,17 @@
   "meta": null,
   "pinData": null,
   "versionId": "590c0b89-96fa-41e8-9b95-3b198e051d70",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-03-08T11:01:30.736Z",
       "updatedAt": "2025-03-08T11:01:30.736Z",
+      "createdAt": "2025-03-08T11:01:30.736Z",
       "role": "workflow:owner",
       "workflowId": "3jeLvEfUeyikZzlR",
       "projectId": "GfhaYhFYRk0TRXAf"
     }
   ],
+  "activeVersion": null,
   "tags": []
 }
