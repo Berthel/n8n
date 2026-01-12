@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-03-06T05:38:26.732Z",
   "updatedAt": "2025-03-06T09:27:49.000Z",
+  "createdAt": "2025-03-06T05:38:26.732Z",
   "id": "BI5OhgYxJiuk0GLK",
   "name": "Knowledgebase test",
   "active": false,
@@ -400,15 +400,17 @@
   },
   "pinData": {},
   "versionId": "eefb3fc5-3a4e-45da-996d-2315a50fb844",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-03-06T05:38:26.735Z",
       "updatedAt": "2025-03-06T05:38:26.735Z",
+      "createdAt": "2025-03-06T05:38:26.735Z",
       "role": "workflow:owner",
       "workflowId": "BI5OhgYxJiuk0GLK",
       "projectId": "rkqKISKa14HwF9Xd"
     }
   ],
+  "activeVersion": null,
   "tags": []
 }
