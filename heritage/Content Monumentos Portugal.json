@@ -1,9 +1,9 @@
 {
-  "createdAt": "2025-02-07T15:05:58.615Z",
   "updatedAt": "2025-02-07T16:38:32.000Z",
+  "createdAt": "2025-02-07T15:05:58.615Z",
   "id": "y3SEoNbyzFsiZXtw",
   "name": "Content Monumentos Portugal",
-  "active": false,
+  "active": true,
   "isArchived": false,
   "nodes": [
     {
@@ -236,20 +236,253 @@
   },
   "pinData": {},
   "versionId": "1754b09d-e8c4-4710-8f17-b6acc9bf0758",
+  "activeVersionId": "1754b09d-e8c4-4710-8f17-b6acc9bf0758",
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-02-07T15:05:58.617Z",
       "updatedAt": "2025-02-07T15:05:58.617Z",
+      "createdAt": "2025-02-07T15:05:58.617Z",
       "role": "workflow:owner",
       "workflowId": "y3SEoNbyzFsiZXtw",
       "projectId": "rkqKISKa14HwF9Xd"
     }
   ],
+  "activeVersion": {
+    "updatedAt": "2025-11-26T07:13:51.767Z",
+    "createdAt": "2025-11-26T07:13:51.767Z",
+    "versionId": "1754b09d-e8c4-4710-8f17-b6acc9bf0758",
+    "workflowId": "y3SEoNbyzFsiZXtw",
+    "nodes": [
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "a73e848c-f7e7-4b3a-ae99-930c577b47be",
+                "name": "results",
+                "type": "object",
+                "value": "={{ $json.results.first() }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "e24465f5-f6f9-468e-adc3-16884ea4cba5",
+        "name": "Get Top Result",
+        "type": "n8n-nodes-base.set",
+        "position": [
+          520,
+          -60
+        ],
+        "typeVersion": 3.4
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.tavily.com/search",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "contentType": "raw",
+          "rawContentType": "application/json",
+          "body": "={\n    \"query\": \"{{ $json.query }}\",\n    \"include_domains\": [\"http://www.monumentos.gov.pt/\"],\n\"search_depth\": \"advanced\"\n  }",
+          "options": {}
+        },
+        "id": "087ca446-1584-4235-9f68-1ef9fe742ace",
+        "name": "Tavily Search Topic",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          20,
+          -60
+        ],
+        "typeVersion": 4.2,
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "isCvBmjhRAg2owXO",
+            "name": "Tavily"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "// Loop over input items\nfor (const item of $input.all()) {\n  // Filter results where title contains 'castelo' (case-insensitive)\n  item.json.results = item.json.results.filter(result => \n    result.title.toLowerCase().includes('bernardas')\n  );\n  \n  // Add new field to each remaining result\n  item.json.results.forEach(result => {\n    result.myNewField = 1;\n  });\n}\n\nreturn $input.all();"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          240,
+          160
+        ],
+        "id": "9f4df61a-a0f0-4650-978f-f77c04820fb7",
+        "name": "Code"
+      },
+      {
+        "parameters": {
+          "url": "={{ $json.results.url }}",
+          "options": {
+            "response": {
+              "response": {
+                "responseFormat": "text"
+              }
+            }
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          740,
+          -60
+        ],
+        "id": "036cb7d8-d180-4bd8-8f35-3da1be42e46f",
+        "name": "HTTP Request"
+      },
+      {
+        "parameters": {
+          "operation": "extractHtmlContent",
+          "extractionValues": {
+            "values": [
+              {
+                "key": "description",
+                "cssSelector": "#MainContent_SubSiteContent_lblDescription"
+              },
+              {
+                "key": "summary",
+                "cssSelector": "#MainContent_SubSiteContent_lblSummary"
+              },
+              {
+                "key": "chronology",
+                "cssSelector": "#MainContent_SubSiteContent_lblChronology"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.html",
+        "typeVersion": 1.2,
+        "position": [
+          1020,
+          -60
+        ],
+        "id": "f674ffdf-c6cd-46e5-9df1-64ea9aab1311",
+        "name": "HTML"
+      },
+      {
+        "parameters": {
+          "inputSource": "passthrough"
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          -540,
+          -60
+        ],
+        "id": "da73e5b2-6bf6-4352-bc58-3175336d0b2c",
+        "name": "Workflow Input Trigger"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "9286de2f-a274-4258-bf87-b8da1bc99fe1",
+                "name": "query",
+                "value": "={{ $json.query.toLowerCase().replace(/,/g, \"\").split(/\\s+/).filter(word => word.length >= 4).join(\" \") }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -320,
+          -60
+        ],
+        "id": "5cdb29ad-72bb-49a7-a881-a3ce5d8d48c8",
+        "name": "Edit Fields"
+      }
+    ],
+    "connections": {
+      "Get Top Result": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Tavily Search Topic": {
+        "main": [
+          [
+            {
+              "node": "Get Top Result",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code": {
+        "main": [
+          []
+        ]
+      },
+      "HTTP Request": {
+        "main": [
+          [
+            {
+              "node": "HTML",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Workflow Input Trigger": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "Tavily Search Topic",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
   "tags": [
     {
-      "createdAt": "2025-01-28T15:25:26.214Z",
       "updatedAt": "2025-01-28T15:25:26.214Z",
+      "createdAt": "2025-01-28T15:25:26.214Z",
       "id": "BngebX50Ev8rBclu",
       "name": "HN Content manager"
     }
