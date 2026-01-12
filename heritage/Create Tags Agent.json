@@ -1,9 +1,9 @@
 {
-  "createdAt": "2025-01-31T04:43:30.799Z",
   "updatedAt": "2025-05-22T11:48:32.000Z",
+  "createdAt": "2025-01-31T04:43:30.799Z",
   "id": "RFBP4vgrDB7zY6cz",
   "name": "Create Tags Agent",
-  "active": false,
+  "active": true,
   "isArchived": false,
   "nodes": [
     {
@@ -879,20 +879,887 @@
     ]
   },
   "versionId": "f3dfe809-3eea-4ad1-b311-60010ada58fa",
+  "activeVersionId": "f3dfe809-3eea-4ad1-b311-60010ada58fa",
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-01-31T04:43:30.802Z",
       "updatedAt": "2025-01-31T04:43:30.802Z",
+      "createdAt": "2025-01-31T04:43:30.802Z",
       "role": "workflow:owner",
       "workflowId": "RFBP4vgrDB7zY6cz",
       "projectId": "rkqKISKa14HwF9Xd"
     }
   ],
+  "activeVersion": {
+    "updatedAt": "2025-11-26T07:13:51.767Z",
+    "createdAt": "2025-11-26T07:13:51.767Z",
+    "versionId": "f3dfe809-3eea-4ad1-b311-60010ada58fa",
+    "workflowId": "RFBP4vgrDB7zY6cz",
+    "nodes": [
+      {
+        "parameters": {
+          "inputSource": "jsonExample",
+          "jsonExample": "{\n  \"site_id\": \"cacela-velha\",\n  \"city_id\": \"tavira\"\n}"
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          -160,
+          0
+        ],
+        "id": "ef623bef-69f3-43b2-b2a2-7bdb5bfb69df",
+        "name": "Workflow Input Trigger"
+      },
+      {
+        "parameters": {
+          "operation": "getAll",
+          "tableId": "detail_section_translations",
+          "matchType": "allFilters",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "detail_section_id",
+                "condition": "ilike",
+                "keyValue": "={{ $('Workflow Input Trigger').item.json.site_id }}%"
+              },
+              {
+                "keyName": "language_code",
+                "condition": "eq",
+                "keyValue": "en"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          600,
+          0
+        ],
+        "id": "e5d7110c-8a3d-4721-8b9c-d3f351318717",
+        "name": "Get Descriptions",
+        "credentials": {
+          "supabaseApi": {
+            "id": "1Yc1VOr8K1yXCO1Q",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "getAll",
+          "tableId": "view_city_tags",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "city_id",
+                "condition": "eq",
+                "keyValue": "={{ $('Get city').first().json.city_id }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          1260,
+          0
+        ],
+        "id": "709bac19-9d1b-4365-90d2-d3756f244ab4",
+        "name": "Get Tags",
+        "executeOnce": true,
+        "credentials": {
+          "supabaseApi": {
+            "id": "1Yc1VOr8K1yXCO1Q",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "fieldsToAggregate": {
+            "fieldToAggregate": [
+              {
+                "fieldToAggregate": "content"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.aggregate",
+        "typeVersion": 1,
+        "position": [
+          800,
+          0
+        ],
+        "id": "40fa156e-54ab-4cd0-9b3a-9e6a8762f22f",
+        "name": "Descriptions"
+      },
+      {
+        "parameters": {
+          "fieldsToAggregate": {
+            "fieldToAggregate": [
+              {
+                "fieldToAggregate": "id",
+                "renameField": true,
+                "outputFieldName": "tags"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.aggregate",
+        "typeVersion": 1,
+        "position": [
+          1480,
+          0
+        ],
+        "id": "048ae2b0-5acc-4505-af5c-a92183d96262",
+        "name": "Tags"
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "value": "gpt-4.1",
+            "mode": "list",
+            "cachedResultName": "gpt-4.1"
+          },
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2,
+        "position": [
+          1820,
+          920
+        ],
+        "id": "2ba36018-927d-4c77-bf84-5651021ebd12",
+        "name": "OpenAI Chat Model",
+        "credentials": {
+          "openAiApi": {
+            "id": "ZjiR1Y4tdzymEK1L",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=Beskrivelse: {{ $('Descriptions').first().json.content }}\n\n\nInput Tags: {{ $('Tags').item.json.tags }}",
+          "messages": {
+            "messageValues": [
+              {
+                "message": "=Du er en AI-specialist i historiske steder og deres kategorisering. Din opgave er at analysere en beskrivelse af et historisk sted og vælge de mest relevante tags fra en foruddefineret liste. Du må kun vælge tags, der allerede findes i den givne liste.\n\nInstruktioner:\n\nLæs beskrivelsen grundigt og identificer nøgletemaer såsom historiske perioder, arkitektoniske stilarter, formål, geografisk placering og besøgsoplevelser.\nUdvælg kun tags, der præcist matcher stedets egenskaber og som findes i den givne liste af tags.\nDu må ikke oprette nye tags eller ændre stavemåden af eksisterende tags.\nPrioriter præcision over kvantitet. Maksimalt 6-8 relevante tags bør vælges.\nHvis beskrivelsen nævner elementer som militærhistorie, forsvarsværker eller strategiske placeringer, vælg relevante tags såsom maritime_history, moorish eller bridge, hvis de findes på listen.\nHvis stedet nævnes som et populært sted for fotografering eller naturskøn udsigt, vælg tags som photography eller scenic_view, hvis de findes på listen.\nHvis beskrivelsen fremhæver familievenlige eller tilgængelighedsfunktioner, vælg relevante tags såsom family_friendly, wheelchair_accessible eller stroller_friendly, hvis de er angivet i listen.\nOutputtet skal være en liste af præcise tags fra input-listen, uden ændringer eller tilføjelser.\nEksempel på Input Tags: [\"castle\", \"museum\", \"maritime_history\", \"family_friendly\", \"photography\", \"scenic_view\", \"guided_tours\", \"peaceful\", \"moorish\", \"bridge\", \"roman\", \"river\", \"wheelchair_accessible\"]\n\nEksempel på Beskrivelse:\n\"Forte do Rato er et 16. århundrede forsvarsværk ved Gilão-floden, bygget for at beskytte Tavira mod piratangreb. Fortet har en bastionsformet struktur, en historisk strategisk betydning og er i dag et bevaringsværdigt monument.\"\n\nEksempel på Udvalgte Tags (kun fra listen) du skal lave dit eget output dette er kun et eksempel:\n[\"maritime_history\", \"scenic_view\", \"photography\", \"guided_tours\", \"peaceful\", \"moorish\"]"
+              }
+            ]
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "typeVersion": 1.5,
+        "position": [
+          1680,
+          0
+        ],
+        "id": "6e67197d-5558-4aee-9c7e-7eda3e7f7bcc",
+        "name": "Find tags"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Get the first element from input data\nconst inputData = $input.all()[0];\n\n// Extract the string containing the array\nconst text = inputData.json.text;\n\n// Use regex to find the array part of the string\nconst arrayString = text.match(/\\[.*?\\]/)[0];\n\n// Convert the string to an actual array\nconst array = JSON.parse(arrayString);\n\n// Transform the array into the desired format\nconst transformedArray = array.map(tag => ({ tag }));\n\n// Return each transformed object as a separate item\nreturn transformedArray.map(item => ({ json: item }));\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2060,
+          0
+        ],
+        "id": "9faa15ce-a7c7-4df5-b263-2da0ab90ac23",
+        "name": "Selected tags"
+      },
+      {
+        "parameters": {
+          "operation": "delete",
+          "tableId": "site_tags",
+          "matchType": "allFilters",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "site_id",
+                "condition": "eq",
+                "keyValue": "={{ $('Workflow Input Trigger').item.json.site_id }}"
+              },
+              {
+                "keyName": "city_id",
+                "condition": "eq",
+                "keyValue": "={{ $('Workflow Input Trigger').item.json.city_id }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          980,
+          0
+        ],
+        "id": "0d977e05-f63c-4e11-b0cd-e0e6c9565bec",
+        "name": "Delete old tags",
+        "alwaysOutputData": true,
+        "credentials": {
+          "supabaseApi": {
+            "id": "1Yc1VOr8K1yXCO1Q",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "value": "gpt-4",
+            "mode": "list",
+            "cachedResultName": "gpt-4"
+          },
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2,
+        "position": [
+          1180,
+          880
+        ],
+        "id": "8b3c591f-c3cc-4ea9-a12e-9d78cd5f3436",
+        "name": "OpenAI Chat Model1",
+        "credentials": {
+          "openAiApi": {
+            "id": "ZjiR1Y4tdzymEK1L",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "tableId": "site_tags",
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "site_id",
+                "fieldValue": "={{ $('Limit').item.json.site_id }}"
+              },
+              {
+                "fieldId": "tag_id",
+                "fieldValue": "={{ $json.tag }}"
+              },
+              {
+                "fieldId": "city_id",
+                "fieldValue": "={{ $('Workflow Input Trigger').item.json.city_id }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          2340,
+          0
+        ],
+        "id": "a7567052-2db9-4d00-aad8-6d10b5b5235a",
+        "name": "Insert Tags",
+        "credentials": {
+          "supabaseApi": {
+            "id": "1Yc1VOr8K1yXCO1Q",
+            "name": "Supabase account"
+          }
+        },
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "operation": "getAll",
+          "tableId": "view_city_periods",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "city_id",
+                "condition": "eq",
+                "keyValue": "={{ $('Get city').first().json.city_id }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          1220,
+          440
+        ],
+        "id": "5c001f82-f681-4b61-b1db-f58e86988cf2",
+        "name": "Get Periods",
+        "executeOnce": true,
+        "credentials": {
+          "supabaseApi": {
+            "id": "1Yc1VOr8K1yXCO1Q",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "aggregate": "aggregateAllItemData",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.aggregate",
+        "typeVersion": 1,
+        "position": [
+          1440,
+          440
+        ],
+        "id": "c4cef507-3d06-47c7-9f83-ee42102a0439",
+        "name": "Periods"
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=Beskrivelse: {{ $('Descriptions').first().json.content }}\n\n\nPeriods: {{ $json.Periods }}",
+          "messages": {
+            "messageValues": [
+              {
+                "message": "=**Titel / Rollebeskrivelse**  \nDu er en AI-specialist i historiske perioder. Din opgave er at analysere en beskrivelse af et historisk sted og vælge de mest relevante perioder fra en foruddefineret liste af perioder.\n\n---\n\n**Vejledning**  \n1. **Vælg kun fra nedenstående periode-liste.** Du må ikke opfinde nye perioder eller ændre deres navne.\n2. **Match** beskrivelsens årstal og oplysninger med de perioder, hvis tidsintervaller tydeligt passer til beskrivelsens tidsramme.  \n3. Hvis ingen perioder passer, returner en tom liste `[]`.\n4. **Output** kun en liste af periode-id'er i **JSON-format** som vist nedenfor, **uden** forklarende tekst.\n5. Følg nøjagtigt dette format i dit endelige svar, og **intet andet**:\n   [\"period1\", \"period2\", ...]\n   ```\n6. Ingen anden tekst eller begrundelse må inkluderes i svaret.\n\n---\n\n**Liste over perioder**  \nFølgende perioder er de eneste, du må vælge fra (med deres start- og slutår efter kommaet):  \n\n{{ $json.Periods }}\n\n---\n\n**Eksempel**  \n\nBeskrivelse:\n\"Forte do Rato blev bygget i det 16. århundrede (1568-1578) under kong Sebastian og spillede en rolle i Taviras forsvar frem til det 19. århundrede. Det gennemgik renoveringer i 1640 og 1672 og blev endeligt opgivet i 1840.\"\n\nOutput:\n[\"renaissance\", \"enlightenment\"]\n```\n\nIngen forklaringer, ingen andre data. Hvis ingenting matcher, skal listen være tom: `[]`."
+              }
+            ]
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "typeVersion": 1.5,
+        "position": [
+          1940,
+          440
+        ],
+        "id": "f05fab64-eeb6-477b-abd5-073e37df6f62",
+        "name": "Find perids"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Get the first element from input data\nconst inputData = $input.all()[0];\n\n// Extract the string containing the array\nconst text = inputData.json.text;\n\n// Use regex to find the array part of the string\nconst arrayString = text.match(/\\[.*?\\]/)[0];\n\n// Convert the string to an actual array\nconst array = JSON.parse(arrayString);\n\n// Transform the array into the desired format\nconst transformedArray = array.map(period => ({ period }));\n\n// Return each transformed object as a separate item\nreturn transformedArray.map(item => ({ json: item }));\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2300,
+          440
+        ],
+        "id": "2a721fcf-9bd9-4767-ab60-a026a9c80345",
+        "name": "Selected periods"
+      },
+      {
+        "parameters": {
+          "operation": "get",
+          "tableId": "sites",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "id",
+                "keyValue": "={{ $json.site_id }}"
+              },
+              {
+                "keyName": "city_id",
+                "keyValue": "={{ $json.city_id }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          380,
+          0
+        ],
+        "id": "2c4e395a-1f67-462c-9e7b-91b334ea1375",
+        "name": "Get city",
+        "credentials": {
+          "supabaseApi": {
+            "id": "1Yc1VOr8K1yXCO1Q",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "tableId": "site_periods",
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "site_id",
+                "fieldValue": "={{ $('Workflow Input Trigger').item.json.site_id }}"
+              },
+              {
+                "fieldId": "period_id",
+                "fieldValue": "={{ $('Selected periods').item.json.period }}"
+              },
+              {
+                "fieldId": "city_id",
+                "fieldValue": "={{ $('Workflow Input Trigger').item.json.city_id }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          2580,
+          440
+        ],
+        "id": "10fbcbc5-a7c6-411b-b3b7-ed0c5b9243cf",
+        "name": "Insert Periods",
+        "credentials": {
+          "supabaseApi": {
+            "id": "1Yc1VOr8K1yXCO1Q",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "delete",
+          "tableId": "site_periods",
+          "matchType": "allFilters",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "site_id",
+                "condition": "eq",
+                "keyValue": "={{ $('Workflow Input Trigger').first().json.site_id }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          980,
+          440
+        ],
+        "id": "5dce1ded-80c2-42b6-9edb-1369741f1c9a",
+        "name": "Delete old periods",
+        "alwaysOutputData": true,
+        "credentials": {
+          "supabaseApi": {
+            "id": "1Yc1VOr8K1yXCO1Q",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const allItems = $input.all();\nconst periods = allItems[0].json.data;\n\n// Sortér efter start_year (stigende)\nperiods.sort((a, b) => a.start_year - b.start_year);\n\n// Map hver periode til et letlæseligt strengformat, fx \"[id, start-end]\"\nconst formattedPeriods = periods.map(period => {\n  const endYear = period.end_year === null ? 'nuværende' : period.end_year;\n  return `[${period.id}, ${period.start_year}-${endYear}]`;\n});\n\n// Her gemmer vi hele arrayet i feltet \"Periods\"\nreturn [\n  {\n    json: {\n      Periods: formattedPeriods\n    }\n  }\n];\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1660,
+          440
+        ],
+        "id": "b33e7335-2fa1-4137-a124-c9291b791e5d",
+        "name": "Code"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.limit",
+        "typeVersion": 1,
+        "position": [
+          60,
+          0
+        ],
+        "id": "6942e750-f506-4de1-9cf8-bc7c23794286",
+        "name": "Limit"
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "vQ3DJB4exIsiKQbp",
+            "mode": "list",
+            "cachedResultName": "Heritage Navigator — Create content loop"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {},
+            "matchingColumns": [],
+            "schema": [],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.2,
+        "position": [
+          2520,
+          800
+        ],
+        "id": "d94797d8-0a7f-4b1d-b0dd-63bfec3a6fe0",
+        "name": "Execute Workflow"
+      },
+      {
+        "parameters": {
+          "content": "## Tilføj denne for at loope gennem alle sites",
+          "height": 340,
+          "width": 580
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          2160,
+          680
+        ],
+        "id": "2d8c69bc-7730-4c42-ba67-fae905be38db",
+        "name": "Sticky Note"
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "XlvRLQnOpVHFWWK2",
+            "mode": "list",
+            "cachedResultName": "Heritage Navigator — Create wiki-links 2"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "site_id": "={{ $json.site_id }}",
+              "city_id": "={{ $json.city_id }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "site_id",
+                "displayName": "site_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string"
+              },
+              {
+                "id": "city_id",
+                "displayName": "city_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string"
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.2,
+        "position": [
+          3020,
+          440
+        ],
+        "id": "fb638fc0-4935-4c03-b4c0-641359071c58",
+        "name": "Create wiki links"
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "KnGUrvVeZr16xo9O",
+            "mode": "list",
+            "cachedResultName": "Heritage Navigator — Start meta-descriptions all sites"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {},
+            "matchingColumns": [],
+            "schema": [],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.2,
+        "position": [
+          3260,
+          440
+        ],
+        "id": "7c94d9e6-03fb-41f6-862c-d90c7977584b",
+        "name": "Create meta-descriptions"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.limit",
+        "typeVersion": 1,
+        "position": [
+          2800,
+          440
+        ],
+        "id": "9c721765-20c6-45c4-a28c-70764a100552",
+        "name": "Limit1"
+      }
+    ],
+    "connections": {
+      "Workflow Input Trigger": {
+        "main": [
+          [
+            {
+              "node": "Limit",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Descriptions": {
+        "main": [
+          [
+            {
+              "node": "Descriptions",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Tags": {
+        "main": [
+          [
+            {
+              "node": "Tags",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Descriptions": {
+        "main": [
+          [
+            {
+              "node": "Delete old tags",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Tags": {
+        "main": [
+          [
+            {
+              "node": "Find tags",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Find tags",
+              "type": "ai_languageModel",
+              "index": 0
+            },
+            {
+              "node": "Find perids",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Find tags": {
+        "main": [
+          [
+            {
+              "node": "Selected tags",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Selected tags": {
+        "main": [
+          [
+            {
+              "node": "Insert Tags",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Delete old tags": {
+        "main": [
+          [
+            {
+              "node": "Get Tags",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model1": {
+        "ai_languageModel": [
+          []
+        ]
+      },
+      "Insert Tags": {
+        "main": [
+          [
+            {
+              "node": "Delete old periods",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Periods": {
+        "main": [
+          [
+            {
+              "node": "Periods",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Periods": {
+        "main": [
+          [
+            {
+              "node": "Code",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Find perids": {
+        "main": [
+          [
+            {
+              "node": "Selected periods",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Selected periods": {
+        "main": [
+          [
+            {
+              "node": "Insert Periods",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get city": {
+        "main": [
+          [
+            {
+              "node": "Get Descriptions",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Delete old periods": {
+        "main": [
+          [
+            {
+              "node": "Get Periods",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code": {
+        "main": [
+          [
+            {
+              "node": "Find perids",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Limit": {
+        "main": [
+          [
+            {
+              "node": "Get city",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Insert Periods": {
+        "main": [
+          [
+            {
+              "node": "Limit1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Create meta-descriptions": {
+        "main": [
+          []
+        ]
+      },
+      "Create wiki links": {
+        "main": [
+          [
+            {
+              "node": "Create meta-descriptions",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Limit1": {
+        "main": [
+          [
+            {
+              "node": "Create wiki links",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
   "tags": [
     {
-      "createdAt": "2025-01-28T15:25:26.214Z",
       "updatedAt": "2025-01-28T15:25:26.214Z",
+      "createdAt": "2025-01-28T15:25:26.214Z",
       "id": "BngebX50Ev8rBclu",
       "name": "HN Content manager"
     }
