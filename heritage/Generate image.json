@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-04-24T04:07:24.445Z",
   "updatedAt": "2025-04-24T19:05:30.000Z",
+  "createdAt": "2025-04-24T04:07:24.445Z",
   "id": "3HJbcWoxnkFogLse",
   "name": "Generate image",
   "active": false,
@@ -463,20 +463,22 @@
   "meta": null,
   "pinData": {},
   "versionId": "0e0b81d0-13d1-4213-bf26-dd2153cca7f2",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-04-24T04:07:24.451Z",
       "updatedAt": "2025-04-24T04:07:24.451Z",
+      "createdAt": "2025-04-24T04:07:24.451Z",
       "role": "workflow:owner",
       "workflowId": "3HJbcWoxnkFogLse",
       "projectId": "PH5AAePaZfow61Bz"
     }
   ],
+  "activeVersion": null,
   "tags": [
     {
-      "createdAt": "2025-02-11T04:13:44.194Z",
       "updatedAt": "2025-02-11T04:13:44.194Z",
+      "createdAt": "2025-02-11T04:13:44.194Z",
       "id": "EtWh3oSAkx4xw5uF",
       "name": "nate"
     }
