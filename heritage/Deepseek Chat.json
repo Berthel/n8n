@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-01-22T05:49:45.590Z",
   "updatedAt": "2025-01-27T04:19:05.000Z",
+  "createdAt": "2025-01-22T05:49:45.590Z",
   "id": "xIzUxVNpzDkBe0P2",
   "name": "Deepseek Chat",
   "active": false,
@@ -135,20 +135,22 @@
   },
   "pinData": {},
   "versionId": "b9bee5c6-8f17-4bb8-9c2d-34c8138b3ac4",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-01-23T05:31:08.348Z",
       "updatedAt": "2025-01-23T05:31:08.348Z",
+      "createdAt": "2025-01-23T05:31:08.348Z",
       "role": "workflow:owner",
       "workflowId": "xIzUxVNpzDkBe0P2",
       "projectId": "rkqKISKa14HwF9Xd"
     }
   ],
+  "activeVersion": null,
   "tags": [
     {
-      "createdAt": "2025-01-26T14:24:07.274Z",
       "updatedAt": "2025-01-26T14:24:07.274Z",
+      "createdAt": "2025-01-26T14:24:07.274Z",
       "id": "qneX5ZMmFiQm5Mhs",
       "name": "research"
     }
