@@ -1,6 +1,6 @@
 {
-  "createdAt": "2025-02-09T05:35:22.522Z",
   "updatedAt": "2025-06-23T11:58:16.000Z",
+  "createdAt": "2025-02-09T05:35:22.522Z",
   "id": "FD4y527EKSFnaQMk",
   "name": "Register paid invoices",
   "active": false,
@@ -852,20 +852,22 @@
   },
   "pinData": {},
   "versionId": "730ee3b6-fb72-4af4-a0b2-eba85c50fd9a",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-02-09T05:53:25.300Z",
       "updatedAt": "2025-02-09T05:53:25.300Z",
+      "createdAt": "2025-02-09T05:53:25.300Z",
       "role": "workflow:owner",
       "workflowId": "FD4y527EKSFnaQMk",
       "projectId": "rkqKISKa14HwF9Xd"
     }
   ],
+  "activeVersion": null,
   "tags": [
     {
-      "createdAt": "2025-02-09T16:38:26.099Z",
       "updatedAt": "2025-02-09T16:38:26.099Z",
+      "createdAt": "2025-02-09T16:38:26.099Z",
       "id": "YEStJInGeLpvHEQ8",
       "name": "tool"
     }
