@@ -3,7 +3,7 @@
   "createdAt": "2025-05-06T13:41:14.352Z",
   "id": "ZOTTc7BFoxlnLyvP",
   "name": "Kursus creator",
-  "active": false,
+  "active": true,
   "isArchived": false,
   "nodes": [
     {
@@ -1287,7 +1287,7 @@
     ]
   },
   "versionId": "2a744b09-7593-414f-9c9c-08eba84975d6",
-  "activeVersionId": null,
+  "activeVersionId": "2a744b09-7593-414f-9c9c-08eba84975d6",
   "triggerCount": 0,
   "shared": [
     {
@@ -1298,7 +1298,1280 @@
       "projectId": "SFLNAzqJIfhKMhJx"
     }
   ],
-  "activeVersion": null,
+  "activeVersion": {
+    "updatedAt": "2025-12-25T10:09:29.063Z",
+    "createdAt": "2025-12-25T10:09:29.063Z",
+    "versionId": "2a744b09-7593-414f-9c9c-08eba84975d6",
+    "workflowId": "ZOTTc7BFoxlnLyvP",
+    "nodes": [
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "value": "gpt-4.1",
+            "mode": "list",
+            "cachedResultName": "gpt-4.1"
+          },
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2,
+        "position": [
+          624,
+          544
+        ],
+        "id": "ed7f5145-42b2-4a91-aa41-9d294812da52",
+        "name": "OpenAI1",
+        "credentials": {
+          "openAiApi": {
+            "id": "Gvr9qL4I7djxEhHC",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "mode": "retrieve-as-tool",
+          "toolName": "User_documents",
+          "toolDescription": "Brug denne baggrundsviden til udarbejdelse af kurser",
+          "tableName": {
+            "__rl": true,
+            "value": "documents",
+            "mode": "list",
+            "cachedResultName": "documents"
+          },
+          "topK": 20,
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+        "typeVersion": 1,
+        "position": [
+          752,
+          544
+        ],
+        "id": "2773c2c4-becd-44c1-a959-0b006f06df64",
+        "name": "User documents",
+        "credentials": {
+          "supabaseApi": {
+            "id": "bvMVIJLed9p3sKxS",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+        "typeVersion": 1.2,
+        "position": [
+          832,
+          752
+        ],
+        "id": "058194b6-4680-4776-ac97-33ca7066ef9d",
+        "name": "Embeddings OpenAI",
+        "credentials": {
+          "openAiApi": {
+            "id": "Gvr9qL4I7djxEhHC",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsonSchemaExample": "{\n  \"kursus\": \"ISO 55001 Asset Management System\",\n  \"kursusbeskrivelse\": \"Dette omfattende 5-dages kursus giver deltagerne de nødvendige kompetencer ...\",\n  \"læringsmål\": [\n    \"Få indgående kendskab til ISO 55001-standardens krav og struktur\",\n    \"Lære hvordan man udvikler en effektiv asset management politik og strategi\",\n    \"... (fortsættes)\"\n  ],\n  \"moduler\": [\n    {\n      \"modulnavn\": \"1. Introduktion til Asset Management\",\n      \"modulbeskrivelse\": \"Gennemgang af grundlæggende principper ...\",\n      \"lektioner\": [\n        \"Grundlæggende begreber i asset management\",\n        \"Værdien af aktiver i organisationens strategi\",\n        \"Forretningsmæssige fordele ved asset management\",\n         \"... (fortsættes)\"\n      ]\n    },\n    {\n      \"modulnavn\": \"2. ISO 55001 Krav og Rammer\",\n      \"modulbeskrivelse\": \"Detaljeret gennemgang af ISO 55001‑standardens struktur ...\",\n      \"lektioner\": [\n        \"ISO 55001 struktur og terminologi\",\n        \"Nøglekrav og kerneprincipper\",\n        \"Sammenhæng med ISO 55000 og ISO 55002\",\n         \"... (fortsættes)\"\n      ]\n    }\n      ],\n  \"content_md\": \"## Velkommen til \\\"ISO 55001 Asset Management System\\\"\\nKære kursusdeltager...\\n\\n### Læringsmål\\n- Få indgående kendskab ...\\n\\n## Modul 1 – Introduktion til Asset Management\\n**Resume:** Gennemgang af grundlæggende principper...\\n\\n**Lektioner**\\n- Grundlæggende begreber i asset management\\n- Værdien af aktiver ...\\n\\n## Modul 2 – ISO 55001 Krav og Rammer\\n**Resume:** Detaljeret gennemgang ...\\n\\n**Lektioner**\\n- ISO 55001 struktur ...\\n- ...\\n\\n<!-- Fortsæt tilsvarende for alle moduler -->\" \n \n}\n\n"
+        },
+        "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+        "typeVersion": 1.2,
+        "position": [
+          2064,
+          720
+        ],
+        "id": "44909ed6-c835-419e-a1fe-21f0c0b845f4",
+        "name": "Structured Output Parser"
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "hs2iwVsjN8phf01l",
+            "mode": "list",
+            "cachedResultName": "My project — Tool Kursus Image generator"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Billedtekst": "=Kursusnavn: {{ $('Kursusplanlægger').item.json.output.kursus }}\n\nBeskrivelse: \n{{ $('Insert courses_translation').first().json.description }}\n\nIndhold:\n{{ $('Insert courses_translation').first().json.content }}",
+              "image_name": "Kursusbeskrivelse",
+              "Billedetype": "Generelt",
+              "eksempel_url": "={{ $('Get course_id').item.json.ref_image_course }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "eksempel_url",
+                "displayName": "eksempel_url",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string"
+              },
+              {
+                "id": "Billedtekst",
+                "displayName": "Billedtekst",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string"
+              },
+              {
+                "id": "image_name",
+                "displayName": "image_name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string"
+              },
+              {
+                "id": "Billedetype",
+                "displayName": "Billedetype",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.2,
+        "position": [
+          5536,
+          496
+        ],
+        "id": "831b0ef9-2ad0-4ca3-9d71-27a4460beda7",
+        "name": "Genererer kursusbillede",
+        "disabled": true
+      },
+      {
+        "parameters": {},
+        "type": "@n8n/n8n-nodes-langchain.toolThink",
+        "typeVersion": 1,
+        "position": [
+          1040,
+          544
+        ],
+        "id": "940398a0-9d5f-4c3b-a1c0-d2e9c137d99d",
+        "name": "Think"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3,
+        "position": [
+          5760,
+          496
+        ],
+        "id": "7e3bd069-685a-4eba-8194-eb953af39e71",
+        "name": "Loop Over Items",
+        "disabled": true
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "value": "claude-sonnet-4-20250514",
+            "mode": "list",
+            "cachedResultName": "Claude Sonnet 4"
+          },
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+        "typeVersion": 1.3,
+        "position": [
+          5184,
+          752
+        ],
+        "id": "e8ca9878-3f21-44a2-a822-eb927b20f1bb",
+        "name": "Anthropic Chat Model1",
+        "credentials": {
+          "anthropicApi": {
+            "id": "hvw52FHiqSCDBq6Q",
+            "name": "Anthropic account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "tableId": "course_translations",
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "title",
+                "fieldValue": "={{ $('Kursusplanlægger').item.json.output.kursus }}"
+              },
+              {
+                "fieldId": "description",
+                "fieldValue": "={{ $('Kursusplanlægger').item.json.output.kursusbeskrivelse }}"
+              },
+              {
+                "fieldId": "learning_objectives",
+                "fieldValue": "={{ $('Kursusplanlægger').item.json.output['læringsmål'] }}"
+              },
+              {
+                "fieldId": "course_id",
+                "fieldValue": "={{ $('Get course_id').first().json.id }}"
+              },
+              {
+                "fieldId": "language_code",
+                "fieldValue": "da"
+              },
+              {
+                "fieldId": "content",
+                "fieldValue": "={{ $('Kursusplanlægger').item.json.output.content_md }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          2496,
+          496
+        ],
+        "id": "acfab935-cab6-4464-857f-89f3aa339b94",
+        "name": "Insert courses_translation",
+        "credentials": {
+          "supabaseApi": {
+            "id": "bvMVIJLed9p3sKxS",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "tableId": "course_translations",
+          "matchType": "allFilters",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "id",
+                "condition": "eq",
+                "keyValue": "={{ $('Insert courses_translation').item.json.id }}"
+              }
+            ]
+          },
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "videoscript",
+                "fieldValue": "={{ $json.text }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          5312,
+          496
+        ],
+        "id": "0d05e16c-62fb-4823-9c1d-1e68a03dc414",
+        "name": "Update video script",
+        "alwaysOutputData": true,
+        "credentials": {
+          "supabaseApi": {
+            "id": "bvMVIJLed9p3sKxS",
+            "name": "Supabase account"
+          }
+        },
+        "disabled": true
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=Description:\n{{ $('Kursusplanlægger').item.json.output.kursusbeskrivelse }}\n\nContent:\n{{ $json.content }}\n\n\nLearning objectives:\n{{ $('Kursusplanlægger').item.json.output['læringsmål'] }}",
+          "messages": {
+            "messageValues": [
+              {
+                "message": "={{ $('Get prompt1').item.json.content }}"
+              }
+            ]
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "typeVersion": 1.6,
+        "position": [
+          4960,
+          496
+        ],
+        "id": "3caeb64d-2a22-4919-9165-e842c71e3fba",
+        "name": "Video script creator",
+        "disabled": true
+      },
+      {
+        "parameters": {
+          "operation": "get",
+          "tableId": "courses",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "status",
+                "keyValue": "next"
+              },
+              {
+                "keyName": "id",
+                "keyValue": "={{ $json.course_id }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          176,
+          496
+        ],
+        "id": "ea31b4d1-3415-464f-bfbc-5c15da35f464",
+        "name": "Get course_id",
+        "credentials": {
+          "supabaseApi": {
+            "id": "bvMVIJLed9p3sKxS",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "tableId": "images",
+          "matchType": "allFilters",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "id",
+                "condition": "eq",
+                "keyValue": "={{ $json.id }}"
+              }
+            ]
+          },
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "ref_table_name",
+                "fieldValue": "courses"
+              },
+              {
+                "fieldId": "ref_table_id",
+                "fieldValue": "={{ $('Get course_id').first().json.id }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          5984,
+          496
+        ],
+        "id": "c8536cad-2313-4907-a82a-0cc17c7081f1",
+        "name": "Update images",
+        "credentials": {
+          "supabaseApi": {
+            "id": "bvMVIJLed9p3sKxS",
+            "name": "Supabase account"
+          }
+        },
+        "disabled": true
+      },
+      {
+        "parameters": {
+          "fieldToSplitOut": "output.moduler",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1,
+        "position": [
+          2944,
+          496
+        ],
+        "id": "d55bc3fd-e35f-4c39-9355-fe4809b013a7",
+        "name": "Split Out"
+      },
+      {
+        "parameters": {
+          "tableId": "modules",
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "course_id",
+                "fieldValue": "={{ $('Get course_id').item.json.id }}"
+              },
+              {
+                "fieldId": "position",
+                "fieldValue": "={{$itemIndex + 1}}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          3168,
+          496
+        ],
+        "id": "49f12db5-6cef-4394-91cf-e593cfa08922",
+        "name": "Insert modules",
+        "credentials": {
+          "supabaseApi": {
+            "id": "bvMVIJLed9p3sKxS",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "tableId": "module_translations",
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "module_id",
+                "fieldValue": "={{ $json.id }}"
+              },
+              {
+                "fieldId": "language_code",
+                "fieldValue": "={{ $('Get course_id').item.json.language_code }}"
+              },
+              {
+                "fieldId": "title",
+                "fieldValue": "={{ $('Split Out').item.json.modulnavn }}"
+              },
+              {
+                "fieldId": "description",
+                "fieldValue": "={{ $('Split Out').item.json.modulbeskrivelse }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          3392,
+          496
+        ],
+        "id": "10d5ae82-91fd-492e-a89c-68c164d7288f",
+        "name": "Insert module translations",
+        "credentials": {
+          "supabaseApi": {
+            "id": "bvMVIJLed9p3sKxS",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "content": "## Indsæt Deep Research \n**Indsæt i Supabase* \nKør deep research i O3"
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          -64,
+          160
+        ],
+        "id": "c7aa0c6e-0022-4312-9f4b-b465c0c1ebe3",
+        "name": "Sticky Note3"
+      },
+      {
+        "parameters": {
+          "fieldToSplitOut": "lektioner",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1,
+        "position": [
+          3840,
+          496
+        ],
+        "id": "4e3704db-a936-4851-ba21-a9588406e63f",
+        "name": "Split Out2"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "133ff84a-bff1-4a04-80dc-ffe787f0c523",
+                "name": "lektioner",
+                "value": "={{ $('Split Out').item.json.lektioner }}",
+                "type": "array"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          3616,
+          496
+        ],
+        "id": "2bc8c3f7-d727-40f9-9ce6-4bc3b747fd4c",
+        "name": "Lektioner"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "352f3b61-a97c-4447-8cf2-b7ce64b41f0f",
+                "name": "output.moduler",
+                "value": "={{ $('Kursusplanlægger').item.json.output.moduler }}",
+                "type": "array"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          2720,
+          496
+        ],
+        "id": "5fe2c9b8-d84d-4e3b-9d3c-8374584b6b42",
+        "name": "Moduler"
+      },
+      {
+        "parameters": {
+          "tableId": "lessons",
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "module_id",
+                "fieldValue": "={{ $('Insert module translations').item.json.module_id }}"
+              },
+              {
+                "fieldId": "position",
+                "fieldValue": "={{$itemIndex + 1}}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          4064,
+          496
+        ],
+        "id": "3487886e-9bf4-4eda-a7c3-c098e921f8af",
+        "name": "Insert lektioner",
+        "credentials": {
+          "supabaseApi": {
+            "id": "bvMVIJLed9p3sKxS",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "tableId": "lesson_translations",
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "lesson_id",
+                "fieldValue": "={{ $json.id }}"
+              },
+              {
+                "fieldId": "language_code",
+                "fieldValue": "={{ $('Get course_id').item.json.language_code }}"
+              },
+              {
+                "fieldId": "title",
+                "fieldValue": "={{ $('Split Out2').item.json.lektioner }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          4288,
+          496
+        ],
+        "id": "e4c24da7-ea0c-4643-86bc-3853547e154f",
+        "name": "Insert lessons translations",
+        "credentials": {
+          "supabaseApi": {
+            "id": "bvMVIJLed9p3sKxS",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.limit",
+        "typeVersion": 1,
+        "position": [
+          4512,
+          496
+        ],
+        "id": "a087acdc-96be-4fc9-a0b9-a055d92a1313",
+        "name": "Limit"
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "BEGIN;\n    -- Slet translations relateret til questions → options\n    DELETE FROM module_question_option_translations\n    WHERE module_question_option_id IN (\n        SELECT id FROM module_question_options\n        WHERE module_question_id IN (\n            SELECT id FROM module_questions\n            WHERE module_id IN (\n                SELECT id FROM modules WHERE course_id = $1\n            )\n        )\n    );\n\n    -- Slet translations relateret til questions\n    DELETE FROM module_question_translations\n    WHERE module_question_id IN (\n        SELECT id FROM module_questions\n        WHERE module_id IN (\n            SELECT id FROM modules WHERE course_id = $1\n        )\n    );\n\n    -- Slet options\n    DELETE FROM module_question_options\n    WHERE module_question_id IN (\n        SELECT id FROM module_questions\n        WHERE module_id IN (\n            SELECT id FROM modules WHERE course_id = $1\n        )\n    );\n\n    -- Slet spørgsmål\n    DELETE FROM module_questions\n    WHERE module_id IN (\n        SELECT id FROM modules WHERE course_id = $1\n    );\n\n    -- Slet kursus quiz med cascading delete\n    DELETE FROM course_questions WHERE course_id = $1;\n\n\n    -- Slet lesson translations\n    DELETE FROM lesson_translations\n    WHERE lesson_id IN (\n        SELECT id FROM lessons\n        WHERE module_id IN (\n            SELECT id FROM modules WHERE course_id = $1\n        )\n    );\n\n\n\n    -- Slet lessons\n    DELETE FROM lessons\n    WHERE module_id IN (\n        SELECT id FROM modules WHERE course_id = $1\n    );\n\n    -- Slet module translations\n    DELETE FROM module_translations\n    WHERE module_id IN (\n        SELECT id FROM modules WHERE course_id = $1\n    );\n\n    -- Slet modules\n    DELETE FROM modules\n    WHERE course_id = $1;\n\n    -- Slet course translations\n    DELETE FROM course_translations\n    WHERE course_id = $1;\n\n\n\n\n    -- Endeligt: slet selve kurset\n    --DELETE FROM courses\n    --WHERE id = $1;\nEND ;\n",
+          "options": {
+            "queryReplacement": "={{ $('Get course_id').item.json.id }}"
+          }
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          2272,
+          496
+        ],
+        "id": "00ffe234-daeb-46ca-b1f5-e738acc8df7d",
+        "name": "Delete kursus",
+        "alwaysOutputData": true,
+        "credentials": {
+          "postgres": {
+            "id": "RUVxlMmZvsZC2IGe",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=Kursustitel: {{ $('Get course_id').item.json.draft_title }}\n\nKursusspecifikation: {{ $('Get course_id').item.json.course_spec }}\n\nKursusniveau: {{ $('Get course_id').item.json.course_level }}\n\nEstimeret antal timer: {{ $('Get course_id').item.json.estimated_hours }}\n\nKursussprog:{{ $('Get course_id').item.json.course_language }}\n\nMålgruppe: {{ $('Get course_id').item.json.target_audience }}\n\nKursusform: {{ $('Get course_id').item.json.delivery_mode }}\n\nSektor: {{ $('Get course_id').item.json.sector }}\n\nDeep Research: {{ $('Get course_id').item.json.research }}\n\nRag research: {{ $('Get rag_research').item.json.rag_research }}\n\nKursusstruktur: {{ $('Get course_id').item.json.course_structure }}\n\n",
+          "hasOutputParser": true,
+          "messages": {
+            "messageValues": [
+              {
+                "message": "={{ $('Get prompt').item.json.content }}"
+              }
+            ]
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "typeVersion": 1.6,
+        "position": [
+          1920,
+          496
+        ],
+        "id": "cd57af62-64ab-451e-aad5-264938456bd3",
+        "name": "Kursusplanlægger"
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=Kursustitel: {{ $('Get course_id').item.json.draft_title }}\n\nKursusniveau: {{ $('Get course_id').item.json.course_level }}\n\nEstimeret antal timer: {{ $('Get course_id').item.json.estimated_hours }}\n\nKursussprog:{{ $('Get course_id').item.json.course_language }}\n\nMålgruppe: {{ $('Get course_id').item.json.target_audience }}\n\nKursusform: {{ $('Get course_id').item.json.delivery_mode }}\n\nSektor: {{ $('Get course_id').item.json.sector }}\n\nKursusspecifikation: {{ $('Get course_id').item.json.course_spec }}\n\n",
+          "options": {
+            "systemMessage": "=Du er en avanceret research-agent integreret i n8n, specialiseret i at udarbejde detaljeret og relevant researchmateriale ved brug af en Retrieval-Augmented Generation (RAG) vectordatabase kaldet \"User documents\". Dit formål er at understøtte kursusplanlæggeren ved at levere velstruktureret researchmateriale baseret på parametrene angivet i den modtagne brugermeddelelse.\n\nNår du modtager en forespørgsel, analyser nøje de angivne parametre, som typisk inkluderer:\n\n* **Kurstitel**: Kursets emne eller specifikke titel.\n* **Kursspecifikation**: Konkret specifikation af kursus.\n* **Niveau**: Kursets kompleksitetsniveau (f.eks. introduktion, mellem, avanceret).\n* **Målgruppe**: Specifikke karakteristika ved kursusdeltagerne (f.eks. faglig baggrund, stillingskategori, branche).\n* **Varighed**: Den tidsmæssige ramme for kurset (f.eks. 1 dag, 3 timer, flere sessioner).\n* **Sprog**: Det sprog, materialet skal udarbejdes på.\n\nBaseret på disse parametre, udfør følgende trin:\n\n1. **Søg og hent relevante dokumenter** fra \"User documents\" vectordatabasen, der bedst matcher de angivne parametre.\n2. **Uddrag essentielle oplysninger** fra disse dokumenter, der direkte understøtter og belyser kursets indhold og formål.\n3. **Strukturér oplysningerne tydeligt** og logisk, med klare overskrifter, underoverskrifter og punkter, således at kursusplanlæggeren let kan anvende materialet.\n4. **Inddrag kun nøglebegreber, praksiseksempler, cases og anbefalede kilder** fra dokumenterne. Du må ikke inkludere information, der ikke direkte findes i RAG-databasen, og du må aldrig hallucinere eller gætte dig til indhold.\n5. **Tydeliggør eventuelle mangler eller områder**, hvor yderligere information kunne være gavnligt.\n\nDit output skal være klart, præcist og umiddelbart anvendeligt af kursusplanlæggeren, således at vedkommende nemt kan sammensætte det endelige kursusmateriale.\n"
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 1.7,
+        "position": [
+          768,
+          320
+        ],
+        "id": "7e6c30c8-15a2-4745-b961-0509490fa52b",
+        "name": "RAG_Research",
+        "disabled": true
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "tableId": "courses",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "id",
+                "condition": "eq",
+                "keyValue": "={{ $('Get course_id').item.json.id }}"
+              }
+            ]
+          },
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "rag_research",
+                "fieldValue": "={{ $json.output }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          1248,
+          320
+        ],
+        "id": "49aff83a-4f2b-4418-88a5-0e115296bae7",
+        "name": "Update rag_research",
+        "credentials": {
+          "supabaseApi": {
+            "id": "bvMVIJLed9p3sKxS",
+            "name": "Supabase account"
+          }
+        },
+        "disabled": true
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "d9c6ce20-a572-4ebe-a255-618091232f81",
+                "leftValue": "={{ $json.rag_research }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "empty",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          400,
+          496
+        ],
+        "id": "daf09452-ceec-4c59-9ef1-11d39b263711",
+        "name": "If"
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "SELECT rag_research\nFROM courses\nWHERE id = '{{ $('Get course_id').item.json.id }}'",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          1472,
+          496
+        ],
+        "id": "270f202e-0cc8-412e-8a5f-4c66e7df90ef",
+        "name": "Get rag_research",
+        "credentials": {
+          "postgres": {
+            "id": "RUVxlMmZvsZC2IGe",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "workflowInputs": {
+            "values": [
+              {
+                "name": "course_id"
+              },
+              {
+                "name": "course_type"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          -48,
+          496
+        ],
+        "id": "40974924-44b5-4239-b056-978f21da1bfd",
+        "name": "When Executed by Another Workflow"
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "select v.prompt_id, v.content, v.llm\nfrom prompts p \njoin prompt_versions v on \n  p.id = v.prompt_id\n  and p.active_version_id = v.id\njoin prompt_course_relations pcr on \n  p.id = pcr.prompt_id\njoin course_types t on \n  pcr.course_type_id = t.id\nwhere t.name = '{{ $('When Executed by Another Workflow').item.json.course_type }}'\nand pcr.course_section_id = '6efb107a-3568-4994-96d8-017308211c27'",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          1696,
+          496
+        ],
+        "id": "d11cb9dd-947e-421e-b28e-6abe1c78480c",
+        "name": "Get prompt",
+        "credentials": {
+          "postgres": {
+            "id": "RUVxlMmZvsZC2IGe",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "select v.prompt_id, v.content, v.llm\nfrom prompts p \njoin prompt_versions v on \n  p.id = v.prompt_id\n  and p.active_version_id = v.id\njoin prompt_course_relations pcr on \n  p.id = pcr.prompt_id\njoin course_types t on \n  pcr.course_type_id = t.id\nwhere t.name = '{{ $('When Executed by Another Workflow').item.json.course_type }}'\nand pcr.course_section_id = 'e01e21ab-d8d7-4a16-93a6-0455da74d995'",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          4736,
+          496
+        ],
+        "id": "219410c3-59af-4769-b2bb-6d292e2a7d96",
+        "name": "Get prompt1",
+        "credentials": {
+          "postgres": {
+            "id": "RUVxlMmZvsZC2IGe",
+            "name": "Postgres account"
+          }
+        },
+        "disabled": true
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "value": "={{ $('Get prompt').item.json.llm }}",
+            "mode": "id"
+          },
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2,
+        "position": [
+          1936,
+          720
+        ],
+        "id": "73a7670f-a6bc-42a0-b25c-ff190863aefc",
+        "name": "Open Router",
+        "credentials": {
+          "openAiApi": {
+            "id": "wLbV0srlBMaP36mY",
+            "name": "Open Router"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "value": "={{ $('Get prompt1').item.json.llm }}",
+            "mode": "id"
+          },
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2,
+        "position": [
+          4976,
+          736
+        ],
+        "id": "7e394bd8-a1f7-448f-b441-f4a6c96337f5",
+        "name": "Open Router1",
+        "credentials": {
+          "openAiApi": {
+            "id": "wLbV0srlBMaP36mY",
+            "name": "Open Router"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "OpenAI1": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "RAG_Research",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "User documents": {
+        "ai_tool": [
+          [
+            {
+              "node": "RAG_Research",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Embeddings OpenAI": {
+        "ai_embedding": [
+          [
+            {
+              "node": "User documents",
+              "type": "ai_embedding",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Structured Output Parser": {
+        "ai_outputParser": [
+          [
+            {
+              "node": "Kursusplanlægger",
+              "type": "ai_outputParser",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Genererer kursusbillede": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Think": {
+        "ai_tool": [
+          [
+            {
+              "node": "RAG_Research",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Over Items": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Update images",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Anthropic Chat Model1": {
+        "ai_languageModel": [
+          []
+        ]
+      },
+      "Insert courses_translation": {
+        "main": [
+          [
+            {
+              "node": "Moduler",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Update video script": {
+        "main": [
+          [
+            {
+              "node": "Genererer kursusbillede",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Video script creator": {
+        "main": [
+          [
+            {
+              "node": "Update video script",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get course_id": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Update images": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Out": {
+        "main": [
+          [
+            {
+              "node": "Insert modules",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Insert modules": {
+        "main": [
+          [
+            {
+              "node": "Insert module translations",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Insert module translations": {
+        "main": [
+          [
+            {
+              "node": "Lektioner",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Out2": {
+        "main": [
+          [
+            {
+              "node": "Insert lektioner",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Lektioner": {
+        "main": [
+          [
+            {
+              "node": "Split Out2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Moduler": {
+        "main": [
+          [
+            {
+              "node": "Split Out",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Insert lektioner": {
+        "main": [
+          [
+            {
+              "node": "Insert lessons translations",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Insert lessons translations": {
+        "main": [
+          [
+            {
+              "node": "Limit",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Limit": {
+        "main": [
+          [
+            {
+              "node": "Get prompt1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Delete kursus": {
+        "main": [
+          [
+            {
+              "node": "Insert courses_translation",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Kursusplanlægger": {
+        "main": [
+          [
+            {
+              "node": "Delete kursus",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "RAG_Research": {
+        "main": [
+          [
+            {
+              "node": "Update rag_research",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "node": "RAG_Research",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Get rag_research",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Update rag_research": {
+        "main": [
+          [
+            {
+              "node": "Get rag_research",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get rag_research": {
+        "main": [
+          [
+            {
+              "node": "Get prompt",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "Get course_id",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get prompt": {
+        "main": [
+          [
+            {
+              "node": "Kursusplanlægger",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get prompt1": {
+        "main": [
+          [
+            {
+              "node": "Video script creator",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Open Router": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Kursusplanlægger",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Open Router1": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Video script creator",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Flemming Berthelsen",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
   "tags": [
     {
       "updatedAt": "2025-03-18T13:45:14.553Z",
