@@ -3,7 +3,7 @@
   "createdAt": "2025-06-09T04:39:10.303Z",
   "id": "TM4BtRHM82JhtiIH",
   "name": "Case creator",
-  "active": false,
+  "active": true,
   "isArchived": false,
   "nodes": [
     {
@@ -419,7 +419,7 @@
   },
   "pinData": {},
   "versionId": "9dd87532-c7ff-4c64-8a3d-8c91bf6dd99b",
-  "activeVersionId": null,
+  "activeVersionId": "9dd87532-c7ff-4c64-8a3d-8c91bf6dd99b",
   "triggerCount": 0,
   "shared": [
     {
@@ -430,7 +430,421 @@
       "projectId": "SFLNAzqJIfhKMhJx"
     }
   ],
-  "activeVersion": null,
+  "activeVersion": {
+    "updatedAt": "2025-12-03T12:36:45.296Z",
+    "createdAt": "2025-12-03T12:36:45.296Z",
+    "versionId": "9dd87532-c7ff-4c64-8a3d-8c91bf6dd99b",
+    "workflowId": "TM4BtRHM82JhtiIH",
+    "nodes": [
+      {
+        "parameters": {
+          "inputSource": "jsonExample",
+          "jsonExample": "{\n  \"courses_id\": \"a string\",\n  \"course_type\": \"course type\"\n}"
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          672,
+          624
+        ],
+        "id": "34701a3d-92fa-4e09-afed-0da135db4712",
+        "name": "When Executed by Another Workflow"
+      },
+      {
+        "parameters": {
+          "operation": "get",
+          "tableId": "courses",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "id",
+                "keyValue": "={{ $('When Executed by Another Workflow').item.json.courses_id }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          896,
+          624
+        ],
+        "id": "e0015003-b35e-42fe-a4bb-423d18cd67a4",
+        "name": "Get course",
+        "credentials": {
+          "supabaseApi": {
+            "id": "bvMVIJLed9p3sKxS",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "get",
+          "tableId": "course_translations",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "course_id",
+                "keyValue": "={{ $json.id }}"
+              },
+              {
+                "keyName": "language_code",
+                "keyValue": "={{ $json.language_code }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          1120,
+          624
+        ],
+        "id": "d5c87253-8bb2-4f44-ae6c-3c0eb0ef7215",
+        "name": "Get course content",
+        "credentials": {
+          "supabaseApi": {
+            "id": "bvMVIJLed9p3sKxS",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=\n{{ $('Course content').item.json.outline }}\n\n",
+          "hasOutputParser": true,
+          "messages": {
+            "messageValues": [
+              {
+                "message": "={{ $('Get prompt').item.json.content }}"
+              }
+            ]
+          },
+          "batching": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "typeVersion": 1.7,
+        "position": [
+          1792,
+          624
+        ],
+        "id": "8ee60287-096c-40ae-a388-520a6530213b",
+        "name": "Case planner"
+      },
+      {
+        "parameters": {
+          "jsonSchemaExample": "{\n  \"course_cases\": [\n    {\n      \"module_id\": \"<samme id som i user prompt>\",\n      \"case_title\": \"<kort, fængende titel>\",\n      \"case_tekst\": \"<ca. 400 ord, struktureret med markdown overskrifter>\"\n    }\n  ]\n}",
+          "autoFix": true
+        },
+        "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+        "typeVersion": 1.2,
+        "position": [
+          1936,
+          848
+        ],
+        "id": "6d70dbe9-17dc-4a00-8c58-54688993241c",
+        "name": "Structured Output Parser"
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "value": "google/gemini-2.5-pro-preview",
+            "mode": "list",
+            "cachedResultName": "google/gemini-2.5-pro-preview"
+          },
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2,
+        "position": [
+          672,
+          960
+        ],
+        "id": "527aef70-13dd-4222-9cd1-21f3179daec3",
+        "name": "OpenAI Chat Model",
+        "credentials": {
+          "openAiApi": {
+            "id": "wLbV0srlBMaP36mY",
+            "name": "Open Router"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "/* ----------------------------------------------------------\n * Læsevenlig outline med\n *  – dobbeltlinje før hvert modul\n *  – lektioner (inkl. content)\n * ---------------------------------------------------------- */\nWITH \n/* 1) Lektioner pr. modul (MED content) --------- */\nlesson_lines AS (\n  SELECT\n    l.module_id,\n\n    string_agg(\n      (\n        /* ---------- lektion-titel ---------- */\n        '    • Lektion ' || l.position || ' (' || lt.language_code || '): '\n        || coalesce(lt.title, '(ingen titel)') || E'\\n'\n\n        /* ---------- lesson-felter ---------- */\n        || CASE WHEN lt.content IS NOT NULL THEN\n             E'\\n    ----------------------------------------\\n'\n             || '    Indhold:' || E'\\n'\n             || lt.content || E'\\n'\n           ELSE '' END\n      ),\n      E'\\n' ORDER BY l.position\n    ) AS lesson_block\n  FROM lessons            l\n  JOIN lesson_translations lt ON lt.lesson_id = l.id\n  GROUP BY l.module_id\n),\n\n/* 2) Hele modul-blokken -------------------------------------- */\nmodule_lines AS (\n  SELECT\n    m.course_id,\n\n    string_agg(\n      /* ==== dobbeltlinje før hvert modul ==================== */\n      E'========================================\\n' ||\n\n      /* ---------- modul-titel -------------------------------- */\n      '◦ Modul ' || m.position || ' (modul_id: ' || m.id || ') (' || mt.language_code || '): '\n        || coalesce(mt.title, '(ingen titel)') || E'\\n'\n\n      /* ---------- modul-felter ------------------------------ */\n      || CASE WHEN mt.description IS NOT NULL THEN\n           E'\\n----------------------------------------\\n'\n           || 'Beskrivelse:' || E'\\n'\n           || mt.description || E'\\n'\n         ELSE '' END\n\n      || CASE WHEN mt.content IS NOT NULL THEN\n           E'\\n----------------------------------------\\n'\n           || 'Indhold:' || E'\\n'\n           || mt.content || E'\\n'\n         ELSE '' END\n\n      /* ---------- lektioner (med indhold) ------------------- */\n      || CASE\n           WHEN ll.lesson_block IS NOT NULL THEN\n             E'\\n----------------------------------------\\n'\n             || 'Lektioner:' || E'\\n'\n             || ll.lesson_block\n           ELSE '(ingen lektioner)'\n         END\n      ,\n      E'\\n' ORDER BY m.position\n    ) AS module_block\n  FROM modules             m\n  JOIN module_translations mt ON mt.module_id = m.id\n  LEFT JOIN lesson_lines   ll ON ll.module_id = m.id\n  GROUP BY m.course_id\n)\n\n/* 3) Kursus-header + moduler ---------------------------------- */\nSELECT\n  'Kursus (' || ct.language_code || '): ' || ct.title || E'\\n'\n  || '========================================' || E'\\n'\n\n  /* ---- Beskrivelse ---- */\n  || CASE WHEN ct.description IS NOT NULL THEN\n       E'\\n----------------------------------------\\n'\n       || 'Beskrivelse:' || E'\\n'\n       || ct.description || E'\\n'\n     ELSE '' END\n\n  /* ---- Indhold ---- */\n  || CASE WHEN ct.content IS NOT NULL THEN\n       E'\\n----------------------------------------\\n'\n       || 'Indhold:' || E'\\n'\n       || ct.content || E'\\n'\n     ELSE '' END\n\n  /* ---- Læringsmål ---- */\n  || CASE WHEN ct.learning_objectives IS NOT NULL THEN\n       E'\\n----------------------------------------\\n'\n       || 'Læringsmål:' || E'\\n'\n       || '• ' || array_to_string(ct.learning_objectives, E'\\n• ') || E'\\n'\n     ELSE '' END\n\n  /* ---- Moduler ---- */\n  || E'\\n' || coalesce(ml.module_block, '(ingen moduler)')   AS outline\nFROM courses              c\nJOIN course_translations  ct ON ct.course_id = c.id\nLEFT JOIN module_lines    ml ON ml.course_id = c.id\nWHERE c.id = '{{ $json.course_id }}';   -- ← dit course_id",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          1344,
+          624
+        ],
+        "id": "ee212670-420e-44a9-9846-3ccbaab452b0",
+        "name": "Course content",
+        "credentials": {
+          "postgres": {
+            "id": "RUVxlMmZvsZC2IGe",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "tableId": "module_translations",
+          "matchType": "allFilters",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "module_id",
+                "condition": "eq",
+                "keyValue": "={{ $json.module_id }}"
+              },
+              {
+                "keyName": "language_code",
+                "condition": "eq",
+                "keyValue": "={{ $('Get course').first().json.language_code }}"
+              }
+            ]
+          },
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "case_text",
+                "fieldValue": "=# {{ $json.case_title }}\n\n{{ $json.case_tekst }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          2368,
+          624
+        ],
+        "id": "17bc8c66-e859-456d-a626-45bf0df6ecc5",
+        "name": "Update module translation1",
+        "alwaysOutputData": true,
+        "credentials": {
+          "supabaseApi": {
+            "id": "bvMVIJLed9p3sKxS",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "fieldToSplitOut": "output.course_cases",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1,
+        "position": [
+          2144,
+          624
+        ],
+        "id": "0edce96c-4926-46a4-bf67-4a8aa558a0f0",
+        "name": "Split Out1"
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "select v.prompt_id, v.content, v.llm\nfrom prompts p \njoin prompt_versions v on \n  p.id = v.prompt_id\n  and p.active_version_id = v.id\njoin prompt_course_relations pcr on \n  p.id = pcr.prompt_id\njoin course_types t on \n  pcr.course_type_id = t.id\nwhere t.name = '{{ $('When Executed by Another Workflow').item.json.course_type }}'\nand pcr.course_section_id = 'b4933441-41b1-45d1-be84-c8765266642b'",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          1568,
+          624
+        ],
+        "id": "3c7f64de-1ba0-42aa-b8e0-a1b2f4b4e0d1",
+        "name": "Get prompt",
+        "credentials": {
+          "postgres": {
+            "id": "RUVxlMmZvsZC2IGe",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "value": "={{ $('Get prompt').item.json.llm }}",
+            "mode": "id"
+          },
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2,
+        "position": [
+          1808,
+          848
+        ],
+        "id": "eaa2d183-14a0-49ef-b982-256c59fa4b22",
+        "name": "Open Router",
+        "credentials": {
+          "openAiApi": {
+            "id": "wLbV0srlBMaP36mY",
+            "name": "Open Router"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "value": "openai/gpt-4o",
+            "mode": "list",
+            "cachedResultName": "openai/gpt-4o"
+          },
+          "builtInTools": {},
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.3,
+        "position": [
+          1872,
+          1056
+        ],
+        "id": "a47389da-0c7e-4682-b48c-449421e29099",
+        "name": "OpenAI Chat Model1",
+        "credentials": {
+          "openAiApi": {
+            "id": "wLbV0srlBMaP36mY",
+            "name": "Open Router"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "Get course",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get course": {
+        "main": [
+          [
+            {
+              "node": "Get course content",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get course content": {
+        "main": [
+          [
+            {
+              "node": "Course content",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Case planner": {
+        "main": [
+          [
+            {
+              "node": "Split Out1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Structured Output Parser": {
+        "ai_outputParser": [
+          [
+            {
+              "node": "Case planner",
+              "type": "ai_outputParser",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          []
+        ]
+      },
+      "Course content": {
+        "main": [
+          [
+            {
+              "node": "Get prompt",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Out1": {
+        "main": [
+          [
+            {
+              "node": "Update module translation1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get prompt": {
+        "main": [
+          [
+            {
+              "node": "Case planner",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Open Router": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Case planner",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model1": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Structured Output Parser",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Flemming Berthelsen",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
   "tags": [
     {
       "updatedAt": "2025-03-18T13:45:14.553Z",
