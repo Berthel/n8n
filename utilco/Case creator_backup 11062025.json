@@ -3,7 +3,7 @@
   "createdAt": "2025-06-11T13:34:11.924Z",
   "id": "btflqBHNpBqX7k2v",
   "name": "Case creator_backup 11062025",
-  "active": false,
+  "active": true,
   "isArchived": false,
   "nodes": [
     {
@@ -1240,7 +1240,7 @@
     ]
   },
   "versionId": "ba2a86d8-f689-4950-bde9-e11998f92c2d",
-  "activeVersionId": null,
+  "activeVersionId": "ba2a86d8-f689-4950-bde9-e11998f92c2d",
   "triggerCount": 0,
   "shared": [
     {
@@ -1251,7 +1251,867 @@
       "projectId": "SFLNAzqJIfhKMhJx"
     }
   ],
-  "activeVersion": null,
+  "activeVersion": {
+    "updatedAt": "2025-12-04T14:45:44.020Z",
+    "createdAt": "2025-12-04T14:45:44.020Z",
+    "versionId": "ba2a86d8-f689-4950-bde9-e11998f92c2d",
+    "workflowId": "btflqBHNpBqX7k2v",
+    "nodes": [
+      {
+        "parameters": {
+          "inputSource": "jsonExample",
+          "jsonExample": "{\n  \"courses_id\": \"a string\"\n}"
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          660,
+          5
+        ],
+        "id": "dc79172b-22c4-4730-9ca9-4a74249bdc2c",
+        "name": "When Executed by Another Workflow"
+      },
+      {
+        "parameters": {
+          "operation": "get",
+          "tableId": "courses",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "id",
+                "keyValue": "={{ $('When Executed by Another Workflow').item.json.courses_id }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          880,
+          5
+        ],
+        "id": "6c7cde68-8c37-457f-ba2a-d57370ff7b4c",
+        "name": "Get course",
+        "credentials": {
+          "supabaseApi": {
+            "id": "bvMVIJLed9p3sKxS",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "getAll",
+          "tableId": "modules",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "course_id",
+                "condition": "eq",
+                "keyValue": "={{ $('Get course').item.json.id }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          660,
+          -740
+        ],
+        "id": "51b8d48d-9d31-466a-8876-4c53a0149bfe",
+        "name": "Get modules id",
+        "alwaysOutputData": true,
+        "credentials": {
+          "supabaseApi": {
+            "id": "bvMVIJLed9p3sKxS",
+            "name": "Supabase account"
+          }
+        },
+        "disabled": true
+      },
+      {
+        "parameters": {
+          "operation": "get",
+          "tableId": "module_translations",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "module_id",
+                "keyValue": "={{ $json.id }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          880,
+          -740
+        ],
+        "id": "1287363e-a570-4799-b6f0-9c1bc5ecc629",
+        "name": "Get title & description",
+        "credentials": {
+          "supabaseApi": {
+            "id": "bvMVIJLed9p3sKxS",
+            "name": "Supabase account"
+          }
+        },
+        "disabled": true
+      },
+      {
+        "parameters": {
+          "operation": "get",
+          "tableId": "course_translations",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "course_id",
+                "keyValue": "={{ $json.id }}"
+              },
+              {
+                "keyName": "language_code",
+                "keyValue": "={{ $json.language_code }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          1100,
+          5
+        ],
+        "id": "ce19f4e1-c95c-40ee-a1bc-797cccaaf3fc",
+        "name": "Get course content",
+        "credentials": {
+          "supabaseApi": {
+            "id": "bvMVIJLed9p3sKxS",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "facb9084-883f-4795-b751-04735e1386a0",
+                "name": "title",
+                "value": "={{ $json.title }}",
+                "type": "string"
+              },
+              {
+                "id": "1945933f-71b3-4fdc-8bb7-dc3617c26c50",
+                "name": "content",
+                "value": "={{ $json.content }}",
+                "type": "array"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          3456,
+          -120
+        ],
+        "id": "e6eeee06-b349-49cc-b136-5e21bf7e374c",
+        "name": "Lessons collect"
+      },
+      {
+        "parameters": {
+          "fieldsToAggregate": {
+            "fieldToAggregate": [
+              {
+                "fieldToAggregate": "title"
+              },
+              {
+                "fieldToAggregate": "content"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.aggregate",
+        "typeVersion": 1,
+        "position": [
+          3236,
+          -120
+        ],
+        "id": "732de31c-5ab0-4bf7-a619-04013ec0bde2",
+        "name": "Aggregate1"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3,
+        "position": [
+          2796,
+          5
+        ],
+        "id": "9669cba2-ff1e-4c50-b3be-a84a657822e4",
+        "name": "Loop Over Items"
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "value": "claude-sonnet-4-20250514",
+            "mode": "list",
+            "cachedResultName": "Claude Sonnet 4"
+          },
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+        "typeVersion": 1.3,
+        "position": [
+          3984,
+          100
+        ],
+        "id": "ccbfdeeb-0f71-4267-a991-79ec21d82dca",
+        "name": "Anthropic Chat Model1",
+        "credentials": {
+          "anthropicApi": {
+            "id": "hvw52FHiqSCDBq6Q",
+            "name": "Anthropic account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "tableId": "module_translations",
+          "matchType": "allFilters",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "module_id",
+                "condition": "eq",
+                "keyValue": "={{ $('Loop Over Items').item.json.module_id }}"
+              },
+              {
+                "keyName": "language_code",
+                "condition": "eq",
+                "keyValue": "={{ $('Get course').first().json.language_code }}"
+              }
+            ]
+          },
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "case_text",
+                "fieldValue": "={{ $json.text }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          4272,
+          5
+        ],
+        "id": "4377a944-7389-438f-b09a-f600a98e5531",
+        "name": "Update module translation",
+        "alwaysOutputData": true,
+        "credentials": {
+          "supabaseApi": {
+            "id": "bvMVIJLed9p3sKxS",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "hs2iwVsjN8phf01l",
+            "mode": "list",
+            "cachedResultName": "My project — Tool Kursus Image generator"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Billedtekst": "=#Input\n## Kursusinformation\nKursusnavn: {{ $('Get course').item.json.draft_title }}\n\n## Modulinformation\nModulnavn: {{ $('Get title & description').item.json.title }}\nModulbeskrivelse: {{ $('Get title & description').item.json.description }}\nModulindhold: {{ $('Get title & description').item.json.content }}",
+              "image_name": "=Modul-{{ $json.title }}",
+              "Billedetype": "Generelt",
+              "eksempel_url": "={{ $('Get course').item.json.ref_image_modules }}",
+              "ref_table_name": "modules",
+              "ref_table_id": "={{ $('Get modules id').item.json.id }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "eksempel_url",
+                "displayName": "eksempel_url",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string"
+              },
+              {
+                "id": "Billedtekst",
+                "displayName": "Billedtekst",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string"
+              },
+              {
+                "id": "image_name",
+                "displayName": "image_name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string"
+              },
+              {
+                "id": "Billedetype",
+                "displayName": "Billedetype",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": false
+              },
+              {
+                "id": "ref_table_name",
+                "displayName": "ref_table_name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": false
+              },
+              {
+                "id": "ref_table_id",
+                "displayName": "ref_table_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.2,
+        "position": [
+          660,
+          -480
+        ],
+        "id": "7646b846-1eb8-4a81-8aa0-a6185e5e58e0",
+        "name": "Genererer modulbillede",
+        "disabled": true
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "select title, content\nfrom lessons l join lesson_translations t on\nl.id = t.lesson_id\nwhere l.module_id = '{{ $json.module_id }}'\nand language_code='da'\norder by position ",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          3016,
+          -120
+        ],
+        "id": "7d7be668-4217-424a-8969-66d0700c5743",
+        "name": "Lesson content",
+        "credentials": {
+          "postgres": {
+            "id": "RUVxlMmZvsZC2IGe",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "fieldsToAggregate": {
+            "fieldToAggregate": [
+              {
+                "fieldToAggregate": "module_id"
+              },
+              {
+                "fieldToAggregate": "title"
+              },
+              {
+                "fieldToAggregate": "description"
+              },
+              {
+                "fieldToAggregate": "content"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.aggregate",
+        "typeVersion": 1,
+        "position": [
+          1540,
+          5
+        ],
+        "id": "f69d54dc-3fe6-4bb4-a451-ec22c49c8f2f",
+        "name": "Aggregate"
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "select t.module_id, t.title, t.description, t.content \nfrom modules m join module_translations t \non m.id = t.module_id\nwhere m.course_id = '{{ $('When Executed by Another Workflow').item.json.courses_id }}'\norder by position ",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          1320,
+          5
+        ],
+        "id": "7ff30507-bdcc-4236-8d25-b4c3abcfc731",
+        "name": "Modul content",
+        "credentials": {
+          "postgres": {
+            "id": "RUVxlMmZvsZC2IGe",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "c2503501-1c9c-469c-8eb5-00e63278c282",
+                "name": "module_id",
+                "value": "={{ $json.module_id }}",
+                "type": "array"
+              },
+              {
+                "id": "b3ac1268-b454-415e-aa3b-c0dc002572f1",
+                "name": "title",
+                "value": "={{ $json.title }}",
+                "type": "array"
+              },
+              {
+                "id": "f9ecaf04-94da-42e4-932a-6a0cd17bd252",
+                "name": "description",
+                "value": "={{ $json.description }}",
+                "type": "array"
+              },
+              {
+                "id": "9f3ad2d2-dfb3-4e84-86f8-c1706d45ca94",
+                "name": "content",
+                "value": "={{ $json.content }}",
+                "type": "array"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1760,
+          5
+        ],
+        "id": "c48d3254-2087-47b7-b282-1f059d4d617d",
+        "name": "Modules collect"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Forventet input = fire parallelle arrayer\nconst ids    = items[0].json.module_id;\nconst titles = items[0].json.title;\nconst desc   = items[0].json.description;\nconst cont   = items[0].json.content;\n\nlet promptBlocks = [];\n\nfor (let i = 0; i < ids.length; i++) {\n  const n = i + 1;                          // rækkefølge-nummeret\n  promptBlocks.push(\n`# ${n}. ${titles[i]}\n\nmodule_id: ${ids[i]}\n\n**Kort beskrivelse**  \n${desc[i]}\n\n**Detaljeret indhold**  \n${cont[i]}\n`);\n}\n\nconst fullPrompt = promptBlocks.join('\\n\\n---\\n\\n');\n\nreturn [\n  {\n    json: { prompt: fullPrompt }            // ét samlet item til LLM-noden\n  }\n];\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1980,
+          5
+        ],
+        "id": "471930c0-fb6f-461e-92fe-dcaade32d87a",
+        "name": "Code"
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "={{ $json.prompt }}\n\n\n\n",
+          "hasOutputParser": true,
+          "messages": {
+            "messageValues": [
+              {
+                "message": "**System Prompt til n8n LLM-modul – “Case-generator til onlinekursus”**\n\nDu er *Instruktions­designer-LLM*. Din opgave er, ud fra den **user prompt**, du modtager (en liste af kursusmoduler), at skabe en gennemgående serie af cases, der understøtter læringsmålene for hvert modul og tilsammen danner en tydelig “rød tråd”.\n\n---\n\n### 1 – Forstå inputtet\n\n* User prompten består af ét eller flere *moduler*.\n\n  * Hvert modul har mindst felterne **module\\_id**, **Kort beskrivelse**, **Detaljeret indhold**, (evt. **Lektioner**) og **Læringsmål**.\n* Modulerne står i den rækkefølge, de indgår i kurset.\n\n### 2 – Designprincipper for cases\n\n1. **Koherens** Alle cases foregår i det *samme* fiktive scenarie (fx et el-, vand- eller energiselskab). Lad scenariet udvikle sig kronologisk fra modul 1 til sidste modul.\n2. **Progression** Kompleksiteten skal stige i takt med modulerne. Senere cases må antage, at læreren allerede har arbejdet med tidligere cases.\n3. **Relevans** Hver case skal tydeligt træne *mindst ét* af modulets læringsmål.\n4. **Variation** Brug forskellige case-typer (beslutningsdilemma, beregning, diskussion, rollespil …) men hold fast i det fælles scenarie.\n5. **Realistisk scope** En case-beskrivelse må højst være 180 ord.\n\n\n\n### 3 – Sprog og stil\n\n* Svar altid på det samme sprog som user prompten (typisk dansk).\n* Brug aktivt sprog og konkrete formuleringer.\n* Ingen ekstra forklaringer uden for JSON-kodeblokken.\n\n### 4 – Fejlhåndtering\n\n* Hvis et modul mangler læringsmål, skab selv plausible læringsmål baseret på modulteksten.\n* Hvis input er tomt eller ustruktureret, svar med fejlbesked: `\"error\": \"No valid modules provided\"` (stadig som JSON-objekt).\n\n**Slut på system prompt.**\n"
+              }
+            ]
+          },
+          "batching": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "typeVersion": 1.7,
+        "position": [
+          2200,
+          5
+        ],
+        "id": "20d97917-51a7-4b9f-a7ef-e24ec95224e7",
+        "name": "Case planner"
+      },
+      {
+        "parameters": {
+          "jsonSchemaExample": "{\n  \"course_cases\": [\n    {\n      \"module_id\": \"<samme id som i user prompt>\",\n      \"case_title\": \"<kort, fængende titel>\",\n      \"case_synopsis\": \"<max 180 ord, beskriver situationen>\",\n      \"learning_link\": [\n        \"<læringsmål fra modulet som casen primært understøtter>\",\n        \"...\"\n      ],\n      \"continuity_note\": \"<1–2 sætninger om hvordan casen bygger videre på (eller forbereder til) andre moduler>\",\n      \"suggested_activities\": [\n        \"Diskussionsspørgsmål / opgave 1\",\n        \"Opgave 2\",\n        \"...\"\n      ],\n      \"expected_outcomes\": \"<kort opsummering af hvad deltageren skal kunne efter casen>\"\n    }\n    \n  ]\n}\n"
+        },
+        "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+        "typeVersion": 1.2,
+        "position": [
+          2348,
+          225
+        ],
+        "id": "ad68cf7c-ea64-49c4-b1f6-97fe842d1052",
+        "name": "Structured Output Parser"
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "value": "google/gemini-2.5-pro-preview",
+            "mode": "list",
+            "cachedResultName": "google/gemini-2.5-pro-preview"
+          },
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2,
+        "position": [
+          2228,
+          225
+        ],
+        "id": "0fa2900c-e02d-4171-8eb5-d5f6423a12be",
+        "name": "OpenAI Chat Model",
+        "credentials": {
+          "openAiApi": {
+            "id": "wLbV0srlBMaP36mY",
+            "name": "Open Router"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "content": "Næste gang: lav ét item per modul, som skal klargøres til loop"
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          2440,
+          -760
+        ],
+        "id": "2a4068bc-aad5-496d-85a4-1d2a431ebbf3",
+        "name": "Sticky Note"
+      },
+      {
+        "parameters": {
+          "fieldToSplitOut": "output.course_cases",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1,
+        "position": [
+          2576,
+          5
+        ],
+        "id": "fe99760d-69e4-4941-be34-bafbaea62f7e",
+        "name": "Split Out"
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "select t.module_id, t.title, t.description, t.content \nfrom modules m join module_translations t \non m.id = t.module_id\nwhere m.id = '{{ $('Split Out').first().json.module_id }}'\norder by position ",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          3676,
+          -120
+        ],
+        "id": "d968eca4-175e-496e-bf80-10be3d92be8e",
+        "name": "Modul content1",
+        "credentials": {
+          "postgres": {
+            "id": "RUVxlMmZvsZC2IGe",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=# Input\n\n## Kursusinformation\n\nKursustitel: {{ $('Get course content').first().json.title }}\n\nKursusniveau: {{ $('Get course').first().json.course_level }}\n\nMålgruppe: {{ $('Get course').first().json.target_audience }}\n\nSprog: {{ $('Get course').first().json.course_language }}\n\nSektor: {{ $('Get course').first().json.sector }}\n\nKursusbeskrivelse: {{ $('Get course content').first().json.description }}\n\nKursusindhold: {{ $('Get course content').first().json.content }}\n\n## Modulinformation\n\nModulnavn: {{ $json.title }}\n\nModulbeskrivelse: {{ $json.description }}\n\nModulindhold: {{ $json.content }}\n\n## Lektioner\nLektionstitler: {{ $('Lessons collect').first().json.title }}\n\nLektionsindhold: {{ $('Lessons collect').first().json.content }}\n\n# Case\nCasetitle: {{ $('Loop Over Items').item.json.case_title }}\n\nCase synopsis: {{ $('Loop Over Items').item.json.case_synopsis }}\n\nLearning link: {{ $('Loop Over Items').item.json.learning_link }}",
+          "messages": {
+            "messageValues": [
+              {
+                "message": "=# Rolle\n\nDu er ekspert i at udvikle engagerende og læringsunderstøttende **case-beskrivelser** til online kurser.\n\n# Instruktion\n\nBaseret på de parametre du får i **user message** – fx\n*casetitle, modulnavn, kursustitel, niveau, målgruppe, varighed, sprog, modulkontekst, learning\\_link(s), nøglebegreber* – skal du:\n\n1. Analysere casens formål i forhold til modul- og kursus­konteksten.\n2. Udarbejde en komplet case-tekst, der præcist følger strukturen beskrevet under **# Casestruktur**.\n3. Sikre, at casen tydeligt kobler problemstillingen til modulets læringsmål og giver deltagerne materiale til refleksion og diskussion.\n\n# Progressiv kontekstbehandling\n\nDu modtager tre lag af kontekst – brug dem hierarkisk:\n\n* **Kursusniveau** (overordnet ramme – ANTAGES kendt)\n* **Modulniveau** (fokus for det aktuelle modul – ANTAGES læst)\n* **Case-niveau** (DIT FOKUS – udvikl selve casen)\n\n\nDerudover modtager du case titel og case synopsis\n\n### Baggrund\n\nSæt scenen: organisation, sektor, nøgleudfordringer (4-6 linjer).\n\n### Problemstilling\n\nBeskriv det centrale dilemma eller den udfordring, deltagerne skal løse (3-4 linjer).\n\n### Interessenter\n\n* Primære interessenter (bulletliste, max 5)\n* Hver interessent: kort beskrivelse af deres mål/agenda (1 linje).\n\n### Læringslink\n\nForklar (2-3 linjer) hvordan casen understøtter modulets konkrete læringsmål. Henvis dér, hvor relevant, til **learning\\_link**-parametrene.\n\n### Diskussions- & analyse­spørgsmål\n\n* 3-5 åbne spørgsmål, der guider deltagerne i at anvende modul­stoffet på casen.\n* Start hvert spørgsmål med et handlings­verbum (”Analysér…”, ”Diskutér…”).\n\n# Regler\n\n## SKAL\n\n1. **Start** med casens titel – ikke med velkomsttekst.\n2. Brug aktivt, klart sprog i samme **sprog** som angivet i parametrene (typisk dansk).\n3. Knyt problem­stillingen eksplicit til mindst ét af modulets læringsmål.\n4. Hold total­længden under 400 ord (ekskl. markdown-overskrifter).\n\n## SKAL IKKE\n\n1. Gentag ikke hele kursus- eller modul­beskrivelserne – medtag kun det, der er nødvendigt for casens forståelse.\n2. Medtag ikke JSON, placeholders eller ekstra forklaringer om outputformatet.\n3. Nævn ikke disse regler eller din egen rolle.\n\n# Output\n\nReturnér **kun case-teksten** i ren Markdown, struktureret med overskrifter (##, ###). Ingen indledende eller afsluttende kommentarer.\n\n\n"
+              }
+            ]
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "typeVersion": 1.6,
+        "position": [
+          3896,
+          -120
+        ],
+        "id": "7ff33f44-20d6-4c8b-a253-df1ba4b102c1",
+        "name": "Case text creator"
+      }
+    ],
+    "connections": {
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "Get course",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get course": {
+        "main": [
+          [
+            {
+              "node": "Get course content",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get modules id": {
+        "main": [
+          [
+            {
+              "node": "Get title & description",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get title & description": {
+        "main": [
+          []
+        ]
+      },
+      "Get course content": {
+        "main": [
+          [
+            {
+              "node": "Modul content",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Aggregate1": {
+        "main": [
+          [
+            {
+              "node": "Lessons collect",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Over Items": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Lesson content",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Lessons collect": {
+        "main": [
+          [
+            {
+              "node": "Modul content1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Anthropic Chat Model1": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Case text creator",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Update module translation": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Genererer modulbillede": {
+        "main": [
+          []
+        ]
+      },
+      "Lesson content": {
+        "main": [
+          [
+            {
+              "node": "Aggregate1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Aggregate": {
+        "main": [
+          [
+            {
+              "node": "Modules collect",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Modul content": {
+        "main": [
+          [
+            {
+              "node": "Aggregate",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Modules collect": {
+        "main": [
+          [
+            {
+              "node": "Code",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code": {
+        "main": [
+          [
+            {
+              "node": "Case planner",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Case planner": {
+        "main": [
+          [
+            {
+              "node": "Split Out",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Structured Output Parser": {
+        "ai_outputParser": [
+          [
+            {
+              "node": "Case planner",
+              "type": "ai_outputParser",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Case planner",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Out": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Modul content1": {
+        "main": [
+          [
+            {
+              "node": "Case text creator",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Case text creator": {
+        "main": [
+          [
+            {
+              "node": "Update module translation",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
   "tags": [
     {
       "updatedAt": "2025-03-18T13:45:14.553Z",
