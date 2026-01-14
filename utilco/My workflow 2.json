@@ -3,7 +3,7 @@
   "createdAt": "2025-07-23T15:38:59.300Z",
   "id": "E81oAPJ1ddpENbb6",
   "name": "My workflow 2",
-  "active": false,
+  "active": true,
   "isArchived": true,
   "nodes": [
     {
@@ -816,8 +816,8 @@
   "meta": null,
   "pinData": {},
   "versionId": "9656e4a5-975d-4f94-a35f-37ada8884e3a",
-  "activeVersionId": null,
-  "triggerCount": 0,
+  "activeVersionId": "9656e4a5-975d-4f94-a35f-37ada8884e3a",
+  "triggerCount": 1,
   "shared": [
     {
       "updatedAt": "2025-07-23T15:38:59.305Z",
@@ -827,6 +827,819 @@
       "projectId": "SFLNAzqJIfhKMhJx"
     }
   ],
-  "activeVersion": null,
+  "activeVersion": {
+    "updatedAt": "2025-12-04T14:45:44.020Z",
+    "createdAt": "2025-12-04T14:45:44.020Z",
+    "versionId": "9656e4a5-975d-4f94-a35f-37ada8884e3a",
+    "workflowId": "E81oAPJ1ddpENbb6",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "lms/image/:lesson_id/:image_type",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "id": "5634e584-e08a-42a9-b67d-254b8c18283d",
+        "name": "Webhook Trigger",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -352,
+          -192
+        ],
+        "webhookId": "976af372-0b47-4b1d-9c8e-cbd453156139"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict"
+            },
+            "conditions": [
+              {
+                "id": "1",
+                "leftValue": "={{ $json.params.lesson_id }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEmpty"
+                }
+              },
+              {
+                "id": "2",
+                "leftValue": "={{ ['illustration', 'grafik', 'diagram'].includes($json.params.image_type) }}",
+                "rightValue": "={{ true }}",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "21ff47a9-4b95-493a-9855-8fbfe93dfc25",
+        "name": "Validate Input",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          -144,
+          -192
+        ]
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "{\"success\":false,\"error\":\"Invalid input. Required: lesson_id (UUID) and image_type (illustration|grafik|diagram)\"}",
+          "options": {
+            "responseCode": 400
+          }
+        },
+        "id": "5704aa9c-1597-4434-a6ac-045d2c28b2d1",
+        "name": "Error Response",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          64,
+          -32
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "1",
+                "name": "lesson_id",
+                "value": "={{ $json.params.lesson_id }}",
+                "type": "string"
+              },
+              {
+                "id": "2",
+                "name": "image_type",
+                "value": "={{ $json.params.image_type }}",
+                "type": "string"
+              },
+              {
+                "id": "3",
+                "name": "webhook_data",
+                "value": "={{ $json }}",
+                "type": "object"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "4163b0c0-cce7-432f-bfa3-870dc2a55ecb",
+        "name": "Set Variables",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          64,
+          -288
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "get",
+          "tableId": "lesson_translations",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "lesson_id",
+                "keyValue": "={{ $json.lesson_id }}"
+              },
+              {
+                "keyName": "language_code",
+                "keyValue": "da"
+              }
+            ]
+          }
+        },
+        "id": "90ab7087-aa1c-4574-805e-0f1a791b7640",
+        "name": "Get Lesson Data",
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          256,
+          -288
+        ],
+        "credentials": {
+          "supabaseApi": {
+            "id": "bvMVIJLed9p3sKxS",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict"
+            },
+            "conditions": [
+              {
+                "id": "1",
+                "leftValue": "={{ $json.length }}",
+                "rightValue": 0,
+                "operator": {
+                  "type": "number",
+                  "operation": "gt"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "436bc04a-8c3a-43b7-9aad-8fcfb2797e2b",
+        "name": "Check Lesson Exists",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          464,
+          -288
+        ]
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "{\"success\":false,\"error\":\"Lesson not found with ID: {{ $('Set Variables').item.json.lesson_id }}\"}",
+          "options": {
+            "responseCode": 404
+          }
+        },
+        "id": "936bc23f-8dc6-4cc4-a7cd-ac0930f5bae1",
+        "name": "Lesson Not Found",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          656,
+          -128
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "SELECT \n  l.id as lesson_id,\n  l.module_id,\n  lt.title as lesson_title,\n  lt.content as lesson_content,\n  m.course_id,\n  mt.title as module_title,\n  mt.description as module_description,\n  ct.title as course_title,\n  ct.description as course_description\nFROM lessons l\nJOIN lesson_translations lt ON l.id = lt.lesson_id AND lt.language_code = 'da'\nJOIN modules m ON l.module_id = m.id\nJOIN module_translations mt ON m.id = mt.module_id AND mt.language_code = 'da'\nJOIN courses c ON m.course_id = c.id\nJOIN course_translations ct ON c.id = ct.course_id AND ct.language_code = 'da'\nWHERE l.id = '{{ $json.lesson_id }}'",
+          "options": {}
+        },
+        "id": "b0fb99b0-e9f1-47d7-9236-dc2aa8aeea05",
+        "name": "Get Module and Course Info",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          656,
+          -384
+        ],
+        "credentials": {
+          "postgres": {
+            "id": "RUVxlMmZvsZC2IGe",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "1",
+                "name": "imageType",
+                "value": "={{ $('Set Variables').item.json.image_type }}",
+                "type": "string"
+              },
+              {
+                "id": "2",
+                "name": "lessonId",
+                "value": "={{ $('Set Variables').item.json.lesson_id }}",
+                "type": "string"
+              },
+              {
+                "id": "3",
+                "name": "courseTitle",
+                "value": "={{ $json[0].course_title }}",
+                "type": "string"
+              },
+              {
+                "id": "4",
+                "name": "courseDescription",
+                "value": "={{ $json[0].course_description }}",
+                "type": "string"
+              },
+              {
+                "id": "5",
+                "name": "moduleTitle",
+                "value": "={{ $json[0].module_title }}",
+                "type": "string"
+              },
+              {
+                "id": "6",
+                "name": "moduleDescription",
+                "value": "={{ $json[0].module_description }}",
+                "type": "string"
+              },
+              {
+                "id": "7",
+                "name": "lessonTitle",
+                "value": "={{ $json[0].lesson_title }}",
+                "type": "string"
+              },
+              {
+                "id": "8",
+                "name": "lessonContent",
+                "value": "={{ $json[0].lesson_content }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "4fb2ed1d-eb9c-4dbd-96aa-82c43cf3e56e",
+        "name": "Set Context",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          864,
+          -384
+        ]
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "value": "openai/gpt-4.1",
+            "mode": "list",
+            "cachedResultName": "openai/gpt-4.1"
+          },
+          "options": {}
+        },
+        "id": "c875e169-875a-4116-b994-4b4f0861486d",
+        "name": "AI Model",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2,
+        "position": [
+          1056,
+          16
+        ],
+        "credentials": {
+          "openAiApi": {
+            "id": "wLbV0srlBMaP36mY",
+            "name": "Open Router"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsonSchemaExample": "{\n  \"imagePrompt\": \"Professional business illustration showing...\",\n  \"imageText\": \"Lektionstitel - billedtype\"\n}"
+        },
+        "id": "5d45e527-4699-472e-97bd-7e48cb75978b",
+        "name": "Output Parser",
+        "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+        "typeVersion": 1.2,
+        "position": [
+          1056,
+          224
+        ]
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=## Kontekst\n\nBilledtype: {{ $json.imageType }}\n\nKursus: \"{{ $json.courseTitle }}\" - {{ $json.courseDescription }}\n\nModul: \"{{ $json.moduleTitle }}\" - {{ $json.moduleDescription }}\n\nLektion: \"{{ $json.lessonTitle }}\"\n\nLektionsindhold: {{ $json.lessonContent.substring(0, 500) }}...",
+          "messages": {
+            "messageValues": [
+              {
+                "message": "# Rolle\nDu er en ekspert i at generere billedprompts til AI billedgenerering for professionelle B2B e-learning kurser.\n\n# Opgave\nGenerer en billedprompt og billedtekst baseret på det givne kursusindhold.\n\n## Billedtype vejledning:\n- **illustration**: Professional business illustration, clean minimalist design, corporate style\n- **grafik**: Professional infographic, data visualization, clean modern design  \n- **diagram**: Professional business diagram, flowchart style, clean lines\n\n# Output krav\nReturner et JSON objekt med:\n1. **imagePrompt**: En detaljeret prompt på engelsk (30-50 ord) der beskriver det ønskede billede. Inkluder stil, komposition, farver og stemning. Afslut altid med \"professional, engaging, suitable for corporate training.\"\n2. **imageText**: En kort dansk tekst (max 200 karakterer) i formatet \"[Lektionstitel] - [billedtype]\"\n\n# Eksempel output:\n```json\n{\n  \"imagePrompt\": \"Professional business illustration showing a modern water treatment facility with clean lines, blue and white color scheme, minimalist design, workers collaborating around digital displays showing water flow diagrams, professional, engaging, suitable for corporate training.\",\n  \"imageText\": \"Introduktion til vandbehandling - illustration\"\n}\n```"
+              }
+            ]
+          }
+        },
+        "id": "3d336ac8-e935-46ba-b1fa-9ff6ba3f1e99",
+        "name": "Generate Image Prompt",
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "typeVersion": 1.6,
+        "position": [
+          1056,
+          -384
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.replicate.com/v1/models/black-forest-labs/flux-pro/predictions",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "Token {{ $credentials.replicateApiKey }}"
+              },
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {}
+            ]
+          },
+          "options": {
+            "timeout": 30000
+          }
+        },
+        "id": "410e467f-bf68-4bcd-86dd-da8d2a64fb6b",
+        "name": "Generate Image",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1264,
+          -384
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "// Poll for billedgenerering med error handling\nconst predictionUrl = $json.urls?.get;\n\nif (!predictionUrl) {\n  throw new Error('No prediction URL received from Replicate');\n}\n\nlet result;\nlet attempts = 0;\nconst maxAttempts = 60; // Max 5 minutter\nconst pollInterval = 5000; // 5 sekunder\n\nwhile (attempts < maxAttempts) {\n  // Vent mellem polling\n  if (attempts > 0) {\n    await new Promise(resolve => setTimeout(resolve, pollInterval));\n  }\n  \n  try {\n    result = await $helpers.httpRequest({\n      method: 'GET',\n      url: predictionUrl,\n      headers: {\n        'Authorization': 'Token ' + $credentials.replicateApiKey\n      },\n      timeout: 10000\n    });\n    \n    if (result.status === 'succeeded' && result.output) {\n      break;\n    } else if (result.status === 'failed' || result.status === 'canceled') {\n      throw new Error(`Image generation ${result.status}: ${result.error || 'Unknown error'}`);\n    }\n  } catch (error) {\n    if (error.message.includes('generation')) {\n      throw error; // Re-throw generation errors\n    }\n    // Log but continue on network errors\n    console.error(`Polling attempt ${attempts + 1} failed:`, error.message);\n  }\n  \n  attempts++;\n}\n\nif (!result || result.status !== 'succeeded' || !result.output) {\n  throw new Error('Image generation timed out after 5 minutes');\n}\n\n// Returner billedets URL og andre data\nreturn [{\n  json: {\n    imageUrl: result.output[0],\n    imagePrompt: $node['Generate Image Prompt'].json.imagePrompt,\n    imageText: $node['Generate Image Prompt'].json.imageText,\n    lessonId: $node['Set Context'].json.lessonId,\n    lessonTitle: $node['Set Context'].json.lessonTitle\n  }\n}];"
+        },
+        "id": "0ae2c3e5-55ce-47c5-81a2-e31ce94b4a16",
+        "name": "Poll for Image",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1456,
+          -384
+        ]
+      },
+      {
+        "parameters": {
+          "url": "={{ $json.imageUrl }}",
+          "options": {
+            "response": {
+              "response": {
+                "responseFormat": "file"
+              }
+            },
+            "timeout": 60000
+          }
+        },
+        "id": "877432bf-b40b-4a89-9517-1b6b13782907",
+        "name": "Download Image",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1664,
+          -384
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://iynjlzzmszozpxpgldaa.supabase.co/storage/v1/object/course-images/lesson_{{ $('Poll for Image').item.json.lessonId }}_{{ $now.format('yyyyMMddHHmmss') }}.webp",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "image/webp"
+              }
+            ]
+          },
+          "sendBody": true,
+          "contentType": "binaryData",
+          "inputDataFieldName": "data",
+          "options": {
+            "timeout": 60000
+          }
+        },
+        "id": "ad2e190c-d077-4bc3-bd01-4fc1a1003df3",
+        "name": "Upload to Storage",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1856,
+          -384
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "7GfqTh2E9gfVr2Gp",
+            "name": "Header Auth account 4"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "1",
+                "name": "storageUrl",
+                "value": "=https://iynjlzzmszozpxpgldaa.supabase.co/storage/v1/object/public/{{ $json.Key }}",
+                "type": "string"
+              },
+              {
+                "id": "2",
+                "name": "imageText",
+                "value": "={{ $('Poll for Image').item.json.imageText }}",
+                "type": "string"
+              },
+              {
+                "id": "3",
+                "name": "lessonId",
+                "value": "={{ $('Poll for Image').item.json.lessonId }}",
+                "type": "string"
+              },
+              {
+                "id": "4",
+                "name": "lessonTitle",
+                "value": "={{ $('Poll for Image').item.json.lessonTitle }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "7ff2b563-ca72-4152-b9f8-da2dad480c5a",
+        "name": "Set Image URL",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          2064,
+          -384
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "tableId": "lesson_translations",
+          "matchType": "allFilters",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "lesson_id",
+                "condition": "eq",
+                "keyValue": "={{ $json.lessonId }}"
+              },
+              {
+                "keyName": "language_code",
+                "condition": "eq",
+                "keyValue": "da"
+              }
+            ]
+          },
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "image_url",
+                "fieldValue": "={{ $json.storageUrl }}"
+              },
+              {
+                "fieldId": "image_text",
+                "fieldValue": "={{ $json.imageText }}"
+              }
+            ]
+          }
+        },
+        "id": "397ada26-59fb-4ef9-bc68-356fc4492588",
+        "name": "Update Lesson",
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          2256,
+          -384
+        ],
+        "credentials": {
+          "supabaseApi": {
+            "id": "bvMVIJLed9p3sKxS",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={\n  \"success\": true,\n  \"message\": \"Billede genereret og gemt\",\n  \"data\": {\n    \"lesson_id\": \"{{ $json.lessonId }}\",\n    \"image_url\": \"{{ $json.storageUrl }}\",\n    \"image_text\": \"{{ $json.imageText }}\",\n    \"lesson_title\": \"{{ $json.lessonTitle }}\",\n    \"generated_at\": \"{{ $now.toISO() }}\"\n  }\n}",
+          "options": {
+            "responseCode": 200,
+            "responseHeaders": {
+              "entries": [
+                {
+                  "name": "Content-Type",
+                  "value": "application/json"
+                }
+              ]
+            }
+          }
+        },
+        "id": "cd887286-4b47-4496-84f1-ec7df2844365",
+        "name": "Success Response",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          2464,
+          -384
+        ]
+      },
+      {
+        "parameters": {},
+        "id": "5e877049-a650-4dfb-8f21-51946fb4ef81",
+        "name": "Error Handler",
+        "type": "n8n-nodes-base.errorTrigger",
+        "typeVersion": 1,
+        "position": [
+          -352,
+          128
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "// Log error details\nconst error = $json.error;\nconst workflow = $json.workflow;\nconst execution = $json.execution;\n\nconsole.error('Workflow Error:', {\n  error: error.message,\n  node: error.node?.name,\n  workflow: workflow.name,\n  execution: execution.id,\n  timestamp: new Date().toISOString()\n});\n\nreturn [{\n  json: {\n    error: error.message,\n    node: error.node?.name,\n    timestamp: new Date().toISOString()\n  }\n}];"
+        },
+        "id": "522293cf-bd0f-4f5a-9484-45de98b34356",
+        "name": "Log Error",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -144,
+          128
+        ]
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={\n  \"success\": false,\n  \"error\": \"{{ $json.error || 'An unexpected error occurred' }}\",\n  \"timestamp\": \"{{ $json.timestamp }}\"\n}",
+          "options": {
+            "responseCode": 500
+          }
+        },
+        "id": "a54f5027-546a-4eb4-a880-3092a083ac57",
+        "name": "Error Webhook Response",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          64,
+          128
+        ]
+      }
+    ],
+    "connections": {
+      "Webhook Trigger": {
+        "main": [
+          [
+            {
+              "node": "Validate Input",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Validate Input": {
+        "main": [
+          [
+            {
+              "node": "Set Variables",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Error Response",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set Variables": {
+        "main": [
+          [
+            {
+              "node": "Get Lesson Data",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Lesson Data": {
+        "main": [
+          [
+            {
+              "node": "Check Lesson Exists",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Check Lesson Exists": {
+        "main": [
+          [
+            {
+              "node": "Get Module and Course Info",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Lesson Not Found",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Module and Course Info": {
+        "main": [
+          [
+            {
+              "node": "Set Context",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set Context": {
+        "main": [
+          [
+            {
+              "node": "Generate Image Prompt",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AI Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Generate Image Prompt",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Generate Image Prompt": {
+        "main": [
+          [
+            {
+              "node": "Generate Image",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Generate Image": {
+        "main": [
+          [
+            {
+              "node": "Poll for Image",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Poll for Image": {
+        "main": [
+          [
+            {
+              "node": "Download Image",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Download Image": {
+        "main": [
+          [
+            {
+              "node": "Upload to Storage",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Upload to Storage": {
+        "main": [
+          [
+            {
+              "node": "Set Image URL",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set Image URL": {
+        "main": [
+          [
+            {
+              "node": "Update Lesson",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Update Lesson": {
+        "main": [
+          [
+            {
+              "node": "Success Response",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Error Handler": {
+        "main": [
+          [
+            {
+              "node": "Log Error",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Log Error": {
+        "main": [
+          [
+            {
+              "node": "Error Webhook Response",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
   "tags": []
 }
