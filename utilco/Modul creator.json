@@ -3,7 +3,7 @@
   "createdAt": "2025-05-16T13:32:22.255Z",
   "id": "qWxRPLsazbaV2TpV",
   "name": "Modul creator",
-  "active": false,
+  "active": true,
   "isArchived": false,
   "nodes": [
     {
@@ -736,7 +736,7 @@
     ]
   },
   "versionId": "aeb31648-3e23-4146-a69f-c499e72404c7",
-  "activeVersionId": null,
+  "activeVersionId": "aeb31648-3e23-4146-a69f-c499e72404c7",
   "triggerCount": 0,
   "shared": [
     {
@@ -747,7 +747,729 @@
       "projectId": "SFLNAzqJIfhKMhJx"
     }
   ],
-  "activeVersion": null,
+  "activeVersion": {
+    "updatedAt": "2025-12-02T06:21:26.668Z",
+    "createdAt": "2025-12-02T06:21:26.668Z",
+    "versionId": "aeb31648-3e23-4146-a69f-c499e72404c7",
+    "workflowId": "qWxRPLsazbaV2TpV",
+    "nodes": [
+      {
+        "parameters": {
+          "inputSource": "jsonExample",
+          "jsonExample": "{\n  \"courses_id\": \"a string\",\n  \"course_type\": \"course type\"\n}"
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          672,
+          -308
+        ],
+        "id": "4b69bba5-b3a3-4eb9-b1db-887cd8308854",
+        "name": "When Executed by Another Workflow"
+      },
+      {
+        "parameters": {
+          "operation": "get",
+          "tableId": "courses",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "id",
+                "keyValue": "={{ $('When Executed by Another Workflow').item.json.courses_id }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          896,
+          -308
+        ],
+        "id": "dca6ad3a-3350-41e0-a85f-998c4a727c46",
+        "name": "Get course",
+        "credentials": {
+          "supabaseApi": {
+            "id": "bvMVIJLed9p3sKxS",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "getAll",
+          "tableId": "modules",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "course_id",
+                "condition": "eq",
+                "keyValue": "={{ $('Get course').item.json.id }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          1344,
+          -308
+        ],
+        "id": "e54a72b2-1090-490b-9232-b31fdca22d26",
+        "name": "Get modules id",
+        "alwaysOutputData": true,
+        "credentials": {
+          "supabaseApi": {
+            "id": "bvMVIJLed9p3sKxS",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "get",
+          "tableId": "module_translations",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "module_id",
+                "keyValue": "={{ $json.id }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          1568,
+          -308
+        ],
+        "id": "c892ef1c-2ecd-4a7d-87e6-0d3b608338ac",
+        "name": "Get title & description",
+        "credentials": {
+          "supabaseApi": {
+            "id": "bvMVIJLed9p3sKxS",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "get",
+          "tableId": "course_translations",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "course_id",
+                "keyValue": "={{ $json.id }}"
+              },
+              {
+                "keyName": "language_code",
+                "keyValue": "={{ $json.language_code }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          1120,
+          -308
+        ],
+        "id": "1cfb9a80-8717-4ee8-a3de-5fc30311cc71",
+        "name": "Get course content",
+        "credentials": {
+          "supabaseApi": {
+            "id": "bvMVIJLed9p3sKxS",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "select title, content\nfrom lessons l join lesson_translations t on\nl.id = t.lesson_id\nwhere l.module_id = '{{ $('Get modules id').item.json.id }}'\nand language_code='da'\norder by position ",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          2016,
+          -432
+        ],
+        "id": "03038e27-75da-4499-b3bf-ae714d779481",
+        "name": "Postgres",
+        "credentials": {
+          "postgres": {
+            "id": "RUVxlMmZvsZC2IGe",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "facb9084-883f-4795-b751-04735e1386a0",
+                "name": "title",
+                "value": "={{ $json.title }}",
+                "type": "string"
+              },
+              {
+                "id": "65b8aba8-800c-402d-bc65-6ddabcc369e8",
+                "name": "content",
+                "value": "={{ $json.content }}",
+                "type": "array"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          2464,
+          -432
+        ],
+        "id": "0bffbd40-e3b4-40be-95f6-5504b279defd",
+        "name": "Lessons collect"
+      },
+      {
+        "parameters": {
+          "fieldsToAggregate": {
+            "fieldToAggregate": [
+              {
+                "fieldToAggregate": "title"
+              },
+              {
+                "fieldToAggregate": "content"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.aggregate",
+        "typeVersion": 1,
+        "position": [
+          2240,
+          -432
+        ],
+        "id": "b0afb8a3-1996-482c-8ab9-c03d08a3e18a",
+        "name": "Aggregate1"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3,
+        "position": [
+          1792,
+          -308
+        ],
+        "id": "4c94c9c9-05b3-4019-82d1-788625f3a073",
+        "name": "Loop Over Items"
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=#Input\n\n##Kursusinformation\n\nKursustitel: {{ $('Get course content').item.json.title }}\n\nKursusniveau: {{ $('Get course').item.json.course_level }}\n\nMålgruppe: {{ $('Get course').item.json.target_audience }}\n\nSprog: {{ $('Get course').item.json.course_language }}\n\nSektor: {{ $('Get course').item.json.sector }}\n\nKursusbeskrivelse: {{ $('Get course content').item.json.description }}\n\nKursusindhold: {{ $('Get course content').item.json.content }}\n\n##Modulinformation\n\nModulnavn: {{ $('Get title & description').item.json.title }}\n\nModulbeskrivelse: {{ $('Get title & description').item.json.description }}\n\n##Lektioner\nLektionstitler: {{ $('Lessons collect').item.json.title }}\n\nLektionsindhold: {{ $('Lessons collect').item.json.content }}\n\n",
+          "messages": {
+            "messageValues": [
+              {
+                "message": "={{ $('Get prompt').item.json.content }}"
+              }
+            ]
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "typeVersion": 1.6,
+        "position": [
+          2912,
+          -432
+        ],
+        "id": "7df7524e-f133-41dd-8975-4448b47728e4",
+        "name": "Modultekst Creator"
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "value": "claude-sonnet-4-20250514",
+            "mode": "list",
+            "cachedResultName": "Claude Sonnet 4"
+          },
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+        "typeVersion": 1.3,
+        "position": [
+          672,
+          -84
+        ],
+        "id": "0ca2f8ea-6fdd-4719-9f83-ee9e17c573f9",
+        "name": "Anthropic Chat Model1",
+        "credentials": {
+          "anthropicApi": {
+            "id": "hvw52FHiqSCDBq6Q",
+            "name": "Anthropic account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=#Input\n\n##Kursusinformation\n\nKursustitel: {{ $('Get course content').item.json.title }}\n\nKursusniveau: {{ $('Get course').item.json.course_level }}\n\nMålgruppe: {{ $('Get course').item.json.target_audience }}\n\nSprog: {{ $('Get course').item.json.course_language }}\n\nSektor: {{ $('Get course').item.json.sector }}\n\nKursusbeskrivelse: {{ $('Get course content').item.json.description }}\n\nKursusindhold: {{ $('Get course content').item.json.content }}\n\n##Modulinformation\n\nModulnavn: {{ $('Get title & description').item.json.title }}\n\nModulbeskrivelse: {{ $('Get title & description').item.json.description }}\n\n##Lektioner\nLektioner: {{ $('Lessons collect').item.json.title }}",
+          "messages": {
+            "messageValues": [
+              {
+                "message": "={{ $('Get prompt1').item.json.content }}"
+              }
+            ]
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "typeVersion": 1.6,
+        "position": [
+          3488,
+          -432
+        ],
+        "id": "d31eceeb-9430-49ff-a323-22ad428cdabd",
+        "name": "Video script creator"
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "hs2iwVsjN8phf01l",
+            "mode": "list",
+            "cachedResultName": "My project — Tool Kursus Image generator"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Billedtekst": "=#Input\n## Kursusinformation\nKursusnavn: {{ $('Get course').item.json.draft_title }}\n\n## Modulinformation\nModulnavn: {{ $('Get title & description').item.json.title }}\nModulbeskrivelse: {{ $('Get title & description').item.json.description }}\nModulindhold: {{ $('Get title & description').item.json.content }}",
+              "image_name": "=Modul-{{ $json.title }}",
+              "Billedetype": "Generelt",
+              "eksempel_url": "={{ $('Get course').item.json.ref_image_modules }}",
+              "ref_table_name": "modules",
+              "ref_table_id": "={{ $('Get modules id').item.json.id }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "eksempel_url",
+                "displayName": "eksempel_url",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string"
+              },
+              {
+                "id": "Billedtekst",
+                "displayName": "Billedtekst",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string"
+              },
+              {
+                "id": "image_name",
+                "displayName": "image_name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string"
+              },
+              {
+                "id": "Billedetype",
+                "displayName": "Billedetype",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": false
+              },
+              {
+                "id": "ref_table_name",
+                "displayName": "ref_table_name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": false
+              },
+              {
+                "id": "ref_table_id",
+                "displayName": "ref_table_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.2,
+        "position": [
+          4064,
+          -308
+        ],
+        "id": "e5308bc6-5672-4395-9d4e-d1a04ca71d1d",
+        "name": "Genererer modulbillede",
+        "disabled": true
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "select v.prompt_id, v.content, v.llm\nfrom prompts p \njoin prompt_versions v on \n  p.id = v.prompt_id\n  and p.active_version_id = v.id\njoin prompt_course_relations pcr on \n  p.id = pcr.prompt_id\njoin course_types t on \n  pcr.course_type_id = t.id\nwhere t.name = '{{ $('When Executed by Another Workflow').item.json.course_type }}'\nand pcr.course_section_id = 'd6aa870b-57c3-4a1f-9242-a785624a171e'",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          2688,
+          -432
+        ],
+        "id": "22ef0cc1-abfb-4abf-8610-4895f85d7708",
+        "name": "Get prompt",
+        "credentials": {
+          "postgres": {
+            "id": "RUVxlMmZvsZC2IGe",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "value": "={{ $('Get prompt').item.json.llm }}",
+            "mode": "id"
+          },
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2,
+        "position": [
+          2984,
+          -208
+        ],
+        "id": "0589e9e5-fd65-496a-9b5c-0a3b83838e9b",
+        "name": "Open Router",
+        "credentials": {
+          "openAiApi": {
+            "id": "wLbV0srlBMaP36mY",
+            "name": "Open Router"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "select v.prompt_id, v.content, v.llm\nfrom prompts p \njoin prompt_versions v on \n  p.id = v.prompt_id\n  and p.active_version_id = v.id\njoin prompt_course_relations pcr on \n  p.id = pcr.prompt_id\njoin course_types t on \n  pcr.course_type_id = t.id\nwhere t.name = '{{ $('When Executed by Another Workflow').item.json.course_type }}'\nand pcr.course_section_id = 'f7045731-88ab-41c0-9965-540fc605f556'",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          3264,
+          -432
+        ],
+        "id": "afb8c16d-132f-4eef-9184-7517b292f30a",
+        "name": "Get prompt1",
+        "credentials": {
+          "postgres": {
+            "id": "RUVxlMmZvsZC2IGe",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "value": "={{ $('Get prompt1').item.json.llm }}",
+            "mode": "id"
+          },
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2,
+        "position": [
+          3560,
+          -208
+        ],
+        "id": "6703bc9e-203a-4bf4-a5cb-a404f1875078",
+        "name": "Open Router1",
+        "credentials": {
+          "openAiApi": {
+            "id": "wLbV0srlBMaP36mY",
+            "name": "Open Router"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "tableId": "module_translations",
+          "matchType": "allFilters",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "module_id",
+                "condition": "eq",
+                "keyValue": "={{ $('Loop Over Items').item.json.module_id }}"
+              },
+              {
+                "keyName": "language_code",
+                "condition": "eq",
+                "keyValue": "={{ $('Loop Over Items').item.json.language_code }}"
+              }
+            ]
+          },
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "content",
+                "fieldValue": "={{ $('Modultekst Creator').item.json.text }}"
+              },
+              {
+                "fieldId": "videoscript",
+                "fieldValue": "={{ $('Video script creator').item.json.text }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          3840,
+          -432
+        ],
+        "id": "1af4fa68-3a1c-49fa-85d6-534331ccc311",
+        "name": "Update module translation",
+        "alwaysOutputData": true,
+        "credentials": {
+          "supabaseApi": {
+            "id": "bvMVIJLed9p3sKxS",
+            "name": "Supabase account"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "Get course",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get course": {
+        "main": [
+          [
+            {
+              "node": "Get course content",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get modules id": {
+        "main": [
+          [
+            {
+              "node": "Get title & description",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get title & description": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get course content": {
+        "main": [
+          [
+            {
+              "node": "Get modules id",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Postgres": {
+        "main": [
+          [
+            {
+              "node": "Aggregate1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Aggregate1": {
+        "main": [
+          [
+            {
+              "node": "Lessons collect",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Over Items": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Postgres",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Lessons collect": {
+        "main": [
+          [
+            {
+              "node": "Get prompt",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Modultekst Creator": {
+        "main": [
+          [
+            {
+              "node": "Get prompt1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Anthropic Chat Model1": {
+        "ai_languageModel": [
+          []
+        ]
+      },
+      "Video script creator": {
+        "main": [
+          [
+            {
+              "node": "Update module translation",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Genererer modulbillede": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get prompt": {
+        "main": [
+          [
+            {
+              "node": "Modultekst Creator",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Open Router": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Modultekst Creator",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get prompt1": {
+        "main": [
+          [
+            {
+              "node": "Video script creator",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Open Router1": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Video script creator",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Update module translation": {
+        "main": [
+          [
+            {
+              "node": "Genererer modulbillede",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Flemming Berthelsen",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
   "tags": [
     {
       "updatedAt": "2025-03-18T13:45:14.553Z",
