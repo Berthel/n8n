@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-01-07T11:36:57.000Z",
+  "updatedAt": "2026-02-06T14:21:32.024Z",
   "createdAt": "2025-05-25T12:07:51.575Z",
   "id": "cgya94OU6IhFm58p",
   "name": "Module questions creator",
@@ -1041,8 +1041,11 @@
     "When Executed by Another Workflow": [
       {
         "json": {
-          "module_id": "6a86648f-88a5-41d1-b3b6-3a74c8aa2b1a",
+          "module_id": "db01504c-a717-4c46-9c9d-95faf6ed69c7",
           "course_type": "Default"
+        },
+        "pairedItem": {
+          "item": 0
         }
       }
     ]
