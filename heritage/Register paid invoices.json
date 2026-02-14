@@ -1,51 +1,11 @@
 {
-  "updatedAt": "2025-06-23T11:58:16.000Z",
+  "updatedAt": "2026-02-12T16:44:49.602Z",
   "createdAt": "2025-02-09T05:35:22.522Z",
   "id": "FD4y527EKSFnaQMk",
   "name": "Register paid invoices",
   "active": false,
   "isArchived": false,
   "nodes": [
-    {
-      "parameters": {
-        "model": {
-          "__rl": true,
-          "mode": "list",
-          "value": "gpt-3.5-turbo-1106",
-          "cachedResultName": "gpt-3.5-turbo-1106"
-        },
-        "options": {
-          "temperature": 0
-        }
-      },
-      "id": "7076854e-c7e8-45b5-9e5e-16678bffa254",
-      "name": "OpenAI Model",
-      "type": "@n8n/n8n-nodes-langchain.lmOpenAi",
-      "position": [
-        2545.9740588781942,
-        580.0279776308931
-      ],
-      "typeVersion": 1,
-      "credentials": {
-        "openAiApi": {
-          "id": "ZjiR1Y4tdzymEK1L",
-          "name": "OpenAi account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "jsonSchema": "{\n  \"Document type\": { \"type\": \"string\" },\n  \"Invoice date\": { \"type\": \"date\" },\n  \"invoice number\": { \"type\": \"string\" },\n  \"Purchase order number\": { \"type\": \"string\" },\n  \"Supplier name\": { \"type\": \"string\" },\n  \"Supplier address\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"address 1\": { \"type\": \"string\" },\n      \"address 2\": { \"type\": \"string\" },\n      \"city\": { \"type\": \"string\" },\n      \"postcode\": { \"type\": \"string\" }\n    }\n  },\n  \"Supplier VAT identification number\": { \"type\": \"string\" },\n  \"Customer name\": { \"type\": \"string\" },\n  \"Customer address\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"address 1\": { \"type\": \"string\" },\n      \"address 2\": { \"type\": \"string\" },\n      \"city\": { \"type\": \"string\" },\n      \"postcode\": { \"type\": \"string\" }\n    }\n  },\n  \"Customer VAT identification number\": { \"type\": \"string\" }, \n  \"Shipping addresses\": {\n    \"type\": \"array\",\n    \"items\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"address 1\": { \"type\": \"string\" },\n        \"address 2\": { \"type\": \"string\" },\n        \"city\": { \"type\": \"string\" },\n        \"postcode\": { \"type\": \"string\" }\n      }\n    }\n  },\n  \"Line items\": {\n    \"type\": \"array\",\n    \"items\": {\n      \"name\": \"string\",\n      \"description\": \"string\",\n      \"price\": \"number\",\n      \"discount\": \"number\"\n    }\n  },\n  \"Subtotal without VAT\": { \"type\": \"number\" },\n  \"Subtotal with VAT\": { \"type\": \"number\" },\n  \"Total price\": { \"type\": \"number\" },\n  \"Currency\": { \"type\": \"string\" }\n}"
-      },
-      "id": "00819f1c-2c60-4b7c-b395-445ec05fd898",
-      "name": "Structured Output Parser",
-      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
-      "position": [
-        2780,
-        840
-      ],
-      "typeVersion": 1.1
-    },
     {
       "parameters": {
         "method": "POST",
@@ -78,8 +38,8 @@
       "name": "Upload to LlamaParse",
       "type": "n8n-nodes-base.httpRequest",
       "position": [
-        1745.9740588781945,
-        520.0279776308931
+        4688,
+        1856
       ],
       "typeVersion": 4.2,
       "credentials": {
@@ -109,8 +69,8 @@
       "name": "Get Processing Status",
       "type": "n8n-nodes-base.httpRequest",
       "position": [
-        1925.9740588781945,
-        520.0279776308931
+        4912,
+        1856
       ],
       "typeVersion": 4.2,
       "credentials": {
@@ -128,8 +88,8 @@
       "name": "Wait to stay within service limits",
       "type": "n8n-nodes-base.wait",
       "position": [
-        2245.9740588781942,
-        660.0279776308931
+        5360,
+        1952
       ],
       "webhookId": "17a96ed6-b5ff-47bb-a8a2-39c1eb40185a",
       "typeVersion": 1.1
@@ -248,8 +208,8 @@
       "name": "Is Job Ready?",
       "type": "n8n-nodes-base.switch",
       "position": [
-        2085.9740588781942,
-        520.0279776308931
+        5136,
+        1728
       ],
       "typeVersion": 3
     },
@@ -268,8 +228,8 @@
       "name": "Get Parsed Invoice Data",
       "type": "n8n-nodes-base.httpRequest",
       "position": [
-        2285.9740588781942,
-        380.02797763089313
+        5360,
+        1712
       ],
       "typeVersion": 4.2,
       "credentials": {
@@ -282,30 +242,29 @@
     {
       "parameters": {
         "mode": "raw",
-        "jsonOutput": "={{ $json.output }}",
+        "jsonOutput": "={{ $json }}",
         "options": {}
       },
       "id": "5f9b507f-4dc1-4853-bf71-a64f2f4b55c1",
       "name": "Map Output",
       "type": "n8n-nodes-base.set",
       "position": [
-        2885.9740588781942,
-        420.02797763089313
+        5936,
+        1712
       ],
       "typeVersion": 3.3
     },
     {
       "parameters": {
         "promptType": "define",
-        "text": "=Given the following invoice in the <invoice> xml tags, extract the following information as listed below.\nIf you cannot the information for a specific item, then leave blank and skip to the next. \n\n* Document type (Receipt or Invoice)\n* Invoice date\n* invoice number\n* Purchase order number\n* Supplier name\n* Supplier address\n* Supplier VAT identification number\n* Customer name\n* Customer address\n* Customer VAT identification number\n* Shipping addresses\n* Line items, including a description of the goods or services rendered\n* Price with and without VAT\n* Total price\n* Currency\n\n<invoice>{{ $json.markdown }}</invoice>",
-        "hasOutputParser": true
+        "text": "=Given the following invoice in the <invoice> xml tags, extract the following information as listed below.\nIf you cannot the information for a specific item, then leave blank and skip to the next. \n\n* Document type (Receipt or Invoice)\n* Invoice date\n* invoice number\n* Purchase order number\n* Supplier name\n* Supplier address\n* Supplier VAT identification number\n* Customer name\n* Customer address\n* Customer VAT identification number\n* Shipping addresses\n* Line items, including a description of the goods or services rendered\n* Price with and without VAT\n* Total price\n* Currency\n\n<invoice>{{ $json.markdown }}</invoice>"
       },
       "id": "d22744cd-151d-4b92-b4f2-4a5b9ceb4ee7",
       "name": "Apply Data Extraction Rules",
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "position": [
-        2545.9740588781942,
-        420.02797763089313
+        5584,
+        1712
       ],
       "typeVersion": 1.4
     },
@@ -324,8 +283,8 @@
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
-        1420,
-        520
+        4464,
+        1856
       ],
       "executeOnce": false,
       "credentials": {
@@ -342,8 +301,8 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        2280,
-        1580
+        3792,
+        2176
       ],
       "id": "56e454ec-614b-4770-85e2-d135a7ba88ed",
       "name": "Loop Over Items"
@@ -353,8 +312,8 @@
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        580,
-        520
+        3792,
+        1856
       ],
       "id": "17a57ca1-7a11-4a0f-aefd-1dae9156530b",
       "name": "When clicking ‘Test workflow’"
@@ -378,8 +337,8 @@
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
-        820,
-        520
+        4016,
+        1856
       ],
       "id": "f29067e2-b974-4115-9e7b-10e3a4c0f8c7",
       "name": "Get paid invoices",
@@ -414,8 +373,8 @@
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
-        3280,
-        420
+        6384,
+        1712
       ],
       "id": "c05498d6-d262-45ca-90d7-5ef33748e246",
       "name": "Move invoice to registered",
@@ -643,8 +602,8 @@
       "name": "Append to Reconciliation Sheet",
       "type": "n8n-nodes-base.googleSheets",
       "position": [
-        3080,
-        420
+        6160,
+        1712
       ],
       "typeVersion": 4.3,
       "credentials": {
@@ -661,11 +620,37 @@
       "type": "n8n-nodes-base.limit",
       "typeVersion": 1,
       "position": [
-        1040,
-        520
+        4240,
+        1856
       ],
       "id": "d526d5d8-c98a-48ea-8647-aedf8c016f4f",
       "name": "Limit"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.2",
+          "mode": "list",
+          "cachedResultName": "gpt-5.2"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "id": "7b751fef-dbd5-4a45-8bbe-c1e01ba7d6e4",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        5600,
+        1936
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "ZjiR1Y4tdzymEK1L",
+          "name": "OpenAi account"
+        }
+      }
     }
   ],
   "connections": {
@@ -680,17 +665,6 @@
         ]
       ]
     },
-    "OpenAI Model": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "Apply Data Extraction Rules",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Is Job Ready?": {
       "main": [
         [
@@ -700,8 +674,8 @@
             "index": 0
           }
         ],
-        null,
-        null,
+        [],
+        [],
         [
           {
             "node": "Wait to stay within service limits",
@@ -744,17 +718,6 @@
         ]
       ]
     },
-    "Structured Output Parser": {
-      "ai_outputParser": [
-        [
-          {
-            "node": "Apply Data Extraction Rules",
-            "type": "ai_outputParser",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Apply Data Extraction Rules": {
       "main": [
         [
@@ -788,12 +751,6 @@
         ]
       ]
     },
-    "Loop Over Items": {
-      "main": [
-        [],
-        []
-      ]
-    },
     "When clicking ‘Test workflow’": {
       "main": [
         [
@@ -814,11 +771,6 @@
             "index": 0
           }
         ]
-      ]
-    },
-    "Move invoice to registered": {
-      "main": [
-        []
       ]
     },
     "Append to Reconciliation Sheet": {
@@ -842,6 +794,17 @@
           }
         ]
       ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Apply Data Extraction Rules",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {},
@@ -851,7 +814,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "730ee3b6-fb72-4af4-a0b2-eba85c50fd9a",
+  "versionId": "0ce4dae2-1296-4593-b0bc-7982259efb9e",
   "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
