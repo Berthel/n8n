@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2025-12-24T08:23:01.000Z",
+  "updatedAt": "2026-02-23T05:23:11.256Z",
   "createdAt": "2025-05-23T12:23:10.568Z",
   "id": "JFxTvX4GDNqmUX0R",
   "name": "Lessons creator",
@@ -15,7 +15,7 @@
       "typeVersion": 1.1,
       "position": [
         0,
-        1124
+        1136
       ],
       "id": "12cb3263-719f-4819-a733-a35b12166cf4",
       "name": "When Executed by Another Workflow"
@@ -37,7 +37,7 @@
       "typeVersion": 1,
       "position": [
         448,
-        1124
+        1136
       ],
       "id": "c056b915-09c4-4ff7-bc22-ec78a1333ced",
       "name": "Get course",
@@ -69,7 +69,7 @@
       "typeVersion": 1,
       "position": [
         672,
-        1124
+        1136
       ],
       "id": "991202ef-f1c9-49a9-b6aa-4b8da1b1587a",
       "name": "Get course content",
@@ -88,7 +88,7 @@
       "typeVersion": 3,
       "position": [
         1792,
-        1124
+        1136
       ],
       "id": "df76781b-a665-46e3-9801-c74404ee0e19",
       "name": "Loop Over Items"
@@ -109,7 +109,7 @@
       "typeVersion": 1.3,
       "position": [
         0,
-        1444
+        1456
       ],
       "id": "9e0b87ab-208d-4015-9f9c-03d174c3035c",
       "name": "Anthropic Chat Model1",
@@ -137,7 +137,7 @@
       "typeVersion": 1,
       "position": [
         224,
-        1124
+        1136
       ],
       "id": "6ad22f16-9626-46cd-a7e0-aaf5067e71ac",
       "name": "Get module",
@@ -165,7 +165,7 @@
       "typeVersion": 1,
       "position": [
         896,
-        1124
+        1136
       ],
       "id": "6833734e-b3d7-4642-acd1-b54ad4390a5e",
       "name": "Get module content",
@@ -194,7 +194,7 @@
       "typeVersion": 1,
       "position": [
         1344,
-        1124
+        1136
       ],
       "id": "df58ded4-e98b-4d6f-a591-6862e2c74ba1",
       "name": "Get lessons_id",
@@ -222,7 +222,7 @@
       "typeVersion": 1,
       "position": [
         1568,
-        1124
+        1136
       ],
       "id": "4c267e3a-25af-4a18-b137-7718c0524bbf",
       "name": "Get lessons_title",
@@ -265,7 +265,7 @@
       "typeVersion": 2.6,
       "position": [
         1120,
-        1124
+        1136
       ],
       "id": "3cb1d80b-6e01-4e2f-8eb7-a1da276c3eb0",
       "name": "Get no of modules and lessons",
@@ -316,7 +316,7 @@
       "typeVersion": 1,
       "position": [
         3968,
-        1220
+        1232
       ],
       "id": "254b3be7-b972-48fe-8922-71c784c2ac13",
       "name": "Update lessons translation",
@@ -341,7 +341,7 @@
       "typeVersion": 1.2,
       "position": [
         0,
-        1860
+        1872
       ],
       "id": "451ad9bd-b57c-4875-b24b-87056331fc9a",
       "name": "OpenAI Chat Model",
@@ -360,7 +360,7 @@
       "typeVersion": 1.2,
       "position": [
         0,
-        2068
+        2080
       ],
       "id": "799c8b13-74e8-4465-b120-822fd5a6003a",
       "name": "Structured Output Parser"
@@ -379,7 +379,7 @@
       "typeVersion": 1.2,
       "position": [
         0,
-        1652
+        1664
       ],
       "id": "06ef9691-571e-4a40-9bf3-28a089644fac",
       "name": "OpenAI Chat Model1",
@@ -406,7 +406,7 @@
       "typeVersion": 1.6,
       "position": [
         2464,
-        1048
+        1056
       ],
       "id": "373eae15-4bc9-43a1-9940-bc3983806eff",
       "name": "Lesson Exercises Creator",
@@ -415,7 +415,7 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=#Input\n\n##Kursusinformation\n\nKursustitel: {{ $('Get course content').item.json.title }}\n\nKursusniveau: {{ $('Get course').item.json.course_level }}\n\nMålgruppe: {{ $('Get course').item.json.target_audience }}\n\nSprog: {{ $('Get course').item.json.course_language }}\n\nSektor: {{ $('Get course').item.json.sector }}\n\nKursusbeskrivelse: {{ $('Get course content').item.json.description }}\n\nKursusindhold: {{ $('Get course content').item.json.content }}\n\nKursusresearch: {{ $('Get course').item.json.research }}\n\n##Modulinformation\n\nModulnavn: {{ $('Get module content').item.json.title }}\n\nModulbeskrivelse: {{ $('Get module content').item.json.description }}\n\nModulcontent: {{ $('Get module content').item.json.content }}\n\nAntal moduler i kurset: {{ $('Get no of modules and lessons').item.json.no_of_modules }}\n\n##Lektioner\nLektionstitel: {{ $('Get lessons_title').item.json.title }}\n\nAntal lektioner i modulet: {{ $('Get no of modules and lessons').item.json.no_of_lessons }}\n\nLektionsnummer i kurset: {{ $('Get lessons_id').item.json.position }}\n\nAntal ord pr lektion: {{ $('Get course').item.json.no_of_words_per_lesson }}\n",
+        "text": "=#Input\n\n##Kursusinformation\n\nKursustitel: {{ $('Get course content').item.json.title }}\n\nKursusniveau: {{ $('Get course').item.json.course_level }}\n\nMålgruppe: {{ $('Get course').item.json.target_audience }}\n\nSprog: {{ $('Get course').item.json.course_language }}\n\nSektor: {{ $('Get course').item.json.sector }}\n\nKursusbeskrivelse: {{ $('Get course content').item.json.description }}\n\nKursusindhold: {{ $('Get course content').item.json.content }}\n\nKursusresearch: {{ $('Get course').item.json.research }}\n\n##Modulinformation\n\nModulnavn: {{ $('Get module content').item.json.title }}\n\nModulbeskrivelse: {{ $('Get module content').item.json.description }}\n\nModulcontent: {{ $('Get module content').item.json.content }}\n\nAntal moduler i kurset: {{ $('Get no of modules and lessons').item.json.no_of_modules }}\n\n##Lektioner\nLektionstitel: {{ $('Get lessons_title').item.json.title }}\n\nAntal lektioner i modulet: {{ $('Get no of modules and lessons').item.json.no_of_lessons }}\n\nLektionsnummer i kurset: {{ $('Get lessons_id').item.json.position }}\n\n",
         "messages": {
           "messageValues": [
             {
@@ -449,7 +449,7 @@
       "typeVersion": 1.6,
       "position": [
         3040,
-        1048
+        1056
       ],
       "id": "d621bfe2-efed-4553-8bdf-f4e03a7e83a5",
       "name": "Lesson Reflection Questions"
@@ -470,7 +470,7 @@
       "typeVersion": 1.6,
       "position": [
         3616,
-        1048
+        1056
       ],
       "id": "465791b8-9b2f-47bc-b9f3-e989759395ff",
       "name": "Lesson Resources"
@@ -485,7 +485,7 @@
       "typeVersion": 2.6,
       "position": [
         2240,
-        648
+        656
       ],
       "id": "921af7bc-67cc-4099-99dd-d3a078c033cb",
       "name": "Get prompt",
@@ -508,7 +508,7 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        2536,
+        2544,
         768
       ],
       "id": "6a59f8d2-10c1-407c-84de-76a88aaaf513",
@@ -530,7 +530,7 @@
       "typeVersion": 2.6,
       "position": [
         2240,
-        1048
+        1056
       ],
       "id": "122f5d90-9b08-42ae-8d46-b083a1f87607",
       "name": "Get prompt1",
@@ -553,8 +553,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        2536,
-        1272
+        2544,
+        1280
       ],
       "id": "1ec52c08-34d0-4528-9da7-79b560afd6c2",
       "name": "Open Router1",
@@ -575,7 +575,7 @@
       "typeVersion": 2.6,
       "position": [
         2816,
-        1048
+        1056
       ],
       "id": "a3f1a99d-9b2d-468d-a0fa-9d21cc806fee",
       "name": "Get prompt2",
@@ -598,8 +598,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        3112,
-        1272
+        3120,
+        1280
       ],
       "id": "c8e190fb-94e6-428f-8f2a-77aa31f0ec43",
       "name": "Open Router2",
@@ -620,7 +620,7 @@
       "typeVersion": 2.6,
       "position": [
         3392,
-        1048
+        1056
       ],
       "id": "ee923c4b-3cce-40f2-a8e4-e4f1d86d5832",
       "name": "Get prompt3",
@@ -643,8 +643,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        3688,
-        1272
+        3696,
+        1280
       ],
       "id": "b9c6d5d9-aff8-4e77-8b01-db5736cf9fd2",
       "name": "Open Router3",
@@ -685,7 +685,7 @@
       "typeVersion": 2.2,
       "position": [
         2016,
-        676
+        688
       ]
     },
     {
@@ -720,7 +720,7 @@
       "typeVersion": 1,
       "position": [
         2816,
-        648
+        656
       ],
       "id": "93ba6d35-c482-4a27-b933-04b92fde9aff",
       "name": "Update lessons translation1",
@@ -1049,8 +1049,8 @@
       }
     ]
   },
-  "versionId": "c1ad808b-077d-4b7c-8039-a7e30efb7042",
-  "activeVersionId": "c1ad808b-077d-4b7c-8039-a7e30efb7042",
+  "versionId": "232f7bc1-9c0b-433b-a041-12d30068536b",
+  "activeVersionId": "232f7bc1-9c0b-433b-a041-12d30068536b",
   "triggerCount": 0,
   "shared": [
     {
@@ -1062,9 +1062,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2025-12-24T08:23:01.381Z",
-    "createdAt": "2025-12-24T08:23:01.381Z",
-    "versionId": "c1ad808b-077d-4b7c-8039-a7e30efb7042",
+    "updatedAt": "2026-02-23T05:23:27.000Z",
+    "createdAt": "2026-02-23T05:23:11.257Z",
+    "versionId": "232f7bc1-9c0b-433b-a041-12d30068536b",
     "workflowId": "JFxTvX4GDNqmUX0R",
     "nodes": [
       {
@@ -1076,7 +1076,7 @@
         "typeVersion": 1.1,
         "position": [
           0,
-          1124
+          1136
         ],
         "id": "12cb3263-719f-4819-a733-a35b12166cf4",
         "name": "When Executed by Another Workflow"
@@ -1098,7 +1098,7 @@
         "typeVersion": 1,
         "position": [
           448,
-          1124
+          1136
         ],
         "id": "c056b915-09c4-4ff7-bc22-ec78a1333ced",
         "name": "Get course",
@@ -1130,7 +1130,7 @@
         "typeVersion": 1,
         "position": [
           672,
-          1124
+          1136
         ],
         "id": "991202ef-f1c9-49a9-b6aa-4b8da1b1587a",
         "name": "Get course content",
@@ -1149,7 +1149,7 @@
         "typeVersion": 3,
         "position": [
           1792,
-          1124
+          1136
         ],
         "id": "df76781b-a665-46e3-9801-c74404ee0e19",
         "name": "Loop Over Items"
@@ -1170,7 +1170,7 @@
         "typeVersion": 1.3,
         "position": [
           0,
-          1444
+          1456
         ],
         "id": "9e0b87ab-208d-4015-9f9c-03d174c3035c",
         "name": "Anthropic Chat Model1",
@@ -1198,7 +1198,7 @@
         "typeVersion": 1,
         "position": [
           224,
-          1124
+          1136
         ],
         "id": "6ad22f16-9626-46cd-a7e0-aaf5067e71ac",
         "name": "Get module",
@@ -1226,7 +1226,7 @@
         "typeVersion": 1,
         "position": [
           896,
-          1124
+          1136
         ],
         "id": "6833734e-b3d7-4642-acd1-b54ad4390a5e",
         "name": "Get module content",
@@ -1255,7 +1255,7 @@
         "typeVersion": 1,
         "position": [
           1344,
-          1124
+          1136
         ],
         "id": "df58ded4-e98b-4d6f-a591-6862e2c74ba1",
         "name": "Get lessons_id",
@@ -1283,7 +1283,7 @@
         "typeVersion": 1,
         "position": [
           1568,
-          1124
+          1136
         ],
         "id": "4c267e3a-25af-4a18-b137-7718c0524bbf",
         "name": "Get lessons_title",
@@ -1326,7 +1326,7 @@
         "typeVersion": 2.6,
         "position": [
           1120,
-          1124
+          1136
         ],
         "id": "3cb1d80b-6e01-4e2f-8eb7-a1da276c3eb0",
         "name": "Get no of modules and lessons",
@@ -1377,7 +1377,7 @@
         "typeVersion": 1,
         "position": [
           3968,
-          1220
+          1232
         ],
         "id": "254b3be7-b972-48fe-8922-71c784c2ac13",
         "name": "Update lessons translation",
@@ -1402,7 +1402,7 @@
         "typeVersion": 1.2,
         "position": [
           0,
-          1860
+          1872
         ],
         "id": "451ad9bd-b57c-4875-b24b-87056331fc9a",
         "name": "OpenAI Chat Model",
@@ -1421,7 +1421,7 @@
         "typeVersion": 1.2,
         "position": [
           0,
-          2068
+          2080
         ],
         "id": "799c8b13-74e8-4465-b120-822fd5a6003a",
         "name": "Structured Output Parser"
@@ -1440,7 +1440,7 @@
         "typeVersion": 1.2,
         "position": [
           0,
-          1652
+          1664
         ],
         "id": "06ef9691-571e-4a40-9bf3-28a089644fac",
         "name": "OpenAI Chat Model1",
@@ -1467,7 +1467,7 @@
         "typeVersion": 1.6,
         "position": [
           2464,
-          1048
+          1056
         ],
         "id": "373eae15-4bc9-43a1-9940-bc3983806eff",
         "name": "Lesson Exercises Creator",
@@ -1476,7 +1476,7 @@
       {
         "parameters": {
           "promptType": "define",
-          "text": "=#Input\n\n##Kursusinformation\n\nKursustitel: {{ $('Get course content').item.json.title }}\n\nKursusniveau: {{ $('Get course').item.json.course_level }}\n\nMålgruppe: {{ $('Get course').item.json.target_audience }}\n\nSprog: {{ $('Get course').item.json.course_language }}\n\nSektor: {{ $('Get course').item.json.sector }}\n\nKursusbeskrivelse: {{ $('Get course content').item.json.description }}\n\nKursusindhold: {{ $('Get course content').item.json.content }}\n\nKursusresearch: {{ $('Get course').item.json.research }}\n\n##Modulinformation\n\nModulnavn: {{ $('Get module content').item.json.title }}\n\nModulbeskrivelse: {{ $('Get module content').item.json.description }}\n\nModulcontent: {{ $('Get module content').item.json.content }}\n\nAntal moduler i kurset: {{ $('Get no of modules and lessons').item.json.no_of_modules }}\n\n##Lektioner\nLektionstitel: {{ $('Get lessons_title').item.json.title }}\n\nAntal lektioner i modulet: {{ $('Get no of modules and lessons').item.json.no_of_lessons }}\n\nLektionsnummer i kurset: {{ $('Get lessons_id').item.json.position }}\n\nAntal ord pr lektion: {{ $('Get course').item.json.no_of_words_per_lesson }}\n",
+          "text": "=#Input\n\n##Kursusinformation\n\nKursustitel: {{ $('Get course content').item.json.title }}\n\nKursusniveau: {{ $('Get course').item.json.course_level }}\n\nMålgruppe: {{ $('Get course').item.json.target_audience }}\n\nSprog: {{ $('Get course').item.json.course_language }}\n\nSektor: {{ $('Get course').item.json.sector }}\n\nKursusbeskrivelse: {{ $('Get course content').item.json.description }}\n\nKursusindhold: {{ $('Get course content').item.json.content }}\n\nKursusresearch: {{ $('Get course').item.json.research }}\n\n##Modulinformation\n\nModulnavn: {{ $('Get module content').item.json.title }}\n\nModulbeskrivelse: {{ $('Get module content').item.json.description }}\n\nModulcontent: {{ $('Get module content').item.json.content }}\n\nAntal moduler i kurset: {{ $('Get no of modules and lessons').item.json.no_of_modules }}\n\n##Lektioner\nLektionstitel: {{ $('Get lessons_title').item.json.title }}\n\nAntal lektioner i modulet: {{ $('Get no of modules and lessons').item.json.no_of_lessons }}\n\nLektionsnummer i kurset: {{ $('Get lessons_id').item.json.position }}\n\n",
           "messages": {
             "messageValues": [
               {
@@ -1510,7 +1510,7 @@
         "typeVersion": 1.6,
         "position": [
           3040,
-          1048
+          1056
         ],
         "id": "d621bfe2-efed-4553-8bdf-f4e03a7e83a5",
         "name": "Lesson Reflection Questions"
@@ -1531,7 +1531,7 @@
         "typeVersion": 1.6,
         "position": [
           3616,
-          1048
+          1056
         ],
         "id": "465791b8-9b2f-47bc-b9f3-e989759395ff",
         "name": "Lesson Resources"
@@ -1546,7 +1546,7 @@
         "typeVersion": 2.6,
         "position": [
           2240,
-          648
+          656
         ],
         "id": "921af7bc-67cc-4099-99dd-d3a078c033cb",
         "name": "Get prompt",
@@ -1569,7 +1569,7 @@
         "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
         "typeVersion": 1.2,
         "position": [
-          2536,
+          2544,
           768
         ],
         "id": "6a59f8d2-10c1-407c-84de-76a88aaaf513",
@@ -1591,7 +1591,7 @@
         "typeVersion": 2.6,
         "position": [
           2240,
-          1048
+          1056
         ],
         "id": "122f5d90-9b08-42ae-8d46-b083a1f87607",
         "name": "Get prompt1",
@@ -1614,8 +1614,8 @@
         "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
         "typeVersion": 1.2,
         "position": [
-          2536,
-          1272
+          2544,
+          1280
         ],
         "id": "1ec52c08-34d0-4528-9da7-79b560afd6c2",
         "name": "Open Router1",
@@ -1636,7 +1636,7 @@
         "typeVersion": 2.6,
         "position": [
           2816,
-          1048
+          1056
         ],
         "id": "a3f1a99d-9b2d-468d-a0fa-9d21cc806fee",
         "name": "Get prompt2",
@@ -1659,8 +1659,8 @@
         "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
         "typeVersion": 1.2,
         "position": [
-          3112,
-          1272
+          3120,
+          1280
         ],
         "id": "c8e190fb-94e6-428f-8f2a-77aa31f0ec43",
         "name": "Open Router2",
@@ -1681,7 +1681,7 @@
         "typeVersion": 2.6,
         "position": [
           3392,
-          1048
+          1056
         ],
         "id": "ee923c4b-3cce-40f2-a8e4-e4f1d86d5832",
         "name": "Get prompt3",
@@ -1704,8 +1704,8 @@
         "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
         "typeVersion": 1.2,
         "position": [
-          3688,
-          1272
+          3696,
+          1280
         ],
         "id": "b9c6d5d9-aff8-4e77-8b01-db5736cf9fd2",
         "name": "Open Router3",
@@ -1746,7 +1746,7 @@
         "typeVersion": 2.2,
         "position": [
           2016,
-          676
+          688
         ]
       },
       {
@@ -1781,7 +1781,7 @@
         "typeVersion": 1,
         "position": [
           2816,
-          648
+          656
         ],
         "id": "93ba6d35-c482-4a27-b933-04b92fde9aff",
         "name": "Update lessons translation1",
@@ -2093,9 +2093,9 @@
       }
     },
     "authors": "Flemming Berthelsen",
-    "name": null,
-    "description": null,
-    "autosaved": false
+    "name": "Version 232f7bc1",
+    "description": "",
+    "autosaved": true
   },
   "tags": [
     {
