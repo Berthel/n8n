@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2025-11-21T06:57:21.000Z",
+  "updatedAt": "2026-03-04T19:34:08.682Z",
   "createdAt": "2025-11-21T05:32:33.932Z",
   "id": "nphu3smdVLhfFGnv",
   "name": "Generate SWOT Analysis from PESTLE Input",
@@ -381,7 +381,8 @@
     }
   },
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "availableInMCP": false
   },
   "staticData": null,
   "meta": {
