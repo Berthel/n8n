@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2025-11-15T13:14:46.000Z",
+  "updatedAt": "2026-03-04T19:34:47.069Z",
   "createdAt": "2025-11-14T14:20:41.009Z",
   "id": "3CTmzMZYXkeInqsw",
   "name": "Ny Drivhus kontrol",
@@ -1305,7 +1305,8 @@
     }
   },
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "availableInMCP": false
   },
   "staticData": {
     "node:Every 15 Minutes": {
