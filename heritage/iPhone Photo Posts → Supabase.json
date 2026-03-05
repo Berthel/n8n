@@ -1,0 +1,192 @@
+{
+  "updatedAt": "2026-03-04T20:09:41.660Z",
+  "createdAt": "2026-03-04T20:09:41.660Z",
+  "id": "RYbDuOhxYi2L3P0D",
+  "name": "iPhone Photo Posts → Supabase",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "id": "webhook_1",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "iphone-post",
+        "responseMode": "lastNode",
+        "responseData": "firstEntryJson",
+        "options": {}
+      }
+    },
+    {
+      "id": "code_prepare",
+      "name": "Prepare Upload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        300
+      ],
+      "parameters": {
+        "language": "javaScript",
+        "mode": "runOnceForAllItems",
+        "jsCode": "const webhookItem = $input.first();\nconst text = webhookItem.json.body?.text || '';\n\n// Generate UUID v4\nconst post_id = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {\n  const r = Math.random() * 16 | 0;\n  const v = c === 'x' ? r : (r & 0x3 | 0x8);\n  return v.toString(16);\n});\n\nconst binaryData = webhookItem.binary || {};\nconst imageKeys = Object.keys(binaryData)\n  .filter(key => key.startsWith('image'))\n  .sort();\n\nif (imageKeys.length === 0) {\n  throw new Error('No images found. Expected fields named image0, image1, etc.');\n}\n\nconst SUPABASE_URL = '<DIN_SUPABASE_URL>';\n\nconst output = [];\nfor (const key of imageKeys) {\n  const bin = binaryData[key];\n  const filename = bin.fileName || `${key}.jpg`;\n  const storagePath = `posts/${post_id}/${filename}`;\n  const uploadUrl = `${SUPABASE_URL}/storage/v1/object/iphone-posts/${storagePath}`;\n\n  output.push({\n    json: {\n      post_id,\n      text,\n      storage_path: storagePath,\n      upload_url: uploadUrl\n    },\n    binary: {\n      data: bin\n    }\n  });\n}\n\nreturn output;"
+      }
+    },
+    {
+      "id": "http_upload",
+      "name": "Upload to Supabase Storage",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        710,
+        300
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.upload_url }}",
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer <DIN_SERVICE_ROLE_KEY>"
+            },
+            {
+              "name": "apikey",
+              "value": "<DIN_SERVICE_ROLE_KEY>"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "code_build",
+      "name": "Build Post Record",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        940,
+        300
+      ],
+      "parameters": {
+        "language": "javaScript",
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Acknowledge upload results from previous node\nconst uploadResults = $input.all();\n\n// Get metadata from the Prepare Upload node\nconst prepareItems = $('Prepare Upload').all();\nconst post_id = String(prepareItems[0].json.post_id);\nconst text = String(prepareItems[0].json.text);\n\nconst SUPABASE_URL = '<DIN_SUPABASE_URL>';\n\nconst imageUrls = [];\nfor (const item of prepareItems) {\n  const path = String(item.json.storage_path);\n  imageUrls.push(SUPABASE_URL + '/storage/v1/object/public/iphone-posts/' + path);\n}\n\nreturn [{\n  json: {\n    post_id: post_id,\n    text_content: text,\n    image_urls: imageUrls\n  }\n}];"
+      }
+    },
+    {
+      "id": "http_insert",
+      "name": "Insert Post Row",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1170,
+        300
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "<DIN_SUPABASE_URL>/rest/v1/posts",
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ text_content: $json.text_content, image_urls: $json.image_urls }) }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer <DIN_SERVICE_ROLE_KEY>"
+            },
+            {
+              "name": "apikey",
+              "value": "<DIN_SERVICE_ROLE_KEY>"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation"
+            }
+          ]
+        },
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Prepare Upload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Upload": {
+      "main": [
+        [
+          {
+            "node": "Upload to Supabase Storage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload to Supabase Storage": {
+      "main": [
+        [
+          {
+            "node": "Build Post Record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Post Record": {
+      "main": [
+        [
+          {
+            "node": "Insert Post Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": "c880d9e7-9b89-4e77-843d-7431af15e056",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-03-04T20:09:41.671Z",
+      "createdAt": "2026-03-04T20:09:41.671Z",
+      "role": "workflow:owner",
+      "workflowId": "RYbDuOhxYi2L3P0D",
+      "projectId": "GfhaYhFYRk0TRXAf"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
