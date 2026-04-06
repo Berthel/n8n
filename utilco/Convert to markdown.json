@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-03-12T05:45:16.617Z",
+  "updatedAt": "2026-04-05T18:14:49.585Z",
   "createdAt": "2025-11-17T06:01:30.706Z",
   "id": "Gmw423TMGpJGS3AT",
   "name": "Convert to markdown",
@@ -643,7 +643,8 @@
     }
   },
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "availableInMCP": false
   },
   "staticData": null,
   "meta": {
