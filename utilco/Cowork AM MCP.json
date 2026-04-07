@@ -1,0 +1,196 @@
+{
+  "updatedAt": "2026-04-06T05:02:11.022Z",
+  "createdAt": "2026-04-06T04:18:37.319Z",
+  "id": "5BBnErFwx02mwklz",
+  "name": "Cowork AM MCP",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "authentication": "bearerAuth",
+        "path": "102c684e-6d73-47c8-a9dc-1ac922e04ce2"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "6c3d5d55-073a-46cf-a321-fdbf39018e03",
+      "name": "MCP Server Trigger",
+      "webhookId": "102c684e-6d73-47c8-a9dc-1ac922e04ce2",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "hM5SHZisXccWE4aX",
+          "name": "Bearer Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "kbvRnTVMCpbX3cKl",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/kbvRnTVMCpbX3cKl",
+          "cachedResultName": "My project — Convert to markdown MCP"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "fileId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('fileId', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "fileId"
+          ],
+          "schema": [
+            {
+              "id": "fileId",
+              "displayName": "fileId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        96,
+        256
+      ],
+      "id": "adf3bcdc-e4ef-4410-aa1b-6ef0e4290676",
+      "name": "Call 'Convert to markdown MCP'"
+    }
+  ],
+  "connections": {
+    "Call 'Convert to markdown MCP'": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "2178945a-8a9a-42d4-a975-5374f352e3ce",
+  "activeVersionId": "2178945a-8a9a-42d4-a975-5374f352e3ce",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-04-06T04:18:37.324Z",
+      "createdAt": "2026-04-06T04:18:37.324Z",
+      "role": "workflow:owner",
+      "workflowId": "5BBnErFwx02mwklz",
+      "projectId": "SFLNAzqJIfhKMhJx"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-04-06T05:09:19.000Z",
+    "createdAt": "2026-04-06T05:02:11.023Z",
+    "versionId": "2178945a-8a9a-42d4-a975-5374f352e3ce",
+    "workflowId": "5BBnErFwx02mwklz",
+    "nodes": [
+      {
+        "parameters": {
+          "authentication": "bearerAuth",
+          "path": "102c684e-6d73-47c8-a9dc-1ac922e04ce2"
+        },
+        "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+        "typeVersion": 2,
+        "position": [
+          0,
+          0
+        ],
+        "id": "6c3d5d55-073a-46cf-a321-fdbf39018e03",
+        "name": "MCP Server Trigger",
+        "webhookId": "102c684e-6d73-47c8-a9dc-1ac922e04ce2",
+        "credentials": {
+          "httpBearerAuth": {
+            "id": "hM5SHZisXccWE4aX",
+            "name": "Bearer Auth account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "kbvRnTVMCpbX3cKl",
+            "mode": "list",
+            "cachedResultUrl": "/workflow/kbvRnTVMCpbX3cKl",
+            "cachedResultName": "My project — Convert to markdown MCP"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "fileId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('fileId', ``, 'string') }}"
+            },
+            "matchingColumns": [
+              "fileId"
+            ],
+            "schema": [
+              {
+                "id": "fileId",
+                "displayName": "fileId",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.2,
+        "position": [
+          96,
+          256
+        ],
+        "id": "adf3bcdc-e4ef-4410-aa1b-6ef0e4290676",
+        "name": "Call 'Convert to markdown MCP'"
+      }
+    ],
+    "connections": {
+      "Call 'Convert to markdown MCP'": {
+        "ai_tool": [
+          [
+            {
+              "node": "MCP Server Trigger",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Flemming Berthelsen",
+    "name": "Version 2178945a",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": []
+}
